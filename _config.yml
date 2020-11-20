@@ -31,7 +31,7 @@ github_username:  weirenxue
 author: "Wei-Ren Xue"
 
 # Build settings
-theme: minimal-mistakes-jekyll
+remote_theme: mmistakes/minimal-mistakes
 plugins:
   - jekyll-feed
 
