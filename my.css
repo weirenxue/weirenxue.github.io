@@ -1,0 +1,142 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+html {
+    scroll-behavior: smooth;
+    font-size: 62.5%;
+}
+body {    
+    font-family: 'Poppins', sans-serif;
+    color: white;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+}
+h1 {
+    font-size: 6rem;
+}
+h2 {
+    font-size: 4.2rem;
+}
+ul {
+    list-style: none;
+}
+#nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    background-color: #BE3144;
+    box-shadow: 0 1px 10px #333;
+}
+#nav > ul {
+    display: flex;
+}
+#nav > ul > li a {
+    padding: 0 20px;
+    font-size: 2.5rem;
+    line-height: 7.5rem;
+    color: white;
+    display: block;
+}
+#nav > ul > li a:hover {
+    background-color: #45567D;
+}
+section {
+    padding-top: 7.5rem;
+}
+#about {
+    background-image: linear-gradient(35deg, #3A3D40, #1A191B);
+    height: 100vh;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+#about p {
+    font-size: 3rem;
+    font-style: italic;
+    color: darkcyan;
+    text-shadow: 5px 5px 3px black;
+}
+#project {
+    background-color: #45567D;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 7.5rem;
+}
+#project h2 {
+    margin: 5rem 0;
+    border-bottom: 1px solid white;
+    max-width: 720px;
+    width: 100%;
+}
+.project-grid {
+    display: grid;
+    max-width: 1000px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-auto-rows: minmax(320px, 400px);
+    grid-gap: 2rem;
+    width: 100%;
+    padding: 0 2rem;
+}
+.project-tile {
+    width: 100%;
+    background-color: #303841;
+    border-radius: 5px;
+    display: block;
+}
+.project-tile img {
+    width: 100%;
+    object-fit: cover;
+    height: calc(100% - 7rem);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.project-tile div {
+    padding: 0.5rem 0;
+    font-size: 1.5rem;
+    line-height: 3rem;
+    font-weight: 600;
+}
+.project-tile .code {
+    color: transparent;
+}
+.project-tile:hover .code {
+    color: orange;
+    display: inline;
+    transition: color 0.7s;
+}
+#contact {
+    height: 100vh;
+    background-color: #303841;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+#contact > ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+#contact > ul > li > a {
+    padding: 0 30px;
+    display: block;
+    font-size: 2rem;
+}
+#footer {
+    background-color: #303841;
+    border-top: 2px solid #BE3144;
+}
