@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://weirenxue.github.io/2021/06/11/asmneg/</loc>
+    
+    <lastmod>2021-06-11</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://weirenxue.github.io/2021/06/11/cfarproc/</loc>
     
     <lastmod>2021-06-11</lastmod>
@@ -137,6 +144,55 @@
   </url>
   
   <url>
+    <loc>https://weirenxue.github.io/tags/neg/</loc>
+    <lastmod>2021-06-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/sbb/</loc>
+    <lastmod>2021-06-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/asm/</loc>
+    <lastmod>2021-06-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/hexo/</loc>
+    <lastmod>2021-06-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/next/</loc>
+    <lastmod>2021-06-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/firestore/</loc>
+    <lastmod>2021-06-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/visitors/</loc>
+    <lastmod>2021-06-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://weirenxue.github.io/tags/32/</loc>
     <lastmod>2021-06-11</lastmod>
     <changefreq>daily</changefreq>
@@ -180,34 +236,6 @@
   
   <url>
     <loc>https://weirenxue.github.io/tags/wow64/</loc>
-    <lastmod>2021-06-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/hexo/</loc>
-    <lastmod>2021-06-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/next/</loc>
-    <lastmod>2021-06-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/firestore/</loc>
-    <lastmod>2021-06-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/visitors/</loc>
     <lastmod>2021-06-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>

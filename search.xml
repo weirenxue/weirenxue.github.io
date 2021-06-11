@@ -106,33 +106,40 @@
       </tags>
   </entry>
   <entry>
-    <title>[Windows] 32 位元的應用程式在 64 位元作業系統運作的原理</title>
-    <url>/2021/06/11/3264/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
-<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
-<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
-<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
-<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
-<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
-<ul>
-<li>system32 放的是 64 位元的 API</li>
-<li>SysWOW64 放的是 32 位元的 API</li>
-</ul>
-<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
-<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
-<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
+    <title>[asm] NEG 的運作與應用</title>
+    <url>/2021/06/11/asmneg/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
+<p>它的運作影響了旗標，進而用來當作實現 <code>BOOL function</code> 回傳的一個選項。就一起來看看 <code>NEG</code> 是如何運作以及對應到的高階語言是如何呈現的。</p>
+<h2 id="運作原理"><a href="#運作原理" class="headerlink" title="運作原理"></a>運作原理</h2><p>想知道一個程式碼如何運作，不外乎就是兩種方法：</p>
+<ol>
+<li>直接編譯/組譯然後執行，觀察結果(暫存器輸出、旗標設置等等)，此方式在本篇文章不強調。</li>
+<li>最基本的就是看技術文件，若參數很多或者回傳複雜無法直接觀察結果推斷的時候，相關文件最有用了。例如 Windows 的 API 可以去 MSDN 上找函數介紹，而組合語言的語法能夠找所使用 CPU 的廠商要文檔，AMD 與 Intel 的組合語言可能有差異，所以若是使用 Intel 的就請找 Intel 的指令手冊來參考。</li>
+</ol>
+<p>我的電腦為 Intel CPU，上網找到對應的指令手冊(<a href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)，內文對 <code>NEG</code> 指令的描述摘要如下</p>
+<blockquote>
+<p>NEG—Two&#39;s Complement Negation<br>Description<br>Replaces the value of operand (the destination operand) with its two&#39;s complement. (This operation is equivalent to subtracting the operand from 0.) The destination operand is located in a general-purpose register or a memory location.</p>
+</blockquote>
+<p>簡單說明一下，<code>NEG</code> 是一個 2 補數的運算，將一個數取 2 補數之後放回原本的目的地，等同於一個數被 0 減掉再放回暫存器(即 <code>eax = 0 - eax</code>)，目的地可以是暫存器也可以是記憶體位址。它原文下面還有說明，但到這就能夠來說明想要表達的程式碼了。再來看看它的流程 Pseudo code</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Operation</span><br><span class="line">IF DEST = <span class="number">0</span></span><br><span class="line">　THEN CF ← <span class="number">0</span>;</span><br><span class="line">　ELSE CF ← <span class="number">1</span>;</span><br><span class="line">FI;</span><br><span class="line">DEST ← [– (DEST)]</span><br></pre></td></tr></table></figure>
+<p>短短幾行 Pseudo code，代表了無數的文字，相信一看就懂它想說甚麼。在簡短的 <code>NEG</code> 描述與操作流程可以知道若 <code>DEST</code> 不為 0，進位旗標 (<code>CF</code>) 會被設置為 1，這是因為 0 減非 0 的數需要補位。</p>
+<h2 id="應用方式"><a href="#應用方式" class="headerlink" title="應用方式"></a>應用方式</h2><p>這時候假設你的程式中有個副程式如下</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">NEGtest</span><span class="params">(TCHAR *str1, TCHAR *str2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">lstrcmp</span>(str1, str2) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不論是組合語言或高階語言，有很多不同編寫方式來完成相同的事情，然而這個函數內的 <code>if else</code> 所對應到的組合語言可能為</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">push ebp        <span class="comment">//str2 的位址</span></span><br><span class="line">push eax        <span class="comment">//str1 的位址</span></span><br><span class="line">call [<span class="number">00404004</span>] <span class="comment">//呼叫 lstrcmp 函數</span></span><br><span class="line">neg eax         <span class="comment">//API 函數回傳值都放在 eax 暫存器裡，因此對比較後的結果作 NEG 運算</span></span><br><span class="line">sbb eax, eax    <span class="comment">//eax = eax - eax - CY</span></span><br><span class="line">inc eax         <span class="comment">//eax = eax + 1</span></span><br></pre></td></tr></table></figure>
+<p><code>lstrcmp</code> 需要兩個參數，因此先壓參數入堆疊再調用 (call) 其函數，而它的回傳值放在 <code>eax</code> 裡面，若兩個字串相同，則 <code>eax == 0</code>；反之 <code>eax != 0</code>。此時分為兩個情況來討論：</p>
+<ol>
+<li><code>str1 == str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為 0，<code>neg eax</code> 之後 <code>eax</code> 還是 0 且 <code>CY</code> 為 0，因此到程式結束時 <code>eax</code> 為 1，即 <code>return true</code></li>
+<li><code>str1 !=  str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為非 0，<code>neg eax</code> 之後 <code>eax</code> 還是非 0 且 <code>CY</code> 為1，因此第五行的執行結果為 <code>eax = eax - eax - CY = 0xFFFFFFFF</code> (32位元的話)，最後 <code>eax = eax + 1 = 0</code> 即 <code>return false</code></li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個執行結果，與高階語言的效果是一樣的。當然，也可以用 <code>cmp</code>、<code>jmp</code>等指令來完成同一件事，但不覺得程式拐個彎寫得簡單優雅，會有更有成就感嗎？呵呵！</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>32</tag>
-        <tag>64</tag>
-        <tag>bit</tag>
-        <tag>application</tag>
-        <tag>os</tag>
-        <tag>windows</tag>
-        <tag>wow64</tag>
+        <tag>neg</tag>
+        <tag>sbb</tag>
+        <tag>asm</tag>
       </tags>
   </entry>
   <entry>
@@ -169,6 +176,36 @@
         <tag>next</tag>
         <tag>firestore</tag>
         <tag>visitors</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Windows] 32 位元的應用程式在 64 位元作業系統運作的原理</title>
+    <url>/2021/06/11/3264/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
+<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
+<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
+<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
+<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
+<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
+<ul>
+<li>system32 放的是 64 位元的 API</li>
+<li>SysWOW64 放的是 32 位元的 API</li>
+</ul>
+<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
+<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
+<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>32</tag>
+        <tag>64</tag>
+        <tag>bit</tag>
+        <tag>application</tag>
+        <tag>os</tag>
+        <tag>windows</tag>
+        <tag>wow64</tag>
       </tags>
   </entry>
   <entry>
