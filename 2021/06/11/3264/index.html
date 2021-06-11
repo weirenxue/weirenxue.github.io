@@ -20,18 +20,26 @@
     var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <meta name="description" content="Software Engineer">
-<meta property="og:type" content="website">
-<meta property="og:title" content="薛惟仁 筆記本">
-<meta property="og:url" content="https://weirenxue.github.io/categories/%E5%90%84%E5%BC%8F%E8%BB%9F%E9%AB%94%E9%96%8B%E7%99%BC%E5%95%8F%E9%A1%8C%E7%B4%80%E9%8C%84/index.html">
+  <meta name="description" content="知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Windows] 32 位元的應用程式在 64 位元作業系統運作的原理">
+<meta property="og:url" content="https://weirenxue.github.io/2021/06/11/3264/index.html">
 <meta property="og:site_name" content="薛惟仁 筆記本">
-<meta property="og:description" content="Software Engineer">
+<meta property="og:description" content="知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。">
 <meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-06-11T09:39:07.000Z">
+<meta property="article:modified_time" content="2021-06-11T10:07:18.096Z">
 <meta property="article:author" content="Wei-Ren Xue">
-<meta property="article:tag" content="AI hexo Linux js python c#">
+<meta property="article:tag" content="32">
+<meta property="article:tag" content="64">
+<meta property="article:tag" content="bit">
+<meta property="article:tag" content="application">
+<meta property="article:tag" content="os">
+<meta property="article:tag" content="windows">
+<meta property="article:tag" content="wow64">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://weirenxue.github.io/categories/%E5%90%84%E5%BC%8F%E8%BB%9F%E9%AB%94%E9%96%8B%E7%99%BC%E5%95%8F%E9%A1%8C%E7%B4%80%E9%8C%84/">
+<link rel="canonical" href="https://weirenxue.github.io/2021/06/11/3264/">
 
 
 <script id="page-configurations">
@@ -39,12 +47,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-TW'
   };
 </script>
 
-  <title>分類: 各式軟體開發問題紀錄 | 薛惟仁 筆記本</title>
+  <title>[Windows] 32 位元的應用程式在 64 位元作業系統運作的原理 | 薛惟仁 筆記本</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
     <script>
@@ -190,57 +198,149 @@
         <div class="content-wrap">
           
 
-          <div class="content category">
+          <div class="content post posts-expand">
             
 
+    
   
   
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2021/06/11/3264/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Wei-Ren Xue">
+      <meta itemprop="description" content="Software Engineer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="薛惟仁 筆記本">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Windows] 32 位元的應用程式在 64 位元作業系統運作的原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2021-06-11 17:39:07 / 修改時間：18:07:18" itemprop="dateCreated datePublished" datetime="2021-06-11T17:39:07+08:00">2021-06-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">學習筆記</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">各式軟體開發問題紀錄
-          <small>分類</small>
-        </h2>
-      </div>
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2021/06/11/3264/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/11/3264/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <div class="post-description">知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
+<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
+<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
+<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
+<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
+<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
+<ul>
+<li>system32 放的是 64 位元的 API</li>
+<li>SysWOW64 放的是 32 位元的 API</li>
+</ul>
+<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
+<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
+<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-06-11T16:16:48+08:00"
-              content="2021-06-11">
-          06-11
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/32/" rel="tag"># 32</a>
+              <a href="/tags/64/" rel="tag"># 64</a>
+              <a href="/tags/bit/" rel="tag"># bit</a>
+              <a href="/tags/application/" rel="tag"># application</a>
+              <a href="/tags/os/" rel="tag"># os</a>
+              <a href="/tags/windows/" rel="tag"># windows</a>
+              <a href="/tags/wow64/" rel="tag"># wow64</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/cs_dpi/" itemprop="url">
-            <span itemprop="name">[C#] 在高 DPI 的螢幕上，有些應用程式內的字會模糊的原因以及解決方法！</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/11/cs_dpi/" rel="prev" title="[C#] 在高 DPI 的螢幕上，有些應用程式內的字會模糊的原因以及解決方法！">
+      <i class="fa fa-chevron-left"></i> [C#] 在高 DPI 的螢幕上，有些應用程式內的字會模糊的原因以及解決方法！
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -287,6 +387,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#32-%E4%BD%8D%E5%85%83%E8%88%87-64-%E4%BD%8D%E5%85%83%E7%9A%84%E5%B7%AE%E7%95%B0"><span class="nav-number">2.</span> <span class="nav-text">32 位元與 64 位元的差異</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SysWOW64-%E8%B3%87%E6%96%99%E5%A4%BE"><span class="nav-number">3.</span> <span class="nav-text">SysWOW64 資料夾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#32-bit-App-on-64-bit-OS-%E9%81%8B%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">32-bit App on 64-bit OS 運作原理</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -527,6 +628,26 @@
   }
   // defer loading until the whole page loading is completed
   window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://weirenxue.github.io/2021/06/11/3264/";
+    this.page.identifier = "2021/06/11/3264/";
+    this.page.title = "[Windows] 32 位元的應用程式在 64 位元作業系統運作的原理";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://weirenxue.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
 </script>
 
 <script>
