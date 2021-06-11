@@ -49,6 +49,16 @@
 <figure class="highlight cs"><table><tr><td class="code"><pre><span class="line">[<span class="meta">STAThread</span>]</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (Environment.OSVersion.Version.Major &gt;= <span class="number">6</span>)</span><br><span class="line">        SetProcessDPIAware();</span><br><span class="line">    Application.EnableVisualStyles();</span><br><span class="line">    Application.SetCompatibleTextRenderingDefault(<span class="literal">false</span>);</span><br><span class="line">    Application.Run(<span class="keyword">new</span> Form1());</span><br><span class="line">&#125;</span><br><span class="line">[<span class="meta">System.Runtime.InteropServices.DllImport(<span class="meta-string">&quot;user32.dll&quot;</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="built_in">bool</span> <span class="title">SetProcessDPIAware</span>(<span class="params"></span>)</span>;</span><br></pre></td></tr></table></figure>
 <p>原理很簡單，在 <code>Main()</code> 的附近加上 4、5、10、11 行，使程式為 DPI 感知即大功告成，結果如下</p>
 <p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E5%9C%A8%E9%AB%98DPI%E7%9A%84%E8%9E%A2%E5%B9%95%E4%B8%8A%EF%BC%8C%E6%9C%89%E4%BA%9B%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E5%85%A7%E7%9A%84%E5%AD%97%E6%9C%83%E6%A8%A1%E7%B3%8A%E7%9A%84%E5%8E%9F%E5%9B%A0%E4%BB%A5%E5%8F%8A%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fplain_text_in_cs.png?alt=media&amp;token=7467c99e-411a-426d-abb2-d0d67cc15af8" alt="DPI 感知程式顯示出清晰文字"><span class="image-caption">DPI 感知程式顯示出清晰文字</span></p>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ol>
+<li><p><a href="https://www.telerik.com/blogs/winforms-scaling-at-large-dpi-settings-is-it-even-possible-">WinForms Scaling at Large DPI Settings–Is It Even Possible?</a></p>
+</li>
+<li><p><a href="https://kknews.cc/zh-tw/digital/x56n4g.html">Windows微信DPI適配</a></p>
+</li>
+<li><p><a href="http://crsouza.com/2015/04/13/how-to-fix-blurry-windows-forms-windows-in-high-dpi-settings/">How to fix blurry Windows Forms Windows in high-dpi settings</a></p>
+</li>
+<li><p><a href="https://docs.microsoft.com/zh-tw/windows/win32/api/winnt/ns-winnt-osversioninfoa">OSVERSIONINFOA structure</a></p>
+</li>
+</ol>
 ]]></content>
       <categories>
         <category>各式軟體開發問題紀錄</category>
