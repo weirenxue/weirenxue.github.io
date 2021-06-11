@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Hexo × NexT × Firestore 顯示瀏覽人次</title>
+    <url>/2021/06/11/hexo_next_firestore_visitors/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>擴充性高的部落格框架有許多功能或是套件需要自己手動加入，因此在研究如何顯示瀏覽人次的同時記錄整個過程。</p>
+<h2 id="使用-Firebase"><a href="#使用-Firebase" class="headerlink" title="使用 Firebase"></a>使用 Firebase</h2><h3 id="建立-Firebase-專案"><a href="#建立-Firebase-專案" class="headerlink" title="建立 Firebase 專案"></a>建立 Firebase 專案</h3><p>到 <a href="https://console.firebase.google.com/u/0/">Firebase</a> 官方網站登入後，再建立專案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Hexo-x-Next-x-Firestore-%E9%A1%AF%E7%A4%BA%E7%80%8F%E8%A6%BD%E4%BA%BA%E6%AC%A1%2Fcreate_firebase_project.png?alt=media&amp;token=d872c7b7-704e-4912-8fbb-47b5b64ed16b" alt="建立 Firebase 專案"><span class="image-caption">建立 Firebase 專案</span></p>
+<h3 id="啟用-Authentication-功能"><a href="#啟用-Authentication-功能" class="headerlink" title="啟用 Authentication 功能"></a>啟用 Authentication 功能</h3><p>必須要啟用此功能才會有 apiKey！再記住 <strong>專案 ID</strong>(<code>projectId</code>) 與 <strong>網路 API 金鑰</strong>(<code>apiKey</code>)</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Hexo-x-Next-x-Firestore-%E9%A1%AF%E7%A4%BA%E7%80%8F%E8%A6%BD%E4%BA%BA%E6%AC%A1%2Fuse_firebase_authentication.png?alt=media&amp;token=08472c0a-f7b0-43cf-bfd9-215d1c88ca65" alt="啟用 Authentication"><span class="image-caption">啟用 Authentication</span></p>
+<h3 id="建立-Firestore-Database"><a href="#建立-Firestore-Database" class="headerlink" title="建立 Firestore Database"></a>建立 Firestore Database</h3><p>建立的過程中選項先選擇 <strong>以測試模式啟動</strong>，之後測試若沒有問題會再改為較安全的安全性設定。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Hexo-x-Next-x-Firestore-%E9%A1%AF%E7%A4%BA%E7%80%8F%E8%A6%BD%E4%BA%BA%E6%AC%A1%2Fcreate_firestore_database.png?alt=media&amp;token=81bde63a-be37-4451-960a-ae4b89d92f63" alt="建立 Firestore Database"><span class="image-caption">建立 Firestore Database</span></p>
+<h2 id="修改-config-yml"><a href="#修改-config-yml" class="headerlink" title="修改 _config.yml"></a>修改 <code>_config.yml</code></h2><p><code>themes/next/_config.yml</code></p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">firestore:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">collection:</span> <span class="string">articles</span> <span class="comment"># Required, a string collection name to access firestore database</span></span><br><span class="line">  <span class="attr">apiKey:</span> <span class="string">AIzaSyDPv4yBy3wupULx0wmE8-SXg4fxjgnrE9w</span> <span class="comment"># Required</span></span><br><span class="line">  <span class="attr">projectId:</span> <span class="string">gh-pages-d3782</span> <span class="comment"># Required</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>enable</code>：改為 true</li>
+<li><code>collection</code>：不用更改，預設為 articles</li>
+<li><code>apiKey</code>：網路 API 金鑰</li>
+<li><code>projectId</code>：專案 ID</li>
+</ul>
+<p>修改好之後就可以發布囉，計數在發布後才有效，本地測試是沒有用的哦！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo d -g</span><br></pre></td></tr></table></figure>
+<h3 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h3><p>可以試著點擊文章，看是否真的有計數，並且可以看到 <strong>Firestore</strong> 有一個叫做 <code>articles</code> 的 <strong>collection</strong>，裡面有紀錄每篇文章的瀏覽次數。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Hexo-x-Next-x-Firestore-%E9%A1%AF%E7%A4%BA%E7%80%8F%E8%A6%BD%E4%BA%BA%E6%AC%A1%2Fvisitors_test.png?alt=media&amp;token=a6a8dae6-4aeb-4e12-96b4-069144f36485" alt="閱讀次數測試"><span class="image-caption">閱讀次數測試</span></p>
+<h2 id="修改-Firestore-安全性設定"><a href="#修改-Firestore-安全性設定" class="headerlink" title="修改 Firestore 安全性設定"></a>修改 Firestore 安全性設定</h2><p>確定有寫入後，那就要修改一下 <strong>Firestore</strong> 的規則，讓應用對特定的 <strong>collection</strong> 或 <strong>article</strong> 擁有特定的權限，要特別注意的是，有時候測試雖然會看到從 0 變成 1，但在 firestore 卻沒看到數據，最有可能的原因就是 firestore 安全性規則擋掉了創建文件的權限。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Hexo-x-Next-x-Firestore-%E9%A1%AF%E7%A4%BA%E7%80%8F%E8%A6%BD%E4%BA%BA%E6%AC%A1%2Ffirestore_security.png?alt=media&amp;token=10cc20c9-72bd-41f2-b515-5f6ee81d63e2" alt="Firestore 安全性設定"><span class="image-caption">Firestore 安全性設定</span></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">rules_version = <span class="string">&#x27;2&#x27;</span>;</span><br><span class="line">service cloud.firestore &#123;</span><br><span class="line">  match /databases/&#123;database&#125;/documents &#123;</span><br><span class="line">    match /articles/&#123;<span class="built_in">document</span>=**&#125; &#123;</span><br><span class="line">      allow read, <span class="attr">create</span>: <span class="keyword">if</span> <span class="literal">true</span>;</span><br><span class="line">      allow write: <span class="keyword">if</span> request.resource.data.count==resource.data.count+<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    match /&#123;<span class="built_in">document</span>=**&#125; &#123;</span><br><span class="line">      allow read, <span class="attr">write</span>: <span class="keyword">if</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Hexo 使用筆記</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>next</tag>
+        <tag>firestore</tag>
+        <tag>visitors</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>全民來找碴 - YOLOv4 戴口罩檢測</title>
+    <url>/2021/06/10/YOLOv4_On_Face_Mask_Detection/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>台灣疫情爆發，天天增加百例，已經升到三級警戒，室內最多 5 人室外最多 10 人聚集。到這種時候還有人不想戴口罩，剛好到了期末做個專題讓 AI 來抓爆這些人。</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
+<li><p>此篇開發環境為 <code>Ubuntu 16.04 LTS</code> 桌面版本，並且每個路徑都以絕對路徑來呈現，盡量使所有路徑透明化，避免讀者混淆。因此若要照著本文提供的程式運行的話，路徑中的 <code>user</code> 需改為登入環境的帳號名稱。</p>
+</li>
+<li><p>作者不講清楚目錄結構常常是讀者的一個痛點，因此本文在每個段落都會顯示出目錄結構給讀者參考，建議讀者經常比對自己的目錄結構是否與本文相同，不相同的話容易出現意想不到的錯誤。</p>
+</li>
+</ol>
+<h2 id="Kaggle"><a href="#Kaggle" class="headerlink" title="Kaggle"></a>Kaggle</h2><h3 id="Kaggle-是什麼？"><a href="#Kaggle-是什麼？" class="headerlink" title="Kaggle 是什麼？"></a>Kaggle 是什麼？</h3><p>Kaggle 是一個數據建模和數據分析競賽平台。企業和研究者可在其上發布數據，統計學者和數據可在其上進行競賽以產生最好的模型。可以分為</p>
+<ol>
+<li>Competitions競賽<br> Kaggle 的比賽類型按照獎勵內容可以分成3種<ol>
+<li>提供獎金的 Featured 類。</li>
+<li>提供實習、面試機會的 Recruitment 類。</li>
+<li>純粹作為練手的 Playground 類。</li>
+</ol>
+</li>
+<li>Datasets 數據集<br> 利用 Kaggle 的數據集，通過簡單的 <code>Dig in → Build → Connect</code> 的步驟，就可以自己挖掘、分析公共數據集的內容。<ol>
+<li><code>Dig in</code>：直接在 Kaggle 上使用其提供的交互式工具來進行數據分析，支持 <strong>Python、Julia、R Markdown、SQLite</strong> 等語言，Kaggle 通過相應的 Docker 容器來編譯執行腳本。</li>
+<li><code>Build</code>：網頁版工具上進行數據分析處理之後，可以發布自己的數據 insights，使用 Kaggle Kernels 來 coding。</li>
+<li><code>Connect</code>：可以很方便的查看其他人公開的 Kaggle Kernels，或者在論壇中諮詢對應數據集的相關問題。</li>
+</ol>
+</li>
+<li>Kernel 內核<ul>
+<li>以前叫做 Scripts，現在改名叫 Kernels 了。Kernels 提供了數據分析所需的環境、數據集、代碼和輸出樣式（比如 Python Notebook），Kaggle 的目的是要使得 Kernels 成為數據分析的核心，他們想將 Kernels 打造為一個能實現並分享所有數據科學工作的平台，包括與本地工具的結合（Kernels 現在提供的環境庫並沒有辦法做到包羅萬象）、團隊間的私有合作空間等等。</li>
+<li>之前 Datasets 里面的網頁版工具就是調用了 Kaggle 的 Kernels 平台，其一大好處就在於不需要將數據集下載在電腦，Kernels 中已經預先載入了龐大的數據集和基本的數據處理環境資料庫（甚至都不需要在本地配環境！）。這點很棒，畢竟龐大的數據要下載下來在網絡條件不允許的情況下還是相當耗費時間，在本地配好一系列的數據處理環境也不容易，Kernels 借助 Docker 鏡像解決了這一問題。（類似的數據上雲的方式開始越來越流行）</li>
+</ul>
+</li>
+</ol>
+<h3 id="Kaggle-優點"><a href="#Kaggle-優點" class="headerlink" title="Kaggle 優點"></a>Kaggle 優點</h3><ol>
+<li>真實的數據：在自己學習數據分析的過程中，很多時候是苦於沒有數據，很多書或課程的數據都是無法參考，數據量小，而真實世界的數據往往都是大量，到處充滿了缺失和不足，實際的數據分析工作中。</li>
+<li>真實的問題：在 Kaggle 上發布的競賽題目，一般都是企業或政府組織中真實面臨的問題。實際的數據分析工作都是從實際問題出發，選擇解決辦法的時候要考慮到各種因素，沒有絕對的對與錯，都是要根據實際問題，具體問題具體分析。</li>
+<li>及時的反饋：而在 Kaggle 上，只要提交了算法結果，就可以在 Leader board 上看到自己的排名和成績，你可以不斷改進，如果一次改進可以提高排名。</li>
+<li>線上的討論：每給 Kaggle 競賽題目都配有一個論壇，參賽者在賽中和賽後可以相互討論，這讓學習不再孤單，可以在討論中吸取別人的想法，也可以為他人提供指導。</li>
+</ol>
+<h2 id="YOLO"><a href="#YOLO" class="headerlink" title="YOLO"></a>YOLO</h2><h3 id="YOLO-簡介"><a href="#YOLO-簡介" class="headerlink" title="YOLO 簡介"></a>YOLO 簡介</h3><p>YOLO (You Only Look Once) 是一種影像物件辨識演算法，為 One stage 的物件偵測方法，只需使用一個 CNN 架構就能判斷圖片內的物體位置與類別。相對於此種物件偵測的是 Two stage (例如 R-CNN)，該演算法必須先偵測出物件，再對每個物件個別做 CNN 運算判斷物件類別，因此 YOLO 相較可以提升辨識速度。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2FOne_stage.png?alt=media&amp;token=5604d37d-593a-4201-8d97-d3258fe3b364" alt="One Stage 示意圖"><span class="image-caption">One Stage 示意圖</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2FTow_stage.png?alt=media&amp;token=ae5b0248-a0a8-4ad2-b6eb-611d157939ab" alt="Two Stage 示意圖"><span class="image-caption">Two Stage 示意圖</span></p>
+<p>YOLO 作法就是將輸入的影像切割成 S*S的網格，若物體的中心若在某網格內，則該網格負責檢測該物體。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2FYOLO_alg.png?alt=media&amp;token=380f2e17-6342-4bb5-b610-67345c54395e" alt="YOLO 運作原理"><span class="image-caption">YOLO 運作原理</span></p>
+<p>在訓練時，每個網格會預測出 B 個 bounding boxes，每個 bounding box 對應 5 個預測結果</p>
+<ol>
+<li><strong>bounding box</strong> 的中心點座標$(x,y)$與寬高$(w,h)$</li>
+<li><p>信心評分代表 <strong>bounding box</strong> 與 <strong>Ground Truth</strong> 的 <strong>IoU</strong> 值</p>
+<script type="math/tex; mode=display">confidence=Pr(Object)\cdot IoU^{truth}_{pred}</script><p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2FIoU.png?alt=media&amp;token=911ad05e-daf2-44f0-aae9-2876549e9457" alt="Intersection over Union"><span class="image-caption">Intersection over Union</span></p>
+</li>
+</ol>
+<h3 id="Why-YOLOv4"><a href="#Why-YOLOv4" class="headerlink" title="Why YOLOv4"></a>Why YOLOv4</h3><ol>
+<li>YOLOv4 在 YOLOv3 各個部分做改進，在同樣的速率(FPS)提升近 12% AP，<br> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2FYOLO_performance.png?alt=media&amp;token=67391dae-9f03-4796-a2d1-c295525a897d" alt="YOLOv4 Performance"><span class="image-caption">YOLOv4 Performance</span></li>
+<li>YOLOv4 貢獻有三[4]<ol>
+<li>此高效有力的物件模型，使用 1080Ti 或 2080Ti 就能進行訓練。</li>
+<li>驗證最新的 Bag-of-Freebies 與 Bag-of-Specials 方法在物件偵測模型訓練中的影響。</li>
+<li>微調最新的的方法例如 CBN、PAN、SAM，使其在單 GPU 訓練中更有效率。</li>
+</ol>
+</li>
+<li>YOLOv4 有共有三名作者，一名為俄羅斯人，另外兩名為台灣中研院研究員，身為台灣人當然要挺自己人研發的模型。<br> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2FYOLOv4_author.png?alt=media&amp;token=4031177f-e360-4cb5-ad10-c7c0280efcca" alt="YOLOv4 Authors"><span class="image-caption">YOLOv4 Authors</span></li>
+</ol>
+<h3 id="YOLOv4-結構-4"><a href="#YOLOv4-結構-4" class="headerlink" title="YOLOv4 結構[4]"></a>YOLOv4 結構[4]</h3><p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2FYOLOv4_structure.png?alt=media&amp;token=a9273009-ff6b-4add-a90d-7b3d25e36ec4" alt="YOLOv4 Structure"><span class="image-caption">YOLOv4 Structure</span></p>
+<p>Backborn：對 ImageNet 做預訓練。</p>
+<p>Neck：在head 與backborn 之間的 layers，通常用來收集不同級的特徵。</p>
+<p>Head：預測類別與 bounding box。</p>
+<p>YOLOv4 各部分組成如下：</p>
+<ul>
+<li>Backbone: CSPDarknet53 [81]</li>
+<li>Neck: SPP [25], PAN [49]</li>
+<li>Head: YOLOv3 [63]</li>
+</ul>
+<h2 id="使用-YOLOv4"><a href="#使用-YOLOv4" class="headerlink" title="使用 YOLOv4"></a>使用 YOLOv4</h2><h3 id="資料集處理"><a href="#資料集處理" class="headerlink" title="資料集處理"></a>資料集處理</h3><p>選用 Kaggle 的 <a href="https://www.kaggle.com/andrewmvd/face-mask-detection">Face Mask Detection</a> 資料集。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2FFace_mask_detection_cover.png?alt=media&amp;token=0ceee8a8-25ad-4c1b-9b1a-eef877eae7dd" alt="Face Mask Detection Cover"><span class="image-caption">Face Mask Detection Cover</span></p>
+<p>至該網站下載並解壓縮到 <code>kaggle_face_mask</code> 資料夾下，目錄結構如下，共有 853 張照片(<code>*.png</code>)/853 標籤檔(<code>*.xml</code>)。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">/home/user/kaggle_face_mask</span><br><span class="line">├─annotations</span><br><span class="line">│ ├─maksssksksss0.xml</span><br><span class="line">│ ├─maksssksksss1.xml</span><br><span class="line">│ ├─...</span><br><span class="line">│ ├─...</span><br><span class="line">│ ├─...</span><br><span class="line">│ └─maksssksksss852.xml</span><br><span class="line">└─images</span><br><span class="line">  ├─maksssksksss0.png</span><br><span class="line">  ├─maksssksksss1.png</span><br><span class="line">  ├─...</span><br><span class="line">  ├─...</span><br><span class="line">  ├─...</span><br><span class="line">  └─maksssksksss852.png</span><br></pre></td></tr></table></figure>
+<p>標籤為 PASCAL VOC 格式</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2FPascal_voc_%E7%A4%BA%E6%84%8F%E5%9C%96.png?alt=media&amp;token=b8ca2c5e-825a-4dc2-bd4e-d56cd1d5a3cc" alt="PASCAL VOC 解讀示意圖"><span class="image-caption">PASCAL VOC 解讀示意圖</span></p>
+<h4 id="轉換-PASCAL-VOC-格式為-YOLO-格式"><a href="#轉換-PASCAL-VOC-格式為-YOLO-格式" class="headerlink" title="轉換 PASCAL VOC 格式為 YOLO 格式"></a>轉換 PASCAL VOC 格式為 YOLO 格式</h4><p>YOLO 的標籤檔為 <code>txt</code> 檔，並與圖檔放在同一名稱放同一目錄下。格式如下，若有多個物件，就記錄多行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">classId xCenter yCenter bndBoxW bndBoxH</span><br></pre></td></tr></table></figure>
+<p>以下為換算公式，其中 $w$ 與 $h$ 為圖片本身的寬與長。</p>
+<script type="math/tex; mode=display">x_{center}=\frac{x_{min}+x_{max}}{2}\frac{1}{w}</script><script type="math/tex; mode=display">y_{center}=\frac{y_{min}+y_{max}}{2}\frac{1}{h}</script><script type="math/tex; mode=display">bndBoxW=\frac{x_{max}-x_{min}}{w}</script><script type="math/tex; mode=display">bndBoxH=\frac{y_{max}-y_{min}}{h}</script><p>以下舉 <code>maksssksksss0.png</code> 為範例</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2FPASCAL_VOL_xml.png?alt=media&amp;token=54ecd746-96e9-4bb2-8d56-62a597be8563" alt="maksssksksss0.png 的 PASCAL VOC 標籤"><span class="image-caption">maksssksksss0.png 的 PASCAL VOC 標籤</span></p>
+<p>將該 <code>VOC</code> 轉為 <code>YOLO</code> 應如下，其中定義 <code>classId=0 為 with_mask</code>、 <code>classId=1 為 without_mask</code>、<code>classId=2 為 mask_weared_incorrect</code></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">1 0.18359375 0.337431693989071 0.05859375 0.10109289617486339</span><br><span class="line">0 0.4013671875 0.3333333333333333 0.080078125 0.12021857923497267</span><br><span class="line">1 0.6689453125 0.3155737704918033 0.068359375 0.13934426229508196</span><br></pre></td></tr></table></figure>
+<p>透過以下 <code>Python</code> 程式將 <code>VOC</code> 轉為 <code>YOLO</code></p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> os, shutil</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"></span><br><span class="line">rootFolder = <span class="string">r&#x27;/home/user/&#x27;</span>   <span class="comment"># 修改此處符合目錄結構</span></span><br><span class="line">annotations = os.path.join(rootFolder, <span class="string">r&#x27;kaggle_face_mask/annotations&#x27;</span>)</span><br><span class="line">images = os.path.join(rootFolder, <span class="string">r&#x27;kaggle_face_mask/images&#x27;</span>)</span><br><span class="line">destination = os.path.join(rootFolder, <span class="string">r&#x27;yolo_data&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(destination):</span><br><span class="line">    os.mkdir(destination)</span><br><span class="line"></span><br><span class="line">className = [<span class="string">&#x27;with_mask&#x27;</span>, <span class="string">&#x27;without_mask&#x27;</span>, <span class="string">&#x27;mask_weared_incorrect&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> xmlFile <span class="keyword">in</span> os.listdir(annotations):</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(os.path.join(annotations, xmlFile), <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&quot;UTF-8&quot;</span>) <span class="keyword">as</span> voc:</span><br><span class="line">        bsObj = BeautifulSoup(voc.read(), <span class="string">&#x27;lxml&#x27;</span>)</span><br><span class="line">        picFilename = bsObj.select_one(<span class="string">&#x27;filename&#x27;</span>).get_text()</span><br><span class="line">        picW = bsObj.select_one(<span class="string">&#x27;size width&#x27;</span>).get_text()</span><br><span class="line">        picH = bsObj.select_one(<span class="string">&#x27;size height&#x27;</span>).get_text()</span><br><span class="line">        </span><br><span class="line">        objectAttrs = []</span><br><span class="line">        <span class="keyword">for</span> bndBox <span class="keyword">in</span> bsObj.select(<span class="string">&#x27;object&#x27;</span>):</span><br><span class="line">            name = bndBox.select_one(<span class="string">&#x27;name&#x27;</span>).get_text()</span><br><span class="line">            xmin = bndBox.select_one(<span class="string">&#x27;xmin&#x27;</span>).get_text()</span><br><span class="line">            xmax = bndBox.select_one(<span class="string">&#x27;xmax&#x27;</span>).get_text()</span><br><span class="line">            ymin = bndBox.select_one(<span class="string">&#x27;ymin&#x27;</span>).get_text()</span><br><span class="line">            ymax = bndBox.select_one(<span class="string">&#x27;ymax&#x27;</span>).get_text()</span><br><span class="line">            </span><br><span class="line">            classId = className.index(name)</span><br><span class="line">            xcenter = <span class="built_in">eval</span>(<span class="string">f&#x27;(<span class="subst">&#123;xmin&#125;</span>+<span class="subst">&#123;xmax&#125;</span>)/2/<span class="subst">&#123;picW&#125;</span>&#x27;</span>)</span><br><span class="line">            ycenter = <span class="built_in">eval</span>(<span class="string">f&#x27;(<span class="subst">&#123;ymin&#125;</span>+<span class="subst">&#123;ymax&#125;</span>)/2/<span class="subst">&#123;picH&#125;</span>&#x27;</span>)</span><br><span class="line">            bndBoxW = <span class="built_in">eval</span>(<span class="string">f&#x27;(<span class="subst">&#123;xmax&#125;</span>-<span class="subst">&#123;xmin&#125;</span>)/<span class="subst">&#123;picW&#125;</span>&#x27;</span>)</span><br><span class="line">            bndBoxH = <span class="built_in">eval</span>(<span class="string">f&#x27;(<span class="subst">&#123;ymax&#125;</span>-<span class="subst">&#123;ymin&#125;</span>)/<span class="subst">&#123;picH&#125;</span>&#x27;</span>)</span><br><span class="line">            </span><br><span class="line">            objectAttrs.append(<span class="string">f&#x27;<span class="subst">&#123;classId&#125;</span> <span class="subst">&#123;xcenter&#125;</span> <span class="subst">&#123;ycenter&#125;</span> <span class="subst">&#123;bndBoxW&#125;</span> <span class="subst">&#123;bndBoxH&#125;</span>&#x27;</span>)</span><br><span class="line">        shutil.copy(os.path.join(images, picFilename), destination)</span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(os.path.join(destination, os.path.splitext(picFilename)[<span class="number">0</span>]) + <span class="string">&#x27;txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;UTF-8&#x27;</span>) <span class="keyword">as</span> yoloTxt:</span><br><span class="line">            yoloTxt.write(<span class="string">&#x27;\n&#x27;</span>.join(objectAttrs))</span><br></pre></td></tr></table></figure>
+<p>現在目錄結構為</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">/home/user</span><br><span class="line">├─kaggle_face_mask</span><br><span class="line">│  ├─annotations</span><br><span class="line">│  └─images</span><br><span class="line">└─yolo_data</span><br><span class="line">  ├─maksssksksss0.png</span><br><span class="line">  ├─maksssksksss0.txt</span><br><span class="line">  ├─maksssksksss1.png</span><br><span class="line">  ├─maksssksksss1.txt</span><br><span class="line">  ├─...</span><br><span class="line">  ├─...</span><br><span class="line">  ├─maksssksksss852.png</span><br><span class="line">  └─maksssksksss852.txt</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="分類為-training-data-與-validation-data"><a href="#分類為-training-data-與-validation-data" class="headerlink" title="分類為 training data 與 validation data"></a>分類為 training data 與 validation data</h4><p>選擇 80% 的資料量為 training data、20% 為 validation data</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">rootFolder = <span class="string">r&#x27;/home/user/&#x27;</span>   <span class="comment"># 修改此處符合目錄結構</span></span><br><span class="line">destination = os.path.join(rootFolder, <span class="string">r&#x27;yolo_data&#x27;</span>)</span><br><span class="line"></span><br><span class="line">files = os.listdir(destination)</span><br><span class="line">numTrainingData = <span class="built_in">int</span>(<span class="built_in">len</span>(files) * <span class="number">0.8</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(os.path.join(rootFolder, <span class="string">&#x27;train.txt&#x27;</span>), <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;UTF-8&#x27;</span>) <span class="keyword">as</span> outfile:</span><br><span class="line">    <span class="keyword">for</span> filename <span class="keyword">in</span> files[:numTrainingData]:</span><br><span class="line">        <span class="keyword">if</span> os.path.splitext(filename)[<span class="number">1</span>] != <span class="string">&#x27;.txt&#x27;</span>:            </span><br><span class="line">            outfile.writelines(os.path.join(destination, filename) + <span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">            </span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(os.path.join(rootFolder, <span class="string">&#x27;val.txt&#x27;</span>), <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;UTF-8&#x27;</span>) <span class="keyword">as</span> outfile:</span><br><span class="line">    <span class="keyword">for</span> filename <span class="keyword">in</span> files[numTrainingData:]:</span><br><span class="line">        <span class="keyword">if</span> os.path.splitext(filename)[<span class="number">1</span>] != <span class="string">&#x27;.txt&#x27;</span>:            </span><br><span class="line">            outfile.writelines(os.path.join(destination, filename) + <span class="string">&#x27;\n&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>執行完上方程式後，會出現兩個檔案，<code>train.txt</code> 與 <code>val.txt</code> ，分別記錄 training data 與 validation data 的路徑</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">/home/user/yolo_data/maksssksksss166.png</span><br><span class="line">/home/user/yolo_data/maksssksksss536.png</span><br><span class="line">/home/user/yolo_data/maksssksksss57.png</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">/home/user/yolo_data/maksssksksss17.png</span><br><span class="line">/home/user/yolo_data/maksssksksss10.png</span><br><span class="line">/home/user/yolo_data/maksssksksss490.png</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>現在的目錄結構為</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">/home/user</span><br><span class="line">├─kaggle_face_mask</span><br><span class="line">│  ├─annotations</span><br><span class="line">│  └─images</span><br><span class="line">├─yolo_data</span><br><span class="line">├─train.txt</span><br><span class="line">└─val.txt</span><br></pre></td></tr></table></figure>
+<h3 id="準備訓練所需設定檔"><a href="#準備訓練所需設定檔" class="headerlink" title="準備訓練所需設定檔"></a>準備訓練所需設定檔</h3><h4 id="安裝-YOLOv4"><a href="#安裝-YOLOv4" class="headerlink" title="安裝 YOLOv4"></a>安裝 YOLOv4</h4><p>先下載原始碼</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /home/user</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/AlexeyAB/darknet</span><br></pre></td></tr></table></figure>
+<p>修改 darknet 的 Makefile，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sed -i <span class="string">&quot;s/GPU=0/GPU=1/&quot;</span> /home/user/darknet/Makefile</span><br><span class="line">sed -i <span class="string">&quot;s/CUDNN=0/CUDNN=1/&quot;</span> /home/user/darknet/Makefile</span><br><span class="line">sed -i <span class="string">&quot;s/CUDNN_HALF=0/CUDNN_HALF=1/&quot;</span> /home/user/darknet/Makefile</span><br><span class="line">sed -i <span class="string">&quot;s/OPENCV=0/OPENCV=1/&quot;</span> /home/user/darknet/Makefile</span><br></pre></td></tr></table></figure>
+<p>編譯 darknet</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /home/user/darknet</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+<h4 id="建立-cfg-資料夾"><a href="#建立-cfg-資料夾" class="headerlink" title="建立 cfg 資料夾"></a>建立 cfg 資料夾</h4><p>創建資料夾，並且移動 <code>train.txt</code> 與 <code>val.txt</code></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">mkdir -p /home/user/mask_detection/cfg/weights</span><br><span class="line">mv /home/user/train.txt /home/user/val.txt /home/user/mask_detection/cfg/</span><br></pre></td></tr></table></figure>
+<p>在 cfg 資料夾中創建以下兩個檔案，</p>
+<p><code>mask.data</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">classes = 3</span><br><span class="line">train = /home/user/mask_detection/cfg/train.txt</span><br><span class="line">valid = /home/user/mask_detection/cfg/val.txt</span><br><span class="line">names = /home/user/mask_detection/cfg/mask.names</span><br><span class="line">backup = /home/user/mask_detection/cfg/weights/</span><br></pre></td></tr></table></figure>
+<p><code>mask.names</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">with_mask</span><br><span class="line">without_mask</span><br><span class="line">mask_weared_incorrect</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>*.data</code>：記錄類別數量(<code>classes</code>)、train.txt 的位置(<code>train</code>)、val.txt 的位置(<code>valid</code>)、mask.names 檔案位置(<code>names</code>)、weights 輸出的路徑 (<code>backup</code>)。</li>
+<li><code>*.names</code>：記錄各類別名稱，第一行名稱對應到 <code>classId=0</code>，以此類推。</li>
+</ul>
+<h4 id="複製-yolov4-tiny-custom-cfg-到-cfg-目錄下"><a href="#複製-yolov4-tiny-custom-cfg-到-cfg-目錄下" class="headerlink" title="複製 yolov4-tiny-custom.cfg 到 cfg 目錄下"></a>複製 <code>yolov4-tiny-custom.cfg</code> 到 <code>cfg</code> 目錄下</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cp /home/user/darknet/cfg/yolov4-tiny-custom.cfg /home/user/mask_detection/cfg/yolov4-tiny-obj.cfg</span><br></pre></td></tr></table></figure>
+<p>修改內容，更改<code>filters=24</code>($filters=(classes + 5) * 3$)、<code>classes=3</code></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sed -i <span class="string">&#x27;212s/255/24/&#x27;</span> /home/user/mask_detection/cfg/yolov4-tiny-obj.cfg</span><br><span class="line">sed -i <span class="string">&#x27;220s/80/3/&#x27;</span> /home/user/mask_detection/cfg/yolov4-tiny-obj.cfg</span><br><span class="line">sed -i <span class="string">&#x27;263s/255/24/&#x27;</span> /home/user/mask_detection/cfg/yolov4-tiny-obj.cfg</span><br><span class="line">sed -i <span class="string">&#x27;269s/80/3/&#x27;</span> /home/user/mask_detection/cfg/yolov4-tiny-obj.cfg</span><br></pre></td></tr></table></figure>
+<p>執行以下指令，計算 `anchors</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/home/user/darknet detector calc_anchors /home/user/mask_detection/cfg/mask.data -num_of_clusters 6 -width 416 -height 416 -showpause</span><br></pre></td></tr></table></figure>
+<p>得到</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">anchors =   8, 15,  16, 28,  25, 42,  38, 64,  66, 99, 136,151</span><br></pre></td></tr></table></figure>
+<p>修改 <code>yolov4-tiny-custom.cfg</code> 內容</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sed -i <span class="string">&#x27;219s/10,14,  23,27,  37,58,  81,82,  135,169,  344,319/8, 15,  16, 28,  25, 42,  38, 64,  66, 99, 136,151/&#x27;</span> /home/user/mask_detection/cfg/yolov4-tiny-obj.cfg</span><br><span class="line">sed -i <span class="string">&#x27;268s/10,14,  23,27,  37,58,  81,82,  135,169,  344,319/8, 15,  16, 28,  25, 42,  38, 64,  66, 99, 136,151/&#x27;</span> /home/user/mask_detection/cfg/yolov4-tiny-obj.cfg</span><br></pre></td></tr></table></figure>
+<h4 id="下載官方已經訓練好的-weights"><a href="#下載官方已經訓練好的-weights" class="headerlink" title="下載官方已經訓練好的 weights"></a>下載官方已經訓練好的 weights</h4><p>下載 <a href="https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v4_pre/yolov4-tiny.conv.29">yolov4-tiny.conv.29</a> 後放到 <code>cfg</code> 下</p>
+<p>現在的目錄結構為</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">/home/user</span><br><span class="line">├─darknet</span><br><span class="line">├─kaggle_face_mask</span><br><span class="line">│  ├─annotations</span><br><span class="line">│  └─images</span><br><span class="line">├─mask_detection/cfg</span><br><span class="line">│  ├─mask.data</span><br><span class="line">│  ├─mask.names</span><br><span class="line">│  ├─train.txt</span><br><span class="line">│  ├─val.txt</span><br><span class="line">│  ├─yolov4-tiny-obj.cfg</span><br><span class="line">│  └─yolov4-tiny.conv.29</span><br><span class="line">└─yolo_data</span><br><span class="line">  ├─maksssksksss0.png</span><br><span class="line">  ├─maksssksksss0.txt</span><br><span class="line">  ├─maksssksksss1.png</span><br><span class="line">  ├─maksssksksss1.txt</span><br><span class="line">  ├─...</span><br><span class="line">  ├─...</span><br><span class="line">  ├─maksssksksss852.png</span><br><span class="line">  └─maksssksksss852.txt</span><br></pre></td></tr></table></figure>
+<h3 id="訓練模型"><a href="#訓練模型" class="headerlink" title="訓練模型"></a>訓練模型</h3><h4 id="訓練"><a href="#訓練" class="headerlink" title="訓練"></a>訓練</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /home/user/darknet</span><br><span class="line">./darknet detector train ../mask_detection/cfg/mask.data ../mask_detection/cfg/yolov4-tiny-obj.cfg ../mask_detection/cfg/weights/yolov4-tiny.conv.29 -map -gpus 0,1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>darknet 指令格式：<code>darknet detector [動作] [.data] [.cfg] [weights檔] [options]</code></li>
+<li>訓練的 weights 會存在 <code>/home/user/mask_detection/cfg/weights/</code></li>
+<li><code>-gpus</code>：可使用多 GPU，後面數字為 GPU 代號，執行指令 <code>nvidia-smi</code> 即可查看代號。</li>
+<li><code>-dont_show</code>：過程中不要展示 loss 圖片。</li>
+<li><code>-map</code>：顯示 mAP。</li>
+<li><p>產出的 <code>weights</code></p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/home/user/mask_detection/cfg/weights</span><br><span class="line">├─yolov4-tiny-obj_final.weights</span><br><span class="line">├─yolov4-tiny-obj_last.weights</span><br><span class="line">├─yolov4-tiny-obj_500000.weights</span><br><span class="line">├─yolov4-tiny-obj_490000.weights</span><br><span class="line">├─yolov4-tiny-obj_480000.weights</span><br><span class="line">├─...</span><br><span class="line">├─...</span><br><span class="line">├─...</span><br><span class="line">├─yolov4-tiny-obj_20000.weights</span><br><span class="line">└─yolov4-tiny-obj_10000.weights</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>mAP vs loss</p>
+<p>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2FLossVsAcc.png?alt=media&amp;token=4369a5f0-c9e9-47b2-b122-17112f485b1c" alt="mAP vs loss"><span class="image-caption">mAP vs loss</span></p>
+</li>
+</ul>
+<h4 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h4><ul>
+<li><p>先修改 <code>cfg</code> 檔</p>
+<p>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2Ftest_configure.png?alt=media&amp;token=4dcc8196-ca36-41b3-b142-518cada814fc" alt="Test configure"><span class="image-caption">Test configure</span></p>
+</li>
+<li><p>測試圖片</p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /home/user/darknet</span><br><span class="line">./darknet detector <span class="built_in">test</span> ../mask_detection/cfg/mask.data ../mask_detection/cfg/yolov4-tiny-obj.cfg ../mask_detection/cfg/weights/yolov4-tiny-obj_final.weights &lt;filename&gt;</span><br></pre></td></tr></table></figure>
+<p>  測試完會產出圖檔再 darknet 資料夾下 <code>/home/user/darknet/predictions.jpg</code></p>
+<p>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2Ftest1.png?alt=media&amp;token=1aa24dda-bff5-4ae2-9a66-15f4c670445e" alt="測試1"><span class="image-caption">測試1</span></p>
+<p>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2Ftest2.png?alt=media&amp;token=593436ba-d866-47ac-ac27-8d3d077f4064" alt="測試2"><span class="image-caption">測試2</span></p>
+</li>
+<li><p>測試影片</p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /home/user/darknet</span><br><span class="line">./darknet detector demo ../mask_detection/cfg/mask.data ../mask_detection/cfg/yolov4-tiny-obj.cfg ../mask_detection/cfg/weights/yolov4-tiny-obj_final.weights &lt;video_filename&gt; -out_filename &lt;output_filename.avi&gt;</span><br></pre></td></tr></table></figure>
+  <!-- markdownlint-disable MD033 -->
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/4qLqwfmG9Vo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+  <!-- markdownlint-restore MD033 -->
+</li>
+</ul>
+<h2 id="Line-Bot-應用"><a href="#Line-Bot-應用" class="headerlink" title="Line Bot 應用"></a>Line Bot 應用</h2><p>上傳圖片給官方帳號，官方帳號會回覆經過 YOLOv4 的照片</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2Fline_bot_structure.png?alt=media&amp;token=ff533353-2119-4ef4-848a-1364266c356b" alt="Line Bot 運作原理"><span class="image-caption">Line Bot 運作原理</span></p>
+<h3 id="Demo-影片"><a href="#Demo-影片" class="headerlink" title="Demo 影片"></a>Demo 影片</h3><!-- markdownlint-disable MD033 -->
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Lw8W-kNHN8Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<!-- markdownlint-restore MD033 -->
+<h3 id="Line-Bot-QR-Code"><a href="#Line-Bot-QR-Code" class="headerlink" title="Line Bot QR Code"></a>Line Bot QR Code</h3><p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2Fline_bot_QRCode.png?alt=media&amp;token=7bc6c4e7-1a90-437a-919a-11d3fe04cc13" alt="Line Bot QR Code"><span class="image-caption">Line Bot QR Code</span></p>
+<h3 id="將-YOLOv4-整合在應用程式中的核心程式碼"><a href="#將-YOLOv4-整合在應用程式中的核心程式碼" class="headerlink" title="將 YOLOv4 整合在應用程式中的核心程式碼"></a>將 YOLOv4 整合在應用程式中的核心程式碼</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> darknet <span class="keyword">import</span> darknet</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">cfgPath = <span class="string">&quot;/home/user/yolo/yolov4-tiny-obj.cfg&quot;</span></span><br><span class="line">dataPath = <span class="string">&quot;/home/user/yolo/mask.data&quot;</span></span><br><span class="line">weightsPath = <span class="string">&quot;/home/user/yolo/yolov4-tiny-obj_final.weights&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">drowBoxes</span>(<span class="params">picPath, outputPath</span>):</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        network, class_names, _ = darknet.load_network(cfgPath, dataPath, weightsPath)</span><br><span class="line">        img = darknet.load_image(<span class="built_in">str</span>.encode(picPath), <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">        r = darknet.detect_image(network, class_names, img)</span><br><span class="line">        colors = &#123;</span><br><span class="line">          class_names[<span class="number">0</span>]: (<span class="number">0</span>, <span class="number">0</span>, <span class="number">255</span>),</span><br><span class="line">          class_names[<span class="number">1</span>]: (<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>),</span><br><span class="line">          class_names[<span class="number">2</span>]: (<span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>),</span><br><span class="line">        &#125;</span><br><span class="line">        img = cv2.imread(picPath)</span><br><span class="line">        img = darknet.draw_boxes(r, img, colors)</span><br><span class="line">        cv2.imwrite(outputPath, img)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(e)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="built_in">print</span>(drowBoxes(<span class="string">&quot;/home/user/yolo/S__8183985.jpg&quot;</span>, <span class="string">&quot;/home/user/yolo/test.jpg&quot;</span>))</span><br></pre></td></tr></table></figure>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ol>
+<li><p><a href="https://chih-sheng-huang821.medium.com/%E6%B7%B1%E5%BA%A6%E5%AD%B8%E7%BF%92-%E4%BB%80%E9%BA%BC%E6%98%AFone-stage-%E4%BB%80%E9%BA%BC%E6%98%AFtwo-stage-%E7%89%A9%E4%BB%B6%E5%81%B5%E6%B8%AC-fc3ce505390f">深度學習-什麼是one stage，什麼是two stage 物件偵測</a></p>
+</li>
+<li><p><a href="https://www.itread01.com/content/1544112970.html">YOLO背景介紹</a></p>
+</li>
+<li><p><a href="https://codingnote.cc/zh-tw/p/183719/">YOLO v3演算法介紹</a></p>
+</li>
+<li><p><a href="https://arxiv.org/pdf/2004.10934.pdf">YOLOv4: Optimal Speed and Accuracy of Object Detection</a></p>
+</li>
+<li><p><a href="https://hackmd.io/@shaoeChen/SJXmp66KG?type=view#3-8Anchor-boxes">Anchor boxes</a></p>
+</li>
+</ol>
+<h2 id="問題排除"><a href="#問題排除" class="headerlink" title="問題排除"></a>問題排除</h2><h3 id="編譯-darknet-時可能遇到的問題"><a href="#編譯-darknet-時可能遇到的問題" class="headerlink" title="編譯 darknet 時可能遇到的問題"></a>編譯 darknet 時可能遇到的問題</h3><ol>
+<li><code>/bin/sh: 1: nvcc: not found</code><br> 將 <code>Makefile</code> 的 <code>NVCC=nvcc</code> 改為 <code>NVCC=/usr/local/cuda-10.0/bin/nvcc</code>，此路徑因環境而異。</li>
+</ol>
+<h3 id="訓練時可能遇到的問題"><a href="#訓練時可能遇到的問題" class="headerlink" title="訓練時可能遇到的問題"></a>訓練時可能遇到的問題</h3><ol>
+<li>Out of memory<br> 嘗試更改改 <code>cfg</code> 檔案中的 <code>subdivision</code>，YOLO 一次會讀取 <code>num(trainingData)/batch/subdivision</code> 份資料到記憶體中，因此若記憶體不夠，則調整 <code>subdivision</code> 試試！</li>
+</ol>
+<h3 id="其他問題"><a href="#其他問題" class="headerlink" title="其他問題"></a>其他問題</h3><p>歡迎留言發問交流。</p>
+]]></content>
+      <categories>
+        <category>專案開發筆記</category>
+      </categories>
+      <tags>
+        <tag>yolov4</tag>
+        <tag>kaggle</tag>
+        <tag>object detection</tag>
+        <tag>mask</tag>
+      </tags>
+  </entry>
+</search>
