@@ -1,42 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hexo × NexT × Firestore 顯示瀏覽人次</title>
-    <url>/2021/06/11/hexo_next_firestore_visitors/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>擴充性高的部落格框架有許多功能或是套件需要自己手動加入，因此在研究如何顯示瀏覽人次的同時記錄整個過程。</p>
-<h2 id="使用-Firebase"><a href="#使用-Firebase" class="headerlink" title="使用 Firebase"></a>使用 Firebase</h2><h3 id="建立-Firebase-專案"><a href="#建立-Firebase-專案" class="headerlink" title="建立 Firebase 專案"></a>建立 Firebase 專案</h3><p>到 <a href="https://console.firebase.google.com/u/0/">Firebase</a> 官方網站登入後，再建立專案</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Hexo-x-Next-x-Firestore-%E9%A1%AF%E7%A4%BA%E7%80%8F%E8%A6%BD%E4%BA%BA%E6%AC%A1%2Fcreate_firebase_project.png?alt=media&amp;token=d872c7b7-704e-4912-8fbb-47b5b64ed16b" alt="建立 Firebase 專案"><span class="image-caption">建立 Firebase 專案</span></p>
-<h3 id="啟用-Authentication-功能"><a href="#啟用-Authentication-功能" class="headerlink" title="啟用 Authentication 功能"></a>啟用 Authentication 功能</h3><p>必須要啟用此功能才會有 apiKey！再記住 <strong>專案 ID</strong>(<code>projectId</code>) 與 <strong>網路 API 金鑰</strong>(<code>apiKey</code>)</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Hexo-x-Next-x-Firestore-%E9%A1%AF%E7%A4%BA%E7%80%8F%E8%A6%BD%E4%BA%BA%E6%AC%A1%2Fuse_firebase_authentication.png?alt=media&amp;token=08472c0a-f7b0-43cf-bfd9-215d1c88ca65" alt="啟用 Authentication"><span class="image-caption">啟用 Authentication</span></p>
-<h3 id="建立-Firestore-Database"><a href="#建立-Firestore-Database" class="headerlink" title="建立 Firestore Database"></a>建立 Firestore Database</h3><p>建立的過程中選項先選擇 <strong>以測試模式啟動</strong>，之後測試若沒有問題會再改為較安全的安全性設定。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Hexo-x-Next-x-Firestore-%E9%A1%AF%E7%A4%BA%E7%80%8F%E8%A6%BD%E4%BA%BA%E6%AC%A1%2Fcreate_firestore_database.png?alt=media&amp;token=81bde63a-be37-4451-960a-ae4b89d92f63" alt="建立 Firestore Database"><span class="image-caption">建立 Firestore Database</span></p>
-<h2 id="修改-config-yml"><a href="#修改-config-yml" class="headerlink" title="修改 _config.yml"></a>修改 <code>_config.yml</code></h2><p><code>themes/next/_config.yml</code></p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">firestore:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">collection:</span> <span class="string">articles</span> <span class="comment"># Required, a string collection name to access firestore database</span></span><br><span class="line">  <span class="attr">apiKey:</span> <span class="string">AIzaSyDPv4yBy3wupULx0wmE8-SXg4fxjgnrE9w</span> <span class="comment"># Required</span></span><br><span class="line">  <span class="attr">projectId:</span> <span class="string">gh-pages-d3782</span> <span class="comment"># Required</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>enable</code>：改為 true</li>
-<li><code>collection</code>：不用更改，預設為 articles</li>
-<li><code>apiKey</code>：網路 API 金鑰</li>
-<li><code>projectId</code>：專案 ID</li>
-</ul>
-<p>修改好之後就可以發布囉，計數在發布後才有效，本地測試是沒有用的哦！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo d -g</span><br></pre></td></tr></table></figure>
-<h3 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h3><p>可以試著點擊文章，看是否真的有計數，並且可以看到 <strong>Firestore</strong> 有一個叫做 <code>articles</code> 的 <strong>collection</strong>，裡面有紀錄每篇文章的瀏覽次數。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Hexo-x-Next-x-Firestore-%E9%A1%AF%E7%A4%BA%E7%80%8F%E8%A6%BD%E4%BA%BA%E6%AC%A1%2Fvisitors_test.png?alt=media&amp;token=a6a8dae6-4aeb-4e12-96b4-069144f36485" alt="閱讀次數測試"><span class="image-caption">閱讀次數測試</span></p>
-<h2 id="修改-Firestore-安全性設定"><a href="#修改-Firestore-安全性設定" class="headerlink" title="修改 Firestore 安全性設定"></a>修改 Firestore 安全性設定</h2><p>確定有寫入後，那就要修改一下 <strong>Firestore</strong> 的規則，讓應用對特定的 <strong>collection</strong> 或 <strong>article</strong> 擁有特定的權限，要特別注意的是，有時候測試雖然會看到從 0 變成 1，但在 firestore 卻沒看到數據，最有可能的原因就是 firestore 安全性規則擋掉了創建文件的權限。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Hexo-x-Next-x-Firestore-%E9%A1%AF%E7%A4%BA%E7%80%8F%E8%A6%BD%E4%BA%BA%E6%AC%A1%2Ffirestore_security.png?alt=media&amp;token=10cc20c9-72bd-41f2-b515-5f6ee81d63e2" alt="Firestore 安全性設定"><span class="image-caption">Firestore 安全性設定</span></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">rules_version = <span class="string">&#x27;2&#x27;</span>;</span><br><span class="line">service cloud.firestore &#123;</span><br><span class="line">  match /databases/&#123;database&#125;/documents &#123;</span><br><span class="line">    match /articles/&#123;<span class="built_in">document</span>=**&#125; &#123;</span><br><span class="line">      allow read, <span class="attr">create</span>: <span class="keyword">if</span> <span class="literal">true</span>;</span><br><span class="line">      allow write: <span class="keyword">if</span> request.resource.data.count==resource.data.count+<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    match /&#123;<span class="built_in">document</span>=**&#125; &#123;</span><br><span class="line">      allow read, <span class="attr">write</span>: <span class="keyword">if</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Hexo 使用筆記</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-        <tag>next</tag>
-        <tag>firestore</tag>
-        <tag>visitors</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>全民來找碴 - YOLOv4 戴口罩檢測</title>
     <url>/2021/06/10/YOLOv4_On_Face_Mask_Detection/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>台灣疫情爆發，天天增加百例，已經升到三級警戒，室內最多 5 人室外最多 10 人聚集。到這種時候還有人不想戴口罩，剛好到了期末做個專題讓 AI 來抓爆這些人。</p>
