@@ -676,9 +676,9 @@
       </tags>
   </entry>
   <entry>
-    <title>[Jupyter] 改變 jupyter notebook 預設路徑與瀏覽器</title>
+    <title>[Jupyter] 改變 Jupyter notebook 預設路徑與瀏覽器</title>
     <url>/2021/06/12/python_jupyter/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Jupyter notebook 是一種很方便開發 Python 程式的軟體，可以一步一步地來執行 Python，近年使用率也逐步提高。而我也是使用 Jupyter notebook 的愛用者，最一開始會遇到幾個問題，就是預設的瀏覽器為什麼是 <code>Edge</code>！要怎麼改？再來是預設路徑要怎麼改到我想放 Python 檔案的地方？</p>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Jupyter notebook 是一種很方便開發 <code>Python</code> 程式的軟體，可以一步一步地來執行 Python，近年使用率也逐步提高。而我也是使用 Jupyter notebook 的愛用者，最一開始會遇到幾個問題，就是預設的瀏覽器為什麼是 Edge！要怎麼改？再來是預設路徑要怎麼改到我想放 <code>Python</code> 檔案的地方？</p>
 <h2 id="產生環境設定檔案"><a href="#產生環境設定檔案" class="headerlink" title="產生環境設定檔案"></a>產生環境設定檔案</h2><p>Jupyter notebook 的環境設定檔預設不會出現，因此要先下指令產生</p>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;jupyter notebook --generate-config</span><br><span class="line">Writing default config to: C:\Users\user\.jupyter\jupyter_notebook_config.py</span><br></pre></td></tr></table></figure>
 <p>產出的設定檔會在指令所提示的地方 <code>C:\Users\user\.jupyter\jupyter_notebook_config.py</code></p>
