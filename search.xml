@@ -706,7 +706,7 @@
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲時，想將資料輸出到 <code>txt</code> 檔案遇到 <code>cp950</code> 等錯誤資訊，是甚麼原因？該怎麼辦？讓我來告訴你。</p>
 <h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>遇到過類似下面的錯誤訊息嗎？</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">UnicodeEncodeError: <span class="string">&#x27;cp950&#x27;</span> codec can<span class="number">&#x27;</span>t encode character <span class="string">&#x27;\u67b1&#x27;</span> in position <span class="number">20</span>: illegal multibyte sequence</span><br></pre></td></tr></table></figure>
-<p>這主要原因為某個字元因為不是 code page 950 (<code>cp950</code>) 內有的字，而無法編碼寫進檔案裡面。</p>
+<p>這主要原因為某個字元不是 code page 950 (<code>cp950</code>) 內有的字，而無法編碼寫進檔案裡面。</p>
 <p><code>Python</code> 處理字串預設是 <code>Unicode</code> 編碼，而在存檔案時，<code>Python</code> 會檢查命令提示字元的編碼頁 (此為 <code>cp950</code>) 做為檔案輸出的預設編碼頁，因此會需要將 <code>Unicode</code> 字串皆轉為 <code>cp950</code>，若此時有字不在 <code>cp950</code> 內的話，就會出現此錯誤訊息。</p>
 <h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>修改 <code>Python</code> 程式，在 <code>open</code> 檔案時多一個輸入參數，讓讀寫檔案的編碼方式為 <code>UTF-8</code></p>
 <figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="built_in">open</span>(<span class="string">&#x27;text.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;UTF-8&#x27;</span>)</span><br></pre></td></tr></table></figure>
