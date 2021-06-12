@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://weirenxue.github.io/2021/06/12/python_cp950_codec_cant_encode/</loc>
+    
+    <lastmod>2021-06-12</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://weirenxue.github.io/2021/06/12/python_jupyter/</loc>
     
     <lastmod>2021-06-12</lastmod>
@@ -481,6 +488,41 @@
   
   <url>
     <loc>https://weirenxue.github.io/tags/browser/</loc>
+    <lastmod>2021-06-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/cp950/</loc>
+    <lastmod>2021-06-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/txt/</loc>
+    <lastmod>2021-06-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/output/</loc>
+    <lastmod>2021-06-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/crawl/</loc>
+    <lastmod>2021-06-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/unicodeencodeerror/</loc>
     <lastmod>2021-06-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
