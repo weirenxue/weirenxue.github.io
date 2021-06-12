@@ -142,7 +142,7 @@
       </tags>
   </entry>
   <entry>
-    <title>[MATLAB] 模仿儀器商附的 IP Finder 整合進自己的系統裡</title>
+    <title>[MATLAB] 模仿儀器商附的 IP Finder 並整合進自己的系統裡</title>
     <url>/2021/06/12/ip_finder/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近拿到一台要價不菲的轉檯 (<code>FLIR PTU-E46</code> 以下稱為 PTU)，預計要用在無線通道量測的自動化量測系統中，必須能控制其轉向，並且要能夠知道當前角度。</p>
 <p>仔細研究一下 PTU 的<a href="https://www.flir.com/support/products/ptu-e46/#Documents">說明書</a>，發現除了 RS-485/232 外，還可以用網際網路來通訊。之後整個系統中預計會有兩個 PTU，為了能讓電腦少一點連接線甚至少到只需要一條網路線，用網路介面來做通訊媒介當然是首選。</p>
@@ -213,6 +213,8 @@
         <tag>equipment</tag>
         <tag>wireshark</tag>
         <tag>matlab</tag>
+        <tag>ptu</tag>
+        <tag>flir</tag>
       </tags>
   </entry>
   <entry>
