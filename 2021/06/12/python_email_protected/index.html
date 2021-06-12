@@ -20,18 +20,23 @@
     var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <meta name="description" content="Software Engineer">
-<meta property="og:type" content="website">
-<meta property="og:title" content="薛惟仁 筆記本">
-<meta property="og:url" content="https://weirenxue.github.io/tags/mask/index.html">
+  <meta name="description" content="爬蟲盛行的年代，防爬蟲的技術也隨之而起，其中一種技術是將電子郵件編碼，藉由網頁載入 js 後還原回正常的電子郵件格式。來了解它的原理與怎麼解決吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Python] 爬蟲遇到 email protected 的原因與解決方法">
+<meta property="og:url" content="https://weirenxue.github.io/2021/06/12/python_email_protected/index.html">
 <meta property="og:site_name" content="薛惟仁 筆記本">
-<meta property="og:description" content="Software Engineer">
+<meta property="og:description" content="爬蟲盛行的年代，防爬蟲的技術也隨之而起，其中一種技術是將電子郵件編碼，藉由網頁載入 js 後還原回正常的電子郵件格式。來了解它的原理與怎麼解決吧。">
 <meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-06-12T14:14:37.000Z">
+<meta property="article:modified_time" content="2021-06-12T14:50:27.120Z">
 <meta property="article:author" content="Wei-Ren Xue">
-<meta property="article:tag" content="AI hexo Linux js python c#">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="crawl">
+<meta property="article:tag" content="email">
+<meta property="article:tag" content="protected">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://weirenxue.github.io/tags/mask/">
+<link rel="canonical" href="https://weirenxue.github.io/2021/06/12/python_email_protected/">
 
 
 <script id="page-configurations">
@@ -39,12 +44,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-TW'
   };
 </script>
 
-  <title>標籤: mask | 薛惟仁 筆記本</title>
+  <title>[Python] 爬蟲遇到 email protected 的原因與解決方法 | 薛惟仁 筆記本</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
     <script>
@@ -188,55 +193,149 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2021/06/12/python_email_protected/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Wei-Ren Xue">
+      <meta itemprop="description" content="Software Engineer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="薛惟仁 筆記本">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Python] 爬蟲遇到 email protected 的原因與解決方法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2021-06-12 22:14:37 / 修改時間：22:50:27" itemprop="dateCreated datePublished" datetime="2021-06-12T22:14:37+08:00">2021-06-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">學習筆記</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">mask
-          <small>標籤</small>
-        </h2>
-      </div>
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2021/06/12/python_email_protected/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/12/python_email_protected/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <div class="post-description">爬蟲盛行的年代，防爬蟲的技術也隨之而起，其中一種技術是將電子郵件編碼，藉由網頁載入 js 後還原回正常的電子郵件格式。來了解它的原理與怎麼解決吧。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲盛行的年代，防爬蟲的技術也隨之而起，其中一種技術是將電子郵件編碼，藉由網頁載入 <code>js</code> 後還原回正常的電子郵件格式。但是這種防禦手法效用可以說是微乎其微，甚至還要多花時間去解碼，可以說是得不償失。</p>
+<p>沒有效用的原因有很多，主要是因為這不是加密解密問題，單純只是編碼與解碼，所以非常容易破解。再者，可以使用 <code>selenium</code> 等網頁載入好再進行爬蟲的動作。</p>
+<p>雖然如此，現在遇到這項技術還是要研究一下其原理，為了以後遇到其他問題時可以有不一樣的思路。</p>
+<h2 id="問題解析"><a href="#問題解析" class="headerlink" title="問題解析"></a>問題解析</h2><p>在爬蟲時遇到電子郵件的地方有可能會顯示被加密的狀態，例如</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;__cf_email__&quot;</span> <span class="attr">data-cfemail</span>=<span class="string">&quot;f2f0ded3dcd1dad7c6c6f2&quot;</span>&gt;</span>[email<span class="symbol">&amp;#160;</span>protected]<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>真正的電子郵件被編碼變成 <code>data-cfemail</code> 屬性的數值，這長長一串都是 16 進位的表示，且分為兩個部分</p>
+<ol>
+<li>密鑰：前兩碼為密鑰的 16 進位表示法。</li>
+<li>信箱本體：除了密鑰，都為信箱本體，每兩個字元分為一組。</li>
+</ol>
+<p>採取最簡單的異或 (<code>xor</code>) 編碼方法，也就是密鑰與信箱本體依序的去做 <code>xor</code>運算，所得結果即為編碼後的結果。</p>
+<script type="math/tex; mode=display">key \oplus e\textnormal{-}mail = data\textnormal{-}cfemail</script><h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>知道規則後，接下來只要解碼就可以了。若要解碼，對編碼後的數值多 <code>xor</code> 一次，就能得到原本的信箱字串</p>
+<script type="math/tex; mode=display">data\textnormal{-}cfemail \oplus key = (key \oplus e\textnormal{-}mail) \oplus key = e\textnormal{-}mail</script><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">codedMail = <span class="string">&#x27;4D08202C242108232E222924232A0d39283E39632E222063393A&#x27;</span></span><br><span class="line">key = <span class="built_in">int</span>(codedMail[:<span class="number">2</span>], <span class="number">16</span>) <span class="comment"># 前兩字元為 16 進位的密鑰</span></span><br><span class="line">codedMail = codedMail[<span class="number">2</span>:] <span class="comment"># 刪除前兩字元</span></span><br><span class="line">EMail = <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">while</span> <span class="built_in">len</span>(codedMail) != <span class="number">0</span>:</span><br><span class="line">    temp = <span class="built_in">int</span>(codedMail[:<span class="number">2</span>], <span class="number">16</span>) <span class="comment"># 每兩碼當一個 16 進位的數字</span></span><br><span class="line">    EMail += <span class="built_in">chr</span>(key ^ temp) <span class="comment"># 做 xor 運算後為正確的 ascii 碼，再轉為字元</span></span><br><span class="line">    codedMail = codedMail[<span class="number">2</span>:] <span class="comment"># 繼續刪除前兩碼</span></span><br><span class="line"><span class="built_in">print</span>(EMail)</span><br><span class="line"><span class="comment"># EmailEncoding@test.com.tw</span></span><br></pre></td></tr></table></figure>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a target="_blank" rel="external nofollow noopener noreferrer" href="https://zhuanlan.zhihu.com/p/36912486">破解爬虫过程中遇到的网页加密Email地址</a></li>
+</ol>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-10T13:20:07+08:00" content="2021-06-10">
-          06-10
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/crawl/" rel="tag"># crawl</a>
+              <a href="/tags/email/" rel="tag"># email</a>
+              <a href="/tags/protected/" rel="tag"># protected</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/10/YOLOv4_On_Face_Mask_Detection/" itemprop="url">
-            <span itemprop="name">全民來找碴 - YOLOv4 戴口罩檢測</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/12/python_cp950_codec_cant_encode/" rel="prev" title="[Python] 爬蟲遇到 'cp950' codec can't encode ?">
+      <i class="fa fa-chevron-left"></i> [Python] 爬蟲遇到 'cp950' codec can't encode ?
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -283,6 +382,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C%E8%A7%A3%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">問題解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">解決方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E6%96%87%E7%8D%BB"><span class="nav-number">4.</span> <span class="nav-text">參考文獻</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -505,6 +605,59 @@
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
@@ -517,6 +670,26 @@
   }
   // defer loading until the whole page loading is completed
   window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://weirenxue.github.io/2021/06/12/python_email_protected/";
+    this.page.identifier = "2021/06/12/python_email_protected/";
+    this.page.title = "[Python] 爬蟲遇到 email protected 的原因與解決方法";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://weirenxue.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
 </script>
 
 <script>

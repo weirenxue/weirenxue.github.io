@@ -723,4 +723,34 @@
         <tag>unicodeencodeerror</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[Python] 爬蟲遇到 email protected 的原因與解決方法</title>
+    <url>/2021/06/12/python_email_protected/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲盛行的年代，防爬蟲的技術也隨之而起，其中一種技術是將電子郵件編碼，藉由網頁載入 <code>js</code> 後還原回正常的電子郵件格式。但是這種防禦手法效用可以說是微乎其微，甚至還要多花時間去解碼，可以說是得不償失。</p>
+<p>沒有效用的原因有很多，主要是因為這不是加密解密問題，單純只是編碼與解碼，所以非常容易破解。再者，可以使用 <code>selenium</code> 等網頁載入好再進行爬蟲的動作。</p>
+<p>雖然如此，現在遇到這項技術還是要研究一下其原理，為了以後遇到其他問題時可以有不一樣的思路。</p>
+<h2 id="問題解析"><a href="#問題解析" class="headerlink" title="問題解析"></a>問題解析</h2><p>在爬蟲時遇到電子郵件的地方有可能會顯示被加密的狀態，例如</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;__cf_email__&quot;</span> <span class="attr">data-cfemail</span>=<span class="string">&quot;f2f0ded3dcd1dad7c6c6f2&quot;</span>&gt;</span>[email<span class="symbol">&amp;#160;</span>protected]<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>真正的電子郵件被編碼變成 <code>data-cfemail</code> 屬性的數值，這長長一串都是 16 進位的表示，且分為兩個部分</p>
+<ol>
+<li>密鑰：前兩碼為密鑰的 16 進位表示法。</li>
+<li>信箱本體：除了密鑰，都為信箱本體，每兩個字元分為一組。</li>
+</ol>
+<p>採取最簡單的異或 (<code>xor</code>) 編碼方法，也就是密鑰與信箱本體依序的去做 <code>xor</code>運算，所得結果即為編碼後的結果。</p>
+<script type="math/tex; mode=display">key \oplus e\textnormal{-}mail = data\textnormal{-}cfemail</script><h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>知道規則後，接下來只要解碼就可以了。若要解碼，對編碼後的數值多 <code>xor</code> 一次，就能得到原本的信箱字串</p>
+<script type="math/tex; mode=display">data\textnormal{-}cfemail \oplus key = (key \oplus e\textnormal{-}mail) \oplus key = e\textnormal{-}mail</script><figure class="highlight py"><table><tr><td class="code"><pre><span class="line">codedMail = <span class="string">&#x27;4D08202C242108232E222924232A0d39283E39632E222063393A&#x27;</span></span><br><span class="line">key = <span class="built_in">int</span>(codedMail[:<span class="number">2</span>], <span class="number">16</span>) <span class="comment"># 前兩字元為 16 進位的密鑰</span></span><br><span class="line">codedMail = codedMail[<span class="number">2</span>:] <span class="comment"># 刪除前兩字元</span></span><br><span class="line">EMail = <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">while</span> <span class="built_in">len</span>(codedMail) != <span class="number">0</span>:</span><br><span class="line">    temp = <span class="built_in">int</span>(codedMail[:<span class="number">2</span>], <span class="number">16</span>) <span class="comment"># 每兩碼當一個 16 進位的數字</span></span><br><span class="line">    EMail += <span class="built_in">chr</span>(key ^ temp) <span class="comment"># 做 xor 運算後為正確的 ascii 碼，再轉為字元</span></span><br><span class="line">    codedMail = codedMail[<span class="number">2</span>:] <span class="comment"># 繼續刪除前兩碼</span></span><br><span class="line"><span class="built_in">print</span>(EMail)</span><br><span class="line"><span class="comment"># EmailEncoding@test.com.tw</span></span><br></pre></td></tr></table></figure>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://zhuanlan.zhihu.com/p/36912486">破解爬虫过程中遇到的网页加密Email地址</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>crawl</tag>
+        <tag>email</tag>
+        <tag>protected</tag>
+      </tags>
+  </entry>
 </search>
