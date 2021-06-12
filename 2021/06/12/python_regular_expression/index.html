@@ -20,18 +20,24 @@
     var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <meta name="description" content="Software Engineer">
-<meta property="og:type" content="website">
-<meta property="og:title" content="薛惟仁 筆記本">
-<meta property="og:url" content="https://weirenxue.github.io/tags/opcode/index.html">
+  <meta name="description" content="在申請使用者帳號時，常常會看到要求密碼內至少要幾個大寫、小寫與數字。若是我們自己開發的系統，要如何寫才能滿足所有條件？這時候就必須請出正規表示式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Python] 使用 regular expression 驗證密碼長度與安全性">
+<meta property="og:url" content="https://weirenxue.github.io/2021/06/12/python_regular_expression/index.html">
 <meta property="og:site_name" content="薛惟仁 筆記本">
-<meta property="og:description" content="Software Engineer">
+<meta property="og:description" content="在申請使用者帳號時，常常會看到要求密碼內至少要幾個大寫、小寫與數字。若是我們自己開發的系統，要如何寫才能滿足所有條件？這時候就必須請出正規表示式。">
 <meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-06-12T08:26:38.000Z">
+<meta property="article:modified_time" content="2021-06-12T08:44:39.183Z">
 <meta property="article:author" content="Wei-Ren Xue">
-<meta property="article:tag" content="AI hexo Linux js python c#">
+<meta property="article:tag" content="regex">
+<meta property="article:tag" content="regular">
+<meta property="article:tag" content="expression">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="password">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://weirenxue.github.io/tags/opcode/">
+<link rel="canonical" href="https://weirenxue.github.io/2021/06/12/python_regular_expression/">
 
 
 <script id="page-configurations">
@@ -39,12 +45,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-TW'
   };
 </script>
 
-  <title>標籤: opcode | 薛惟仁 筆記本</title>
+  <title>[Python] 使用 regular expression 驗證密碼長度與安全性 | 薛惟仁 筆記本</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
     <script>
@@ -188,55 +194,161 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2021/06/12/python_regular_expression/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Wei-Ren Xue">
+      <meta itemprop="description" content="Software Engineer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="薛惟仁 筆記本">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Python] 使用 regular expression 驗證密碼長度與安全性
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2021-06-12 16:26:38 / 修改時間：16:44:39" itemprop="dateCreated datePublished" datetime="2021-06-12T16:26:38+08:00">2021-06-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">學習筆記</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">opcode
-          <small>標籤</small>
-        </h2>
-      </div>
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2021/06/12/python_regular_expression/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/12/python_regular_expression/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <div class="post-description">在申請使用者帳號時，常常會看到要求密碼內至少要幾個大寫、小寫與數字。若是我們自己開發的系統，要如何寫才能滿足所有條件？這時候就必須請出正規表示式。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在申請使用者帳號時，常常會看到要求密碼內至少要幾個大寫、小寫與數字。若是我們自己開發的系統，要如何寫才能滿足所有條件？這時候就必須請出正規表示式 (regular expression 也稱為 regex)。</p>
+<h2 id="訂定密碼原則"><a href="#訂定密碼原則" class="headerlink" title="訂定密碼原則"></a>訂定密碼原則</h2><p>在寫程式之前，需把所有的限制都先條列出來，避免遺漏或理解錯誤</p>
+<ol>
+<li>至少有 1 個數字</li>
+<li>至少有 1 個小寫英文字母</li>
+<li>至少有 1 個大寫英文字母</li>
+<li>密碼長度在 6 ~ 20 個字母之間</li>
+</ol>
+<h2 id="Python-實現"><a href="#Python-實現" class="headerlink" title="Python 實現"></a>Python 實現</h2><p>現在就用 <code>Python</code> 來實現檢查密碼的功能吧！直接上程式碼再解釋</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">pattern = <span class="string">&quot;^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).&#123;6,20&#125;$&quot;</span></span><br><span class="line">password = <span class="built_in">input</span>(<span class="string">&quot;Enter string to test: &quot;</span>)</span><br><span class="line">result = re.findall(pattern, password)</span><br><span class="line"><span class="keyword">if</span> (result):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Valid password&quot;</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Password not valid&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><code>regular expression</code> 找字串的原理關鍵是使用 <code>pattern</code>，如上程式碼中的 <code>&quot;^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).&#123;6,20&#125;$&quot;</code>，再使用 <code>re.findall</code> 查看字串裡面有沒有符合 <code>pattern</code>，若是有符合 <code>pattern</code>，則等同符合密碼原則。</p>
+<p>仔細解析一下 <code>pattern</code></p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pattern = <span class="string">&quot;^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).&#123;6,20&#125;$&quot;</span></span><br></pre></td></tr></table></figure>
+<p>一堆符號看得眼花撩亂？我會拆成有 <code>(?=)</code> 的部分和沒有 <code>(?=)</code> 的部分來看</p>
+<ul>
+<li>有 <code>(?=)</code>的部分<ol>
+<li><code>^(?=.*\d)</code>：從頭 (<code>^</code>) 檢查此字串是否有數字 (<code>.*\d</code>)。</li>
+<li><code>^(?=.*[a-z])</code>：從頭 (<code>^</code>) 檢查此字串是否有小寫英文字母 (<code>.*[a-z]</code>)。</li>
+<li><code>^(?=.*[A-Z])</code>：從頭 (<code>^</code>) 檢查此字串是否有小寫英文字母 (<code>.*[A-Z]</code>)。</li>
+</ol>
+</li>
+<li>沒有 <code>(?=)</code> 的部分<ol>
+<li><code>^.&#123;6,20&#125;$</code>：若上述 <code>(?=)</code> 的條件都滿足，再來找從頭 (<code>^</code>) 到尾 (<code>$</code>) 的字串長度是否在 6 至 20 之間。</li>
+</ol>
+</li>
+</ul>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>正規表示式是非常好用的字串查找、檢查的工具，只要理解如何寫 <code>pattern</code>，就能寫出各種難以用 <code>if else</code> 判斷的功能。</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T08:42:52+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/regex/" rel="tag"># regex</a>
+              <a href="/tags/regular/" rel="tag"># regular</a>
+              <a href="/tags/expression/" rel="tag"># expression</a>
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/password/" rel="tag"># password</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/opcodejmp/" itemprop="url">
-            <span itemprop="name">[Opcode] JMP 轉成機械碼的原理與過程</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/12/matlab_k_means/" rel="prev" title="[MATLAB] k-means 演算法說明與實作">
+      <i class="fa fa-chevron-left"></i> [MATLAB] k-means 演算法說明與實作
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -283,6 +395,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A8%82%E5%AE%9A%E5%AF%86%E7%A2%BC%E5%8E%9F%E5%89%87"><span class="nav-number">2.</span> <span class="nav-text">訂定密碼原則</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Python-%E5%AF%A6%E7%8F%BE"><span class="nav-number">3.</span> <span class="nav-text">Python 實現</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -517,6 +630,26 @@
   }
   // defer loading until the whole page loading is completed
   window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://weirenxue.github.io/2021/06/12/python_regular_expression/";
+    this.page.identifier = "2021/06/12/python_regular_expression/";
+    this.page.title = "[Python] 使用 regular expression 驗證密碼長度與安全性";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://weirenxue.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
 </script>
 
 <script>

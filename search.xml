@@ -633,4 +633,46 @@
         <tag>algorithm</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[Python] 使用 regular expression 驗證密碼長度與安全性</title>
+    <url>/2021/06/12/python_regular_expression/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在申請使用者帳號時，常常會看到要求密碼內至少要幾個大寫、小寫與數字。若是我們自己開發的系統，要如何寫才能滿足所有條件？這時候就必須請出正規表示式 (regular expression 也稱為 regex)。</p>
+<h2 id="訂定密碼原則"><a href="#訂定密碼原則" class="headerlink" title="訂定密碼原則"></a>訂定密碼原則</h2><p>在寫程式之前，需把所有的限制都先條列出來，避免遺漏或理解錯誤</p>
+<ol>
+<li>至少有 1 個數字</li>
+<li>至少有 1 個小寫英文字母</li>
+<li>至少有 1 個大寫英文字母</li>
+<li>密碼長度在 6 ~ 20 個字母之間</li>
+</ol>
+<h2 id="Python-實現"><a href="#Python-實現" class="headerlink" title="Python 實現"></a>Python 實現</h2><p>現在就用 <code>Python</code> 來實現檢查密碼的功能吧！直接上程式碼再解釋</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">pattern = <span class="string">&quot;^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).&#123;6,20&#125;$&quot;</span></span><br><span class="line">password = <span class="built_in">input</span>(<span class="string">&quot;Enter string to test: &quot;</span>)</span><br><span class="line">result = re.findall(pattern, password)</span><br><span class="line"><span class="keyword">if</span> (result):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Valid password&quot;</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Password not valid&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><code>regular expression</code> 找字串的原理關鍵是使用 <code>pattern</code>，如上程式碼中的 <code>&quot;^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).&#123;6,20&#125;$&quot;</code>，再使用 <code>re.findall</code> 查看字串裡面有沒有符合 <code>pattern</code>，若是有符合 <code>pattern</code>，則等同符合密碼原則。</p>
+<p>仔細解析一下 <code>pattern</code></p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">pattern = <span class="string">&quot;^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).&#123;6,20&#125;$&quot;</span></span><br></pre></td></tr></table></figure>
+<p>一堆符號看得眼花撩亂？我會拆成有 <code>(?=)</code> 的部分和沒有 <code>(?=)</code> 的部分來看</p>
+<ul>
+<li>有 <code>(?=)</code>的部分<ol>
+<li><code>^(?=.*\d)</code>：從頭 (<code>^</code>) 檢查此字串是否有數字 (<code>.*\d</code>)。</li>
+<li><code>^(?=.*[a-z])</code>：從頭 (<code>^</code>) 檢查此字串是否有小寫英文字母 (<code>.*[a-z]</code>)。</li>
+<li><code>^(?=.*[A-Z])</code>：從頭 (<code>^</code>) 檢查此字串是否有小寫英文字母 (<code>.*[A-Z]</code>)。</li>
+</ol>
+</li>
+<li>沒有 <code>(?=)</code> 的部分<ol>
+<li><code>^.&#123;6,20&#125;$</code>：若上述 <code>(?=)</code> 的條件都滿足，再來找從頭 (<code>^</code>) 到尾 (<code>$</code>) 的字串長度是否在 6 至 20 之間。</li>
+</ol>
+</li>
+</ul>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>正規表示式是非常好用的字串查找、檢查的工具，只要理解如何寫 <code>pattern</code>，就能寫出各種難以用 <code>if else</code> 判斷的功能。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>regex</tag>
+        <tag>regular</tag>
+        <tag>expression</tag>
+        <tag>python</tag>
+        <tag>password</tag>
+      </tags>
+  </entry>
 </search>
