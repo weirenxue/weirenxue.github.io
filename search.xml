@@ -159,7 +159,7 @@
 <li>近跳轉：目的地在同一個區段內，且差值在 32-bit 可以表示的範圍內，又稱段內跳轉。</li>
 <li>遠跳轉：目的地在別的區段，又稱段間跳轉。</li>
 </ol>
-<p>雖然在組合語言都是以 JMP 來實現跳轉，但在組譯轉成機械碼 (opcode) 時翻譯出來的卻不一樣，短跳轉 (<code>EB</code>)、近跳轉 (<code>E9</code>)、遠跳轉 (<code>EA</code>)。當然，機械碼不一樣就代表是不同的指令，其後的參數要怎麼給是該瞭解的事情。參考手冊說明摘要如下：</p>
+<p>雖然在組合語言都是以 <code>JMP</code> 來實現跳轉，但在組譯轉成 opcode 時翻譯出來的卻不一樣，短跳轉 (<code>EB</code>)、近跳轉 (<code>E9</code>)、遠跳轉 (<code>EA</code>)。當然，opcode 不一樣就代表是不同的指令，其後的參數要怎麼給是該瞭解的事情。參考手冊說明摘要如下：</p>
 <div class="table-container">
 <table>
 <thead>
@@ -208,17 +208,17 @@
 <tr>
 <td>003F1010</td>
 <td>EB 06</td>
-<td>jmp  003F1018</td>
+<td>JMP  003F1018</td>
 </tr>
 <tr>
 <td>003F1012</td>
 <td>EB 04</td>
-<td>jmp  003F1018</td>
+<td>JMP  003F1018</td>
 </tr>
 <tr>
 <td>003F1014</td>
 <td>EB 02</td>
-<td>jmp  003F1018</td>
+<td>JMP  003F1018</td>
 </tr>
 </tbody>
 </table>
@@ -238,17 +238,17 @@
 <tr>
 <td>013D1035</td>
 <td>E9 85 00 00 00</td>
-<td>jmp  013D10BF</td>
+<td>JMP  013D10BF</td>
 </tr>
 <tr>
 <td>013D103A</td>
 <td>E9 80 00 00 00</td>
-<td>jmp  013D10BF</td>
+<td>JMP  013D10BF</td>
 </tr>
 <tr>
 <td>013D103F</td>
 <td>EB 7E</td>
-<td>jmp  013D10BF</td>
+<td>JMP  013D10BF</td>
 </tr>
 </tbody>
 </table>
