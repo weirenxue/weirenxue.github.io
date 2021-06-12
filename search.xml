@@ -1,40 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>[C++] (FARPROC&amp;) 的含意</title>
-    <url>/2021/06/11/cfarproc/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr; </span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...省略...)</span><br></pre></td></tr></table></figure>
-<p>平常只會看到像是 <code>(int)</code>、<code>(int*)</code> 之類的轉型，第一次看到轉型是帶著 <code>&amp;</code> 符號的，引發我的好奇心，藉此研究一番。</p>
-<h2 id="探討"><a href="#探討" class="headerlink" title="探討"></a>探討</h2><p>要探討這問題，就要先知道一般再宣告的時候，<code>&amp;</code> 運算元到底發揮甚麼功用，所以先用最簡單的整數(<code>int</code>)宣告來測試，內容分為以下三種：</p>
-<ol>
-<li><p><code>int a = b;   //這應該大家都知道，就是把b的值給a</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> a = b;</span><br><span class="line"><span class="comment">//結果：a = 2; b = 2; &amp;a = 006FF8C0; &amp;b = 006FF8CC;</span></span><br><span class="line"><span class="comment">//結論：值一樣但記憶體位址不一樣</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>int *a = &amp;b; //程度好一些的應該知道，這是把b的記憶體位址存到a裡面</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> *a = &amp;b;</span><br><span class="line"><span class="comment">//結果：a = 006FF8B4; b = 3; &amp;a = 006FF8A8; &amp;b = 006FF8B4;</span></span><br><span class="line"><span class="comment">//結論：a存著b的位址，但兩個記憶體位址還是不一樣</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>int &amp;a = b;  //但這個呢？讓我們繼續看下去</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">int</span> &amp;a = b;</span><br><span class="line"><span class="comment">//結果：a = 4; b = 4; &amp;a = 006FF89C; &amp;b = 006FF89C;</span></span><br><span class="line"><span class="comment">//結論：a的位址跟b一樣，所以a跟b一模一樣了！</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>以這些實驗可以得到結論：在宣告的時候 ，<code>int&amp;</code> 會把「等號左邊(<code>a</code>)的變數地址」改變成「等號右邊(<code>b</code>)變數的地址」，因此 <code>a</code> 與 <code>b</code> 兩個是一樣的東西（也就是記憶體位址一樣）！</p>
-<p>回到最一開始的問題：<code>(FARPROC&amp;) addr</code> 到底是甚麼呢？我還是用程式做一下實驗，先以書上的程式碼為第一個實驗，用 <code>(FARPROC&amp;)</code> 去接 <code>GetProcAddress</code> 的值，看會如何；再用 <code>addr</code> 直接去接，又會如何。以下是實驗結果：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA94; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA88; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
-<p>可以發現其實沒有像是我們在最原本例子 <code>int &amp;a=b;</code> 看到的把 <code>addr</code> 位址變為 <code>GetProcAddress</code> 的位址，反而是addr的值變化了，變為 <code>GetProcAddress</code> 回傳的地址，也就是說 <code>(FARPROC&amp;)</code> 在這個實驗中看起來是沒有作用到的。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p><code>(FARPROC&amp;) addr = GetProcAddress(...)</code> 等同於 <code>addr = GetProcAddress(...)</code>，只是不知道書上為何多此一舉。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>FARPROC</tag>
-        <tag>c++</tag>
-        <tag>加密與解密</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[C#] 在高 DPI 的螢幕上，有些應用程式內的字會模糊的原因以及解決方法！</title>
     <url>/2021/06/11/cs_dpi/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>開啟 Visual Studio <code>C#</code> 的 Windows Form 應用程式來設計，一定曾經注意到雖然在 VS 裡面設計 Form 時，預覽的字是清晰的，結果 Compiler 之後跑出來的字是模糊的！以下圖幫各位回憶一下。</p>
@@ -106,40 +72,37 @@
       </tags>
   </entry>
   <entry>
-    <title>[asm] NEG 的運作與應用</title>
-    <url>/2021/06/11/asmneg/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
-<p>它的運作影響了旗標，進而用來當作實現 <code>BOOL function</code> 回傳的一個選項。就一起來看看 <code>NEG</code> 是如何運作以及對應到的高階語言是如何呈現的。</p>
-<h2 id="運作原理"><a href="#運作原理" class="headerlink" title="運作原理"></a>運作原理</h2><p>想知道一個程式碼如何運作，不外乎就是兩種方法：</p>
+    <title>[C++] (FARPROC&amp;) 的含意</title>
+    <url>/2021/06/11/cfarproc/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr; </span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...省略...)</span><br></pre></td></tr></table></figure>
+<p>平常只會看到像是 <code>(int)</code>、<code>(int*)</code> 之類的轉型，第一次看到轉型是帶著 <code>&amp;</code> 符號的，引發我的好奇心，藉此研究一番。</p>
+<h2 id="探討"><a href="#探討" class="headerlink" title="探討"></a>探討</h2><p>要探討這問題，就要先知道一般再宣告的時候，<code>&amp;</code> 運算元到底發揮甚麼功用，所以先用最簡單的整數(<code>int</code>)宣告來測試，內容分為以下三種：</p>
 <ol>
-<li>直接編譯/組譯然後執行，觀察結果(暫存器輸出、旗標設置等等)，此方式在本篇文章不強調。</li>
-<li>最基本的就是看技術文件，若參數很多或者回傳複雜無法直接觀察結果推斷的時候，相關文件最有用了。例如 Windows 的 API 可以去 MSDN 上找函數介紹，而組合語言的語法能夠找所使用 CPU 的廠商要文檔，AMD 與 Intel 的組合語言可能有差異，所以若是使用 Intel 的就請找 Intel 的指令手冊來參考。</li>
+<li><p><code>int a = b;   //這應該大家都知道，就是把b的值給a</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> a = b;</span><br><span class="line"><span class="comment">//結果：a = 2; b = 2; &amp;a = 006FF8C0; &amp;b = 006FF8CC;</span></span><br><span class="line"><span class="comment">//結論：值一樣但記憶體位址不一樣</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>int *a = &amp;b; //程度好一些的應該知道，這是把b的記憶體位址存到a裡面</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> *a = &amp;b;</span><br><span class="line"><span class="comment">//結果：a = 006FF8B4; b = 3; &amp;a = 006FF8A8; &amp;b = 006FF8B4;</span></span><br><span class="line"><span class="comment">//結論：a存著b的位址，但兩個記憶體位址還是不一樣</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>int &amp;a = b;  //但這個呢？讓我們繼續看下去</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">int</span> &amp;a = b;</span><br><span class="line"><span class="comment">//結果：a = 4; b = 4; &amp;a = 006FF89C; &amp;b = 006FF89C;</span></span><br><span class="line"><span class="comment">//結論：a的位址跟b一樣，所以a跟b一模一樣了！</span></span><br></pre></td></tr></table></figure>
+</li>
 </ol>
-<p>我的電腦為 Intel CPU，上網找到對應的指令手冊(<a href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)，內文對 <code>NEG</code> 指令的描述摘要如下</p>
-<blockquote>
-<p>NEG—Two&#39;s Complement Negation<br>Description<br>Replaces the value of operand (the destination operand) with its two&#39;s complement. (This operation is equivalent to subtracting the operand from 0.) The destination operand is located in a general-purpose register or a memory location.</p>
-</blockquote>
-<p>簡單說明一下，<code>NEG</code> 是一個 2 補數的運算，將一個數取 2 補數之後放回原本的目的地，等同於一個數被 0 減掉再放回暫存器(即 <code>eax = 0 - eax</code>)，目的地可以是暫存器也可以是記憶體位址。它原文下面還有說明，但到這就能夠來說明想要表達的程式碼了。再來看看它的流程 Pseudo code</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Operation</span><br><span class="line">IF DEST = <span class="number">0</span></span><br><span class="line">　THEN CF ← <span class="number">0</span>;</span><br><span class="line">　ELSE CF ← <span class="number">1</span>;</span><br><span class="line">FI;</span><br><span class="line">DEST ← [– (DEST)]</span><br></pre></td></tr></table></figure>
-<p>短短幾行 Pseudo code，代表了無數的文字，相信一看就懂它想說甚麼。在簡短的 <code>NEG</code> 描述與操作流程可以知道若 <code>DEST</code> 不為 0，進位旗標 (<code>CF</code>) 會被設置為 1，這是因為 0 減非 0 的數需要補位。</p>
-<h2 id="應用方式"><a href="#應用方式" class="headerlink" title="應用方式"></a>應用方式</h2><p>這時候假設你的程式中有個副程式如下</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">NEGtest</span><span class="params">(TCHAR *str1, TCHAR *str2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">lstrcmp</span>(str1, str2) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>不論是組合語言或高階語言，有很多不同編寫方式來完成相同的事情，然而這個函數內的 <code>if else</code> 所對應到的組合語言可能為</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">push ebp        <span class="comment">//str2 的位址</span></span><br><span class="line">push eax        <span class="comment">//str1 的位址</span></span><br><span class="line">call [<span class="number">00404004</span>] <span class="comment">//呼叫 lstrcmp 函數</span></span><br><span class="line">neg eax         <span class="comment">//API 函數回傳值都放在 eax 暫存器裡，因此對比較後的結果作 NEG 運算</span></span><br><span class="line">sbb eax, eax    <span class="comment">//eax = eax - eax - CY</span></span><br><span class="line">inc eax         <span class="comment">//eax = eax + 1</span></span><br></pre></td></tr></table></figure>
-<p><code>lstrcmp</code> 需要兩個參數，因此先壓參數入堆疊再調用 (call) 其函數，而它的回傳值放在 <code>eax</code> 裡面，若兩個字串相同，則 <code>eax == 0</code>；反之 <code>eax != 0</code>。此時分為兩個情況來討論：</p>
-<ol>
-<li><code>str1 == str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為 0，<code>neg eax</code> 之後 <code>eax</code> 還是 0 且 <code>CY</code> 為 0，因此到程式結束時 <code>eax</code> 為 1，即 <code>return true</code></li>
-<li><code>str1 !=  str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為非 0，<code>neg eax</code> 之後 <code>eax</code> 還是非 0 且 <code>CY</code> 為1，因此第五行的執行結果為 <code>eax = eax - eax - CY = 0xFFFFFFFF</code> (32位元的話)，最後 <code>eax = eax + 1 = 0</code> 即 <code>return false</code></li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個執行結果，與高階語言的效果是一樣的。當然，也可以用 <code>cmp</code>、<code>jmp</code>等指令來完成同一件事，但不覺得程式拐個彎寫得簡單優雅，會有更有成就感嗎？呵呵！</p>
+<p>以這些實驗可以得到結論：在宣告的時候 ，<code>int&amp;</code> 會把「等號左邊(<code>a</code>)的變數地址」改變成「等號右邊(<code>b</code>)變數的地址」，因此 <code>a</code> 與 <code>b</code> 兩個是一樣的東西（也就是記憶體位址一樣）！</p>
+<p>回到最一開始的問題：<code>(FARPROC&amp;) addr</code> 到底是甚麼呢？我還是用程式做一下實驗，先以書上的程式碼為第一個實驗，用 <code>(FARPROC&amp;)</code> 去接 <code>GetProcAddress</code> 的值，看會如何；再用 <code>addr</code> 直接去接，又會如何。以下是實驗結果：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA94; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA88; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
+<p>可以發現其實沒有像是我們在最原本例子 <code>int &amp;a=b;</code> 看到的把 <code>addr</code> 位址變為 <code>GetProcAddress</code> 的位址，反而是addr的值變化了，變為 <code>GetProcAddress</code> 回傳的地址，也就是說 <code>(FARPROC&amp;)</code> 在這個實驗中看起來是沒有作用到的。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p><code>(FARPROC&amp;) addr = GetProcAddress(...)</code> 等同於 <code>addr = GetProcAddress(...)</code>，只是不知道書上為何多此一舉。</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>neg</tag>
-        <tag>sbb</tag>
-        <tag>asm</tag>
+        <tag>FARPROC</tag>
+        <tag>c++</tag>
+        <tag>加密與解密</tag>
       </tags>
   </entry>
   <entry>
@@ -179,6 +142,131 @@
       </tags>
   </entry>
   <entry>
+    <title>[Opcode] JMP 轉成機械碼的原理與過程</title>
+    <url>/2021/06/11/opcodejmp/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>JMP</code> 指令根據跳轉目的地遠近分成短跳轉 (Short jump)、近跳轉 (Near jump)、遠跳轉 (Far jump)、他們所代表的含意不一樣，使得機械碼 opcode 呈現的方式也不一樣。</p>
+<h2 id="閱讀手冊"><a href="#閱讀手冊" class="headerlink" title="閱讀手冊"></a>閱讀手冊</h2><p>引用指令手冊(<a href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)裡面一些對於 <code>JMP</code> 的敘述：</p>
+<blockquote>
+<ol>
+<li>Short jump—A near jump where the jump range is limited to –128 to +127 from the current EIP value.</li>
+<li>Near jump—A jump to an instruction within the current code segment (the segment currently pointed to by the CS register), sometimes referred to as an intrasegment jump.</li>
+<li>Far jump—A jump to an instruction located in a different segment than the current code segment but at the same privilege level, sometimes referred to as an intersegment jump.</li>
+</ol>
+</blockquote>
+<p>它們主要是以所要跳的目的地位址與現在的 <code>IP</code> (instruction pointer) 位址差值來區分：</p>
+<ol>
+<li>短跳轉：差值在 -128 ~ +127 (8-bit) 之內。</li>
+<li>近跳轉：目的地在同一個區段內，且差值在 32-bit 可以表示的範圍內，又稱段內跳轉。</li>
+<li>遠跳轉：目的地在別的區段，又稱段間跳轉。</li>
+</ol>
+<p>雖然在組合語言都是以 JMP 來實現跳轉，但在組譯轉成機械碼 (opcode) 時翻譯出來的卻不一樣，短跳轉 (<code>EB</code>)、近跳轉 (<code>E9</code>)、遠跳轉 (<code>EA</code>)。當然，機械碼不一樣就代表是不同的指令，其後的參數要怎麼給是該瞭解的事情。參考手冊說明摘要如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Jump</th>
+<th>Opcode</th>
+<th>Instruction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Short Jump</td>
+<td>EB cb</td>
+<td>JMP rel8</td>
+</tr>
+<tr>
+<td>Near Jump</td>
+<td>E9 cw/cd</td>
+<td>JMP rel16/rel32</td>
+</tr>
+<tr>
+<td>Far Jump</td>
+<td>EA cd/cp</td>
+<td>JMP ptr16:16/ptr16:32</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>參數解釋</p>
+<ol>
+<li><code>rel8</code>/<code>rel16</code>/<code>rel32</code>：偏移量(也就是上面提到的差值)能用有號 8/16/32-bit 來表示的相對位址。</li>
+<li><code>ptr16:16</code>/<code>ptr16:32</code>：一個相對遠的指標 (pointer)，通常與 <code>IP</code> 不同區段，前面的 16/16 表示 16-bit 的區段暫存器，後面的 16/32 表示目的地在那個區段的偏移量。</li>
+<li><code>cb</code>/<code>cw</code>/<code>cd</code>/<code>cp</code>：用來描述代碼的偏移量和新的區段暫存器的值，分別為 1-byte、2-byte、4-byte、6-byte。</li>
+</ol>
+<h2 id="程式驗證"><a href="#程式驗證" class="headerlink" title="程式驗證"></a>程式驗證</h2><p>有概念之後，用程式來對上面敘述做驗證吧：</p>
+<h3 id="短跳轉"><a href="#短跳轉" class="headerlink" title="短跳轉"></a>短跳轉</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Opcode</th>
+<th>Instruction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>003F1010</td>
+<td>EB 06</td>
+<td>jmp  003F1018</td>
+</tr>
+<tr>
+<td>003F1012</td>
+<td>EB 04</td>
+<td>jmp  003F1018</td>
+</tr>
+<tr>
+<td>003F1014</td>
+<td>EB 02</td>
+<td>jmp  003F1018</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>因為指令位址距目的很近，所以為短跳轉 (<code>EB</code>)，<code>EB</code> 後的數字為目的地與 <code>EIP</code> 的偏移量，但可能有人會問，為什麼對不起來？</p>
+<p>像是第一個的 <code>偏移量 = 003F1018h - 003F1010h = 08h</code> 結果不是 <code>EB 08</code>，而是 <code>EB 06</code> 。這是因為 CPU 在運作時，看到 <code>EB 06</code> 知道要跳轉，也由於它已經讀了這一指令，<code>EIP</code> 會再加 2 指向下一指令，再執行 <code>EB 06</code> 這個指令。可以看得出關鍵嗎？在執行 <code>EB 06</code> 時 <code>EIP</code> 已經又加 2 了，實際上的算法應為 <code>偏移量 = 003F1018h - (003F1010h + opcode的長度) = 06h</code></p>
+<h3 id="近跳轉"><a href="#近跳轉" class="headerlink" title="近跳轉"></a>近跳轉</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Opcode</th>
+<th>Instruction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>013D1035</td>
+<td>E9 85 00 00 00</td>
+<td>jmp  013D10BF</td>
+</tr>
+<tr>
+<td>013D103A</td>
+<td>E9 80 00 00 00</td>
+<td>jmp  013D10BF</td>
+</tr>
+<tr>
+<td>013D103F</td>
+<td>EB 7E</td>
+<td>jmp  013D10BF</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>偏移量的算法和短跳轉相同，不同在於近跳轉的 opcode 且 <code>E9</code> 與長度為 5-byte，在計算時要注意。在此特地用跳轉至同目的地但分別為近跳轉與短跳轉來說明，當從 1-byte 的 7E 要進位到 80 時，就會變成 4-byte 的 <code>00 00 00 80h</code>，因為其超出有號 8-bit 可表示範圍。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>far jump</tag>
+        <tag>near jump</tag>
+        <tag>short jump</tag>
+        <tag>jmp</tag>
+        <tag>opcode</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Windows] 32 位元的應用程式在 64 位元作業系統運作的原理</title>
     <url>/2021/06/11/3264/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
@@ -206,6 +294,43 @@
         <tag>os</tag>
         <tag>windows</tag>
         <tag>wow64</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[asm] NEG 的運作與應用</title>
+    <url>/2021/06/11/asmneg/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
+<p>它的運作影響了旗標，進而用來當作實現 <code>BOOL function</code> 回傳的一個選項。就一起來看看 <code>NEG</code> 是如何運作以及對應到的高階語言是如何呈現的。</p>
+<h2 id="運作原理"><a href="#運作原理" class="headerlink" title="運作原理"></a>運作原理</h2><p>想知道一個程式碼如何運作，不外乎就是兩種方法：</p>
+<ol>
+<li>直接編譯/組譯然後執行，觀察結果(暫存器輸出、旗標設置等等)，此方式在本篇文章不強調。</li>
+<li>最基本的就是看技術文件，若參數很多或者回傳複雜無法直接觀察結果推斷的時候，相關文件最有用了。例如 Windows 的 API 可以去 MSDN 上找函數介紹，而組合語言的語法能夠找所使用 CPU 的廠商要文檔，AMD 與 Intel 的組合語言可能有差異，所以若是使用 Intel 的就請找 Intel 的指令手冊來參考。</li>
+</ol>
+<p>我的電腦為 Intel CPU，上網找到對應的指令手冊(<a href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)，內文對 <code>NEG</code> 指令的描述摘要如下</p>
+<blockquote>
+<p>NEG—Two&#39;s Complement Negation<br>Description<br>Replaces the value of operand (the destination operand) with its two&#39;s complement. (This operation is equivalent to subtracting the operand from 0.) The destination operand is located in a general-purpose register or a memory location.</p>
+</blockquote>
+<p>簡單說明一下，<code>NEG</code> 是一個 2 補數的運算，將一個數取 2 補數之後放回原本的目的地，等同於一個數被 0 減掉再放回暫存器(即 <code>eax = 0 - eax</code>)，目的地可以是暫存器也可以是記憶體位址。它原文下面還有說明，但到這就能夠來說明想要表達的程式碼了。再來看看它的流程 Pseudo code</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Operation</span><br><span class="line">IF DEST = <span class="number">0</span></span><br><span class="line">　THEN CF ← <span class="number">0</span>;</span><br><span class="line">　ELSE CF ← <span class="number">1</span>;</span><br><span class="line">FI;</span><br><span class="line">DEST ← [– (DEST)]</span><br></pre></td></tr></table></figure>
+<p>短短幾行 Pseudo code，代表了無數的文字，相信一看就懂它想說甚麼。在簡短的 <code>NEG</code> 描述與操作流程可以知道若 <code>DEST</code> 不為 0，進位旗標 (<code>CF</code>) 會被設置為 1，這是因為 0 減非 0 的數需要補位。</p>
+<h2 id="應用方式"><a href="#應用方式" class="headerlink" title="應用方式"></a>應用方式</h2><p>這時候假設你的程式中有個副程式如下</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">NEGtest</span><span class="params">(TCHAR *str1, TCHAR *str2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">lstrcmp</span>(str1, str2) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不論是組合語言或高階語言，有很多不同編寫方式來完成相同的事情，然而這個函數內的 <code>if else</code> 所對應到的組合語言可能為</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">push ebp        <span class="comment">//str2 的位址</span></span><br><span class="line">push eax        <span class="comment">//str1 的位址</span></span><br><span class="line">call [<span class="number">00404004</span>] <span class="comment">//呼叫 lstrcmp 函數</span></span><br><span class="line">neg eax         <span class="comment">//API 函數回傳值都放在 eax 暫存器裡，因此對比較後的結果作 NEG 運算</span></span><br><span class="line">sbb eax, eax    <span class="comment">//eax = eax - eax - CY</span></span><br><span class="line">inc eax         <span class="comment">//eax = eax + 1</span></span><br></pre></td></tr></table></figure>
+<p><code>lstrcmp</code> 需要兩個參數，因此先壓參數入堆疊再調用 (call) 其函數，而它的回傳值放在 <code>eax</code> 裡面，若兩個字串相同，則 <code>eax == 0</code>；反之 <code>eax != 0</code>。此時分為兩個情況來討論：</p>
+<ol>
+<li><code>str1 == str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為 0，<code>neg eax</code> 之後 <code>eax</code> 還是 0 且 <code>CY</code> 為 0，因此到程式結束時 <code>eax</code> 為 1，即 <code>return true</code></li>
+<li><code>str1 !=  str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為非 0，<code>neg eax</code> 之後 <code>eax</code> 還是非 0 且 <code>CY</code> 為1，因此第五行的執行結果為 <code>eax = eax - eax - CY = 0xFFFFFFFF</code> (32位元的話)，最後 <code>eax = eax + 1 = 0</code> 即 <code>return false</code></li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個執行結果，與高階語言的效果是一樣的。當然，也可以用 <code>cmp</code>、<code>jmp</code>等指令來完成同一件事，但不覺得程式拐個彎寫得簡單優雅，會有更有成就感嗎？呵呵！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>neg</tag>
+        <tag>sbb</tag>
+        <tag>asm</tag>
       </tags>
   </entry>
   <entry>

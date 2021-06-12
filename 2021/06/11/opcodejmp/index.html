@@ -20,18 +20,24 @@
     var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <meta name="description" content="Software Engineer">
-<meta property="og:type" content="website">
-<meta property="og:title" content="薛惟仁 筆記本">
-<meta property="og:url" content="https://weirenxue.github.io/archives/index.html">
+  <meta name="description" content="JMP 指令根據跳轉目的地遠近分成短跳轉 (Short jump)、近跳轉 (Near jump)、遠跳轉 (Far jump)、他們所代表的含意不一樣，使得機械碼 opcode 呈現的方式也不一樣。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Opcode] JMP 轉成機械碼的原理與過程">
+<meta property="og:url" content="https://weirenxue.github.io/2021/06/11/opcodejmp/index.html">
 <meta property="og:site_name" content="薛惟仁 筆記本">
-<meta property="og:description" content="Software Engineer">
+<meta property="og:description" content="JMP 指令根據跳轉目的地遠近分成短跳轉 (Short jump)、近跳轉 (Near jump)、遠跳轉 (Far jump)、他們所代表的含意不一樣，使得機械碼 opcode 呈現的方式也不一樣。">
 <meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-06-11T09:42:52.000Z">
+<meta property="article:modified_time" content="2021-06-12T01:01:38.299Z">
 <meta property="article:author" content="Wei-Ren Xue">
-<meta property="article:tag" content="AI hexo Linux js python c#">
+<meta property="article:tag" content="far jump">
+<meta property="article:tag" content="near jump">
+<meta property="article:tag" content="short jump">
+<meta property="article:tag" content="jmp">
+<meta property="article:tag" content="opcode">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://weirenxue.github.io/archives/">
+<link rel="canonical" href="https://weirenxue.github.io/2021/06/11/opcodejmp/">
 
 
 <script id="page-configurations">
@@ -39,12 +45,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-TW'
   };
 </script>
 
-  <title>歸檔 | 薛惟仁 筆記本</title>
+  <title>[Opcode] JMP 轉成機械碼的原理與過程 | 薛惟仁 筆記本</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
     <script>
@@ -188,162 +194,250 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2021/06/11/opcodejmp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Wei-Ren Xue">
+      <meta itemprop="description" content="Software Engineer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="薛惟仁 筆記本">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Opcode] JMP 轉成機械碼的原理與過程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2021-06-11 17:42:52" itemprop="dateCreated datePublished" datetime="2021-06-11T17:42:52+08:00">2021-06-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2021-06-12 09:01:38" itemprop="dateModified" datetime="2021-06-12T09:01:38+08:00">2021-06-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">學習筆記</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共有 7 篇文章。 繼續努力。</span>
-      </div>
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2021/06/11/opcodejmp/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/11/opcodejmp/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <div class="post-description">JMP 指令根據跳轉目的地遠近分成短跳轉 (Short jump)、近跳轉 (Near jump)、遠跳轉 (Far jump)、他們所代表的含意不一樣，使得機械碼 opcode 呈現的方式也不一樣。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-11T17:42:52+08:00" content="2021-06-11">
-          06-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/opcodejmp/" itemprop="url">
-            <span itemprop="name">[Opcode] JMP 轉成機械碼的原理與過程</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-11T17:41:26+08:00" content="2021-06-11">
-          06-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/asmneg/" itemprop="url">
-            <span itemprop="name">[asm] NEG 的運作與應用</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-11T17:40:17+08:00" content="2021-06-11">
-          06-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/cfarproc/" itemprop="url">
-            <span itemprop="name">[C++] (FARPROC&) 的含意</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-11T17:39:07+08:00" content="2021-06-11">
-          06-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/3264/" itemprop="url">
-            <span itemprop="name">[Windows] 32 位元的應用程式在 64 位元作業系統運作的原理</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-11T16:16:48+08:00" content="2021-06-11">
-          06-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/cs_dpi/" itemprop="url">
-            <span itemprop="name">[C#] 在高 DPI 的螢幕上，有些應用程式內的字會模糊的原因以及解決方法！</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-11T13:20:43+08:00" content="2021-06-11">
-          06-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/hexo_next_firestore_visitors/" itemprop="url">
-            <span itemprop="name">Hexo × NexT × Firestore 顯示瀏覽人次</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-10T13:20:07+08:00" content="2021-06-10">
-          06-10
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/10/YOLOv4_On_Face_Mask_Detection/" itemprop="url">
-            <span itemprop="name">全民來找碴 - YOLOv4 戴口罩檢測</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>JMP</code> 指令根據跳轉目的地遠近分成短跳轉 (Short jump)、近跳轉 (Near jump)、遠跳轉 (Far jump)、他們所代表的含意不一樣，使得機械碼 opcode 呈現的方式也不一樣。</p>
+<h2 id="閱讀手冊"><a href="#閱讀手冊" class="headerlink" title="閱讀手冊"></a>閱讀手冊</h2><p>引用指令手冊(<a target="_blank" rel="external nofollow noopener noreferrer" href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)裡面一些對於 <code>JMP</code> 的敘述：</p>
+<blockquote>
+<ol>
+<li>Short jump—A near jump where the jump range is limited to –128 to +127 from the current EIP value.</li>
+<li>Near jump—A jump to an instruction within the current code segment (the segment currently pointed to by the CS register), sometimes referred to as an intrasegment jump.</li>
+<li>Far jump—A jump to an instruction located in a different segment than the current code segment but at the same privilege level, sometimes referred to as an intersegment jump.</li>
+</ol>
+</blockquote>
+<p>它們主要是以所要跳的目的地位址與現在的 <code>IP</code> (instruction pointer) 位址差值來區分：</p>
+<ol>
+<li>短跳轉：差值在 -128 ~ +127 (8-bit) 之內。</li>
+<li>近跳轉：目的地在同一個區段內，且差值在 32-bit 可以表示的範圍內，又稱段內跳轉。</li>
+<li>遠跳轉：目的地在別的區段，又稱段間跳轉。</li>
+</ol>
+<p>雖然在組合語言都是以 JMP 來實現跳轉，但在組譯轉成機械碼 (opcode) 時翻譯出來的卻不一樣，短跳轉 (<code>EB</code>)、近跳轉 (<code>E9</code>)、遠跳轉 (<code>EA</code>)。當然，機械碼不一樣就代表是不同的指令，其後的參數要怎麼給是該瞭解的事情。參考手冊說明摘要如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Jump</th>
+<th>Opcode</th>
+<th>Instruction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Short Jump</td>
+<td>EB cb</td>
+<td>JMP rel8</td>
+</tr>
+<tr>
+<td>Near Jump</td>
+<td>E9 cw/cd</td>
+<td>JMP rel16/rel32</td>
+</tr>
+<tr>
+<td>Far Jump</td>
+<td>EA cd/cp</td>
+<td>JMP ptr16:16/ptr16:32</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>參數解釋</p>
+<ol>
+<li><code>rel8</code>/<code>rel16</code>/<code>rel32</code>：偏移量(也就是上面提到的差值)能用有號 8/16/32-bit 來表示的相對位址。</li>
+<li><code>ptr16:16</code>/<code>ptr16:32</code>：一個相對遠的指標 (pointer)，通常與 <code>IP</code> 不同區段，前面的 16/16 表示 16-bit 的區段暫存器，後面的 16/32 表示目的地在那個區段的偏移量。</li>
+<li><code>cb</code>/<code>cw</code>/<code>cd</code>/<code>cp</code>：用來描述代碼的偏移量和新的區段暫存器的值，分別為 1-byte、2-byte、4-byte、6-byte。</li>
+</ol>
+<h2 id="程式驗證"><a href="#程式驗證" class="headerlink" title="程式驗證"></a>程式驗證</h2><p>有概念之後，用程式來對上面敘述做驗證吧：</p>
+<h3 id="短跳轉"><a href="#短跳轉" class="headerlink" title="短跳轉"></a>短跳轉</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Opcode</th>
+<th>Instruction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>003F1010</td>
+<td>EB 06</td>
+<td>jmp  003F1018</td>
+</tr>
+<tr>
+<td>003F1012</td>
+<td>EB 04</td>
+<td>jmp  003F1018</td>
+</tr>
+<tr>
+<td>003F1014</td>
+<td>EB 02</td>
+<td>jmp  003F1018</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>因為指令位址距目的很近，所以為短跳轉 (<code>EB</code>)，<code>EB</code> 後的數字為目的地與 <code>EIP</code> 的偏移量，但可能有人會問，為什麼對不起來？</p>
+<p>像是第一個的 <code>偏移量 = 003F1018h - 003F1010h = 08h</code> 結果不是 <code>EB 08</code>，而是 <code>EB 06</code> 。這是因為 CPU 在運作時，看到 <code>EB 06</code> 知道要跳轉，也由於它已經讀了這一指令，<code>EIP</code> 會再加 2 指向下一指令，再執行 <code>EB 06</code> 這個指令。可以看得出關鍵嗎？在執行 <code>EB 06</code> 時 <code>EIP</code> 已經又加 2 了，實際上的算法應為 <code>偏移量 = 003F1018h - (003F1010h + opcode的長度) = 06h</code></p>
+<h3 id="近跳轉"><a href="#近跳轉" class="headerlink" title="近跳轉"></a>近跳轉</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Opcode</th>
+<th>Instruction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>013D1035</td>
+<td>E9 85 00 00 00</td>
+<td>jmp  013D10BF</td>
+</tr>
+<tr>
+<td>013D103A</td>
+<td>E9 80 00 00 00</td>
+<td>jmp  013D10BF</td>
+</tr>
+<tr>
+<td>013D103F</td>
+<td>EB 7E</td>
+<td>jmp  013D10BF</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>偏移量的算法和短跳轉相同，不同在於近跳轉的 opcode 且 <code>E9</code> 與長度為 5-byte，在計算時要注意。在此特地用跳轉至同目的地但分別為近跳轉與短跳轉來說明，當從 1-byte 的 7E 要進位到 80 時，就會變成 4-byte 的 <code>00 00 00 80h</code>，因為其超出有號 8-bit 可表示範圍。</p>
 
     </div>
-  </div>
-  
-  
-  
 
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/far-jump/" rel="tag"># far jump</a>
+              <a href="/tags/near-jump/" rel="tag"># near jump</a>
+              <a href="/tags/short-jump/" rel="tag"># short jump</a>
+              <a href="/tags/jmp/" rel="tag"># jmp</a>
+              <a href="/tags/opcode/" rel="tag"># opcode</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/11/asmneg/" rel="prev" title="[asm] NEG 的運作與應用">
+      <i class="fa fa-chevron-left"></i> [asm] NEG 的運作與應用
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -390,6 +484,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%96%B1%E8%AE%80%E6%89%8B%E5%86%8A"><span class="nav-number">2.</span> <span class="nav-text">閱讀手冊</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BC%8F%E9%A9%97%E8%AD%89"><span class="nav-number">3.</span> <span class="nav-text">程式驗證</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%AD%E8%B7%B3%E8%BD%89"><span class="nav-number">3.1.</span> <span class="nav-text">短跳轉</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%91%E8%B7%B3%E8%BD%89"><span class="nav-number">3.2.</span> <span class="nav-text">近跳轉</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -624,6 +719,26 @@
   }
   // defer loading until the whole page loading is completed
   window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://weirenxue.github.io/2021/06/11/opcodejmp/";
+    this.page.identifier = "2021/06/11/opcodejmp/";
+    this.page.title = "[Opcode] JMP 轉成機械碼的原理與過程";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://weirenxue.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
 </script>
 
 <script>
