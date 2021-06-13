@@ -818,10 +818,41 @@
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
 <h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
 ]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
       <tags>
         <tag>sdk</tag>
         <tag>xilinx</tag>
         <tag>make</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Xilinx SDK] GPIO 常用到的參數</title>
+    <url>/2021/06/13/xilinx_sdk_gpio/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用 API 時，最重要的是正確地輸入對應參數，因此必定要先了解參數所代表的涵義，才能有正確的使用 API 姿勢。</p>
+<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
+<li>RFSoC ZCU111</li>
+</ul>
+<h2 id="參數說明"><a href="#參數說明" class="headerlink" title="參數說明"></a>參數說明</h2><ol>
+<li><p><code>channel</code>：這是在 Vivado 內使用 IP 來做設計時就決定的，打開 GPIO 的 IP 設定視窗可以看到 GPIO 與 GPIO2，這裡的例子通道 1 與通道 2 分別為 led 與 push button。</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Xilinx-SDK-GPIO-%E5%B8%B8%E7%94%A8%E5%88%B0%E7%9A%84%E5%8F%83%E6%95%B8%2Fgpio.png?alt=media&amp;token=1edff119-f05f-4e10-bc7a-fb60595872fa" alt="GPIO IP 設定畫面"><span class="image-caption">GPIO IP 設定畫面</span></p>
+</li>
+<li><p><code>DirectionMask</code>：這是決定 GPIO 為輸入或輸出 (相對於晶片來說) 的參數，需要特別點開 <code>*.h</code> 或 <code>*.c</code> 去看說明，此說明在 <code>xgpio.c</code> 的註解裡，以下為摘要</p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Bits set to 0 are output and bits set to 1 are input.</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>sdk</tag>
+        <tag>xilinx</tag>
+        <tag>gpio</tag>
+        <tag>channel</tag>
+        <tag>directionmask</tag>
+        <tag>api</tag>
       </tags>
   </entry>
 </search>
