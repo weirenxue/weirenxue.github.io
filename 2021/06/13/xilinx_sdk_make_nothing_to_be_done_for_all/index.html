@@ -20,18 +20,22 @@
     var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <meta name="description" content="Software Engineer">
-<meta property="og:type" content="website">
-<meta property="og:title" content="薛惟仁 筆記本">
-<meta property="og:url" content="https://weirenxue.github.io/archives/2021/06/index.html">
+  <meta name="description" content="在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 make: Nothing to be done for &#39;all&#39;. 的訊息。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題">
+<meta property="og:url" content="https://weirenxue.github.io/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/index.html">
 <meta property="og:site_name" content="薛惟仁 筆記本">
-<meta property="og:description" content="Software Engineer">
+<meta property="og:description" content="在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 make: Nothing to be done for &#39;all&#39;. 的訊息。">
 <meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-06-13T01:24:15.000Z">
+<meta property="article:modified_time" content="2021-06-13T01:31:31.951Z">
 <meta property="article:author" content="Wei-Ren Xue">
-<meta property="article:tag" content="AI hexo Linux js python c#">
+<meta property="article:tag" content="sdk">
+<meta property="article:tag" content="xilinx">
+<meta property="article:tag" content="make">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://weirenxue.github.io/archives/2021/06/">
+<link rel="canonical" href="https://weirenxue.github.io/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/">
 
 
 <script id="page-configurations">
@@ -39,12 +43,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-TW'
   };
 </script>
 
-  <title>歸檔 | 薛惟仁 筆記本</title>
+  <title>[Xilinx SDK] make: Nothing to be done for 'all'. 的問題 | 薛惟仁 筆記本</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
     <script>
@@ -188,219 +192,125 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Wei-Ren Xue">
+      <meta itemprop="description" content="Software Engineer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="薛惟仁 筆記本">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [Xilinx SDK] make: Nothing to be done for 'all'. 的問題
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2021-06-13 09:24:15 / 修改時間：09:31:31" itemprop="dateCreated datePublished" datetime="2021-06-13T09:24:15+08:00">2021-06-13</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共有 16 篇文章。 繼續努力。</span>
-      </div>
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <div class="post-description">在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 make: Nothing to be done for 'all'. 的訊息。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-13T09:24:15+08:00" content="2021-06-13">
-          06-13
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/" itemprop="url">
-            <span itemprop="name">[Xilinx SDK] make: Nothing to be done for 'all'. 的問題</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-13T09:09:06+08:00" content="2021-06-13">
-          06-13
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/13/vivado_vitis/" itemprop="url">
-            <span itemprop="name">[Vivado Vitis] 在軟體開發環境中缺少一堆 .h 檔的解決方法</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-13T08:53:15+08:00" content="2021-06-13">
-          06-13
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/13/latex_texmaker/" itemprop="url">
-            <span itemprop="name">[LaTeX] Texmaker 點擊跳轉失效</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T22:14:37+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/python_email_protected/" itemprop="url">
-            <span itemprop="name">[Python] 爬蟲遇到 email protected 的原因與解決方法</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T21:19:11+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/python_cp950_codec_cant_encode/" itemprop="url">
-            <span itemprop="name">[Python] 爬蟲遇到 'cp950' codec can't encode ?</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T16:51:58+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/python_jupyter/" itemprop="url">
-            <span itemprop="name">[Jupyter] 改變 Jupyter notebook 預設路徑與瀏覽器</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T16:26:38+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/python_regular_expression/" itemprop="url">
-            <span itemprop="name">[Python] 使用 regular expression 驗證密碼長度與安全性</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T15:44:23+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/matlab_k_means/" itemprop="url">
-            <span itemprop="name">[MATLAB] k-means 演算法說明與實作</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T12:22:09+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/ip_finder/" itemprop="url">
-            <span itemprop="name">[MATLAB] 模仿儀器商附的 IP Finder 並整合進自己的系統裡</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T08:42:52+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/opcodejmp/" itemprop="url">
-            <span itemprop="name">[Opcode] JMP 轉成機械碼的原理與過程</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
 
     </div>
-  </div>
-  
-  
-  
 
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/sdk/" rel="tag"># sdk</a>
+              <a href="/tags/xilinx/" rel="tag"># xilinx</a>
+              <a href="/tags/make/" rel="tag"># make</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/13/vivado_vitis/" rel="prev" title="[Vivado Vitis] 在軟體開發環境中缺少一堆 .h 檔的解決方法">
+      <i class="fa fa-chevron-left"></i> [Vivado Vitis] 在軟體開發環境中缺少一堆 .h 檔的解決方法
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
   
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/archives/2021/06/page/2/">2</a><a class="extend next" rel="next" href="/archives/2021/06/page/2/"><i class="fa fa-angle-right" aria-label="下一頁"></i></a>
-  </nav>
+  
+  
 
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -447,6 +357,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%9B%A0"><span class="nav-number">2.</span> <span class="nav-text">原因</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -681,6 +592,26 @@
   }
   // defer loading until the whole page loading is completed
   window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://weirenxue.github.io/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/";
+    this.page.identifier = "2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/";
+    this.page.title = "[Xilinx SDK] make: Nothing to be done for 'all'. 的問題";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://weirenxue.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
 </script>
 
 <script>
