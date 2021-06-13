@@ -882,8 +882,8 @@
   <entry>
     <title>[RDP] Windows 10 設定遠端多人多工</title>
     <url>/2021/06/13/rdp_windows_10_multi/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在許多非資工實驗室內擁有被稱作 Super 的高配備電腦，希望能提高運算速度，進而使產能增加。大多數人熟悉的作業系統是 Windows，為了配合使用者，Super 也是採用 Windows 的作業系統。</p>
-<p>Windows 10 是一單人多工作業系統，單一時間只能單人使用，會導致資源大多都在閒置狀態，太浪費其強大效能。然而在 Windows 10 遠端多人多工並非官方開放的功能，因此在此紀錄如何將 Windows 10 改為可遠端多人多工系統，讓 Super 的效有機會被發揮的淋漓盡致。</p>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在許多實驗室內擁有被稱作 Super 的高配備電腦，希望能藉由提高運算速度，進而使產能增加。大多數人熟悉的作業系統是 Windows，為了配合使用者，Super 也是採用 Windows 的作業系統。</p>
+<p>Windows 10 是一種單人多工作業系統，單一時間只能單人使用，會導致資源大多都在閒置狀態，太浪費其強大效能。然而在 Windows 10 遠端多人多工並非官方開放的功能，因此在此紀錄如何將 Windows 10 改為可遠端多人多工系統，讓 Super 的效有機會被發揮的淋漓盡致。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Windows 10</li>
 </ul>
