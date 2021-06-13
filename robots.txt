@@ -10,4 +10,5 @@ Disallow: /css/
 Disallow: /fonts/
 Disallow: /fancybox/
 
+Sitemap: http://weirenxue.github.io/sitemap.xml
 Sitemap: https://weirenxue.github.io/sitemap.xml
