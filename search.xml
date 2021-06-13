@@ -859,7 +859,7 @@
     <title>[RDP] Windows 10 新增使用者並賦予遠端桌面權限</title>
     <url>/2021/06/13/rdp_windows_10/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在同一台電腦 Windows 上，若想要擁有自己個人桌面，就需要不與他人共用的一個使用者帳號；若想要遠端連線，則需要賦予使用者帳號遠端桌面的權限。</p>
-<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><p>組合鍵 <code>Windows + Ｉ</code> 開啟 Windows 的設定視窗。</p>
+<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><p>組合鍵 <code>Windows + I</code> 開啟 Windows 的設定視窗。</p>
 <p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fnew_account.png?alt=media&amp;token=7de524c5-ffa3-4354-85b8-d9bceabc340a" alt="新增其他使用者帳號"><span class="image-caption">新增其他使用者帳號</span></p>
 <p>若使用者沒有 Microsoft 帳戶或不想用 Microsoft 帳戶登入，可以在此式窗選擇「我沒有這位人員的登入資訊」→「新增沒有 Microsoft 帳戶的使用者」，填寫在地端的帳號、密碼與三個安全性問題。</p>
 <p>填寫完之後會在「家人與其他使用者」的「其他使用者」欄位看到新增的帳戶。</p>
