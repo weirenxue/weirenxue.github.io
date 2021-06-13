@@ -95,7 +95,7 @@
 </ol>
 ]]></content>
       <categories>
-        <category>各式軟體開發問題紀錄</category>
+        <category>學習筆記</category>
       </categories>
       <tags>
         <tag>C#</tag>
@@ -751,6 +751,32 @@
         <tag>crawl</tag>
         <tag>email</tag>
         <tag>protected</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[LaTeX] Texmaker 點擊跳轉失效</title>
+    <url>/2021/06/13/latex_texmaker/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>點擊 pdf 跳轉到相對應的 tex 程式碼是非常好用的工具，若少了這項功能 tex 將變得難以使用。</p>
+<h2 id="原因及解決方法"><a href="#原因及解決方法" class="headerlink" title="原因及解決方法"></a>原因及解決方法</h2><p>無法使用這個功能主要有兩個可能原因</p>
+<ol>
+<li><p>先到「選項」→「設定Texmaker」→「命令」，看看自己使用哪個編譯器，我是用的是 <code>XeLaTeX</code></p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">xelatex -synctex=1 -interaction=nonstopmode %.tex</span><br></pre></td></tr></table></figure>
+<p> 其中 <code>-synctex=1</code> 是將同步 (Synchronize) 功能打開的關鍵，若無法使用很可能是沒有這個，直接加入即可。</p>
+</li>
+<li><p>檔案路徑中不要有中文或特殊符號，若有，先將檔案移動到沒有中文或特殊符號的路徑下，並確保檔名也符合此條件。再重新開啟 Texmaker 測試點擊跳轉功能。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>latex</tag>
+        <tag>synctex</tag>
+        <tag>texmaker</tag>
+        <tag>not work</tag>
+        <tag>jump</tag>
+        <tag>click</tag>
       </tags>
   </entry>
 </search>
