@@ -926,4 +926,32 @@
         <tag>wrapper</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[Git] git remote add origin 中 origin 的意思解析</title>
+    <url>/2021/06/13/git_git_remote_add_origin/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>Git</code> 真的是對程式開發者的一個大福音，在知道 <code>Git</code> 之前常常在實驗室用桌電開發，回宿舍前上傳雲端或隨身碟，然後回到宿再抓下來繼續開發，久了之後檔案多了，非常難管理，也很難找到之前到底修改了哪裡。使用 <code>Git</code> 之後，光是管理程式碼的部份就省很多時間。</p>
+<p>其中一個很常下的指令是 <code>git remote add origin</code>，它很基本以至於很少有文章介紹它的意思，因此在自己的好奇心之下，驅使自己理解這個指令的含意。</p>
+<h2 id="origin-意思解析"><a href="#origin-意思解析" class="headerlink" title="origin 意思解析"></a>origin 意思解析</h2><p>當想要從 Local 端 <code>push</code> 資料上 <code>Git</code> 管理網 (例如 GitHub、GitLab ，統稱為 <code>remote</code> 端) 時，會先在網頁上先建一個 Repository，然後跟著網頁的指示做。以下以個人的 <a href="https://github.com/weirenxue">GitHub</a> 為例，創建一個 Repository 名稱為 zcu111-EMIO，且「不」打勾 &quot;Initialize this repository with a README&quot;，創建好之後 GitHub 會提示以下訊息讓我們能順利上傳程式碼</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">…or push an existing repository from the command line</span><br><span class="line"></span><br><span class="line">git remote add origin https://github.com/weirenxue/zcu111-EMIO.git</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+<p>依照它的提示執行這些指令後，就能把在地端的程式碼 <code>push</code> 上去，這時再用 <code>git remote -v</code> 來看看 <code>remote</code> 資料</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
+<p>可以發現 <code>origin</code> 就只是那 <code>remote git</code> 的代名詞！為了讓使用者不必每次對 <code>remote</code> 操作都要打一長串網址。</p>
+<h2 id="應用"><a href="#應用" class="headerlink" title="應用"></a>應用</h2><p>理解意思之後，就能自己做變化！我們可以把 <code>origin</code> 改為別的名稱</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote rename origin origin-github  <span class="comment"># 改名</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
+<p>更甚者，如果有兩個 <code>Git</code> 管理網要 <code>push</code> 的話 (例如：公司專用/個人習慣用)，可以再加入一個 <code>remote</code>！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote add origin-company http://192.168.0.123/fake/zcu111-EMIO.git</span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
+<p><code>push</code> 的方法都沒變，只是將原本是 origin 的地方改為對應的代名詞</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git push origin-github master  <span class="comment"># 到 GitHub</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git push origin-company master <span class="comment"># 到公司</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>remote</tag>
+        <tag>git</tag>
+        <tag>origin</tag>
+        <tag>push</tag>
+        <tag>upstream</tag>
+      </tags>
+  </entry>
 </search>
