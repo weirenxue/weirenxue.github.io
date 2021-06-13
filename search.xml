@@ -779,4 +779,37 @@
         <tag>click</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[Vivado Vitis] 在軟體開發環境中缺少一堆 .h 檔的解決方法</title>
+    <url>/2021/06/13/vivado_vitis/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近接手一個 Zynq 的開發板 (RFSoC ZCU111)，新手上路肯定是要參考網路上豐富的文件，才會學得快。但在參考文獻的過程中碰到一個似乎教學的作者沒有提及，但自己遇到的問題，也就是 Build 時缺少一堆 <code>.h</code> 檔案的錯誤提示。</p>
+<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
+<li>Vivado 2019.2</li>
+<li>Vitis 2019.2</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>網路上沒有提供清楚的解決方法，因此自己記錄下遇到的問題與解決的步驟</p>
+<ol>
+<li><p>在 Vitis (或 SDK) 創建 Application Project，硬體平台選擇 Vivado 輸出的 <code>*.xsa</code> 檔案，並且將範例 <code>*.c</code> 檔匯入 <code>src</code> 資料夾下，開始 Build，會出現以下的提示，這是在路徑下找不到 <code>*.h</code> 檔案的意思，但照理來說 Vivado 的 <code>xsa</code> 都包含這些了。</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">22:54:01 **** Incremental Build of configuration Debug <span class="keyword">for</span> project LED ****</span><br><span class="line">make all </span><br><span class="line">make --no-print-directory pre-build</span><br><span class="line">a9-linaro-pre-build-step</span><br><span class="line"><span class="string">&#x27; &#x27;</span></span><br><span class="line">make --no-print-directory main-build</span><br><span class="line"><span class="string">&#x27;Building file: ../src/LED_test_tut_1C.c&#x27;</span></span><br><span class="line"><span class="string">&#x27;Invoking: ARM v7 gcc compiler&#x27;</span></span><br><span class="line">arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT<span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Zynq_Book/first_zynq_design/SDK/first_zynq_system_wrapper/<span class="built_in">export</span>/first_zynq_system_wrapper/sw/first_zynq_system_wrapper/standalone_domain/bspinclude/include -MMD -MP -MF<span class="string">&quot;src/LED_test_tut_1C.d&quot;</span> -MT<span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> -o <span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> <span class="string">&quot;../src/LED_test_tut_1C.c&quot;</span></span><br><span class="line">../src/LED_test_tut_1C.c:31:10: fatal error: xgpio.h: No such file or directory</span><br><span class="line"><span class="comment">#include &quot;xgpio.h&quot;</span></span><br><span class="line">        ^~~~~~~~~</span><br><span class="line">compilation terminated.</span><br><span class="line">make[1]: *** [src/subdir.mk:23: src/LED_test_tut_1C.o] Error 1</span><br><span class="line">make: *** [makefile:34: all] Error 2</span><br><span class="line"></span><br><span class="line">22:54:02 Build Finished (took 987ms)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看在 <code>*.h</code> 目錄底下到底有甚麼檔案，我的路徑為：</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Zynq_Book\first_zynq_design\SDK\first_zynq_system_wrapper\<span class="built_in">export</span>\first_zynq_system_wrapper\sw\first_zynq_system_wrapper\standalone_domain\bspinclude\include</span><br></pre></td></tr></table></figure>
+<p> 發現只有一個檔案 <code>xparameters.h</code> ，這為不正常的結果。</p>
+</li>
+<li><p>再回到 Vitis 畫面，直接重新 Build BSP 一次，並等待執行完成。再回到步驟 2 的路徑去查看，會發現多出很多 <code>*.h</code> 檔案，回到Vitis，Build <code>*.c</code> 檔案，結果為可以順利完成。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>vivado</tag>
+        <tag>vitis</tag>
+        <tag>h</tag>
+        <tag>lack</tag>
+        <tag>sdk</tag>
+      </tags>
+  </entry>
 </search>

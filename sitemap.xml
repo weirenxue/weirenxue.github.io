@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://weirenxue.github.io/2021/06/13/vivado_vitis/</loc>
+    
+    <lastmod>2021-06-13</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://weirenxue.github.io/2021/06/13/latex_texmaker/</loc>
     
     <lastmod>2021-06-13</lastmod>
@@ -593,6 +600,41 @@
   
   <url>
     <loc>https://weirenxue.github.io/tags/click/</loc>
+    <lastmod>2021-06-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/vivado/</loc>
+    <lastmod>2021-06-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/vitis/</loc>
+    <lastmod>2021-06-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/h/</loc>
+    <lastmod>2021-06-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/lack/</loc>
+    <lastmod>2021-06-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/sdk/</loc>
     <lastmod>2021-06-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
