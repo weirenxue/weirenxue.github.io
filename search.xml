@@ -954,4 +954,27 @@
         <tag>upstream</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[Git] git-cli 使用樹狀圖展示 Commit Log</title>
+    <url>/2021/06/13/git_terminal_git_log/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>習慣使用 cli 操作 Git 後，不會想裝 Git 的 GUI 擴充，但還是覺得若能以樹狀圖來看 Commit Log 會很方便。</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>同樣是使用 <code>git log</code> 指令，但需加上一些參數達到這個效果</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git log --oneline --graph --all</span><br><span class="line">* baf420b (HEAD -&gt; feat-fill-up) Text to speech</span><br><span class="line">* a06c9c8 Display the fuel prompt</span><br><span class="line">| * 5d04f92 (origin-github/feat, feat) renew API</span><br><span class="line">|/  </span><br><span class="line">* 19b0257 Rename the variables&#x27; name</span><br><span class="line">* 41992f1 renew API(communicates with golang API)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>--oneline</code>：只顯示 log 標題，若不限定為只有標題，將會顯得雜亂。</li>
+<li><code>--graph</code>：以樹狀圖顯示 log。</li>
+<li><code>--all</code>：全部的 log，包含所有分支。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>tree</tag>
+        <tag>log</tag>
+        <tag>commit</tag>
+        <tag>cli</tag>
+      </tags>
+  </entry>
 </search>
