@@ -977,4 +977,78 @@
         <tag>cli</tag>
       </tags>
   </entry>
+  <entry>
+    <title>讀 Paper 懶人器</title>
+    <url>/2021/06/14/read_paper_lazier/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Paper 通常以英文流通最為廣泛，在閱讀時總是會搭配 google translation 查找不懂的語句或單字，但在複製整個語句或整段原文時，不應該存在的換行也會被複製進來。導致在輸入進 google translation 翻譯之前需要手動去掉換行。剛開始可能會覺得還好，但用到後來會發現這是非常浪費時間與惱人的事。</p>
+<p>除此之外，有時候翻譯出來的中文慣用語會是中國大陸的慣用語，而不是台灣的慣用語，例如：server 在台灣會翻為「伺服器」而非「服務器」、macro 在台灣會翻為「巨集」而非「宏」。</p>
+<p>因此我開發一個應用程式，為了解決這些困擾之處，其功能為當我們複製某段文章時，可以自動去掉換行，並且進行翻譯、替換某些自訂文字，再使用 <code>Ctrl-V</code> 貼上時，已經是翻譯與替換後的結果！絕對是碩士、博士們讀 Paper 的一個利器。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fdemo_cover.png?alt=media&amp;token=e650fd4d-4bd0-43e7-bc1c-e14ac3840132" alt="應用程式畫面展示"><span class="image-caption">應用程式畫面展示</span></p>
+<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
+<li><a href="https://github.com/weirenxue/read-paper-lazier">GitHub</a></li>
+<li><a href="https://www.youtube.com/watch?v=vX0utNYPfGs">使用教學影片</a></li>
+</ul>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li><code>python 3.8.5</code></li>
+<li><code>pip 21.1.2</code></li>
+<li><code>google-cloud-translate 3.2.0</code></li>
+<li><code>pyperclip 1.8.2</code></li>
+</ul>
+<h2 id="概念流程圖"><a href="#概念流程圖" class="headerlink" title="概念流程圖"></a>概念流程圖</h2><p>寫程式之前紙上談兵是一個好習慣，先將流程圖畫下來，思考整個過程是否具有邏輯錯誤，一改再改，最後成為定案。下圖即為此專案的主功能流程圖，我們主要需要做的事情與順序為</p>
+<ol>
+<li>監聽 Copy 事件</li>
+<li>得到剪貼板中的文字</li>
+<li>去掉所有換行字元</li>
+<li>將其翻譯成中文</li>
+<li>翻譯後的文字替換特定文字</li>
+<li>輸出最後文字至剪貼板</li>
+</ol>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fmainfunction.png?alt=media&amp;token=c0dddc3b-e058-499e-b66d-e9f411086965" alt="主功能流程圖"><span class="image-caption">主功能流程圖</span></p>
+<h2 id="各個擊破"><a href="#各個擊破" class="headerlink" title="各個擊破"></a>各個擊破</h2><h3 id="監聽-Copy-事件"><a href="#監聽-Copy-事件" class="headerlink" title="監聽 Copy 事件"></a>監聽 Copy 事件</h3><p>在 <code>Python</code> 之中內沒有內建可以監聽 Copy 事件發生的函數，因此只能自己造輪子，我採用的方法是，比對現在剪貼板中的值與上一個狀態的值是否相同，若不同代表 Copy 事件發生</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> pyperclip</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Hook</span>():</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.run = <span class="literal">True</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">copyHook</span>(<span class="params">self, callback</span>):</span></span><br><span class="line">        self.run = <span class="literal">True</span></span><br><span class="line">        self.runHook(<span class="keyword">lambda</span> : self._copyHook(callback))</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_copyHook</span>(<span class="params">self, callback</span>):</span></span><br><span class="line">        <span class="comment"># 清除剪貼板</span></span><br><span class="line">        copiedText = <span class="string">&quot;&quot;</span></span><br><span class="line">        pyperclip.copy(copiedText)</span><br><span class="line">        <span class="keyword">while</span> self.run:</span><br><span class="line">            <span class="comment"># 複製事件是否發生</span></span><br><span class="line">            tmp_value = pyperclip.paste()</span><br><span class="line">            <span class="keyword">if</span> tmp_value != copiedText <span class="keyword">and</span> tmp_value != <span class="string">&#x27;&#x27;</span>:</span><br><span class="line">                <span class="comment"># 複製事件發生，對剪貼板中的文字進行處理</span></span><br><span class="line">                copiedText = callback(tmp_value)</span><br><span class="line">                <span class="comment"># 將處理後的文字輸出至剪貼板</span></span><br><span class="line">                pyperclip.copy(copiedText)</span><br><span class="line">            time.sleep(<span class="number">0.1</span>)</span><br><span class="line">            </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">runHook</span>(<span class="params">self, functionHandle</span>):</span></span><br><span class="line">        t = threading.Thread(target=functionHandle)</span><br><span class="line">        t.start()</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">stop</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.run = <span class="literal">False</span></span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">copyHookCallback</span>(<span class="params">copiedText</span>):</span></span><br><span class="line">    <span class="built_in">print</span>(copiedText)</span><br><span class="line">    <span class="keyword">return</span> copiedText</span><br><span class="line"></span><br><span class="line">h = Hook()</span><br><span class="line">h.copyHook(copyHookCallback)</span><br></pre></td></tr></table></figure>
+<p>執行後，任意複製文字，都會原封不動地輸出在 Console 底下，由此可以確認監聽 Copy 事件功能已經完備。</p>
+<h4 id="Callback-Function"><a href="#Callback-Function" class="headerlink" title="Callback Function"></a>Callback Function</h4><p>這裡使用了一個小技巧，可以將一個 <code>Callback Function</code> 當作參數傳給 <code>Hook.copyHook</code>，當 Copy 事件發生時，會呼叫該函數並把剪貼板的文字傳入，在函數內可以對文字做任何想做的事，最後回傳想要輸出在剪貼板的文字。</p>
+<p>這裡實際應用該函數來達到我們想要的效果，也就是去除換行、翻譯為中文、替換文字。</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cancelCRLF</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">translation</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">replaceText</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">copyHookCallback</span>(<span class="params">copiedText</span>):</span></span><br><span class="line">    <span class="comment"># 去除換行</span></span><br><span class="line">    noCRLF = cancelCRLF(copiedText)</span><br><span class="line">    <span class="comment"># 翻譯成中文</span></span><br><span class="line">    translated = translation(noCRLF)</span><br><span class="line">    <span class="comment"># 替換特定文字</span></span><br><span class="line">    replaced = replaceText(translated)</span><br><span class="line">    <span class="keyword">return</span> replaced</span><br></pre></td></tr></table></figure>
+<h3 id="去除換行"><a href="#去除換行" class="headerlink" title="去除換行"></a>去除換行</h3><p>這功能相對簡單，因為只需要將 <code>\r</code>、<code>\r\n</code>、<code>\n</code> 等去掉即可，剛好 Python 有一個內建的函式 <code>splitlines</code> 可以協助我們去除換行符號</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cancelCRLF</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27; &#x27;</span>.join(text.splitlines())</span><br></pre></td></tr></table></figure>
+<h3 id="翻譯為中文"><a href="#翻譯為中文" class="headerlink" title="翻譯為中文"></a>翻譯為中文</h3><p>在翻譯為中文這裡可以有兩種做法</p>
+<ol>
+<li>使用 <code>selenium</code> 開啟 <a href="https://translate.google.com/?hl=zh-TW">Google Translate</a>，將文字貼進左邊的原文窗格內，等待翻譯好之後再從右邊翻譯窗格拿到翻譯後的結果。但這樣的缺點是使用者需要另外下載 <code>selenium driver</code>。</li>
+<li>使用 Google Cloud Translate API 服務，以 API 的方式來做整合，較不會有環境問題，因此我採用這種作法。</li>
+</ol>
+<h4 id="Google-Cloud-Translate-API"><a href="#Google-Cloud-Translate-API" class="headerlink" title="Google Cloud Translate API"></a>Google Cloud Translate API</h4><p>想要使用這項服務，需先申請 GCP (Google Cloud Platform) 帳號，再依照下方步驟來取得 API Key</p>
+<p>啟用 Google Cloud Translation API</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fenable_translation_api.png?alt=media&amp;token=6ccd3502-bb96-404a-a002-96ae3bb6edf2" alt="啟用 Google Cloud Translation API 步驟"><span class="image-caption">啟用 Google Cloud Translation API 步驟</span></p>
+<p>啟用之後需要幾個步驟取得 API Key</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fcreate_credentials.png?alt=media&amp;token=b6e3cbb9-f26a-444c-9b70-2111cc81588e" alt="建立 Credential"><span class="image-caption">建立 Credential</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Ffill_form.png?alt=media&amp;token=74357faf-00b5-441d-8d4b-033b084e1226" alt="填寫表單資訊"><span class="image-caption">填寫表單資訊</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fmanage_api_key.png?alt=media&amp;token=af719d95-8285-4b3a-9551-885db206cf26" alt="進入管理金鑰介面"><span class="image-caption">進入管理金鑰介面</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fsave_api_key.png?alt=media&amp;token=2fb2c867-bd64-479d-95a6-f96382add50e" alt="儲存 API Key"><span class="image-caption">儲存 API Key</span></p>
+<h4 id="Translate-API-使用"><a href="#Translate-API-使用" class="headerlink" title="Translate API 使用"></a>Translate API 使用</h4><p>費勁千辛萬苦申請到 API Key 之後就可以馬上整合到應用程式裡啦！其中 <code>apiKeyJson</code> 是 API Key 的絕對路徑</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> google.cloud <span class="keyword">import</span> translate_v2 <span class="keyword">as</span> translate</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">translation</span>(<span class="params">text</span>):</span></span><br><span class="line">    translate_client = translate.Client.from_service_account_json(apiKeyJson)</span><br><span class="line">    target = <span class="string">&#x27;zh-TW&#x27;</span> <span class="comment"># 翻譯為中文</span></span><br><span class="line">    translation = translate_client.translate(text, target_language=target)</span><br><span class="line">    <span class="keyword">return</span> translation[<span class="string">&#x27;translatedText&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<h3 id="替換文字"><a href="#替換文字" class="headerlink" title="替換文字"></a>替換文字</h3><p>替換文字很簡單，只需把介面中 <code>Regex Entry</code> 與對應的 <code>Replace With Entry</code> 一一替換即可，<code>replaceMap</code> 儲存了所有對應 <code>[&#123;&#39;regexEntry&#39;: tk.Entry(), &#39;replaceWithEntry&#39;: tk.Entry()&#125;, ...]</code>。</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">replaceText</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">for</span> element <span class="keyword">in</span> replaceMap:</span><br><span class="line">        regex = element[<span class="string">&#x27;regexEntry&#x27;</span>].get()</span><br><span class="line">        replaceWith = element[<span class="string">&#x27;replaceWithEntry&#x27;</span>].get()</span><br><span class="line">        <span class="keyword">if</span> regex == <span class="string">&#x27;&#x27;</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        text = re.sub(regex, replaceWith, text)</span><br><span class="line">    <span class="keyword">return</span> text</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>到目前為止，功能基本上都已經實現，剩下的只有 GUI 呈現的部份，這部分不在此篇文章強調的重點內，可以直接參考 <a href="https://github.com/weirenxue/read-paper-lazier">GitHub</a>。最後附上使用影片教大家如何秒變懶人</p>
+<!-- markdownlint-disable MD033 -->
+<iframe width="560" height="315" src="https://www.youtube.com/embed/vX0utNYPfGs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<!-- markdownlint-restore MD033 -->
+]]></content>
+      <categories>
+        <category>專案開發筆記</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>api</tag>
+        <tag>paper</tag>
+        <tag>lazier</tag>
+        <tag>translate</tag>
+        <tag>google</tag>
+        <tag>cloud</tag>
+        <tag>copy</tag>
+        <tag>listener</tag>
+        <tag>event</tag>
+      </tags>
+  </entry>
 </search>
