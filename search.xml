@@ -1299,7 +1299,7 @@
 </ul>
 <h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p><code>Python</code> 爬蟲第一步大多數是使用 <code>requests</code> 這個套件，它內建的請求標頭 <code>User-Agent</code> 為 <code>python-requests/2.24.0</code>，也許版本號會不同，但一看就知道是爬蟲而不是真的使用者的連線請求，所以應用程式可根據這個線索來拒絕服務。但「道高一尺，魔高一丈」不是沒有道理的，只要我們改了 <code>User-Agent</code>，就能繞過根據這個標頭欄位過濾請求的網站</p>
 <figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://abcde.example.com&quot;</span></span><br><span class="line">response = requests.get(url, headers = headers)</span><br></pre></td></tr></table></figure>
-<p>這時，所有的請求標頭 <code>User-Agent</code> 都改為 <code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36</code>。</p>
+<p>這時，所有的請求標頭 <code>User-Agent</code> 都將顯示為 <code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36</code>。</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
@@ -1309,6 +1309,36 @@
         <tag>crawl</tag>
         <tag>user</tag>
         <tag>agent</tag>
+        <tag>requests</tag>
+        <tag>header</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
+    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>IIS 10.0</li>
+</ul>
+<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>header</tag>
+        <tag>iis</tag>
+        <tag>server</tag>
+        <tag>x powered by</tag>
+        <tag>x aspnet version</tag>
+        <tag>hide</tag>
       </tags>
   </entry>
 </search>
