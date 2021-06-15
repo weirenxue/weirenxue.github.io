@@ -1524,4 +1524,66 @@
         <tag>tutorial</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[Tool] IT 的好幫手 - 帳密顯示器</title>
+    <url>/2021/06/15/tool_it_ap_displayer/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 IT 產業中大概率會碰到管理很多伺服器的情況，要如何有組織的記錄這些帳號，是一個很重要的技能，記的好可以增加效率。</p>
+<p>個人有試過使用 word、excel，但每次要搜尋某帳號時都會花一段時間，且密碼都為明碼，若有人在旁觀看會非常不自在，且檔案位置難以管理，若是存雲端，則怕有資安疑慮。因此開發這個專案，讓帳號密碼顯示更為方便又兼顧安全性。</p>
+<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><p><a href="https://github.com/weirenxue/ap-displayer/releases">ap-displayer</a> 下載安裝檔並安裝，目前只支援 Windows 10</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-IT-%E7%9A%84%E5%A5%BD%E5%B9%AB%E6%89%8B-%E5%B8%B3%E5%AF%86%E9%A1%AF%E7%A4%BA%E5%99%A8%2F0001.png?alt=media&amp;token=97c08c77-56fc-4f04-9309-5aeee7131e4f" alt="帳密顯示器下載"><span class="image-caption">帳密顯示器下載</span></p>
+<h2 id="此專案優點"><a href="#此專案優點" class="headerlink" title="此專案優點"></a>此專案優點</h2><p>這是一個將存在 excel 的帳密表，透過應用程式顯示資訊的專案 (即 xlsx 作為 DB，只執行 SELECT Query)。<br>使用此專案有幾個好處：</p>
+<ol>
+<li>此專案可以處理受加密的 xlsx 檔案（需輸入正確密碼），這樣若 excel 加密過就不用擔心外流。✨👍😎</li>
+<li>也由於是使用 excel 當作 db，因此不會有任何可能性將帳密存於別人的資料庫內，非常安全。👏</li>
+<li>可以根據自己的喜好隱藏或顯示密碼，有人在旁邊偷看時也只能看到帳號而不知密碼，比直接開 excel 好多了！👏</li>
+<li>可以直接點擊按鈕執行動作，隨著不同協定而有不同效果。例如<ol>
+<li>協定為 rdp：自動化開啟遠端軟體，自動輸入目標 IP (uri)，並帶著帳密登入，免去剪剪貼貼輸入 IP/帳密的繁雜程序。👏</li>
+<li>協定為 http/https：網頁登入形式太多，因此不協助登入，將會使用系統預設瀏覽器開啟該網址 (uri)，用滑鼠右鍵點擊應用程式中的表格即可直接複製帳號與密碼，省去框選/複製的時間，直接於登入欄位貼上資訊。👏</li>
+<li>其他協定：目前尚未實作。</li>
+</ol>
+</li>
+<li>可以使用下拉式選單或者關鍵字篩選出想要的資訊<ol>
+<li>下拉式選單：根據系統名稱 (sysName) 與協定 (protocol) 欄位作篩選。👏</li>
+<li>關鍵字：根據URI、描述 (desc) 欄位作篩選。👏</li>
+</ol>
+</li>
+<li>右鍵點擊表格，便可複製表格中的資訊，省去框選並複製的時間 (還有可能選錯、多選到空白鍵 QAQ)。👏</li>
+<li>此專案只會呈現資訊，並不能修改內容，因此不用怕修改到原始檔案。</li>
+</ol>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-IT-%E7%9A%84%E5%A5%BD%E5%B9%AB%E6%89%8B-%E5%B8%B3%E5%AF%86%E9%A1%AF%E7%A4%BA%E5%99%A8%2Fap-displayer.png?alt=media&amp;token=bde1558b-72f0-429f-832a-7304a5542370" alt="功能展示"><span class="image-caption">功能展示</span></p>
+<h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><ol>
+<li>首先下載專案中的tempalate.xlsx檔案。⬇️</li>
+<li><p>開啟，可看到已經有定義好的一排標頭 (請勿更動)，根據定義增加紀錄即可。➕</p>
+<ul>
+<li>pk：主鍵，所有紀錄不可重複。✔️</li>
+<li>sysName：系統名稱，可任意自取。✔️</li>
+<li>protocol：協定名稱，目前有定義的為 http/https/rdp/mssql/smb/ssh，其他協定名稱可以任意自行添加。✔️</li>
+<li>uri：根據協定不同而有所不同，例如http的uri應為其網址，而rdp的uri應為IP:Port，不可為空。✔️</li>
+<li>account：帳號。✔️</li>
+<li>password：密碼。✔️</li>
+<li>comName：主機名稱，可為空，不會在應用程式中顯示，可以任意自行添加。✔️</li>
+<li>hostType：主機型態，可為空，例如實體 (Phy) 或虛擬 (VM)，不會在應用程式中顯示。✔️</li>
+<li><p>desc：描述此紀錄。✔️</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-IT-%E7%9A%84%E5%A5%BD%E5%B9%AB%E6%89%8B-%E5%B8%B3%E5%AF%86%E9%A1%AF%E7%A4%BA%E5%99%A8%2FAPtable.png?alt=media&amp;token=632dd0f6-ba9d-49eb-a454-0cb56cbf7e56" alt="填表範例"><span class="image-caption">填表範例</span></p>
+</li>
+</ul>
+</li>
+<li><p>新增好紀錄後存檔，並視需求加密 excel檔案。🔒</p>
+</li>
+<li>開啟此專案程式，選擇帳密檔案 (xlsx) 並輸入密碼 (若有的話)。🔑</li>
+<li>將會列出 excel 內的資訊！💯</li>
+</ol>
+<h2 id="歡迎-fork"><a href="#歡迎-fork" class="headerlink" title="歡迎 fork"></a>歡迎 fork</h2><p>希望能藉由社群的力量一起增強這個工具的功能！</p>
+]]></content>
+      <categories>
+        <category>自行開發工具使用教學</category>
+      </categories>
+      <tags>
+        <tag>password</tag>
+        <tag>account</tag>
+        <tag>tool</tag>
+        <tag>it</tag>
+        <tag>displayer</tag>
+      </tags>
+  </entry>
 </search>
