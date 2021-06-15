@@ -208,7 +208,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/06/15/ssl_digital_signed_verify/" class="post-title-link" itemprop="url">SSL 數位簽名與驗證的過程</a>
+            <a href="/2021/06/15/ssl_digital_signed_verify/" class="post-title-link" itemprop="url">[SSL] 數位簽名與驗證的過程</a>
         </h2>
 
         <div class="post-meta">
@@ -219,7 +219,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2021-06-15 15:48:37 / 修改時間：16:07:15" itemprop="dateCreated datePublished" datetime="2021-06-15T15:48:37+08:00">2021-06-15</time>
+              <time title="創建時間：2021-06-15 15:48:37 / 修改時間：16:12:32" itemprop="dateCreated datePublished" datetime="2021-06-15T15:48:37+08:00">2021-06-15</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -263,19 +263,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作，但有一個現象是，講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並記錄在這。</p>
-<h2 id="產製數位憑證"><a href="#產製數位憑證" class="headerlink" title="產製數位憑證"></a>產製數位憑證</h2><p>認證機構 (CA) 會先對要簽署的數據 (Data, 例如：Public Key, Subject ... 等等憑證資訊，皆為明碼) 做雜湊 (Hash) 運算，得到雜湊值 (Hash Value)，再以 CA 的私鑰 (Private Key) 對其加密以達到防止更改效果，這個產出即為數位簽章 (Digital Signature)</p>
-<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;CA}Hash\;Value\xrightarrow{Private\;Key\;of\;CA}Digital\;Signature</script><p>得到數位簽章後，將其與原本資料合起來，就為所謂的數位憑證 (Digital Certificate)</p>
-<script type="math/tex; mode=display">Data+Digital\;Signature=Digital\;Certificate</script><p>這個數位憑證就會被稱為被某 CA 所簽發的憑證。</p>
-<h2 id="驗證數位簽章"><a href="#驗證數位簽章" class="headerlink" title="驗證數位簽章"></a>驗證數位簽章</h2><p>在進行 https 連線的過程中，Server 會給 Client 一個數位憑證，當 Client 拿到數位憑證後，會馬上驗證是否真的為憑證上說的CA所發。</p>
-<p>第一步把憑證拆回 Data 與 Digital Signature</p>
-<script type="math/tex; mode=display">Digital\;Certificate=Data+Digital\;Signature</script><p>Client 先自行對 Data 做 Hash 運算</p>
-<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;Client}Hash\;Value</script><p>再對 Digital Signature 做解密運算，取得 CA 對 Data 做 Hash 運算的結果</p>
-<script type="math/tex; mode=display">Digital\;Signature\xrightarrow{Public\;Key\;of\;CA}Hash\;Value\;via\;Signature</script><p>再比對 Client 自己算出的 Hash Value 與經由數位簽章解密所得到的 Hash Value 是否相同，若相同，表示此憑證確實是該 CA 所發！</p>
-<script type="math/tex; mode=display">Hash\;Value\overset{\underset{\mathrm{?}}{}}{=}Hash\;Value\;via\;Signature</script><h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a target="_blank" rel="external nofollow noopener noreferrer" href="https://cheapsslsecurity.com/blog/digital-signature-vs-digital-certificate-the-difference-explained/">What is the difference between a digital signature and a digital certificate</a></li>
-</ol>
-
+          <p>SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作。但我有發現一個現象，就是當講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並整理後記錄在這。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/06/15/ssl_digital_signed_verify/">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
