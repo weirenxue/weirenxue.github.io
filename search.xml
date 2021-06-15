@@ -1124,7 +1124,7 @@
   <entry>
     <title>[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</title>
     <url>/2021/06/15/dll_vs_2017_dllmain_dll/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 VS 2017 寫一個 dll，其包含 <code>DllMain</code> 與一個 <code>dllexport</code> 函數。若要知道如何在其它的 C++ 專案中使用在 dll 中的函數，請參考 <a href="/2021/06/15/dll_cpp_dll/">[DLL] 在 C++ 中調用 dll 的函式</a>。</p>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 VS 2017 寫一個 dll，其包含 <code>DllMain</code> 與一個 <code>dllexport</code> 函數。若要知道如何在其它的 C++ 專案中調用在 dll 中的函數，請參考 <a href="/2021/06/15/dll_cpp_dll/">[DLL] 在 C++ 中調用 dll 的函式</a>。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Windows 10</li>
 <li>Visual Studio 2017</li>
@@ -1187,6 +1187,37 @@
         <tag>invoke</tag>
         <tag>loadlibrarya</tag>
         <tag>loadlibraryw</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Math] 以移位運算優化除數為 2 的冪次方的除法</title>
+    <url>/2021/06/15/math_2/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>除法指令在 CPU 中的執行周期相較於其它運算 (加/減/乘) 還要來得長，所以會盡可能的找替代方案來算出除法結果。這裡討論的是，當除以一個 2 的冪次方數時要怎麼減化過程，特別是被除數為負數時的情況。</p>
+<h2 id="問題敘述"><a href="#問題敘述" class="headerlink" title="問題敘述"></a>問題敘述</h2><p>基本上 $x\gg k$ 等同於 $\dfrac{x}{2^k}$，但這個結果只能保證在 $x \geq 0$ 時是對的，若在 $x &lt; 0$ 時，可就不一定了！舉例來說，若 $x=-12345$ 且 $k=4$</p>
+<p>以除法運算來看，取整數後即 $-771$。</p>
+<script type="math/tex; mode=display">x\gg k=-12345\gg 4=\dfrac{-12345}{2^4}=-771.5625</script><p>在以位元運算來看</p>
+<script type="math/tex; mode=display">-12345_{10}\gg 4_{10}=1100\_1111\_1100\_0111_2 \gg 4_{10} = 1111\_1100\_1111\_1100_2 = -772</script><p>這與我們想要的結果 ($-771$) 不一樣，因為移位運算後的結果都是取 <code>floor</code> 後的值，即</p>
+<script type="math/tex; mode=display">x \gg k = floor(\dfrac{x}{2^k})</script><p>當 $x \geq 0$，我們要得到整數部份就要取 <code>floor</code>，這與移位運算的特性一致；而當 $x &lt; 0$ 時，我們要得到整數部份就要取 <code>ceil</code>，但此時移位運算是取 <code>floor</code>，所以就會有誤。</p>
+<p>因此，我們需要一個函數，當 $x &lt; 0$ 時作移位運算後結果為 $ceil(\dfrac{x}{2^k})$ 的演算法</p>
+<script type="math/tex; mode=display">(x + (2^k - 1)) >> k</script><h2 id="證明"><a href="#證明" class="headerlink" title="證明"></a>證明</h2><p>目標</p>
+<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = (x + (2^k - 1)) \gg k</script><p>要證明上式，必須先證明下式成立，</p>
+<script type="math/tex; mode=display">ceil(\dfrac{x}{y})=floor(\dfrac{x+y-1}{y}), \ \textrm{if}\ x\ \in \mathbb{Z}\ \textrm{and}\ y\ \in \mathbb{Z^+}</script><p>令</p>
+<script type="math/tex; mode=display">x=qy+r,\ 0 \leq r\leq y-1</script><p>q 為除法商數且 r 為除法餘數。再將此試代入目標等式右邊</p>
+<script type="math/tex; mode=display">\dfrac{x+y-1}{y}=\dfrac{qy+r+y-1}{y}=q+\dfrac{r+y-1}{y}</script><p>討論：</p>
+<p><code>case 1</code>：如果 $x$ 可以被 $y$ 整除，則 $r=0$</p>
+<script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{y-1}{y})=q=ceil(\dfrac{x}{y})</script><p><code>case 2</code>：如果 $x$ 不能被 $y$ 整除，則 $1\leq r\leq y-1$</p>
+<script type="math/tex; mode=display">\dfrac{y}{y}\leq \dfrac{r+y-1}{y}\leq \dfrac{2y-2}{y}</script><script type="math/tex; mode=display">1\leq\dfrac{r+y-1}{y}<2</script><script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{r+y-1}{y})=q+1=ceil(\dfrac{x}{y})</script><p>最後，再利用這個等式，可以得到若 <code>x &lt; 0</code></p>
+<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = floor ( \dfrac{x + 2^k - 1}{2^k}) = (x + (2^k - 1)) \gg k</script><p>得證</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>bit</tag>
+        <tag>math</tag>
+        <tag>shift</tag>
+        <tag>division</tag>
+        <tag>power of 2</tag>
       </tags>
   </entry>
 </search>
