@@ -1208,6 +1208,9 @@
 <script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{y-1}{y})=q=ceil(\dfrac{x}{y})</script><p><code>case 2</code>：如果 $x$ 不能被 $y$ 整除，則 $1\leq r\leq y-1$</p>
 <script type="math/tex; mode=display">\dfrac{y}{y}\leq \dfrac{r+y-1}{y}\leq \dfrac{2y-2}{y}</script><script type="math/tex; mode=display">1\leq\dfrac{r+y-1}{y}<2</script><script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{r+y-1}{y})=q+1=ceil(\dfrac{x}{y})</script><p>最後，再利用這個等式，可以得到若 <code>x &lt; 0</code></p>
 <script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = floor ( \dfrac{x + 2^k - 1}{2^k}) = (x + (2^k - 1)) \gg k</script><p>得證</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://www.itread01.com/content/1548192791.html">計算機中如何實現除數是2的冪次的除法</a></li>
+</ol>
 ]]></content>
       <categories>
         <category>學習筆記</category>
@@ -1218,6 +1221,24 @@
         <tag>shift</tag>
         <tag>division</tag>
         <tag>power of 2</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
+    <url>/2021/06/15/window_modal_non_modal/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
+<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
+<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
+<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>window</tag>
+        <tag>modal</tag>
+        <tag>non modal</tag>
       </tags>
   </entry>
 </search>
