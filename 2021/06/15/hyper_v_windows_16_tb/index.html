@@ -28,7 +28,7 @@
 <meta property="og:description" content="Windows 檔案系統預設的 Cluster Size 為 4KB，進一步導致分割區最多只能到 16 TB，當要延伸磁區且總容量會超過 16 TB 時，就會出現「磁碟區無法延伸 因為叢集數目將超過檔案系統支援的最大叢集數目」的提示視窗。若想要讓 C 槽可到 16 TB 以上的容量，需要在安裝 Windows 時就先設定 (若沒設定但又需要延伸大容量硬碟的話，就重灌吧 QQ)！這篇文章便是紀錄如何">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-06-15T12:51:26.000Z">
-<meta property="article:modified_time" content="2021-06-15T13:09:54.173Z">
+<meta property="article:modified_time" content="2021-06-15T13:14:10.713Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="windows">
 <meta property="article:tag" content="16 tb">
@@ -136,17 +136,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">176</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">183</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">3</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">4</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">38</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">39</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -226,7 +226,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2021-06-15 20:51:26 / 修改時間：21:09:54" itemprop="dateCreated datePublished" datetime="2021-06-15T20:51:26+08:00">2021-06-15</time>
+              <time title="創建時間：2021-06-15 20:51:26 / 修改時間：21:14:10" itemprop="dateCreated datePublished" datetime="2021-06-15T20:51:26+08:00">2021-06-15</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -280,14 +280,14 @@
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 檔案系統預設的 Cluster Size 為 4KB，進一步導致分割區最多只能到 16 TB，當要延伸磁區且總容量會超過 16 TB 時，就會出現「磁碟區無法延伸 因為叢集數目將超過檔案系統支援的最大叢集數目」的提示視窗。</p>
 <p>若想要讓 C 槽可到 16 TB 以上的容量，需要在安裝 Windows 時就先設定 (若沒設定但又需要延伸大容量硬碟的話，就重灌吧 QQ)！這篇文章便是紀錄如何設定 C 槽預設能使用更大容量的硬碟！</p>
-<h2 id="查看所需-Cluster-Size"><a href="#查看所需-Cluster-Size" class="headerlink" title="查看所需 Cluster Size"></a>查看所需 Cluster Size</h2><p>請先參考 <a target="_blank" rel="external nofollow noopener noreferrer" href="https://support.microsoft.com/zh-tw/topic/%E9%A0%90%E8%A8%AD-ntfs-fat-%E5%92%8C-exfat-%E7%9A%84%E5%8F%A2%E9%9B%86%E5%A4%A7%E5%B0%8F-9772e6f1-e31a-00d7-e18f-73169155af95">預設 NTFS、 FAT，和 exFAT 的叢集大小。</a> 中的表格，找出自己需要的 Cluster Size ，例如我是需要將 OS 灌在 Hyper-V 之中，目前 (2021/01/29) 官方所建議的最大容量為 64TB ，因此查表得知對應的 Cluster Size 應為 16 KB！記住這個資訊下面步驟會用到。</p>
+<h2 id="查看所需-Cluster-Size"><a href="#查看所需-Cluster-Size" class="headerlink" title="查看所需 Cluster Size"></a>查看所需 Cluster Size</h2><p>請先參考 <a target="_blank" rel="external nofollow noopener noreferrer" href="https://support.microsoft.com/zh-tw/topic/%E9%A0%90%E8%A8%AD-ntfs-fat-%E5%92%8C-exfat-%E7%9A%84%E5%8F%A2%E9%9B%86%E5%A4%A7%E5%B0%8F-9772e6f1-e31a-00d7-e18f-73169155af95">預設 NTFS、 FAT，和 exFAT 的叢集大小。</a> 中的表格，找出自己需要的 Cluster Size ，例如我是需要將 OS 灌在 Hyper-V 之中，目前 (2021/01/29) 官方所建議的最大容量為 64 TB ，因此查表得知對應的 Cluster Size 應為 16 KB！記住這個資訊下面步驟會用到。</p>
 <h2 id="修改預設-Cluster-Size"><a href="#修改預設-Cluster-Size" class="headerlink" title="修改預設 Cluster Size"></a>修改預設 Cluster Size</h2><p>參考影片設定步驟，會用到的指令及順序如下，其中的 <code>16K</code> 請改為上一步所查找出來的結果</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">DISKPART</span><br><span class="line">LIST DISK</span><br><span class="line">SELECT DISK 0</span><br><span class="line">LIST PARTITION</span><br><span class="line">SELECT PARTITION 4</span><br><span class="line">FORMAT QUICK UNIT=16K</span><br><span class="line">EXIT </span><br><span class="line">SETUP</span><br></pre></td></tr></table></figure>
 <!-- markdownlint-disable MD033 -->
 <iframe width="560" height="315" src="https://www.youtube.com/embed/KmW_b57L2Ao" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <!-- markdownlint-restore MD033 -->
-<p>按照影片步驟做完後，該 VM 的 C 槽的 Cluster Size 就為 16K 囉！讓 C 槽可延伸到 64TB！</p>
+<p>按照影片步驟做完後，該 VM 的 C 槽的 Cluster Size 就為 16 KB 囉！讓 C 槽可延伸最多到 64 TB 的容量！</p>
 
     </div>
 
@@ -314,7 +314,10 @@
     <a href="/2021/06/15/cs_asp_net_core/" rel="prev" title="[C#] 發布 ASP.NET Core 應用程式">
       <i class="fa fa-chevron-left"></i> [C#] 發布 ASP.NET Core 應用程式
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/06/15/tool_sql_injection/" rel="next" title="[Tool] SQL Injection 合成語句即時顯示，教學利器">
+      [Tool] SQL Injection 合成語句即時顯示，教學利器 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -395,20 +398,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分類</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">176</span>
+        <span class="site-state-item-count">183</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>

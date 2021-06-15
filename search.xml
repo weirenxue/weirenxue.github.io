@@ -1446,14 +1446,14 @@
     <url>/2021/06/15/hyper_v_windows_16_tb/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 檔案系統預設的 Cluster Size 為 4KB，進一步導致分割區最多只能到 16 TB，當要延伸磁區且總容量會超過 16 TB 時，就會出現「磁碟區無法延伸 因為叢集數目將超過檔案系統支援的最大叢集數目」的提示視窗。</p>
 <p>若想要讓 C 槽可到 16 TB 以上的容量，需要在安裝 Windows 時就先設定 (若沒設定但又需要延伸大容量硬碟的話，就重灌吧 QQ)！這篇文章便是紀錄如何設定 C 槽預設能使用更大容量的硬碟！</p>
-<h2 id="查看所需-Cluster-Size"><a href="#查看所需-Cluster-Size" class="headerlink" title="查看所需 Cluster Size"></a>查看所需 Cluster Size</h2><p>請先參考 <a href="https://support.microsoft.com/zh-tw/topic/%E9%A0%90%E8%A8%AD-ntfs-fat-%E5%92%8C-exfat-%E7%9A%84%E5%8F%A2%E9%9B%86%E5%A4%A7%E5%B0%8F-9772e6f1-e31a-00d7-e18f-73169155af95">預設 NTFS、 FAT，和 exFAT 的叢集大小。</a> 中的表格，找出自己需要的 Cluster Size ，例如我是需要將 OS 灌在 Hyper-V 之中，目前 (2021/01/29) 官方所建議的最大容量為 64TB ，因此查表得知對應的 Cluster Size 應為 16 KB！記住這個資訊下面步驟會用到。</p>
+<h2 id="查看所需-Cluster-Size"><a href="#查看所需-Cluster-Size" class="headerlink" title="查看所需 Cluster Size"></a>查看所需 Cluster Size</h2><p>請先參考 <a href="https://support.microsoft.com/zh-tw/topic/%E9%A0%90%E8%A8%AD-ntfs-fat-%E5%92%8C-exfat-%E7%9A%84%E5%8F%A2%E9%9B%86%E5%A4%A7%E5%B0%8F-9772e6f1-e31a-00d7-e18f-73169155af95">預設 NTFS、 FAT，和 exFAT 的叢集大小。</a> 中的表格，找出自己需要的 Cluster Size ，例如我是需要將 OS 灌在 Hyper-V 之中，目前 (2021/01/29) 官方所建議的最大容量為 64 TB ，因此查表得知對應的 Cluster Size 應為 16 KB！記住這個資訊下面步驟會用到。</p>
 <h2 id="修改預設-Cluster-Size"><a href="#修改預設-Cluster-Size" class="headerlink" title="修改預設 Cluster Size"></a>修改預設 Cluster Size</h2><p>參考影片設定步驟，會用到的指令及順序如下，其中的 <code>16K</code> 請改為上一步所查找出來的結果</p>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART</span><br><span class="line">LIST DISK</span><br><span class="line">SELECT DISK 0</span><br><span class="line">LIST PARTITION</span><br><span class="line">SELECT PARTITION 4</span><br><span class="line">FORMAT QUICK UNIT=16K</span><br><span class="line">EXIT </span><br><span class="line">SETUP</span><br></pre></td></tr></table></figure>
 <!-- markdownlint-disable MD033 -->
 <iframe width="560" height="315" src="https://www.youtube.com/embed/KmW_b57L2Ao" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <!-- markdownlint-restore MD033 -->
-<p>按照影片步驟做完後，該 VM 的 C 槽的 Cluster Size 就為 16K 囉！讓 C 槽可延伸到 64TB！</p>
+<p>按照影片步驟做完後，該 VM 的 C 槽的 Cluster Size 就為 16 KB 囉！讓 C 槽可延伸最多到 64 TB 的容量！</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
@@ -1495,6 +1495,33 @@
         <tag>application</tag>
         <tag>os</tag>
         <tag>wow64</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Tool] SQL Injection 合成語句即時顯示，教學利器</title>
+    <url>/2021/06/15/tool_sql_injection/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL 注入原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
+<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><p>這個工具是以 <code>javascript</code> 開發的，目的是隨時都可以用，不用安裝！ <a href="https://weirenxue.github.io/sql-injection-in-time/">SQL Injection Real Time</a></p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
+<li>將 SQL 語句貼至「SQL HERE」，注入前的預覽會在「PREVIEW」區域。</li>
+<li>填寫要注入的參數名稱於「Parameter Name」。</li>
+<li>填寫要注入的參數名稱於「Value」。</li>
+<li>注入後的 SQL 語句會在「AFTER INJECTION」區域。</li>
+<li>可由「PREVIEW」比對「AFTER INJECTION」，就知道 SQL 注入的威力！</li>
+</ol>
+<h2 id="補充小常識"><a href="#補充小常識" class="headerlink" title="補充小常識"></a>補充小常識</h2><p>要預防被注入、安全的執行SQL，必定要用 <code>Parameterized Query + Prepared Statement</code>，缺一不可。</p>
+]]></content>
+      <categories>
+        <category>自行開發工具使用教學</category>
+      </categories>
+      <tags>
+        <tag>tool</tag>
+        <tag>sql</tag>
+        <tag>injection</tag>
+        <tag>real</tag>
+        <tag>time</tag>
+        <tag>synthesis</tag>
+        <tag>tutorial</tag>
       </tags>
   </entry>
 </search>
