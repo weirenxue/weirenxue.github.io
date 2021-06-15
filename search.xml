@@ -1276,7 +1276,7 @@
 </ul>
 <h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
-<p>這一步確認這些後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
+<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
@@ -1288,6 +1288,27 @@
         <tag>match</tag>
         <tag>cert</tag>
         <tag>csr</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Python] 爬蟲修改 User-Agent 標頭</title>
+    <url>/2021/06/15/python_user_agent/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲是一個很方便的工具，可以自動化且大量分析網頁，將別人的網頁當作自己資料庫，但也因為如此，有些網頁會偵測連線來源是否為爬蟲工具，若是的話會阻擋 (404)，或者有些會顯示出與正常使用瀏覽器瀏覽時不一樣的內容。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>python 3.8.5</li>
+</ul>
+<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p><code>Python</code> 爬蟲第一步大多數是使用 <code>requests</code> 這個套件，它內建的請求標頭 <code>User-Agent</code> 為 <code>python-requests/2.24.0</code>，也許版本號會不同，但一看就知道是爬蟲而不是真的使用者的連線請求，所以應用程式可根據這個線索來拒絕服務。但「道高一尺，魔高一丈」不是沒有道理的，只要我們改了 <code>User-Agent</code>，就能繞過根據這個標頭欄位過濾請求的網站</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://abcde.example.com&quot;</span></span><br><span class="line">response = requests.get(url, headers = headers)</span><br></pre></td></tr></table></figure>
+<p>這時，所有的請求標頭 <code>User-Agent</code> 都改為 <code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36</code>。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>crawl</tag>
+        <tag>user</tag>
+        <tag>agent</tag>
       </tags>
   </entry>
 </search>
