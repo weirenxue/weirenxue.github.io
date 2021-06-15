@@ -1241,4 +1241,29 @@
         <tag>mask</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[WIN32 API] 函數使用範例</title>
+    <url>/2021/06/15/win32_api_function_example/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接複製貼上，可以馬上 Build 看效果。</p>
+<p>因此我看著文件慢慢的嘗試，寫出一個可以用的應用來。這裡收集了個人對於 <code>WIN32 API</code> 調用的範例，除了供大家參考外，自己也可以隨時複習。</p>
+<h2 id="原始碼"><a href="#原始碼" class="headerlink" title="原始碼"></a>原始碼</h2><ol>
+<li><a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam</a></li>
+<li><a href="https://github.com/weirenxue/enablemenuitem-example">EnableMenuItem, GetSubMenu, GetMenuItemID</a></li>
+<li><a href="https://github.com/weirenxue/settimer-example">SetTimer</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>api</tag>
+        <tag>win32</tag>
+        <tag>example</tag>
+        <tag>dialogboxparam</tag>
+        <tag>enablemenuitem</tag>
+        <tag>getsubmenu</tag>
+        <tag>getmenuitemid</tag>
+        <tag>settimer</tag>
+      </tags>
+  </entry>
 </search>
