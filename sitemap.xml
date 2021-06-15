@@ -270,6 +270,34 @@
   </url>
   
   <url>
+    <loc>https://weirenxue.github.io/tags/dll/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/2017/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/visual-studio/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/dllmain/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://weirenxue.github.io/tags/C/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
@@ -305,553 +333,56 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/hexo/</loc>
+    <loc>https://weirenxue.github.io/tags/invoke/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/next/</loc>
+    <loc>https://weirenxue.github.io/tags/loadlibrarya/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/firestore/</loc>
+    <loc>https://weirenxue.github.io/tags/loadlibraryw/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/visitors/</loc>
+    <loc>https://weirenxue.github.io/tags/ejs/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/ip/</loc>
+    <loc>https://weirenxue.github.io/tags/render/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/finder/</loc>
+    <loc>https://weirenxue.github.io/tags/front-end/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/equipment/</loc>
+    <loc>https://weirenxue.github.io/tags/alone/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/wireshark/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/matlab/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/far-jump/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/near-jump/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/short-jump/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/jmp/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/opcode/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/neg/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/sbb/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/asm/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/32/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/64/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/bit/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/application/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/os/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/windows/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/wow64/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/yolov4/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/kaggle/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/object-detection/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/mask/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/ptu/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/flir/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/k/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/means/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/pseudo/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/algorithm/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/regex/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/regular/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/expression/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/python/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/password/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/jupyter/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/notebook/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/default/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/path/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/browser/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/cp950/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/txt/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/output/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/crawl/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/unicodeencodeerror/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/email/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/protected/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/latex/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/synctex/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/texmaker/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/not-work/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/jump/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/click/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/vivado/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/vitis/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/h/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/lack/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/sdk/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/xilinx/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/make/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/gpio/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/channel/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/directionmask/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/api/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/rdp/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/privilege/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/account/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/user/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/remote/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/win10/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/mstsc/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/%E5%A4%9A%E4%BA%BA/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/%E5%A4%9A%E5%B7%A5/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/mutiplex/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/wrapper/</loc>
+    <loc>https://weirenxue.github.io/tags/node/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -859,6 +390,13 @@
   
   <url>
     <loc>https://weirenxue.github.io/tags/git/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/remote/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -914,56 +452,259 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/paper/</loc>
+    <loc>https://weirenxue.github.io/tags/hexo/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/lazier/</loc>
+    <loc>https://weirenxue.github.io/tags/next/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/translate/</loc>
+    <loc>https://weirenxue.github.io/tags/firestore/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/google/</loc>
+    <loc>https://weirenxue.github.io/tags/visitors/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/cloud/</loc>
+    <loc>https://weirenxue.github.io/tags/python/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/copy/</loc>
+    <loc>https://weirenxue.github.io/tags/jupyter/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/listener/</loc>
+    <loc>https://weirenxue.github.io/tags/notebook/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/event/</loc>
+    <loc>https://weirenxue.github.io/tags/default/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/path/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/browser/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/latex/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/synctex/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/texmaker/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/not-work/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/jump/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/click/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/ip/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/finder/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/equipment/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/wireshark/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/matlab/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/ptu/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/flir/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/k/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/means/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/pseudo/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/algorithm/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/math/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/shift/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/bit/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/division/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/power-of-2/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/far-jump/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/near-jump/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/short-jump/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/jmp/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/opcode/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -985,6 +726,293 @@
   
   <url>
     <loc>https://weirenxue.github.io/tags/namespace/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/cp950/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/txt/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/output/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/crawl/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/unicodeencodeerror/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/regex/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/regular/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/expression/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/password/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/email/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/protected/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/rdp/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/privilege/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/account/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/user/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/windows/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/win10/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/mstsc/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/%E5%A4%9A%E4%BA%BA/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/%E5%A4%9A%E5%B7%A5/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/mutiplex/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/wrapper/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/vivado/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/vitis/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/h/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/lack/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/sdk/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/window/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/modal/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/non-modal/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/32/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/64/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/application/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/os/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/wow64/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/xilinx/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/gpio/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/channel/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/directionmask/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/api/</loc>
+    <lastmod>2021-06-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/tags/make/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -1026,133 +1054,105 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/ejs/</loc>
+    <loc>https://weirenxue.github.io/tags/neg/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/render/</loc>
+    <loc>https://weirenxue.github.io/tags/sbb/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/front-end/</loc>
+    <loc>https://weirenxue.github.io/tags/asm/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/node/</loc>
+    <loc>https://weirenxue.github.io/tags/paper/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/alone/</loc>
+    <loc>https://weirenxue.github.io/tags/lazier/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/dll/</loc>
+    <loc>https://weirenxue.github.io/tags/google/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/2017/</loc>
+    <loc>https://weirenxue.github.io/tags/cloud/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/visual-studio/</loc>
+    <loc>https://weirenxue.github.io/tags/translate/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/dllmain/</loc>
+    <loc>https://weirenxue.github.io/tags/copy/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/invoke/</loc>
+    <loc>https://weirenxue.github.io/tags/listener/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/loadlibrarya/</loc>
+    <loc>https://weirenxue.github.io/tags/event/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/loadlibraryw/</loc>
+    <loc>https://weirenxue.github.io/tags/yolov4/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/math/</loc>
+    <loc>https://weirenxue.github.io/tags/kaggle/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/shift/</loc>
+    <loc>https://weirenxue.github.io/tags/object-detection/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/tags/division/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/power-of-2/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/window/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/modal/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/non-modal/</loc>
+    <loc>https://weirenxue.github.io/tags/mask/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
