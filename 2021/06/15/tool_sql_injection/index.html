@@ -22,13 +22,13 @@
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   <meta name="description" content="Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL 注入原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[Tool] SQL Injection 合成語句即時顯示，教學利器">
+<meta property="og:title" content="[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器">
 <meta property="og:url" content="https://weirenxue.github.io/2021/06/15/tool_sql_injection/index.html">
 <meta property="og:site_name" content="薛惟仁 筆記本">
 <meta property="og:description" content="Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL 注入原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-06-15T13:21:54.000Z">
-<meta property="article:modified_time" content="2021-06-15T13:38:38.772Z">
+<meta property="article:modified_time" content="2021-06-15T14:07:27.716Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="tool">
 <meta property="article:tag" content="sql">
@@ -37,6 +37,8 @@
 <meta property="article:tag" content="time">
 <meta property="article:tag" content="synthesis">
 <meta property="article:tag" content="tutorial">
+<meta property="article:tag" content="penetrate">
+<meta property="article:tag" content="pentest">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://weirenxue.github.io/2021/06/15/tool_sql_injection/">
@@ -52,7 +54,7 @@
   };
 </script>
 
-  <title>[Tool] SQL Injection 合成語句即時顯示，教學利器 | 薛惟仁 筆記本</title>
+  <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器 | 薛惟仁 筆記本</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
     <script>
@@ -137,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">185</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">187</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -216,7 +218,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          [Tool] SQL Injection 合成語句即時顯示，教學利器
+          [Tool] 滲透利器 - SQL Injection 合成語句即時顯示器
         </h1>
 
         <div class="post-meta">
@@ -227,7 +229,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2021-06-15 21:21:54 / 修改時間：21:38:38" itemprop="dateCreated datePublished" datetime="2021-06-15T21:21:54+08:00">2021-06-15</time>
+              <time title="創建時間：2021-06-15 21:21:54 / 修改時間：22:07:27" itemprop="dateCreated datePublished" datetime="2021-06-15T21:21:54+08:00">2021-06-15</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -305,6 +307,8 @@
               <a href="/tags/time/" rel="tag"># time</a>
               <a href="/tags/synthesis/" rel="tag"># synthesis</a>
               <a href="/tags/tutorial/" rel="tag"># tutorial</a>
+              <a href="/tags/penetrate/" rel="tag"># penetrate</a>
+              <a href="/tags/pentest/" rel="tag"># pentest</a>
           </div>
 
         
@@ -413,7 +417,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">185</span>
+        <span class="site-state-item-count">187</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
@@ -625,7 +629,7 @@
   var disqus_config = function() {
     this.page.url = "https://weirenxue.github.io/2021/06/15/tool_sql_injection/";
     this.page.identifier = "2021/06/15/tool_sql_injection/";
-    this.page.title = "[Tool] SQL Injection 合成語句即時顯示，教學利器";
+    this.page.title = "[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {
