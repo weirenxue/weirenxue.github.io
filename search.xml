@@ -1065,7 +1065,8 @@
 <h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
 <h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>]]></content>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
@@ -1073,6 +1074,28 @@
         <tag>php</tag>
         <tag>phalcon</tag>
         <tag>namespace</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[ZIP] 壓縮檔內中文檔名呈現亂碼的解決方法</title>
+    <url>/2021/06/15/zip_chinese_garbled/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想練英文從生活周遭開始是最直接的，安裝英文版版作業系統也不奇怪，但身在中文環境工作與學習，通常經手的會是中文檔名的檔案，當英文版作業系統遇見中文檔名，總是會發生一些惱人的錯誤。這次遇到的問題是，在瀏灠內含中文檔名的 zip 壓縮檔時，中文會呈現出亂碼型態。</p>
+<h2 id="狀況描述"><a href="#狀況描述" class="headerlink" title="狀況描述"></a>狀況描述</h2><p>原本資料夾為中文(示範用)，壓縮後開啟瀏覽呈現為亂碼</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fgarbled.png?alt=media&amp;token=2c282188-e3cb-4481-9f3b-24d820ed2d74" alt="亂碼的檔案名稱"><span class="image-caption">亂碼的檔案名稱</span></p>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>先開啟控制台 (Control Panel)，按照下圖所示操作，將語言更換為 <code>Chinese (Traditional, Taiwan)</code> 之後，電腦會要求重開機，就重開機吧！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Foperation.png?alt=media&amp;token=0933c050-25ae-4a77-a8c6-1f42ca9840a0" alt="操作步驟"><span class="image-caption">操作步驟</span></p>
+<h2 id="結果"><a href="#結果" class="headerlink" title="結果"></a>結果</h2><p>重開機後就能再次開啟該 zip 壓縮檔來查看正常的檔案名稱啦！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fno_grabled.png?alt=media&amp;token=174f988f-0f11-46e0-abb7-903c57691af0" alt="沒有亂碼的檔案名稱"><span class="image-caption">沒有亂碼的檔案名稱</span></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>zip</tag>
+        <tag>chinese</tag>
+        <tag>garbled</tag>
+        <tag>file</tag>
+        <tag>name</tag>
       </tags>
   </entry>
 </search>
