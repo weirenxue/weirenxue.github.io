@@ -1098,4 +1098,27 @@
         <tag>name</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[EJS] 單獨使用 EJS 渲染前端畫面</title>
+    <url>/2021/06/15/ejs_ejs/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>網路上有許多 <code>EJS</code> 使用範例，通常是以 <code>Node.js</code> 與 <code>Express</code> 搭配的教學，而這裡紀錄如何單獨使用 <code>EJS</code> 來渲染前端畫面。</p>
+<h2 id="使用步驟"><a href="#使用步驟" class="headerlink" title="使用步驟"></a>使用步驟</h2><p>建立一個資料夾用來放置相關檔案，並下載 <a href="https://github.com/mde/ejs/releases/tag/v3.0.2">EJS</a> 內的 <code>ejs.min.js</code> 放至此資料夾中。再新增 <code>index.html</code> 且程式碼如下</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&#x27;./ejs.min.js&#x27;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> html = ejs.render(<span class="string">&#x27;fieldA:&lt;%= fieldA %&gt;&lt;br /&gt;fieldB:&lt;%= fieldB %&gt;&#x27;</span>,</span></span><br><span class="line"><span class="javascript">                &#123;<span class="attr">fieldA</span> : <span class="string">&#x27;Hello world!&#x27;</span>, <span class="attr">fieldB</span> : <span class="string">&#x27;Hellow Taiwan!&#x27;</span>&#125;);</span></span><br><span class="line"><span class="javascript">            <span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                <span class="built_in">document</span>.getElementById(<span class="string">&#x27;divContent&#x27;</span>).innerHTML = html;</span></span><br><span class="line"><span class="javascript">            &#125;</span></span><br><span class="line"><span class="javascript">        </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;divContent&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>此時的目錄檔案結構為</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── ejs.min.js</span><br><span class="line">└── index.html</span><br></pre></td></tr></table></figure>
+<p>直接雙擊 <code>index.html</code>，用瀏灠器就可以看到結果囉！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">fieldA:Hello world!</span><br><span class="line">fieldB:Hellow Taiwan!</span><br></pre></td></tr></table></figure>
+<p>原始碼參考：<a href="https://github.com/weirenxue/ejs-first-step">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ejs</tag>
+        <tag>render</tag>
+        <tag>front end</tag>
+        <tag>node</tag>
+        <tag>alone</tag>
+      </tags>
+  </entry>
 </search>
