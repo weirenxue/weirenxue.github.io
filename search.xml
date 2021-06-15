@@ -1124,7 +1124,7 @@
   <entry>
     <title>[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</title>
     <url>/2021/06/15/dll_vs_2017_dllmain_dll/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 VS 2017 寫一個 dll，其包含 <code>DllMain</code> 與一個 <code>dllexport</code> 函數。若要知道如何在其它的 C++ 專案中使用，請參考 <a href="/2021/06/15/dll_cpp_dll/">DLL 在 C++ 中調用 dll 的函式</a></p>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 VS 2017 寫一個 dll，其包含 <code>DllMain</code> 與一個 <code>dllexport</code> 函數。若要知道如何在其它的 C++ 專案中使用在 dll 中的函數，請參考 <a href="/2021/06/15/dll_cpp_dll/">[DLL] 在 C++ 中調用 dll 的函式</a>。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Windows 10</li>
 <li>Visual Studio 2017</li>
@@ -1162,7 +1162,7 @@
 <li>Windows 10</li>
 <li>Visual Studio 2017</li>
 </ul>
-<h2 id="準備一個-DLL"><a href="#準備一個-DLL" class="headerlink" title="準備一個 DLL"></a>準備一個 DLL</h2><p>先自己寫一個 dll，詳細步驟說明請參考：<a href="/2021/06/15/dll_vs_2017_dllmain_dll/">[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</a></p>
+<h2 id="準備一個-DLL"><a href="#準備一個-DLL" class="headerlink" title="準備一個 DLL"></a>準備一個 DLL</h2><p>先自己寫一個 dll，詳細步驟說明請參考：<a href="/2021/06/15/dll_vs_2017_dllmain_dll/">[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</a>。</p>
 <h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
 <p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fcreate_project.png?alt=media&amp;token=fbe282e9-5cb1-4090-a01e-817bc244411e" alt="新建專案"><span class="image-caption">新建專案</span></p>
 <p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_project_type.png?alt=media&amp;token=c4a871cc-40d8-49d3-ac26-2857fb355c1d" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>

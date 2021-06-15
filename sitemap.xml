@@ -2,13 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://weirenxue.github.io/2021/06/13/rdp_windows_10_multi/</loc>
-    
-    <lastmod>2021-06-15</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://weirenxue.github.io/2021/06/15/dll_cpp_dll/</loc>
     
     <lastmod>2021-06-15</lastmod>
@@ -17,6 +10,13 @@
   
   <url>
     <loc>https://weirenxue.github.io/2021/06/15/dll_vs_2017_dllmain_dll/</loc>
+    
+    <lastmod>2021-06-15</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/2021/06/13/rdp_windows_10_multi/</loc>
     
     <lastmod>2021-06-15</lastmod>
     
