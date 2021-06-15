@@ -20,18 +20,27 @@
     var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <meta name="description" content="Software Engineer">
-<meta property="og:type" content="website">
-<meta property="og:title" content="薛惟仁 筆記本">
-<meta property="og:url" content="https://weirenxue.github.io/tags/far-jump/index.html">
+  <meta name="description" content="接續 [C#] 使用 ASP.NET Core 3.1 建立一個初學範例，已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[C#] 發布 ASP.NET Core 應用程式">
+<meta property="og:url" content="https://weirenxue.github.io/2021/06/15/cs_asp_net_core/index.html">
 <meta property="og:site_name" content="薛惟仁 筆記本">
-<meta property="og:description" content="Software Engineer">
+<meta property="og:description" content="接續 [C#] 使用 ASP.NET Core 3.1 建立一個初學範例，已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。">
 <meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-06-15T11:49:00.000Z">
+<meta property="article:modified_time" content="2021-06-15T12:25:12.235Z">
 <meta property="article:author" content="Wei-Ren Xue">
-<meta property="article:tag" content="AI hexo Linux js python c#">
+<meta property="article:tag" content="visual studio">
+<meta property="article:tag" content="c#">
+<meta property="article:tag" content="asp">
+<meta property="article:tag" content=".net">
+<meta property="article:tag" content="core">
+<meta property="article:tag" content="3.1">
+<meta property="article:tag" content="2019">
+<meta property="article:tag" content="publish">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://weirenxue.github.io/tags/far-jump/">
+<link rel="canonical" href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core/">
 
 
 <script id="page-configurations">
@@ -39,12 +48,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-TW'
   };
 </script>
 
-  <title>標籤: far jump | 薛惟仁 筆記本</title>
+  <title>[C#] 發布 ASP.NET Core 應用程式 | 薛惟仁 筆記本</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
     <script>
@@ -188,55 +197,149 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Wei-Ren Xue">
+      <meta itemprop="description" content="Software Engineer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="薛惟仁 筆記本">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [C#] 發布 ASP.NET Core 應用程式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2021-06-15 19:49:00 / 修改時間：20:25:12" itemprop="dateCreated datePublished" datetime="2021-06-15T19:49:00+08:00">2021-06-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">學習筆記</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">far jump
-          <small>標籤</small>
-        </h2>
-      </div>
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2021/06/15/cs_asp_net_core/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/15/cs_asp_net_core/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <div class="post-description">接續 [C#] 使用 ASP.NET Core 3.1 建立一個初學範例，已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接續 <a href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core_3_1/">[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</a> 已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio Enterprise 2019 (16.7.2)</li>
+<li>.Net Core 3.1</li>
+</ul>
+<h2 id="發布"><a href="#發布" class="headerlink" title="發布"></a>發布</h2><p>開啟 cmd 進到專案的資料夾裡</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\&gt;<span class="built_in">cd</span> C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice</span><br></pre></td></tr></table></figure>
+<p>使用 <a target="_blank" rel="external nofollow noopener noreferrer" href="https://docs.microsoft.com/zh-tw/dotnet/core/tools/dotnet-build">Release 組建組態</a>，並以指令執行 publish，訊息中的最後一行為該專案 Publish 的位置</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice&gt;dotnet publish -c Release</span><br><span class="line">Microsoft (R) Build Engine version 16.7.0+b89cb5fde <span class="keyword">for</span> .NET</span><br><span class="line">Copyright (C) Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">  Determining projects to restore...</span><br><span class="line">  All projects are up-to-date <span class="keyword">for</span> restore.</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.Views.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish\</span><br></pre></td></tr></table></figure>
+<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>啟動 Publish 位置內的應用程式，此時應用程式在 <code>http://localhost:5000</code> 運行監聽囉，開啟瀏灠器輸入網址即可連線到網頁應用程式</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish&gt;dotnet CorePractice.dll <span class="comment"># 這裡是 dll，不是 exe</span></span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: http://localhost:5000</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: https://localhost:5001</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Application started. Press Ctrl+C to shut down.</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Hosting environment: Production</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Content root path: C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish</span><br></pre></td></tr></table></figure>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T08:42:52+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/visual-studio/" rel="tag"># visual studio</a>
+              <a href="/tags/c/" rel="tag"># c#</a>
+              <a href="/tags/asp/" rel="tag"># asp</a>
+              <a href="/tags/net/" rel="tag"># .net</a>
+              <a href="/tags/core/" rel="tag"># core</a>
+              <a href="/tags/3-1/" rel="tag"># 3.1</a>
+              <a href="/tags/2019/" rel="tag"># 2019</a>
+              <a href="/tags/publish/" rel="tag"># publish</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/opcodejmp/" itemprop="url">
-            <span itemprop="name">[Opcode] JMP 轉成機械碼的原理與過程</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/15/cs_asp_net_core_3_1/" rel="prev" title="[C#] 使用 ASP.NET Core 3.1 建立一個初學範例">
+      <i class="fa fa-chevron-left"></i> [C#] 使用 ASP.NET Core 3.1 建立一個初學範例
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -283,6 +386,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%92%B0%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%99%BC%E5%B8%83"><span class="nav-number">3.</span> <span class="nav-text">發布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%AC%E8%A9%A6"><span class="nav-number">4.</span> <span class="nav-text">測試</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -517,6 +621,26 @@
   }
   // defer loading until the whole page loading is completed
   window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://weirenxue.github.io/2021/06/15/cs_asp_net_core/";
+    this.page.identifier = "2021/06/15/cs_asp_net_core/";
+    this.page.title = "[C#] 發布 ASP.NET Core 應用程式";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://weirenxue.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
 </script>
 
 <script>

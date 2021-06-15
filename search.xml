@@ -1441,4 +1441,34 @@
         <tag>2019</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[C#] 發布 ASP.NET Core 應用程式</title>
+    <url>/2021/06/15/cs_asp_net_core/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接續 <a href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core_3_1/">[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</a> 已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio Enterprise 2019 (16.7.2)</li>
+<li>.Net Core 3.1</li>
+</ul>
+<h2 id="發布"><a href="#發布" class="headerlink" title="發布"></a>發布</h2><p>開啟 cmd 進到專案的資料夾裡</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;<span class="built_in">cd</span> C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice</span><br></pre></td></tr></table></figure>
+<p>使用 <a href="https://docs.microsoft.com/zh-tw/dotnet/core/tools/dotnet-build">Release 組建組態</a>，並以指令執行 publish，訊息中的最後一行為該專案 Publish 的位置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice&gt;dotnet publish -c Release</span><br><span class="line">Microsoft (R) Build Engine version 16.7.0+b89cb5fde <span class="keyword">for</span> .NET</span><br><span class="line">Copyright (C) Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">  Determining projects to restore...</span><br><span class="line">  All projects are up-to-date <span class="keyword">for</span> restore.</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.Views.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish\</span><br></pre></td></tr></table></figure>
+<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>啟動 Publish 位置內的應用程式，此時應用程式在 <code>http://localhost:5000</code> 運行監聽囉，開啟瀏灠器輸入網址即可連線到網頁應用程式</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish&gt;dotnet CorePractice.dll <span class="comment"># 這裡是 dll，不是 exe</span></span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: http://localhost:5000</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: https://localhost:5001</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Application started. Press Ctrl+C to shut down.</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Hosting environment: Production</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Content root path: C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>visual studio</tag>
+        <tag>c#</tag>
+        <tag>asp</tag>
+        <tag>.net</tag>
+        <tag>core</tag>
+        <tag>3.1</tag>
+        <tag>2019</tag>
+        <tag>publish</tag>
+      </tags>
+  </entry>
 </search>
