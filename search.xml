@@ -1132,7 +1132,7 @@
 <h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><h3 id="確認環境"><a href="#確認環境" class="headerlink" title="確認環境"></a>確認環境</h3><p>開啟 <code>Visual Studio Installer</code>，確認 <code>Desktop development with C++</code> 已安裝，才可進行下面的步驟</p>
 <p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fdesktop_development_with_cpp.png?alt=media&amp;token=086089aa-89c2-406b-9b88-64bd9f4023bc" alt="確認環境"><span class="image-caption">確認環境</span></p>
 <h3 id="新增專案"><a href="#新增專案" class="headerlink" title="新增專案"></a>新增專案</h3><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fnew_project.png?alt=media&amp;token=7c6566f7-e51f-4c83-9e38-ee14a3ff1840" alt="新開專案"><span class="image-caption">新開專案</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fnew_project.png?alt=media&amp;token=7c6566f7-e51f-4c83-9e38-ee14a3ff1840" alt="新建專案"><span class="image-caption">新建專案</span></p>
 <p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fchoose_project_type.png?alt=media&amp;token=48ce3ba4-4228-45a4-b9de-188e160dd485" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
 <p>Application type 選 <code>Dynamic Link Library(.dll)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>dllmain.cpp</code></p>
 <p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fchoose_dll.png?alt=media&amp;token=be30c3e7-94b4-4cc9-a1bd-5457d068658a" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
@@ -1147,10 +1147,46 @@
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>c++</tag>
         <tag>dll</tag>
         <tag>2017</tag>
         <tag>visual studio</tag>
         <tag>dllmain</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DLL 在 C++ 中調用 dll 的函式</title>
+    <url>/2021/06/15/dll_cpp_dll/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 <code>C++</code> 中，使用 <code>LoadLibraryA</code>/<code>LoadLibraryW</code> 調用 dll。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio 2017</li>
+</ul>
+<h2 id="準備一個-DLL"><a href="#準備一個-DLL" class="headerlink" title="準備一個 DLL"></a>準備一個 DLL</h2><p>先自己寫一個 dll，詳細步驟說明請參考：<a href="https://weirenxue.github.io/2021/06/15/dll_vs_2017_dllmain_dll/">[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</a></p>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fcreate_project.png?alt=media&amp;token=fbe282e9-5cb1-4090-a01e-817bc244411e" alt="新建專案"><span class="image-caption">新建專案</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_project_type.png?alt=media&amp;token=c4a871cc-40d8-49d3-ac26-2857fb355c1d" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
+<p>Application type 選 <code>Console Application(.exe)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>&#123;project_name&#125;.cpp</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_exe.png?alt=media&amp;token=a3933b05-a276-4d7a-a0a0-7129bb6912a5" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>&#123;project_name&#125;.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-load-in-cpp">GitHub</a>)</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*voidFun)</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HMODULE hDll = <span class="built_in">LoadLibraryA</span>(<span class="string">&quot;dllMainAndFun.dll&quot;</span>);</span><br><span class="line"></span><br><span class="line">    voidFun pHelloWorldFun = (<span class="built_in"><span class="keyword">void</span></span>(*)())<span class="built_in">GetProcAddress</span>(hDll, <span class="string">&quot;helloWorldFun&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">pHelloWorldFun</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>將要匯入的 dll 放到 Debug 資料夾下，否則 <code>LoadLibraryA</code> 需要給 dll 的絕對路徑，因為 Debug 模式編譯出來的執行檔都存在此處。</p>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>按下 F5，開始 Debug 模式，看到彈出視窗 (<code>MessageBoxA</code>/<code>MessageBoxW</code>)，就代表載入成功了！顯示順序應為</p>
+<ol>
+<li>程序建立時被呼叫</li>
+<li>此函式呼叫成功</li>
+<li>程序退出時被呼叫</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>dll</tag>
+        <tag>cpp</tag>
+        <tag>invoke</tag>
+        <tag>loadlibrarya</tag>
+        <tag>loadlibraryw</tag>
       </tags>
   </entry>
 </search>
