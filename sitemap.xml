@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://weirenxue.github.io/2021/06/13/rdp_windows_10_multi/</loc>
+    
+    <lastmod>2021-06-15</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://weirenxue.github.io/2021/06/15/dll_cpp_dll/</loc>
     
     <lastmod>2021-06-15</lastmod>
@@ -52,13 +59,6 @@
   
   <url>
     <loc>https://weirenxue.github.io/2021/06/13/git_git_remote_add_origin/</loc>
-    
-    <lastmod>2021-06-13</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/2021/06/13/rdp_windows_10_multi/</loc>
     
     <lastmod>2021-06-13</lastmod>
     
@@ -1069,13 +1069,6 @@
   
   <url>
     <loc>https://weirenxue.github.io/tags/dllmain/</loc>
-    <lastmod>2021-06-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://weirenxue.github.io/tags/cpp/</loc>
     <lastmod>2021-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
