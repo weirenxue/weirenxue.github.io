@@ -1269,7 +1269,7 @@
   <entry>
     <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
     <url>/2021/06/15/ssl_crt_key/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請的CA，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Ubuntu 18.04LTS</li>
 <li>OpenSSL 1.1.1f</li>
