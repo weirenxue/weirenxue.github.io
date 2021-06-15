@@ -1108,7 +1108,7 @@
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── ejs.min.js</span><br><span class="line">└── index.html</span><br></pre></td></tr></table></figure>
 <p>直接雙擊 <code>index.html</code>，用瀏灠器就可以看到結果囉！</p>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">fieldA:Hello world!</span><br><span class="line">fieldB:Hellow Taiwan!</span><br></pre></td></tr></table></figure>
-<p>原始碼參考：<a href="https://github.com/weirenxue/ejs-first-step">GitHub</a></p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/ejs-first-step">GitHub</a></p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
@@ -1119,6 +1119,38 @@
         <tag>front end</tag>
         <tag>node</tag>
         <tag>alone</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</title>
+    <url>/2021/06/15/dll_vs_2017_dllmain_dll/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 VS 2017 寫一個 dll，其包含 <code>DllMain</code> 與一個 <code>dllexport</code> 函數。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio 2017</li>
+</ul>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><h3 id="確認環境"><a href="#確認環境" class="headerlink" title="確認環境"></a>確認環境</h3><p>開啟 <code>Visual Studio Installer</code>，確認 <code>Desktop development with C++</code> 已安裝，才可進行下面的步驟</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fdesktop_development_with_cpp.png?alt=media&amp;token=086089aa-89c2-406b-9b88-64bd9f4023bc" alt="確認環境"><span class="image-caption">確認環境</span></p>
+<h3 id="新增專案"><a href="#新增專案" class="headerlink" title="新增專案"></a>新增專案</h3><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fnew_project.png?alt=media&amp;token=7c6566f7-e51f-4c83-9e38-ee14a3ff1840" alt="新開專案"><span class="image-caption">新開專案</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fchoose_project_type.png?alt=media&amp;token=48ce3ba4-4228-45a4-b9de-188e160dd485" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
+<p>Application type 選 <code>Dynamic Link Library(.dll)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>dllmain.cpp</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fchoose_dll.png?alt=media&amp;token=be30c3e7-94b4-4cc9-a1bd-5457d068658a" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>dllmain.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-dllmain-and-function">GitHub</a>)</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// dllmain.cpp : Defines the entry point for the DLL application.</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;framework.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DLLMAIN_API __declspec(dllexport)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="function">DLLMAIN_API <span class="keyword">void</span> <span class="title">helloWorldFun</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">MessageBoxW</span>(<span class="number">0</span>, <span class="string">L&quot;此函式呼叫成功&quot;</span>, <span class="string">L&quot;helloWorldFun&quot;</span>, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL APIENTRY <span class="title">DllMain</span><span class="params">(HMODULE hModule,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD  ul_reason_for_call,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPVOID lpReserved</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in"><span class="keyword">switch</span></span> (ul_reason_for_call)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">case</span> DLL_PROCESS_ATTACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;程序建立時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_THREAD_ATTACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;執行緒建立時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_THREAD_DETACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;執行緒退出時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_PROCESS_DETACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;程序退出時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>點擊功能選單 <code>Build → Build Solution</code>，可在 Output 視窗看到下方提示，會在專案下的 Debug 資料夾產出 dll 檔案，檔名與專案名稱相同</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fbuild_solution.png?alt=media&amp;token=55a6777b-cd77-45d8-a01d-7e168eb4f5e8" alt="Build Solution"><span class="image-caption">Build Solution</span></p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">1&gt;</span><span class="bash">------ Build started: Project: Project1, Configuration: Debug Win32 ------</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">dllmain.cpp</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">   Creating library C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.lib and object C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.exp</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">Project1.vcxproj -&gt;  C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.dll</span> </span><br><span class="line">========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========</span><br></pre></td></tr></table></figure>
+<p>此時的 <code>Project1.dll</code> 就是包含 <code>DllMain</code> 與一個匯出函式 <code>helloWorldFun</code> 的 dll 檔案囉！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>dll</tag>
+        <tag>2017</tag>
+        <tag>visual studio</tag>
+        <tag>dllmain</tag>
       </tags>
   </entry>
 </search>
