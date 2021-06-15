@@ -1373,4 +1373,36 @@
         <tag>mask</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[SSL] 自簽憑證過程</title>
+    <url>/2021/06/15/ssl_self_sign/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
+<h2 id="產生-CA-SSL"><a href="#產生-CA-SSL" class="headerlink" title="產生 CA SSL"></a>產生 CA SSL</h2><p>⾸先為我們的 CA 產⽣⼀把屬於 CA 的私鑰</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out root/ca.key 4096</span><br></pre></td></tr></table></figure>
+<p>⽤這把私鑰產⽣⼀份⾃我簽署的 CA 憑證，其中 <code>subj</code> 可依自己需求做更改</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -x509 -days 365 -sha256 \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=localhost&quot;</span> \ </span><br><span class="line">    -key root/ca.key \ </span><br><span class="line">    -out root/ca.crt</span><br></pre></td></tr></table></figure>
+<h2 id="產生-Server-SSL"><a href="#產生-Server-SSL" class="headerlink" title="產生 Server SSL"></a>產生 Server SSL</h2><p>為我們的 Server 產⽣不加密之 PEM 格式的私密⾦鑰</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out server/server.key 2048</span><br></pre></td></tr></table></figure>
+<p>產⽣憑證請求檔 CSR，其中 <code>subj</code> 可依自己需求做更改，要注意的是 <strong>CN 不可與 CA 的 CN 相同</strong></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -key server/server.key \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=your_service_FQDN&quot;</span> \ </span><br><span class="line">    -out server/server.csr</span><br></pre></td></tr></table></figure>
+<p>把 CSR 丟給 CA 簽署</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -req -CAcreateserial -days 30 -sha256 \ </span><br><span class="line">    -CA root/ca.crt -CAkey root/ca.key \ </span><br><span class="line">    -<span class="keyword">in</span> server/server.csr \ </span><br><span class="line">    -out server/server.crt</span><br></pre></td></tr></table></figure>
+<p>現在⽬錄應該有以下這些文件，<code>server.key</code> 是 Server 的私鑰，<code>server.crt</code> 是 Server 的憑證，也因為是用我們自創的 CA 來簽核的一個憑證，又稱為自簽憑證</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ ls -alR . </span><br><span class="line"></span><br><span class="line">./root: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1968 Oct 21 02:05 ca.crt </span><br><span class="line">-rw------- 1 user user 3243 Oct 21 02:05 ca.key </span><br><span class="line">-rw-rw-r-- 1 user user   41 Oct 21 02:05 ca.srl </span><br><span class="line"></span><br><span class="line">./server: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1501 Oct 21 02:05 server.crt </span><br><span class="line">-rw-rw-r-- 1 user user  972 Oct 21 02:05 server.csr </span><br><span class="line">-rw------- 1 user user 1679 Oct 21 02:05 server.key</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ssl</tag>
+        <tag>ca</tag>
+        <tag>key</tag>
+        <tag>crt</tag>
+        <tag>csr</tag>
+        <tag>self</tag>
+        <tag>sign</tag>
+        <tag>openssl</tag>
+        <tag>mitm</tag>
+      </tags>
+  </entry>
 </search>
