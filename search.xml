@@ -1656,14 +1656,13 @@
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">P:\EFI\ubuntu&gt;dir</span><br><span class="line"></span><br><span class="line"> P:\EFI\ubuntu 的目錄</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          .</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          ..</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          fw</span><br><span class="line">2019/09/27  下午 06:16            75,992 fwupx64.efi</span><br><span class="line">2019/09/27  下午 06:20               121 grub.cfg</span><br><span class="line">2019/09/27  下午 06:20         1,334,816 shimx64.efi</span><br><span class="line">2019/09/27  下午 06:20         1,269,496 mmx64.efi</span><br><span class="line">2019/09/27  下午 06:20               108 BOOTX64.CSV</span><br><span class="line">2019/09/28  下午 01:01           956,792 grubx64.efi</span><br><span class="line">               6 個檔案       3,637,325 位元組</span><br><span class="line">               3 個目錄     236,093,440 位元組可用</span><br></pre></td></tr></table></figure>
 <p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;bcdedit /<span class="built_in">set</span> &#123;bootmgr&#125; path \EFI\ubuntu\grubx64.efi</span><br><span class="line"></span><br><span class="line">操作順利完成。</span><br></pre></td></tr></table></figure>
-<p>重新開機之後就可以看到選單啦！不過它等 10 秒沒操作的話就會自動進入預設的系統哦，所以要開機時需要注意，否則錯過進錯系統也只能再重開機。</p>
+<p>重新開機之後就可以看到選單啦！不過它等 10 秒沒操作的話就會自動進入預設的系統哦，所以要開機時需要注意，否則錯過進錯系統也只能再重開機。若想修改預設選項，可以參考 <a href="/2021/06/16/dual_system_change_default/">[雙系統] 更改開機系統選單的預設值</a>。</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
         <tag>windows</tag>
-        <tag>double</tag>
         <tag>system</tag>
         <tag>10</tag>
         <tag>ubuntu</tag>
@@ -1674,6 +1673,41 @@
         <tag>grubx64.efi</tag>
         <tag>linux</tag>
         <tag>18.04</tag>
+        <tag>dual</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[雙系統] 更改開機系統選單的預設值</title>
+    <url>/2021/06/16/dual_system_change_default/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>要切換雙系統的方法主要有兩種，一是修改 BIOS 的 Boot Option，另一個是使用 grub (參考：<a href="/2021/06/16/win_10_ubuntu/">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a>])。grub 預設是以 Ubuntu 開機，若在選單畫面超過 10 秒沒有動作，預設直接進入 Ubuntu。對於主要是用 Windows 的人來說稍嫌不便，因為每次開機都要等選單出現，以免不小心進其他系統，這篇主要紀錄如何將預設系統改為 Windows。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="修改-grub"><a href="#修改-grub" class="headerlink" title="修改 grub"></a>修改 grub</h2><p>以下動作皆在 Ubuntu 中執行，先知道 Windows 啟動檔的位置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ cat /boot/grub/grub.cfg | grep windows</span><br><span class="line">menuentry <span class="string">&#x27;Windows Boot Manager (於 /dev/sdb2)&#x27;</span> --class windows --class os <span class="variable">$menuentry_id_option</span> <span class="string">&#x27;osprober-efi-264C-BB58&#x27;</span> &#123;</span><br></pre></td></tr></table></figure>
+<p>記住檔案位置 <code>&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 後，再開啟 <code>/ect/default/grub</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo gedit /etc/default/grub</span><br></pre></td></tr></table></figure>
+<p>修改 <code>GRUB_DEFAULT=0</code> 為 <code>GRUB_DEFAULT=&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 並儲存，注意不要少了單引號</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-%E6%9B%B4%E6%94%B9%E9%96%8B%E6%A9%9F%E7%B3%BB%E7%B5%B1%E9%81%B8%E5%96%AE%E7%9A%84%E9%A0%90%E8%A8%AD%E5%80%BC%2Fchange_setting.png?alt=media&amp;token=55bafa2f-b2ff-4fb6-94a1-7a81fc3e9107" alt="修改 GRUB_DEFAULT"><span class="image-caption">修改 GRUB_DEFAULT</span></p>
+<p>更新 grub 後重新開機，就可以發現預設選項落在 Windows 上囉！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo update-grub</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>system</tag>
+        <tag>10</tag>
+        <tag>ubuntu</tag>
+        <tag>option</tag>
+        <tag>boot</tag>
+        <tag>menu</tag>
+        <tag>grub</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>dual</tag>
       </tags>
   </entry>
 </search>
