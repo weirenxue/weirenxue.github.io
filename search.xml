@@ -1588,4 +1588,47 @@
         <tag>mask</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[EFI] 顯示 Windows 的 EFI 系統分割磁碟</title>
+    <url>/2021/06/16/efi_windows_efi/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>與開機有關的文件通常會存放於 EFI 系統分割磁碟，且為了不讓一般使用者誤觸造成設定錯誤進而導致系統崩潰，通常會將磁碟隱藏起來，只讓真的有需要設定且知道如何進入的使用者自行更改設定。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+</ul>
+<h2 id="操作方法"><a href="#操作方法" class="headerlink" title="操作方法"></a>操作方法</h2><p>這裡有兩種方法能夠採用</p>
+<h3 id="diskpart"><a href="#diskpart" class="headerlink" title="diskpart"></a>diskpart</h3><p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;diskpart</span><br></pre></td></tr></table></figure>
+<p>執行後會跳出驗證視窗，按下「是」之後會跳出一個與 cmd 視窗很像的視窗，但其實是 diskpart.exe，接下來的動作都在此視窗中執行。</p>
+<p>先列出磁碟清單，利用大小的資訊判斷想要的 EFI 系統磁碟分割區在哪個磁碟裡面，在這情況下我的 C 槽所在磁碟的大小為 238 GB，因此 EFI 系統磁碟分割區在磁碟 1，再用 <code>select</code> 指令選擇該磁碟</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;list disk</span><br><span class="line"></span><br><span class="line">  磁碟 <span class="comment">###  狀態           大小     可用     Dyn  Gpt</span></span><br><span class="line">  --------  -------------  -------  -------  ---  ---</span><br><span class="line">  磁碟 0    連線              931 GB      0 B        *</span><br><span class="line">  磁碟 1    連線              238 GB      0 B        *</span><br><span class="line"></span><br><span class="line">DISKPART&gt;select disk 1</span><br><span class="line"></span><br><span class="line">磁碟 1 是所選擇的磁碟。</span><br></pre></td></tr></table></figure>
+<p>顯示磁碟分割清單，選擇系統磁碟分割區 (類型為系統的那個磁碟分割區)，同樣是使用 <code>select</code> 選擇該磁碟分割區</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;list partition</span><br><span class="line"></span><br><span class="line">  磁碟分割  <span class="comment">###  類型              大小     位移</span></span><br><span class="line">  -------------  ----------------  -------  -------</span><br><span class="line">  磁碟分割  1    系統                 260 MB  1024 KB</span><br><span class="line">  磁碟分割  2    保留                  16 MB   261 MB</span><br><span class="line">  磁碟分割  3    主要                 237 GB   277 MB</span><br><span class="line">  磁碟分割  4    復原                 850 MB   237 GB</span><br><span class="line"></span><br><span class="line">DISKPART&gt;select partition 1</span><br><span class="line"></span><br><span class="line">磁碟分割 1 是所選擇的磁碟分割。</span><br></pre></td></tr></table></figure>
+<p>使用 <code>assign</code> 暫時地命名分割區(這裡把它命名為 <code>p</code> 槽)，至此已經把系統磁碟叫出來了，在檔案總管 (File Explorer) 或透過 cmd (以系統管理員身分執行) 都能存取</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;assign letter=p</span><br><span class="line"></span><br><span class="line">DiskPart 成功地指派了磁碟機代號或掛接點。</span><br></pre></td></tr></table></figure>
+<p>會說它是暫時命名的是因為關機時，系統會自動註銷這個名稱，若重新啟動後還有使用需求，需要再操做一遍它才會再次出現，若要手動註銷的話則用 <code>remove</code> 指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;remove letter=p</span><br><span class="line"></span><br><span class="line">DiskPart 成功地移除了磁碟機代號或掛接點。</span><br></pre></td></tr></table></figure>
+<h3 id="mountvol"><a href="#mountvol" class="headerlink" title="mountvol"></a>mountvol</h3><p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令，將 EFI 系統分割區暫時命名為 <code>p</code> 槽</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;mountvol p: /s</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>/s</code>：Mount the EFI System Partition on the given drive.</li>
+</ul>
+<p>以這個方式指派的磁碟分割區只能在 cmd 存取 (<code>p:\</code>)，檔案總管 (File Explorer) 是看不到的。與 diskpart 相同，關機時會註銷名稱，若要手動註銷 <code>p</code> 槽</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;mountvol p: /d</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>/d</code>：Removes the volume mount point from the specified directory.</li>
+</ul>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>efi</tag>
+        <tag>diskpart</tag>
+        <tag>mountvol</tag>
+        <tag>partition</tag>
+        <tag>disk</tag>
+        <tag>cmd</tag>
+      </tags>
+  </entry>
 </search>
