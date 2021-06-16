@@ -1284,7 +1284,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #99a821;
+  background: #37e809;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2720,4 +2720,10 @@ mjx-container + br {
 .post-body .image-caption {
   margin: auto;
   display: block;
+}
+.posts-expand .post-meta {
+  margin: 10px 0 10px 0;
+}
+.post-footer .post-eof {
+  width: 100%;
 }
