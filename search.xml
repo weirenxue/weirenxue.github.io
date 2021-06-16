@@ -941,7 +941,7 @@
     <url>/2021/06/15/ssl_crt_key/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04LTS</li>
+<li>Ubuntu 18.04 LTS</li>
 <li>OpenSSL 1.1.1f</li>
 </ul>
 <h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
@@ -958,6 +958,8 @@
         <tag>match</tag>
         <tag>cert</tag>
         <tag>csr</tag>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
       </tags>
   </entry>
   <entry>
@@ -1629,6 +1631,49 @@
         <tag>partition</tag>
         <tag>disk</tag>
         <tag>cmd</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</title>
+    <url>/2021/06/16/win_10_ubuntu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 是一個非常輕便且好用的作業系統，在 Windows 下使用 Linux 大多是透過虛擬機器 (VM, Virtual Machine)，但對一個想要深入研究 Linux 的同好來說，灌雙系統是一個不錯的選擇。灌完雙系統之後，有機率會遇到一種情況「電腦會直接進Windows，不會出現選擇作業系統的畫面」。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="環境確認"><a href="#環境確認" class="headerlink" title="環境確認"></a>環境確認</h2><p>灌好 Ubuntu 後重新開機，若沒有出現系統選單，而直接進入 Windows 系統的話，那就要先確定一些設定：</p>
+<ol>
+<li><p>控制台 -&gt; 電源選項 -&gt; 選擇蓋上螢幕時的行為(左方) -&gt; 「取消勾選」開啟快速啟動</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-Win10-Ubuntu-%E9%96%8B%E6%A9%9F%E9%81%B8%E5%96%AE%EF%BC%8C%E8%AE%93%E4%BD%BF%E7%94%A8%E8%80%85%E9%96%8B%E6%A9%9F%E5%8F%AF%E4%BB%A5%E9%81%B8%E6%93%87%E7%B3%BB%E7%B5%B1%2Fcancel_quick_boot.png?alt=media&amp;token=0b90e051-8718-46fd-9888-2ba9c1af1fd6" alt="不要勾選開啟快速啟動"><span class="image-caption">不要勾選開啟快速啟動</span></p>
+</li>
+<li><p>重新開機進入 BIOS -&gt; Fast Boot -&gt; Disabled</p>
+</li>
+<li><p>同樣在 BIOS -&gt; Secure Boot Contorl -&gt; Disabled</p>
+</li>
+</ol>
+<p>以上三點都確認完，重開機後還是沒有出現選單的話，再接著去做下面的事情</p>
+<h2 id="grubx64-efi-確認"><a href="#grubx64-efi-確認" class="headerlink" title="grubx64.efi 確認"></a>grubx64.efi 確認</h2><p>進 EFI 系統分割磁碟區(參考：<a href="/2021/06/16/efi_windows_efi/">[EFI] 顯示 Windows 的 EFI 系統分割磁碟</a>)下的 ubuntu 資料夾，看是否有關鍵檔案 <code>grubx64.efi</code>，這是 Linux 的引導開機檔案，若沒有看到的話請 <a href="https://mega.nz/#!iIonWA4a!unTw_2I5r6pXLZaXUe-gU5D_lOqCHQJVwgcDeQyl0FU">點此下載 grubx64.efi</a> 並將其移到這個目錄下，再繼續下一步</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">P:\EFI\ubuntu&gt;dir</span><br><span class="line"></span><br><span class="line"> P:\EFI\ubuntu 的目錄</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          .</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          ..</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          fw</span><br><span class="line">2019/09/27  下午 06:16            75,992 fwupx64.efi</span><br><span class="line">2019/09/27  下午 06:20               121 grub.cfg</span><br><span class="line">2019/09/27  下午 06:20         1,334,816 shimx64.efi</span><br><span class="line">2019/09/27  下午 06:20         1,269,496 mmx64.efi</span><br><span class="line">2019/09/27  下午 06:20               108 BOOTX64.CSV</span><br><span class="line">2019/09/28  下午 01:01           956,792 grubx64.efi</span><br><span class="line">               6 個檔案       3,637,325 位元組</span><br><span class="line">               3 個目錄     236,093,440 位元組可用</span><br></pre></td></tr></table></figure>
+<p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;bcdedit /<span class="built_in">set</span> &#123;bootmgr&#125; path \EFI\ubuntu\grubx64.efi</span><br><span class="line"></span><br><span class="line">操作順利完成。</span><br></pre></td></tr></table></figure>
+<p>重新開機之後就可以看到選單啦！不過它等 10 秒沒操作的話就會自動進入預設的系統哦，所以要開機時需要注意，否則錯過進錯系統也只能再重開機。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>double</tag>
+        <tag>system</tag>
+        <tag>10</tag>
+        <tag>ubuntu</tag>
+        <tag>option</tag>
+        <tag>boot</tag>
+        <tag>menu</tag>
+        <tag>grub</tag>
+        <tag>grubx64.efi</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
       </tags>
   </entry>
 </search>

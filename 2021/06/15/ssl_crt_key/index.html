@@ -29,7 +29,7 @@
 <meta property="og:description" content="最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-06-15T06:36:56.000Z">
-<meta property="article:modified_time" content="2021-06-15T07:09:26.173Z">
+<meta property="article:modified_time" content="2021-06-16T13:50:37.541Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="ssl">
 <meta property="article:tag" content="crt">
@@ -37,6 +37,8 @@
 <meta property="article:tag" content="match">
 <meta property="article:tag" content="cert">
 <meta property="article:tag" content="csr">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="18.04">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://weirenxue.github.io/2021/06/15/ssl_crt_key/">
@@ -137,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">192</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">203</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -147,7 +149,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">41</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">42</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -227,10 +229,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">發表於</span>
-              
 
-              <time title="創建時間：2021-06-15 14:36:56 / 修改時間：15:09:26" itemprop="dateCreated datePublished" datetime="2021-06-15T14:36:56+08:00">2021-06-15</time>
+              <time title="創建時間：2021-06-15 14:36:56" itemprop="dateCreated datePublished" datetime="2021-06-15T14:36:56+08:00">2021-06-15</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2021-06-16 21:50:37" itemprop="dateModified" datetime="2021-06-16T21:50:37+08:00">2021-06-16</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -283,7 +291,7 @@
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04LTS</li>
+<li>Ubuntu 18.04 LTS</li>
 <li>OpenSSL 1.1.1f</li>
 </ul>
 <h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
@@ -321,6 +329,8 @@
               <a href="/tags/match/" rel="tag"># match</a>
               <a href="/tags/cert/" rel="tag"># cert</a>
               <a href="/tags/csr/" rel="tag"># csr</a>
+              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+              <a href="/tags/18-04/" rel="tag"># 18.04</a>
           </div>
 
         
@@ -416,7 +426,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-count">42</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -429,7 +439,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">192</span>
+        <span class="site-state-item-count">203</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
