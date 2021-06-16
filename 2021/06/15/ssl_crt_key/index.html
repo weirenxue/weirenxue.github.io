@@ -18,7 +18,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   <meta name="description" content="最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。">
@@ -32,11 +32,11 @@
 <meta property="article:modified_time" content="2021-06-15T07:09:26.173Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="ssl">
-<meta property="article:tag" content="key">
-<meta property="article:tag" content="csr">
 <meta property="article:tag" content="crt">
+<meta property="article:tag" content="key">
 <meta property="article:tag" content="match">
 <meta property="article:tag" content="cert">
+<meta property="article:tag" content="csr">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://weirenxue.github.io/2021/06/15/ssl_crt_key/">
@@ -316,11 +316,11 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/ssl/" rel="tag"># ssl</a>
-              <a href="/tags/key/" rel="tag"># key</a>
-              <a href="/tags/csr/" rel="tag"># csr</a>
               <a href="/tags/crt/" rel="tag"># crt</a>
+              <a href="/tags/key/" rel="tag"># key</a>
               <a href="/tags/match/" rel="tag"># match</a>
               <a href="/tags/cert/" rel="tag"># cert</a>
+              <a href="/tags/csr/" rel="tag"># csr</a>
           </div>
 
         
@@ -585,6 +585,7 @@
 
   
   <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 

@@ -18,7 +18,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   <meta name="description" content="SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。">
@@ -32,14 +32,14 @@
 <meta property="article:modified_time" content="2021-06-16T00:55:18.157Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="ssl">
-<meta property="article:tag" content="ca">
+<meta property="article:tag" content="crt">
 <meta property="article:tag" content="key">
+<meta property="article:tag" content="csr">
 <meta property="article:tag" content="self">
 <meta property="article:tag" content="sign">
 <meta property="article:tag" content="openssl">
 <meta property="article:tag" content="mitm">
-<meta property="article:tag" content="csr">
-<meta property="article:tag" content="crt">
+<meta property="article:tag" content="ca">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://weirenxue.github.io/2021/06/15/ssl_self_sign/">
@@ -330,14 +330,14 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/ssl/" rel="tag"># ssl</a>
-              <a href="/tags/ca/" rel="tag"># ca</a>
+              <a href="/tags/crt/" rel="tag"># crt</a>
               <a href="/tags/key/" rel="tag"># key</a>
+              <a href="/tags/csr/" rel="tag"># csr</a>
               <a href="/tags/self/" rel="tag"># self</a>
               <a href="/tags/sign/" rel="tag"># sign</a>
               <a href="/tags/openssl/" rel="tag"># openssl</a>
               <a href="/tags/mitm/" rel="tag"># mitm</a>
-              <a href="/tags/csr/" rel="tag"># csr</a>
-              <a href="/tags/crt/" rel="tag"># crt</a>
+              <a href="/tags/ca/" rel="tag"># ca</a>
           </div>
 
         
@@ -602,6 +602,7 @@
 
   
   <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 

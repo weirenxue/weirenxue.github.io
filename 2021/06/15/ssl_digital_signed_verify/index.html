@@ -18,7 +18,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   <meta name="description" content="SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作。但我有發現一個現象，就是當講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並整理後記錄在這。">
@@ -32,15 +32,15 @@
 <meta property="article:modified_time" content="2021-06-15T08:12:32.318Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="ssl">
+<meta property="article:tag" content="key">
+<meta property="article:tag" content="ca">
 <meta property="article:tag" content="digital">
 <meta property="article:tag" content="signature">
 <meta property="article:tag" content="verify">
 <meta property="article:tag" content="process">
-<meta property="article:tag" content="ca">
 <meta property="article:tag" content="certificate">
 <meta property="article:tag" content="private">
 <meta property="article:tag" content="public">
-<meta property="article:tag" content="key">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://weirenxue.github.io/2021/06/15/ssl_digital_signed_verify/">
@@ -324,15 +324,15 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/ssl/" rel="tag"># ssl</a>
+              <a href="/tags/key/" rel="tag"># key</a>
+              <a href="/tags/ca/" rel="tag"># ca</a>
               <a href="/tags/digital/" rel="tag"># digital</a>
               <a href="/tags/signature/" rel="tag"># signature</a>
               <a href="/tags/verify/" rel="tag"># verify</a>
               <a href="/tags/process/" rel="tag"># process</a>
-              <a href="/tags/ca/" rel="tag"># ca</a>
               <a href="/tags/certificate/" rel="tag"># certificate</a>
               <a href="/tags/private/" rel="tag"># private</a>
               <a href="/tags/public/" rel="tag"># public</a>
-              <a href="/tags/key/" rel="tag"># key</a>
           </div>
 
         
@@ -597,6 +597,7 @@
 
   
   <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
