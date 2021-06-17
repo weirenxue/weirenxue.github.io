@@ -1827,4 +1827,34 @@
         <tag>remove</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[Power] Ubuntu 筆電蓋上螢幕不休眠</title>
+    <url>/2021/06/17/power_ubuntu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>筆電闔上螢幕不一定是沒有要使用，有可能是在有外接螢幕情況下只需要一個螢幕，這時就可以選擇把螢幕關上將筆電當成桌電主機一樣，因此就需要設定讓筆電關上螢幕時不會有任何動作 (包含睡眠、休眠等等)。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="修改系統參數"><a href="#修改系統參數" class="headerlink" title="修改系統參數"></a>修改系統參數</h2><p>使用 vim 編輯器開啟電源管理的配置檔案 (gedit 無法修改系統參數檔案)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo vim /etc/systemd/logind.conf</span><br></pre></td></tr></table></figure>
+<p><code>HandleLidSwitch</code> 為管理螢幕闔上動作的參數，若要無動作，將其指定為 <code>ignore</code>，且前方不要有註解符號 <code>＃</code>，修改好後 <code>:wq</code> 存檔並重新開機使其生效。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HandleLidSwitch=ignore </span><br></pre></td></tr></table></figure>
+<ul>
+<li>其他參數的數值還有休眠 (hibernate)、睡眠 (suspend)、關機 (poweroff)</li>
+</ul>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>screen</tag>
+        <tag>sleep</tag>
+        <tag>action</tag>
+        <tag>cover</tag>
+        <tag>suspend</tag>
+        <tag>poweroff</tag>
+        <tag>hibernate</tag>
+      </tags>
+  </entry>
 </search>
