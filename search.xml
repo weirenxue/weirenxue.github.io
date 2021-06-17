@@ -1710,4 +1710,42 @@
         <tag>dual</tag>
       </tags>
   </entry>
+  <entry>
+    <title>[雙系統] 同步 Ubuntu 與 Windows 的系統時間</title>
+    <url>/2021/06/17/ubuntu_windows_time/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>使用 Ubuntu + Windows 雙系統的用戶，應該會發現 Ubuntu 的時間總是與 Windows 的不一樣，在 UTC+8 的地方，Ubuntu 比 Windows 快 8 小時，切換系統後總是要手動調整時間，造成一定的困擾。最佳解決之道應為將雙系統時間設為同步，因此這裡紀錄了如何將雙系統的時間設為一致。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="原因說明"><a href="#原因說明" class="headerlink" title="原因說明"></a>原因說明</h2><p>此問題是由於 Ubuntu 和 Windows 的時間設定方式不同所導致，以當地時間 UTC+8 為例</p>
+<ul>
+<li>Windows：取得硬體時間 (BIOS 的時間) 直接為當地時間 (Local Time)。</li>
+<li>Ubuntu：取得硬體時間 (BIOS 的時間) 並視之為 UTC+0，所以顯示出來的時間是硬體時間 +8 後的結果，也就是 Windows 的時間 +8。</li>
+</ul>
+<p>簡而言之，正是因為 Ubuntu 會把硬體時間視為 UTC+0，切到 Windows 顯示出來的時間才會比 Ubuntu 慢上 8 個小時！</p>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>以下皆是在 Ubuntu 操作，先取得正確時間</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate            <span class="comment"># network time protocol date </span></span><br><span class="line">user@pc:~$ sudo ntpdate time.windows.com           <span class="comment"># 從微軟公司的時間伺服器取得時間</span></span><br></pre></td></tr></table></figure>
+<p>把系統中的時間更新到硬體上，並請 Ubuntu 將硬體時間視為當地時間，這樣就會與 Windows 顯示時間的運作方式一樣，再重開機進入 Windows 查看是否同步</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo hwclock --systohc --localtime    <span class="comment"># hardware clock</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>--systohc</code>：將系統時間同步到硬體內</li>
+<li><code>--localtime</code>：將硬體時間當作當地時間</li>
+</ul>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>time</tag>
+        <tag>system</tag>
+        <tag>10</tag>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>dual</tag>
+        <tag>synchronize</tag>
+      </tags>
+  </entry>
 </search>
