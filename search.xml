@@ -1857,4 +1857,35 @@
         <tag>hibernate</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Mount 掛載與卸載一個 iso 光碟映像檔</title>
+    <url>/2021/06/17/mount_iso/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 mount/umount 這組指令。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
+<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-o loop</code>：使用 loop device 來掛載</li>
+</ul>
+<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
+<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>mount</tag>
+        <tag>unmount</tag>
+        <tag>iso</tag>
+        <tag>media</tag>
+      </tags>
+  </entry>
 </search>
