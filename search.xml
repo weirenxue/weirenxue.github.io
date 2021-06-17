@@ -1787,7 +1787,7 @@
 <p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E5%9C%A8-Ubuntu-%E5%AE%89%E8%A3%9D%E5%98%B8%E8%9D%A6%E7%B1%B3%E7%AD%89%E8%BC%B8%E5%85%A5%E6%B3%95%2Fchange_ime.png?alt=media&amp;token=9bc6f6db-41b9-417e-ab0f-fb1bc249c097" alt="設定輸入法系統"><span class="image-caption">設定輸入法系統</span></p>
 <p>點擊 fcitx 圖示 -&gt; Configure，若有看到嘸蝦米 (Boshiamy) 等自己安裝的輸入法，就代表安裝完成，可以開始使用了。若沒有看到，可點擊左下角的「＋」按鈕，在搜尋框內輸入 Chewing 來新增。若很確定有安裝輸入法但找不到的話，試著把「Only Show Current Language」取消勾選，就會有了</p>
 <p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E5%9C%A8-Ubuntu-%E5%AE%89%E8%A3%9D%E5%98%B8%E8%9D%A6%E7%B1%B3%E7%AD%89%E8%BC%B8%E5%85%A5%E6%B3%95%2Fadd_ime.png?alt=media&amp;token=14b764f6-c8e6-44cc-927a-e9dbb3d27152" alt="fcitx 介面"><span class="image-caption">fcitx 介面</span></p>
-<h2 id="貼心小提醒"><a href="#貼心小提醒" class="headerlink" title="貼心小提醒"></a>貼心小提醒</h2><p>嘸蝦米的預設通常是簡體中文，若要換成繁體中文的話可按組合鍵「Ctrl+Shift+F」做切換。</p>
+<h2 id="貼心小提醒"><a href="#貼心小提醒" class="headerlink" title="貼心小提醒"></a>貼心小提醒</h2><p>嘸蝦米的預設通常是簡體中文，若要換成繁體中文的話可按組合鍵「Ctrl + Shift + F」做切換。</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
