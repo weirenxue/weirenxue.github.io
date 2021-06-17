@@ -29,7 +29,7 @@
 <meta property="og:description" content="安裝與移除幾乎是每天都會作到的動作，移除相較安裝困難，Windows 作業系統中只需要進控制台移除程式，而在 Linux 只能使用指令來做移除的動作，且不確定是否真的移除乾淨相關檔案，最近剛好要移除 libreoffice，因此藉此紀錄移除程式的步驟與指令相對的意義。">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-06-17T06:16:13.000Z">
-<meta property="article:modified_time" content="2021-06-17T07:00:13.341Z">
+<meta property="article:modified_time" content="2021-06-17T07:02:23.938Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="ubuntu">
 <meta property="article:tag" content="18.04">
@@ -137,7 +137,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">234</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">240</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -147,7 +147,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">51</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">52</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -229,7 +229,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2021-06-17 14:16:13 / 修改時間：15:00:13" itemprop="dateCreated datePublished" datetime="2021-06-17T14:16:13+08:00">2021-06-17</time>
+              <time title="創建時間：2021-06-17 14:16:13 / 修改時間：15:02:23" itemprop="dateCreated datePublished" datetime="2021-06-17T14:16:13+08:00">2021-06-17</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -291,6 +291,7 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get autoremove              <span class="comment"># 移除原為「自動」安裝但現在不再需要的套件</span></span><br></pre></td></tr></table></figure>
 <p>移除相關的 deb 檔案</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get clean <span class="comment"># 除了「lock」檔案，移除在 /var/cache/apt/archives/ 與</span></span><br><span class="line">                              <span class="comment"># /var/cache/apt/archives/partial/ 目錄下的檔案，</span></span><br><span class="line">                              <span class="comment"># 這兩個目錄是執行「apt-get install」或「apt-get upgrade」指令時，</span></span><br><span class="line">                              <span class="comment"># 放置下載的相關套件所在，因為已經用不到，所以這些東西也可以清理掉</span></span><br></pre></td></tr></table></figure>
+
     </div>
 
     
@@ -333,7 +334,10 @@
     <a href="/2021/06/17/rpm_deb/" rel="prev" title="[轉檔] 將 rpm 檔轉為 deb 檔">
       <i class="fa fa-chevron-left"></i> [轉檔] 將 rpm 檔轉為 deb 檔
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/06/17/usb_usb/" rel="next" title="[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法">
+      [USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -414,7 +418,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">52</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -427,7 +431,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">234</span>
+        <span class="site-state-item-count">240</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>

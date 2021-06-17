@@ -35,6 +35,42 @@
       </tags>
   </entry>
   <entry>
+    <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
+    <url>/2021/06/15/cs_asp_net_core_3_1/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio Enterprise 2019 (16.7.2)</li>
+<li>.Net Core 3.1</li>
+</ul>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>必需使用 Visual Studio 2019 以上版本才可以用 .NET Core 3.1 (<a href="https://dotnet.microsoft.com/download/dotnet-core/3.1">參考資訊</a>)，也因為 2.1 版在 2021/08/21 就會結束支援，所以建議使用較新的 Core (3.1)。</p>
+<p>開啟「Visual Studio 2019」→「Create a new project」→ 選「ASP.NET Core Web Application」→ Project name 為「CorePractice」→ 選「Web Application」(請注意上方要為 .NET Core 與 ASP.NET Core 3.1，且右方的 HTTPS 不要勾) →「Create」</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fcreate_project.png?alt=media&amp;token=fc23ffc7-0664-4325-bd3f-9d052cf073d7" alt="創建專案步驟"><span class="image-caption">創建專案步驟</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>目錄結構如下，目前只會用到 <code>Index.cshtml</code> 與 <code>Index.cshtml.cs</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">│  appsettings.Development.json</span><br><span class="line">│  appsettings.json</span><br><span class="line">│  CorePractice.csproj</span><br><span class="line">│  Program.cs</span><br><span class="line">│  Startup.cs</span><br><span class="line">├─bin</span><br><span class="line">├─obj</span><br><span class="line">├─Pages</span><br><span class="line">│  │  Error.cshtml</span><br><span class="line">│  │  Error.cshtml.cs</span><br><span class="line">│  │  Index.cshtml</span><br><span class="line">│  │  Index.cshtml.cs</span><br><span class="line">│  │  Privacy.cshtml</span><br><span class="line">│  │  Privacy.cshtml.cs</span><br><span class="line">│  │  _ViewImports.cshtml</span><br><span class="line">│  │  _ViewStart.cshtml</span><br><span class="line">│  │</span><br><span class="line">│  └─Shared</span><br><span class="line">├─Properties</span><br><span class="line">└─wwwroot</span><br></pre></td></tr></table></figure>
+<p>修改 <code>Index.cshtml.cs</code> 內 <code>OnGet</code> 函式的內容，透過 <code>ViewData</code> 將資料傳給 View</p>
+<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.RazorPages;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CorePractice.Pages</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">IndexModel</span> : <span class="title">PageModel</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;IndexModel&gt; _logger;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">IndexModel</span>(<span class="params">ILogger&lt;IndexModel&gt; logger</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            _logger = logger;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGet</span>(<span class="params"></span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span>[] names = <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; <span class="string">&quot;Alfreda Stephenson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Swanson Swanson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Walker Pace&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Katina Le&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Lesley Calderon&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Ruth Merrill&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Cristina Buchanan&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Gallegos May&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Macdonald Lucas&quot;</span>&#125;;</span><br><span class="line">            <span class="built_in">int</span> num = <span class="number">3</span>;</span><br><span class="line">            <span class="built_in">int</span>[] age = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            <span class="built_in">string</span>[] name = <span class="keyword">new</span> <span class="built_in">string</span>[num];</span><br><span class="line">            <span class="built_in">int</span>[] family = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            Random rnd = <span class="keyword">new</span> Random();</span><br><span class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; num; i++)</span><br><span class="line">            &#123;</span><br><span class="line">                age[i] = rnd.Next(<span class="number">50</span>);</span><br><span class="line">                name[i] = names[rnd.Next(names.Length)];</span><br><span class="line">                family[i] = rnd.Next(<span class="number">5</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            ViewData[<span class="string">&quot;age&quot;</span>] = age;</span><br><span class="line">            ViewData[<span class="string">&quot;name&quot;</span>] = name;</span><br><span class="line">            ViewData[<span class="string">&quot;family&quot;</span>] = family;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>將 <code>Index.cshtml</code> 修改如下，透過 <code>ViewData</code> 將 Controller 的資料取出，在 View 中渲染</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">@page</span><br><span class="line">@model IndexModel</span><br><span class="line">@&#123;</span><br><span class="line">    ViewData[&quot;Title&quot;] = &quot;Home page&quot;;</span><br><span class="line"></span><br><span class="line">    int[] age = ViewData[&quot;age&quot;] as int[];</span><br><span class="line">    string[] name = ViewData[&quot;name&quot;] as string[];</span><br><span class="line">    int[] family = ViewData[&quot;family&quot;] as int[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;text-center&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">&quot;display-4&quot;</span>&gt;</span>Welcome<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Learn about <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://docs.microsoft.com/aspnet/core&quot;</span>&gt;</span>building Web apps with ASP.NET Core<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">style</span>=<span class="string">&quot;border-style: solid; margin-left: auto; margin-right: auto;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>名字<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>歲數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>家庭人數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    @for (var i = 0; i &lt; name.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@name[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@age[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@family[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">    <span class="selector-tag">table</span> <span class="selector-tag">td</span>, <span class="selector-tag">table</span> <span class="selector-tag">th</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">1px</span> solid black;</span></span><br><span class="line"><span class="css">    &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>編譯與建置 (F5) 後一個簡單的 ASP.NET Core 應用程式就此完成</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fproject_demo.png?alt=media&amp;token=7e1625c1-5d92-4acd-84b5-8de508a799f0" alt="完成頁面"><span class="image-caption">完成頁面</span></p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/core-practice">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>csharp</tag>
+        <tag>asp</tag>
+        <tag>.net</tag>
+        <tag>core</tag>
+        <tag>3.1</tag>
+        <tag>visual studio</tag>
+        <tag>razor</tag>
+        <tag>2019</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[C#] 在高 DPI 的螢幕上，有些應用程式內的字會模糊的原因以及解決方法！</title>
     <url>/2021/06/11/cs_dpi/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>開啟 Visual Studio <code>C#</code> 的 Windows Form 應用程式來設計，一定曾經注意到雖然在 VS 裡面設計 Form 時，預覽的字是清晰的，結果 Compiler 之後跑出來的字是模糊的！以下圖幫各位回憶一下。</p>
@@ -106,26 +142,20 @@
       </tags>
   </entry>
   <entry>
-    <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
-    <url>/2021/06/15/cs_asp_net_core_3_1/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
+    <title>[C#] 發布 ASP.NET Core 應用程式</title>
+    <url>/2021/06/15/cs_asp_net_core/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接續 <a href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core_3_1/">[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</a> 已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Windows 10</li>
 <li>Visual Studio Enterprise 2019 (16.7.2)</li>
 <li>.Net Core 3.1</li>
 </ul>
-<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>必需使用 Visual Studio 2019 以上版本才可以用 .NET Core 3.1 (<a href="https://dotnet.microsoft.com/download/dotnet-core/3.1">參考資訊</a>)，也因為 2.1 版在 2021/08/21 就會結束支援，所以建議使用較新的 Core (3.1)。</p>
-<p>開啟「Visual Studio 2019」→「Create a new project」→ 選「ASP.NET Core Web Application」→ Project name 為「CorePractice」→ 選「Web Application」(請注意上方要為 .NET Core 與 ASP.NET Core 3.1，且右方的 HTTPS 不要勾) →「Create」</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fcreate_project.png?alt=media&amp;token=fc23ffc7-0664-4325-bd3f-9d052cf073d7" alt="創建專案步驟"><span class="image-caption">創建專案步驟</span></p>
-<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>目錄結構如下，目前只會用到 <code>Index.cshtml</code> 與 <code>Index.cshtml.cs</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">│  appsettings.Development.json</span><br><span class="line">│  appsettings.json</span><br><span class="line">│  CorePractice.csproj</span><br><span class="line">│  Program.cs</span><br><span class="line">│  Startup.cs</span><br><span class="line">├─bin</span><br><span class="line">├─obj</span><br><span class="line">├─Pages</span><br><span class="line">│  │  Error.cshtml</span><br><span class="line">│  │  Error.cshtml.cs</span><br><span class="line">│  │  Index.cshtml</span><br><span class="line">│  │  Index.cshtml.cs</span><br><span class="line">│  │  Privacy.cshtml</span><br><span class="line">│  │  Privacy.cshtml.cs</span><br><span class="line">│  │  _ViewImports.cshtml</span><br><span class="line">│  │  _ViewStart.cshtml</span><br><span class="line">│  │</span><br><span class="line">│  └─Shared</span><br><span class="line">├─Properties</span><br><span class="line">└─wwwroot</span><br></pre></td></tr></table></figure>
-<p>修改 <code>Index.cshtml.cs</code> 內 <code>OnGet</code> 函式的內容，透過 <code>ViewData</code> 將資料傳給 View</p>
-<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.RazorPages;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CorePractice.Pages</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">IndexModel</span> : <span class="title">PageModel</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;IndexModel&gt; _logger;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">IndexModel</span>(<span class="params">ILogger&lt;IndexModel&gt; logger</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            _logger = logger;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGet</span>(<span class="params"></span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span>[] names = <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; <span class="string">&quot;Alfreda Stephenson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Swanson Swanson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Walker Pace&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Katina Le&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Lesley Calderon&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Ruth Merrill&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Cristina Buchanan&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Gallegos May&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Macdonald Lucas&quot;</span>&#125;;</span><br><span class="line">            <span class="built_in">int</span> num = <span class="number">3</span>;</span><br><span class="line">            <span class="built_in">int</span>[] age = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            <span class="built_in">string</span>[] name = <span class="keyword">new</span> <span class="built_in">string</span>[num];</span><br><span class="line">            <span class="built_in">int</span>[] family = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            Random rnd = <span class="keyword">new</span> Random();</span><br><span class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; num; i++)</span><br><span class="line">            &#123;</span><br><span class="line">                age[i] = rnd.Next(<span class="number">50</span>);</span><br><span class="line">                name[i] = names[rnd.Next(names.Length)];</span><br><span class="line">                family[i] = rnd.Next(<span class="number">5</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            ViewData[<span class="string">&quot;age&quot;</span>] = age;</span><br><span class="line">            ViewData[<span class="string">&quot;name&quot;</span>] = name;</span><br><span class="line">            ViewData[<span class="string">&quot;family&quot;</span>] = family;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>將 <code>Index.cshtml</code> 修改如下，透過 <code>ViewData</code> 將 Controller 的資料取出，在 View 中渲染</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">@page</span><br><span class="line">@model IndexModel</span><br><span class="line">@&#123;</span><br><span class="line">    ViewData[&quot;Title&quot;] = &quot;Home page&quot;;</span><br><span class="line"></span><br><span class="line">    int[] age = ViewData[&quot;age&quot;] as int[];</span><br><span class="line">    string[] name = ViewData[&quot;name&quot;] as string[];</span><br><span class="line">    int[] family = ViewData[&quot;family&quot;] as int[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;text-center&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">&quot;display-4&quot;</span>&gt;</span>Welcome<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Learn about <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://docs.microsoft.com/aspnet/core&quot;</span>&gt;</span>building Web apps with ASP.NET Core<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">style</span>=<span class="string">&quot;border-style: solid; margin-left: auto; margin-right: auto;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>名字<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>歲數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>家庭人數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    @for (var i = 0; i &lt; name.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@name[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@age[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@family[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">    <span class="selector-tag">table</span> <span class="selector-tag">td</span>, <span class="selector-tag">table</span> <span class="selector-tag">th</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">1px</span> solid black;</span></span><br><span class="line"><span class="css">    &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>編譯與建置 (F5) 後一個簡單的 ASP.NET Core 應用程式就此完成</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fproject_demo.png?alt=media&amp;token=7e1625c1-5d92-4acd-84b5-8de508a799f0" alt="完成頁面"><span class="image-caption">完成頁面</span></p>
-<p>參考原始碼：<a href="https://github.com/weirenxue/core-practice">GitHub</a></p>
+<h2 id="發布"><a href="#發布" class="headerlink" title="發布"></a>發布</h2><p>開啟 cmd 進到專案的資料夾裡</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;<span class="built_in">cd</span> C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice</span><br></pre></td></tr></table></figure>
+<p>使用 <a href="https://docs.microsoft.com/zh-tw/dotnet/core/tools/dotnet-build">Release 組建組態</a>，並以指令執行 publish，訊息中的最後一行為該專案 Publish 的位置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice&gt;dotnet publish -c Release</span><br><span class="line">Microsoft (R) Build Engine version 16.7.0+b89cb5fde <span class="keyword">for</span> .NET</span><br><span class="line">Copyright (C) Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">  Determining projects to restore...</span><br><span class="line">  All projects are up-to-date <span class="keyword">for</span> restore.</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.Views.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish\</span><br></pre></td></tr></table></figure>
+<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>啟動 Publish 位置內的應用程式，此時應用程式在 <code>http://localhost:5000</code> 運行監聽囉，開啟瀏灠器輸入網址即可連線到網頁應用程式</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish&gt;dotnet CorePractice.dll <span class="comment"># 這裡是 dll，不是 exe</span></span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: http://localhost:5000</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: https://localhost:5001</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Application started. Press Ctrl+C to shut down.</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Hosting environment: Production</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Content root path: C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
@@ -137,8 +167,8 @@
         <tag>core</tag>
         <tag>3.1</tag>
         <tag>visual studio</tag>
-        <tag>razor</tag>
         <tag>2019</tag>
+        <tag>publish</tag>
       </tags>
   </entry>
   <entry>
@@ -172,71 +202,6 @@
         <tag>dll</tag>
         <tag>2017</tag>
         <tag>dllmain</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[C#] 發布 ASP.NET Core 應用程式</title>
-    <url>/2021/06/15/cs_asp_net_core/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接續 <a href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core_3_1/">[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</a> 已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio Enterprise 2019 (16.7.2)</li>
-<li>.Net Core 3.1</li>
-</ul>
-<h2 id="發布"><a href="#發布" class="headerlink" title="發布"></a>發布</h2><p>開啟 cmd 進到專案的資料夾裡</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;<span class="built_in">cd</span> C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice</span><br></pre></td></tr></table></figure>
-<p>使用 <a href="https://docs.microsoft.com/zh-tw/dotnet/core/tools/dotnet-build">Release 組建組態</a>，並以指令執行 publish，訊息中的最後一行為該專案 Publish 的位置</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice&gt;dotnet publish -c Release</span><br><span class="line">Microsoft (R) Build Engine version 16.7.0+b89cb5fde <span class="keyword">for</span> .NET</span><br><span class="line">Copyright (C) Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">  Determining projects to restore...</span><br><span class="line">  All projects are up-to-date <span class="keyword">for</span> restore.</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.Views.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish\</span><br></pre></td></tr></table></figure>
-<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>啟動 Publish 位置內的應用程式，此時應用程式在 <code>http://localhost:5000</code> 運行監聽囉，開啟瀏灠器輸入網址即可連線到網頁應用程式</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish&gt;dotnet CorePractice.dll <span class="comment"># 這裡是 dll，不是 exe</span></span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: http://localhost:5000</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: https://localhost:5001</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Application started. Press Ctrl+C to shut down.</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Hosting environment: Production</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Content root path: C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>csharp</tag>
-        <tag>asp</tag>
-        <tag>.net</tag>
-        <tag>core</tag>
-        <tag>3.1</tag>
-        <tag>visual studio</tag>
-        <tag>2019</tag>
-        <tag>publish</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[DLL] 在 C++ 中調用 dll 的函式</title>
-    <url>/2021/06/15/dll_cpp_dll/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 <code>C++</code> 中，使用 <code>LoadLibraryA</code>/<code>LoadLibraryW</code> 調用 dll。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio 2017</li>
-</ul>
-<h2 id="準備一個-DLL"><a href="#準備一個-DLL" class="headerlink" title="準備一個 DLL"></a>準備一個 DLL</h2><p>先自己寫一個 dll，詳細步驟說明請參考：<a href="/2021/06/15/dll_vs_2017_dllmain_dll/">[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</a>。</p>
-<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fcreate_project.png?alt=media&amp;token=fbe282e9-5cb1-4090-a01e-817bc244411e" alt="新建專案"><span class="image-caption">新建專案</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_project_type.png?alt=media&amp;token=c4a871cc-40d8-49d3-ac26-2857fb355c1d" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
-<p>Application type 選 <code>Console Application(.exe)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>&#123;project_name&#125;.cpp</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_exe.png?alt=media&amp;token=a3933b05-a276-4d7a-a0a0-7129bb6912a5" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
-<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>&#123;project_name&#125;.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-load-in-cpp">GitHub</a>)</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*voidFun)</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HMODULE hDll = <span class="built_in">LoadLibraryA</span>(<span class="string">&quot;dllMainAndFun.dll&quot;</span>);</span><br><span class="line"></span><br><span class="line">    voidFun pHelloWorldFun = (<span class="built_in"><span class="keyword">void</span></span>(*)())<span class="built_in">GetProcAddress</span>(hDll, <span class="string">&quot;helloWorldFun&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">pHelloWorldFun</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>將要匯入的 dll 放到 Debug 資料夾下，否則 <code>LoadLibraryA</code> 需要給 dll 的絕對路徑，因為 Debug 模式編譯出來的執行檔都存在此處。</p>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>按下 F5，開始 Debug 模式，看到彈出視窗 (<code>MessageBoxA</code>/<code>MessageBoxW</code>)，就代表載入成功了！顯示順序應為</p>
-<ol>
-<li>程序建立時被呼叫</li>
-<li>此函式呼叫成功</li>
-<li>程序退出時被呼叫</li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>cpp</tag>
-        <tag>dll</tag>
-        <tag>invoke</tag>
-        <tag>loadlibrarya</tag>
-        <tag>loadlibraryw</tag>
       </tags>
   </entry>
   <entry>
@@ -280,6 +245,41 @@
         <tag>partition</tag>
         <tag>disk</tag>
         <tag>cmd</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[DLL] 在 C++ 中調用 dll 的函式</title>
+    <url>/2021/06/15/dll_cpp_dll/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 <code>C++</code> 中，使用 <code>LoadLibraryA</code>/<code>LoadLibraryW</code> 調用 dll。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio 2017</li>
+</ul>
+<h2 id="準備一個-DLL"><a href="#準備一個-DLL" class="headerlink" title="準備一個 DLL"></a>準備一個 DLL</h2><p>先自己寫一個 dll，詳細步驟說明請參考：<a href="/2021/06/15/dll_vs_2017_dllmain_dll/">[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</a>。</p>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fcreate_project.png?alt=media&amp;token=fbe282e9-5cb1-4090-a01e-817bc244411e" alt="新建專案"><span class="image-caption">新建專案</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_project_type.png?alt=media&amp;token=c4a871cc-40d8-49d3-ac26-2857fb355c1d" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
+<p>Application type 選 <code>Console Application(.exe)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>&#123;project_name&#125;.cpp</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_exe.png?alt=media&amp;token=a3933b05-a276-4d7a-a0a0-7129bb6912a5" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>&#123;project_name&#125;.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-load-in-cpp">GitHub</a>)</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*voidFun)</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HMODULE hDll = <span class="built_in">LoadLibraryA</span>(<span class="string">&quot;dllMainAndFun.dll&quot;</span>);</span><br><span class="line"></span><br><span class="line">    voidFun pHelloWorldFun = (<span class="built_in"><span class="keyword">void</span></span>(*)())<span class="built_in">GetProcAddress</span>(hDll, <span class="string">&quot;helloWorldFun&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">pHelloWorldFun</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>將要匯入的 dll 放到 Debug 資料夾下，否則 <code>LoadLibraryA</code> 需要給 dll 的絕對路徑，因為 Debug 模式編譯出來的執行檔都存在此處。</p>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>按下 F5，開始 Debug 模式，看到彈出視窗 (<code>MessageBoxA</code>/<code>MessageBoxW</code>)，就代表載入成功了！顯示順序應為</p>
+<ol>
+<li>程序建立時被呼叫</li>
+<li>此函式呼叫成功</li>
+<li>程序退出時被呼叫</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>cpp</tag>
+        <tag>dll</tag>
+        <tag>invoke</tag>
+        <tag>loadlibrarya</tag>
+        <tag>loadlibraryw</tag>
       </tags>
   </entry>
   <entry>
@@ -419,6 +419,34 @@
       </tags>
   </entry>
   <entry>
+    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
+    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>IIS 10.0</li>
+</ul>
+<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>iis</tag>
+        <tag>server</tag>
+        <tag>x powered by</tag>
+        <tag>x aspnet version</tag>
+        <tag>header</tag>
+        <tag>hide</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[IME] 在 Ubuntu 安裝嘸蝦米等輸入法</title>
     <url>/2021/06/17/ime_ubuntu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 預設中的輸入法為 IBus 框架，除 IBus 外還有很多如 gcin、fcitx 等不同的輸入法框架，若想要使用如嘸 (ㄈㄨˇ) 蝦米等輸入法的話就需要使用有支援的框架，這篇文章主要紀錄如何安裝嘸蝦米輸入法與酷音輸入法。</p>
@@ -473,31 +501,28 @@
       </tags>
   </entry>
   <entry>
-    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
-    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>IIS 10.0</li>
-</ul>
-<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
+    <title>[Jupyter] 改變 Jupyter notebook 預設路徑與瀏覽器</title>
+    <url>/2021/06/12/python_jupyter/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Jupyter notebook 是一種很方便開發 <code>Python</code> 程式的軟體，可以一步一步地來執行 Python，近年使用率也逐步提高。而我也是使用 Jupyter notebook 的愛用者，最一開始會遇到幾個問題，就是預設的瀏覽器為什麼是 Edge！要怎麼改？再來是預設路徑要怎麼改到我想放 <code>Python</code> 檔案的地方？</p>
+<h2 id="產生環境設定檔案"><a href="#產生環境設定檔案" class="headerlink" title="產生環境設定檔案"></a>產生環境設定檔案</h2><p>Jupyter notebook 的環境設定檔預設不會出現，因此要先下指令產生</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;jupyter notebook --generate-config</span><br><span class="line">Writing default config to: C:\Users\user\.jupyter\jupyter_notebook_config.py</span><br></pre></td></tr></table></figure>
+<p>產出的設定檔會在指令所提示的地方 <code>C:\Users\user\.jupyter\jupyter_notebook_config.py</code></p>
+<h2 id="修改預設瀏覽器"><a href="#修改預設瀏覽器" class="headerlink" title="修改預設瀏覽器"></a>修改預設瀏覽器</h2><p>開啟 <code>jupyter_notebook_config.py</code> 並搜尋 <code>c.NotebookApp.browser</code>，找到後先把注解符號刪除，再在 <code>&#39;&#39;</code> 內輸入想要的預設瀏覽器應用程式路徑 (如 chrome.exe)，注意：路徑中有斜線的話，要以 <code>/</code> 代替 <code>\</code>，且最後要 <code>%s</code>。不要忘記存檔！</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">c.NotebookApp.browser = <span class="string">u&#x27;C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s&#x27;</span></span><br></pre></td></tr></table></figure>
+<h2 id="修改預設路徑"><a href="#修改預設路徑" class="headerlink" title="修改預設路徑"></a>修改預設路徑</h2><p>一樣開啟 <code>jupyter_notebook_config.py</code> 並搜尋 <code>c.NotebookApp.notebook_dir</code>，先把注解符號刪除，再在 <code>&#39;&#39;</code> 內輸入想要的預設路徑，注意：路徑中有斜線的話，要以 <code>\\</code> 代替 <code>\</code>。不要忘記存檔！</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">c.NotebookApp.notebook_dir = <span class="string">u&#x27;D:\\py&#x27;</span></span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>在打開 Jupyter notebook 就可以看到使用指定瀏覽器，並且在預設路徑囉！</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>windows</tag>
-        <tag>iis</tag>
-        <tag>server</tag>
-        <tag>x powered by</tag>
-        <tag>x aspnet version</tag>
-        <tag>header</tag>
-        <tag>hide</tag>
+        <tag>python</tag>
+        <tag>jupyter</tag>
+        <tag>notebook</tag>
+        <tag>default</tag>
+        <tag>path</tag>
+        <tag>browser</tag>
       </tags>
   </entry>
   <entry>
@@ -527,28 +552,36 @@
       </tags>
   </entry>
   <entry>
-    <title>[Jupyter] 改變 Jupyter notebook 預設路徑與瀏覽器</title>
-    <url>/2021/06/12/python_jupyter/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Jupyter notebook 是一種很方便開發 <code>Python</code> 程式的軟體，可以一步一步地來執行 Python，近年使用率也逐步提高。而我也是使用 Jupyter notebook 的愛用者，最一開始會遇到幾個問題，就是預設的瀏覽器為什麼是 Edge！要怎麼改？再來是預設路徑要怎麼改到我想放 <code>Python</code> 檔案的地方？</p>
-<h2 id="產生環境設定檔案"><a href="#產生環境設定檔案" class="headerlink" title="產生環境設定檔案"></a>產生環境設定檔案</h2><p>Jupyter notebook 的環境設定檔預設不會出現，因此要先下指令產生</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;jupyter notebook --generate-config</span><br><span class="line">Writing default config to: C:\Users\user\.jupyter\jupyter_notebook_config.py</span><br></pre></td></tr></table></figure>
-<p>產出的設定檔會在指令所提示的地方 <code>C:\Users\user\.jupyter\jupyter_notebook_config.py</code></p>
-<h2 id="修改預設瀏覽器"><a href="#修改預設瀏覽器" class="headerlink" title="修改預設瀏覽器"></a>修改預設瀏覽器</h2><p>開啟 <code>jupyter_notebook_config.py</code> 並搜尋 <code>c.NotebookApp.browser</code>，找到後先把注解符號刪除，再在 <code>&#39;&#39;</code> 內輸入想要的預設瀏覽器應用程式路徑 (如 chrome.exe)，注意：路徑中有斜線的話，要以 <code>/</code> 代替 <code>\</code>，且最後要 <code>%s</code>。不要忘記存檔！</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">c.NotebookApp.browser = <span class="string">u&#x27;C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s&#x27;</span></span><br></pre></td></tr></table></figure>
-<h2 id="修改預設路徑"><a href="#修改預設路徑" class="headerlink" title="修改預設路徑"></a>修改預設路徑</h2><p>一樣開啟 <code>jupyter_notebook_config.py</code> 並搜尋 <code>c.NotebookApp.notebook_dir</code>，先把注解符號刪除，再在 <code>&#39;&#39;</code> 內輸入想要的預設路徑，注意：路徑中有斜線的話，要以 <code>\\</code> 代替 <code>\</code>。不要忘記存檔！</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">c.NotebookApp.notebook_dir = <span class="string">u&#x27;D:\\py&#x27;</span></span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>在打開 Jupyter notebook 就可以看到使用指定瀏覽器，並且在預設路徑囉！</p>
+    <title>[MATLAB] k-means 演算法說明與實作</title>
+    <url>/2021/06/12/matlab_k_means/</url>
+    <content><![CDATA[<h2 id="k-means-介紹"><a href="#k-means-介紹" class="headerlink" title="k-means 介紹"></a>k-means 介紹</h2><p><code>k-means</code> 又稱 <code>c-means Clustering</code>，是一種分群演算法，k 表示群集的數量，演算法如下</p>
+<ol>
+<li>給定一資料集 S，選擇 k 個點當群集中心，也稱為群心。</li>
+<li>計算每一資料與各群心距離，資料歸類在與之最短距離的群心那群。</li>
+<li>歸類好的資料再算出一個新的群心，通常是使用平均值。</li>
+<li>比較新的群心與舊的群心位置是否接近或者固定。</li>
+<li>重複 2 ~ 4 直到 4 成立，則分群完畢。</li>
+</ol>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/MATLAB-k-means-%E6%BC%94%E7%AE%97%E6%B3%95%2Fk_means_alg.png?alt=media&amp;token=954cb2ec-bdda-4a67-a154-8181dde1c09e" alt="k-means 流程圖"><span class="image-caption">k-means 流程圖</span></p>
+<h2 id="Pseudo-code"><a href="#Pseudo-code" class="headerlink" title="Pseudo code"></a>Pseudo code</h2><p>Pseudo code 如下，先定義參數</p>
+<ul>
+<li>Input : 群數 <code>k</code>, 群心 Centers of clusters(<code>kC</code>)</li>
+<li>Output：分群結果 <code>team</code></li>
+<li>Subroutine：算距離 <code>distFunc</code>, 算新的群心 <code>re_center</code>, 分群 <code>clustering</code></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">main k_means(Database, k, kC, distFunc, re_center, k_clustering)</span><br><span class="line">    While 1</span><br><span class="line">        分群結果 team = clustering(Database, kC, distFunc)</span><br><span class="line">        重新找群心 NewkC = re_center(Database, team, k)</span><br><span class="line">        If 新的群心NewkC和舊群心kC差距可接受 Then 　//差距可接受代表分類完成</span><br><span class="line">            kC = NewkC //更新群心</span><br><span class="line">            break;</span><br><span class="line">        Else //還沒找到滿意的群心就繼續找</span><br><span class="line">            kC = NewkC //更新群心</span><br><span class="line">        End If</span><br><span class="line">    End While 1</span><br><span class="line">    return team, kC //回傳資料群集編號和群心</span><br><span class="line">End k_means</span><br><span class="line">    </span><br><span class="line">sub re_center(Database, team, k)</span><br><span class="line">    For each Cluster of k</span><br><span class="line">        新群心NewkC = 屬於第team(Cluster)組的資料取算術平均數為新的群心</span><br><span class="line">    End For Cluster </span><br><span class="line">    return NewkC</span><br><span class="line">End re_center</span><br><span class="line"></span><br><span class="line">sub clustering(Database, kC)</span><br><span class="line">    tempDist = ? //距離暫存器，?要比所有可能的距離都大</span><br><span class="line">    For each P of Database</span><br><span class="line">        For each C of kC</span><br><span class="line">            距離dist = distFunc(C, P)</span><br><span class="line">            If dist &lt; tempDist Then //紀錄哪個群心最近</span><br><span class="line">                tempDist = dist</span><br><span class="line">                FLAG = C </span><br><span class="line">            End If</span><br><span class="line">        End For C</span><br><span class="line">        將tempDist 變回 ?</span><br><span class="line">        team(P) = FLAG //P點的分類完成</span><br><span class="line">    End For P</span><br><span class="line">    return team</span><br><span class="line">End clustering</span><br></pre></td></tr></table></figure>
+<h2 id="MATLAB-code"><a href="#MATLAB-code" class="headerlink" title="MATLAB code"></a>MATLAB code</h2><p><code>MATLAB</code> code</p>
+<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">function [team kx ky]<span class="built_in">=</span> k_means(x, y, kx, ky, seed_num)</span><br><span class="line">while <span class="number">1</span></span><br><span class="line">    team <span class="built_in">=</span> k_Clustering( x, y, kx, ky);<span class="comment">% 分群</span></span><br><span class="line">    [nkx, nky] <span class="built_in">=</span> k_re_center(x, y, team, seed_num); <span class="comment">%更新新的群心</span></span><br><span class="line">    <span class="built_in">if</span> ( sum(kx <span class="built_in">=</span><span class="built_in">=</span> nkx) <span class="built_in">=</span><span class="built_in">=</span> seed_num ) &amp;&amp; ( sum(ky <span class="built_in">=</span><span class="built_in">=</span> nky) <span class="built_in">=</span><span class="built_in">=</span> seed_num) <span class="comment">%新的群心是否跟舊的一樣</span></span><br><span class="line">        kx <span class="built_in">=</span> nkx;</span><br><span class="line">        ky <span class="built_in">=</span> nky;</span><br><span class="line">        break; <span class="comment">%一樣的話就跳出</span></span><br><span class="line">    <span class="built_in">else</span> <span class="comment">%不一樣就繼續</span></span><br><span class="line">        kx <span class="built_in">=</span> nkx;</span><br><span class="line">        ky <span class="built_in">=</span> nky;</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function team <span class="built_in">=</span> k_Clustering(x, y, kx, ky)</span><br><span class="line"><span class="comment">% This is for K-Clustering</span></span><br><span class="line"><span class="comment">% (x,y) are dataset and (kx, ky) are Cluster-center</span></span><br><span class="line"></span><br><span class="line">mid_dis <span class="built_in">=</span> <span class="number">9999999999</span>; <span class="comment">%距離的暫存器</span></span><br><span class="line">for i <span class="built_in">=</span> <span class="number">1</span> : length(x); <span class="comment">%總共要判斷 length(x) 個資料</span></span><br><span class="line">    for j <span class="built_in">=</span> <span class="number">1</span> : length(kx); <span class="comment">%總共有 length(kx) 個群集中心</span></span><br><span class="line">        dist <span class="built_in">=</span> k_distFunc( [x(i) y(i)], [kx(j) ky(j)]); <span class="comment">%計算第i個資料和第j個群集中心的距離</span></span><br><span class="line">        <span class="built_in">if</span> dist &lt; mid_dis <span class="comment">%判斷距離哪個群集中心較近</span></span><br><span class="line">            mid_dis <span class="built_in">=</span> dist; <span class="comment">%更新距離的暫存器</span></span><br><span class="line">            FLAG <span class="built_in">=</span> j; <span class="comment">%紀錄現在距離哪個群集中心最近</span></span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">    mid_dis <span class="built_in">=</span> <span class="number">9999999999</span>; <span class="comment">%距離的暫存器變回初始值</span></span><br><span class="line">    team(i,<span class="number">1</span>) <span class="built_in">=</span> FLAG; <span class="comment">%第 i 個資料屬於第 FLAG 個群集</span></span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function [kx, ky] <span class="built_in">=</span> k_re_center( x, y, team, seed_num)</span><br><span class="line"><span class="comment">% re-find clustered data for new cluster center</span></span><br><span class="line">for i <span class="built_in">=</span> <span class="number">1</span> : seed_num</span><br><span class="line">    kx(i) <span class="built_in">=</span> sum(x(team <span class="built_in">=</span><span class="built_in">=</span> i )) / sum(team <span class="built_in">=</span><span class="built_in">=</span> i);</span><br><span class="line">    ky(i) <span class="built_in">=</span> sum(y(team <span class="built_in">=</span><span class="built_in">=</span> i )) / sum(team <span class="built_in">=</span><span class="built_in">=</span> i);</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function D <span class="built_in">=</span> k_distFunc(P1, P2)</span><br><span class="line"><span class="comment">% This is for finding Distance Between 2D Points</span></span><br><span class="line"><span class="comment">% Input can be an vector</span></span><br><span class="line">D <span class="built_in">=</span> norm(P1 - P2);</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>python</tag>
-        <tag>jupyter</tag>
-        <tag>notebook</tag>
-        <tag>default</tag>
-        <tag>path</tag>
-        <tag>browser</tag>
+        <tag>k</tag>
+        <tag>means</tag>
+        <tag>matlab</tag>
+        <tag>pseudo</tag>
+        <tag>algorithm</tag>
       </tags>
   </entry>
   <entry>
@@ -618,11 +651,11 @@
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>matlab</tag>
         <tag>ip</tag>
         <tag>finder</tag>
         <tag>equipment</tag>
         <tag>wireshark</tag>
-        <tag>matlab</tag>
         <tag>ptu</tag>
         <tag>flir</tag>
       </tags>
@@ -662,36 +695,34 @@
       </tags>
   </entry>
   <entry>
-    <title>[MATLAB] k-means 演算法說明與實作</title>
-    <url>/2021/06/12/matlab_k_means/</url>
-    <content><![CDATA[<h2 id="k-means-介紹"><a href="#k-means-介紹" class="headerlink" title="k-means 介紹"></a>k-means 介紹</h2><p><code>k-means</code> 又稱 <code>c-means Clustering</code>，是一種分群演算法，k 表示群集的數量，演算法如下</p>
-<ol>
-<li>給定一資料集 S，選擇 k 個點當群集中心，也稱為群心。</li>
-<li>計算每一資料與各群心距離，資料歸類在與之最短距離的群心那群。</li>
-<li>歸類好的資料再算出一個新的群心，通常是使用平均值。</li>
-<li>比較新的群心與舊的群心位置是否接近或者固定。</li>
-<li>重複 2 ~ 4 直到 4 成立，則分群完畢。</li>
-</ol>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/MATLAB-k-means-%E6%BC%94%E7%AE%97%E6%B3%95%2Fk_means_alg.png?alt=media&amp;token=954cb2ec-bdda-4a67-a154-8181dde1c09e" alt="k-means 流程圖"><span class="image-caption">k-means 流程圖</span></p>
-<h2 id="Pseudo-code"><a href="#Pseudo-code" class="headerlink" title="Pseudo code"></a>Pseudo code</h2><p>Pseudo code 如下，先定義參數</p>
-<ul>
-<li>Input : 群數 <code>k</code>, 群心 Centers of clusters(<code>kC</code>)</li>
-<li>Output：分群結果 <code>team</code></li>
-<li>Subroutine：算距離 <code>distFunc</code>, 算新的群心 <code>re_center</code>, 分群 <code>clustering</code></li>
+    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
+    <url>/2021/06/17/mount_iso/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">main k_means(Database, k, kC, distFunc, re_center, k_clustering)</span><br><span class="line">    While 1</span><br><span class="line">        分群結果 team = clustering(Database, kC, distFunc)</span><br><span class="line">        重新找群心 NewkC = re_center(Database, team, k)</span><br><span class="line">        If 新的群心NewkC和舊群心kC差距可接受 Then 　//差距可接受代表分類完成</span><br><span class="line">            kC = NewkC //更新群心</span><br><span class="line">            break;</span><br><span class="line">        Else //還沒找到滿意的群心就繼續找</span><br><span class="line">            kC = NewkC //更新群心</span><br><span class="line">        End If</span><br><span class="line">    End While 1</span><br><span class="line">    return team, kC //回傳資料群集編號和群心</span><br><span class="line">End k_means</span><br><span class="line">    </span><br><span class="line">sub re_center(Database, team, k)</span><br><span class="line">    For each Cluster of k</span><br><span class="line">        新群心NewkC = 屬於第team(Cluster)組的資料取算術平均數為新的群心</span><br><span class="line">    End For Cluster </span><br><span class="line">    return NewkC</span><br><span class="line">End re_center</span><br><span class="line"></span><br><span class="line">sub clustering(Database, kC)</span><br><span class="line">    tempDist = ? //距離暫存器，?要比所有可能的距離都大</span><br><span class="line">    For each P of Database</span><br><span class="line">        For each C of kC</span><br><span class="line">            距離dist = distFunc(C, P)</span><br><span class="line">            If dist &lt; tempDist Then //紀錄哪個群心最近</span><br><span class="line">                tempDist = dist</span><br><span class="line">                FLAG = C </span><br><span class="line">            End If</span><br><span class="line">        End For C</span><br><span class="line">        將tempDist 變回 ?</span><br><span class="line">        team(P) = FLAG //P點的分類完成</span><br><span class="line">    End For P</span><br><span class="line">    return team</span><br><span class="line">End clustering</span><br></pre></td></tr></table></figure>
-<h2 id="MATLAB-code"><a href="#MATLAB-code" class="headerlink" title="MATLAB code"></a>MATLAB code</h2><p><code>MATLAB</code> code</p>
-<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">function [team kx ky]<span class="built_in">=</span> k_means(x, y, kx, ky, seed_num)</span><br><span class="line">while <span class="number">1</span></span><br><span class="line">    team <span class="built_in">=</span> k_Clustering( x, y, kx, ky);<span class="comment">% 分群</span></span><br><span class="line">    [nkx, nky] <span class="built_in">=</span> k_re_center(x, y, team, seed_num); <span class="comment">%更新新的群心</span></span><br><span class="line">    <span class="built_in">if</span> ( sum(kx <span class="built_in">=</span><span class="built_in">=</span> nkx) <span class="built_in">=</span><span class="built_in">=</span> seed_num ) &amp;&amp; ( sum(ky <span class="built_in">=</span><span class="built_in">=</span> nky) <span class="built_in">=</span><span class="built_in">=</span> seed_num) <span class="comment">%新的群心是否跟舊的一樣</span></span><br><span class="line">        kx <span class="built_in">=</span> nkx;</span><br><span class="line">        ky <span class="built_in">=</span> nky;</span><br><span class="line">        break; <span class="comment">%一樣的話就跳出</span></span><br><span class="line">    <span class="built_in">else</span> <span class="comment">%不一樣就繼續</span></span><br><span class="line">        kx <span class="built_in">=</span> nkx;</span><br><span class="line">        ky <span class="built_in">=</span> nky;</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function team <span class="built_in">=</span> k_Clustering(x, y, kx, ky)</span><br><span class="line"><span class="comment">% This is for K-Clustering</span></span><br><span class="line"><span class="comment">% (x,y) are dataset and (kx, ky) are Cluster-center</span></span><br><span class="line"></span><br><span class="line">mid_dis <span class="built_in">=</span> <span class="number">9999999999</span>; <span class="comment">%距離的暫存器</span></span><br><span class="line">for i <span class="built_in">=</span> <span class="number">1</span> : length(x); <span class="comment">%總共要判斷 length(x) 個資料</span></span><br><span class="line">    for j <span class="built_in">=</span> <span class="number">1</span> : length(kx); <span class="comment">%總共有 length(kx) 個群集中心</span></span><br><span class="line">        dist <span class="built_in">=</span> k_distFunc( [x(i) y(i)], [kx(j) ky(j)]); <span class="comment">%計算第i個資料和第j個群集中心的距離</span></span><br><span class="line">        <span class="built_in">if</span> dist &lt; mid_dis <span class="comment">%判斷距離哪個群集中心較近</span></span><br><span class="line">            mid_dis <span class="built_in">=</span> dist; <span class="comment">%更新距離的暫存器</span></span><br><span class="line">            FLAG <span class="built_in">=</span> j; <span class="comment">%紀錄現在距離哪個群集中心最近</span></span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">    mid_dis <span class="built_in">=</span> <span class="number">9999999999</span>; <span class="comment">%距離的暫存器變回初始值</span></span><br><span class="line">    team(i,<span class="number">1</span>) <span class="built_in">=</span> FLAG; <span class="comment">%第 i 個資料屬於第 FLAG 個群集</span></span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function [kx, ky] <span class="built_in">=</span> k_re_center( x, y, team, seed_num)</span><br><span class="line"><span class="comment">% re-find clustered data for new cluster center</span></span><br><span class="line">for i <span class="built_in">=</span> <span class="number">1</span> : seed_num</span><br><span class="line">    kx(i) <span class="built_in">=</span> sum(x(team <span class="built_in">=</span><span class="built_in">=</span> i )) / sum(team <span class="built_in">=</span><span class="built_in">=</span> i);</span><br><span class="line">    ky(i) <span class="built_in">=</span> sum(y(team <span class="built_in">=</span><span class="built_in">=</span> i )) / sum(team <span class="built_in">=</span><span class="built_in">=</span> i);</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function D <span class="built_in">=</span> k_distFunc(P1, P2)</span><br><span class="line"><span class="comment">% This is for finding Distance Between 2D Points</span></span><br><span class="line"><span class="comment">% Input can be an vector</span></span><br><span class="line">D <span class="built_in">=</span> norm(P1 - P2);</span><br></pre></td></tr></table></figure>
+<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
+<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-o loop</code>：使用 loop device 來掛載</li>
+</ul>
+<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
+<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>matlab</tag>
-        <tag>k</tag>
-        <tag>means</tag>
-        <tag>pseudo</tag>
-        <tag>algorithm</tag>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>mount</tag>
+        <tag>unmount</tag>
+        <tag>iso</tag>
+        <tag>media</tag>
       </tags>
   </entry>
   <entry>
@@ -820,62 +851,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
-    <url>/2021/06/17/mount_iso/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
-<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-o loop</code>：使用 loop device 來掛載</li>
-</ul>
-<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
-<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>18.04</tag>
-        <tag>mount</tag>
-        <tag>unmount</tag>
-        <tag>iso</tag>
-        <tag>media</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
-    <url>/2021/06/15/php_phalcon_namespace/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Phalcon 4.0.3</li>
-</ul>
-<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
-<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
-<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
-<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>php</tag>
-        <tag>phalcon</tag>
-        <tag>namespace</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Power] Ubuntu 筆電蓋上螢幕不休眠</title>
     <url>/2021/06/17/power_ubuntu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>筆電闔上螢幕不一定是沒有要使用，有可能是在有外接螢幕情況下只需要一個螢幕，這時就可以選擇把螢幕關上將筆電當成桌電主機一樣，因此就需要設定讓筆電關上螢幕時不會有任何動作 (包含睡眠、休眠等等)。</p>
@@ -903,29 +878,6 @@
         <tag>suspend</tag>
         <tag>poweroff</tag>
         <tag>hibernate</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Python] 爬蟲修改 User-Agent 標頭</title>
-    <url>/2021/06/15/python_user_agent/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲是一個很方便的工具，可以自動化且大量分析網頁，將別人的網頁當作自己資料庫，但也因為如此，有些網頁會偵測連線來源是否為爬蟲工具，若是的話會阻擋 (404)，或者有些會顯示出與正常使用瀏覽器瀏覽時不一樣的內容。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>python 3.8.5</li>
-</ul>
-<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p><code>Python</code> 爬蟲第一步大多數是使用 <code>requests</code> 這個套件，它內建的請求標頭 <code>User-Agent</code> 為 <code>python-requests/2.24.0</code>，也許版本號會不同，但一看就知道是爬蟲而不是真的使用者的連線請求，所以應用程式可根據這個線索來拒絕服務。但「道高一尺，魔高一丈」不是沒有道理的，只要我們改了 <code>User-Agent</code>，就能繞過根據這個標頭欄位過濾請求的網站</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://abcde.example.com&quot;</span></span><br><span class="line">response = requests.get(url, headers = headers)</span><br></pre></td></tr></table></figure>
-<p>這時，所有的請求標頭 <code>User-Agent</code> 都將顯示為 <code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36</code>。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>header</tag>
-        <tag>python</tag>
-        <tag>user</tag>
-        <tag>agent</tag>
-        <tag>crawl</tag>
-        <tag>requests</tag>
       </tags>
   </entry>
   <entry>
@@ -971,26 +923,28 @@
       </tags>
   </entry>
   <entry>
-    <title>[Python] 爬蟲遇到 &#39;cp950&#39; codec can&#39;t encode ?</title>
-    <url>/2021/06/12/python_cp950_codec_cant_encode/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲時，想將資料輸出到 <code>txt</code> 檔案遇到 <code>cp950</code> 等錯誤資訊，是甚麼原因？該怎麼辦？讓我來告訴你。</p>
-<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>遇到過類似下面的錯誤訊息嗎？</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">UnicodeEncodeError: <span class="string">&#x27;cp950&#x27;</span> codec can<span class="number">&#x27;</span>t encode character <span class="string">&#x27;\u67b1&#x27;</span> in position <span class="number">20</span>: illegal multibyte sequence</span><br></pre></td></tr></table></figure>
-<p>這主要原因為某個字元不是 code page 950 (<code>cp950</code>) 內有的字，而無法編碼寫進檔案裡面。</p>
-<p><code>Python</code> 處理字串預設是 <code>Unicode</code> 編碼，而在存檔案時，<code>Python</code> 會檢查命令提示字元的編碼頁 (此為 <code>cp950</code>) 做為檔案輸出的預設編碼頁，因此會需要將 <code>Unicode</code> 字串皆轉為 <code>cp950</code>，若此時有字不在 <code>cp950</code> 內的話，就會出現此錯誤訊息。</p>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>修改 <code>Python</code> 程式，在 <code>open</code> 檔案時多一個輸入參數，讓讀寫檔案的編碼方式為 <code>UTF-8</code></p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="built_in">open</span>(<span class="string">&#x27;text.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;UTF-8&#x27;</span>)</span><br></pre></td></tr></table></figure>
+    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
+    <url>/2021/06/15/php_phalcon_namespace/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Phalcon 4.0.3</li>
+</ul>
+<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
+<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
+<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
+<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>python</tag>
-        <tag>crawl</tag>
-        <tag>cp950</tag>
-        <tag>txt</tag>
-        <tag>output</tag>
-        <tag>unicodeencodeerror</tag>
+        <tag>php</tag>
+        <tag>phalcon</tag>
+        <tag>namespace</tag>
       </tags>
   </entry>
   <entry>
@@ -1018,9 +972,56 @@
       </categories>
       <tags>
         <tag>python</tag>
-        <tag>crawl</tag>
         <tag>email</tag>
         <tag>protected</tag>
+        <tag>crawl</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[RDP] Windows 10 新增使用者並賦予遠端桌面權限</title>
+    <url>/2021/06/13/rdp_windows_10/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在同一台電腦 Windows 上，若想要擁有自己個人桌面，就需要不與他人共用的一個使用者帳號；若想要遠端連線，則需要賦予使用者帳號遠端桌面的權限。</p>
+<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><p>組合鍵 <code>Windows + I</code> 開啟 Windows 的設定視窗。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fnew_account.png?alt=media&amp;token=7de524c5-ffa3-4354-85b8-d9bceabc340a" alt="新增其他使用者帳號"><span class="image-caption">新增其他使用者帳號</span></p>
+<p>若使用者沒有 Microsoft 帳戶或不想用 Microsoft 帳戶登入，可以在此式窗選擇「我沒有這位人員的登入資訊」→「新增沒有 Microsoft 帳戶的使用者」，填寫在地端的帳號、密碼與三個安全性問題。</p>
+<p>填寫完之後會在「家人與其他使用者」的「其他使用者」欄位看到新增的帳戶。</p>
+<h2 id="設定遠端桌面權限"><a href="#設定遠端桌面權限" class="headerlink" title="設定遠端桌面權限"></a>設定遠端桌面權限</h2><p>將設定畫面點回到「首頁」，並點選「系統」→「遠端桌面」→「啟用遠端桌面」→「選取可以從遠端存取此電腦的使用者」→「新增」，輸入使用者帳號後按兩次確定即可增加權限</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fadd_remote_privilege.png?alt=media&amp;token=e523d5c2-14ee-4afe-9931-b465b268c6cd" alt="賦予使用者遠端桌面權限"><span class="image-caption">賦予使用者遠端桌面權限</span></p>
+<p>使用者便可以遠端登入，並擁有自己的桌面與環境！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>remote</tag>
+        <tag>rdp</tag>
+        <tag>privilege</tag>
+        <tag>account</tag>
+        <tag>user</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Python] 爬蟲修改 User-Agent 標頭</title>
+    <url>/2021/06/15/python_user_agent/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲是一個很方便的工具，可以自動化且大量分析網頁，將別人的網頁當作自己資料庫，但也因為如此，有些網頁會偵測連線來源是否為爬蟲工具，若是的話會阻擋 (404)，或者有些會顯示出與正常使用瀏覽器瀏覽時不一樣的內容。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>python 3.8.5</li>
+</ul>
+<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p><code>Python</code> 爬蟲第一步大多數是使用 <code>requests</code> 這個套件，它內建的請求標頭 <code>User-Agent</code> 為 <code>python-requests/2.24.0</code>，也許版本號會不同，但一看就知道是爬蟲而不是真的使用者的連線請求，所以應用程式可根據這個線索來拒絕服務。但「道高一尺，魔高一丈」不是沒有道理的，只要我們改了 <code>User-Agent</code>，就能繞過根據這個標頭欄位過濾請求的網站</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://abcde.example.com&quot;</span></span><br><span class="line">response = requests.get(url, headers = headers)</span><br></pre></td></tr></table></figure>
+<p>這時，所有的請求標頭 <code>User-Agent</code> 都將顯示為 <code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36</code>。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>header</tag>
+        <tag>python</tag>
+        <tag>crawl</tag>
+        <tag>user</tag>
+        <tag>agent</tag>
+        <tag>requests</tag>
       </tags>
   </entry>
   <entry>
@@ -1071,30 +1072,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[RDP] Windows 10 新增使用者並賦予遠端桌面權限</title>
-    <url>/2021/06/13/rdp_windows_10/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在同一台電腦 Windows 上，若想要擁有自己個人桌面，就需要不與他人共用的一個使用者帳號；若想要遠端連線，則需要賦予使用者帳號遠端桌面的權限。</p>
-<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><p>組合鍵 <code>Windows + I</code> 開啟 Windows 的設定視窗。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fnew_account.png?alt=media&amp;token=7de524c5-ffa3-4354-85b8-d9bceabc340a" alt="新增其他使用者帳號"><span class="image-caption">新增其他使用者帳號</span></p>
-<p>若使用者沒有 Microsoft 帳戶或不想用 Microsoft 帳戶登入，可以在此式窗選擇「我沒有這位人員的登入資訊」→「新增沒有 Microsoft 帳戶的使用者」，填寫在地端的帳號、密碼與三個安全性問題。</p>
-<p>填寫完之後會在「家人與其他使用者」的「其他使用者」欄位看到新增的帳戶。</p>
-<h2 id="設定遠端桌面權限"><a href="#設定遠端桌面權限" class="headerlink" title="設定遠端桌面權限"></a>設定遠端桌面權限</h2><p>將設定畫面點回到「首頁」，並點選「系統」→「遠端桌面」→「啟用遠端桌面」→「選取可以從遠端存取此電腦的使用者」→「新增」，輸入使用者帳號後按兩次確定即可增加權限</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fadd_remote_privilege.png?alt=media&amp;token=e523d5c2-14ee-4afe-9931-b465b268c6cd" alt="賦予使用者遠端桌面權限"><span class="image-caption">賦予使用者遠端桌面權限</span></p>
-<p>使用者便可以遠端登入，並擁有自己的桌面與環境！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>remote</tag>
-        <tag>user</tag>
-        <tag>rdp</tag>
-        <tag>privilege</tag>
-        <tag>account</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Remove] Ubuntu 解除安裝應用程式</title>
     <url>/2021/06/17/remove_ubuntu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>安裝與移除幾乎是每天都會作到的動作，移除相較安裝困難，Windows 作業系統中只需要進控制台移除程式，而在 Linux 只能使用指令來做移除的動作，且不確定是否真的移除乾淨相關檔案，最近剛好要移除 libreoffice，因此藉此紀錄移除程式的步驟與指令相對的意義。</p>
@@ -1106,7 +1083,8 @@
 <p>移除因應用程式相依所需而自動安裝，但現在已經不再需要的套件</p>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get autoremove              <span class="comment"># 移除原為「自動」安裝但現在不再需要的套件</span></span><br></pre></td></tr></table></figure>
 <p>移除相關的 deb 檔案</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get clean <span class="comment"># 除了「lock」檔案，移除在 /var/cache/apt/archives/ 與</span></span><br><span class="line">                              <span class="comment"># /var/cache/apt/archives/partial/ 目錄下的檔案，</span></span><br><span class="line">                              <span class="comment"># 這兩個目錄是執行「apt-get install」或「apt-get upgrade」指令時，</span></span><br><span class="line">                              <span class="comment"># 放置下載的相關套件所在，因為已經用不到，所以這些東西也可以清理掉</span></span><br></pre></td></tr></table></figure>]]></content>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get clean <span class="comment"># 除了「lock」檔案，移除在 /var/cache/apt/archives/ 與</span></span><br><span class="line">                              <span class="comment"># /var/cache/apt/archives/partial/ 目錄下的檔案，</span></span><br><span class="line">                              <span class="comment"># 這兩個目錄是執行「apt-get install」或「apt-get upgrade」指令時，</span></span><br><span class="line">                              <span class="comment"># 放置下載的相關套件所在，因為已經用不到，所以這些東西也可以清理掉</span></span><br></pre></td></tr></table></figure>
+]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
@@ -1117,6 +1095,29 @@
         <tag>libreoffice</tag>
         <tag>uninstall</tag>
         <tag>clean</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Python] 爬蟲遇到 &#39;cp950&#39; codec can&#39;t encode ?</title>
+    <url>/2021/06/12/python_cp950_codec_cant_encode/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲時，想將資料輸出到 <code>txt</code> 檔案遇到 <code>cp950</code> 等錯誤資訊，是甚麼原因？該怎麼辦？讓我來告訴你。</p>
+<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>遇到過類似下面的錯誤訊息嗎？</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">UnicodeEncodeError: <span class="string">&#x27;cp950&#x27;</span> codec can<span class="number">&#x27;</span>t encode character <span class="string">&#x27;\u67b1&#x27;</span> in position <span class="number">20</span>: illegal multibyte sequence</span><br></pre></td></tr></table></figure>
+<p>這主要原因為某個字元不是 code page 950 (<code>cp950</code>) 內有的字，而無法編碼寫進檔案裡面。</p>
+<p><code>Python</code> 處理字串預設是 <code>Unicode</code> 編碼，而在存檔案時，<code>Python</code> 會檢查命令提示字元的編碼頁 (此為 <code>cp950</code>) 做為檔案輸出的預設編碼頁，因此會需要將 <code>Unicode</code> 字串皆轉為 <code>cp950</code>，若此時有字不在 <code>cp950</code> 內的話，就會出現此錯誤訊息。</p>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>修改 <code>Python</code> 程式，在 <code>open</code> 檔案時多一個輸入參數，讓讀寫檔案的編碼方式為 <code>UTF-8</code></p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="built_in">open</span>(<span class="string">&#x27;text.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;UTF-8&#x27;</span>)</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>crawl</tag>
+        <tag>cp950</tag>
+        <tag>txt</tag>
+        <tag>output</tag>
+        <tag>unicodeencodeerror</tag>
       </tags>
   </entry>
   <entry>
@@ -1152,6 +1153,32 @@
       </tags>
   </entry>
   <entry>
+    <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
+    <url>/2021/06/15/ssl_crt_key/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>OpenSSL 1.1.1f</li>
+</ul>
+<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
+<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>ssl</tag>
+        <tag>key</tag>
+        <tag>crt</tag>
+        <tag>match</tag>
+        <tag>cert</tag>
+        <tag>csr</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[SSL] 自簽憑證過程</title>
     <url>/2021/06/15/ssl_self_sign/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
@@ -1175,38 +1202,41 @@
         <tag>ssl</tag>
         <tag>ca</tag>
         <tag>key</tag>
+        <tag>crt</tag>
+        <tag>csr</tag>
         <tag>self</tag>
         <tag>sign</tag>
         <tag>openssl</tag>
         <tag>mitm</tag>
-        <tag>csr</tag>
-        <tag>crt</tag>
       </tags>
   </entry>
   <entry>
-    <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
-    <url>/2021/06/15/ssl_crt_key/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
+    <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
+    <url>/2021/06/17/usb_usb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Ubuntu 18.04 LTS</li>
-<li>OpenSSL 1.1.1f</li>
 </ul>
-<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
-<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
+<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>先確認目標裝置的權限，可以看到是 <code>660</code> 權限，也就是說非擁有者 (root) 且非群組 (dialout) 成員的其他人，是不能讀取的，這也是為什麼應用程式內讀不到的原因</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ ls -al /dev/ttyUSB*</span><br><span class="line">crw-rw---- 1 root dialout 188, 0 十二  4 16:53 /dev/ttyUSB0</span><br><span class="line">crw-rw---- 1 root dialout 188, 1 十二  4 16:53 /dev/ttyUSB1</span><br><span class="line">crw-rw---- 1 root dialout 188, 2 十二  4 16:53 /dev/ttyUSB2</span><br><span class="line">crw-rw---- 1 root dialout 188, 3 十二  4 16:53 /dev/ttyUSB3</span><br></pre></td></tr></table></figure>
+<h2 id="加入群組"><a href="#加入群組" class="headerlink" title="加入群組"></a>加入群組</h2><p>一般使用者預設是沒有加入 <code>dialout</code> 群組的，因此將自己加入此群組藉此繼承擁有讀取序列埠的權限</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo usermod -a -G dialout user  <span class="comment"># user 當然就是使用者帳號，依需求更改</span></span><br></pre></td></tr></table></figure>
+<p>再回到應用程式內找尋 Serial Port 應該就能看到囉！</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
         <tag>ubuntu</tag>
+        <tag>linux</tag>
         <tag>18.04</tag>
-        <tag>ssl</tag>
-        <tag>key</tag>
-        <tag>csr</tag>
-        <tag>crt</tag>
-        <tag>match</tag>
-        <tag>cert</tag>
+        <tag>privilege</tag>
+        <tag>usb</tag>
+        <tag>serail</tag>
+        <tag>port</tag>
+        <tag>dialout</tag>
+        <tag>tty</tag>
+        <tag>usermod</tag>
       </tags>
   </entry>
   <entry>
@@ -1326,6 +1356,36 @@
       </tags>
   </entry>
   <entry>
+    <title>[Windows] 32 位元應用程式在 64 位元作業系統運作的原理</title>
+    <url>/2021/06/11/3264/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
+<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
+<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
+<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
+<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
+<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
+<ul>
+<li>system32 放的是 64 位元的 API</li>
+<li>SysWOW64 放的是 32 位元的 API</li>
+</ul>
+<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
+<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
+<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>bit</tag>
+        <tag>32</tag>
+        <tag>64</tag>
+        <tag>application</tag>
+        <tag>os</tag>
+        <tag>wow64</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Vivado Vitis] 在軟體開發環境中缺少一堆 .h 檔的解決方法</title>
     <url>/2021/06/13/vivado_vitis/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近接手一個 Zynq 的開發板 (RFSoC ZCU111)，新手上路肯定是要參考網路上豐富的文件，才會學得快。但在參考文獻的過程中碰到一個似乎教學的作者沒有提及，但自己遇到的問題，也就是 Build 時缺少一堆 <code>.h</code> 檔案的錯誤提示。</p>
@@ -1374,36 +1434,6 @@
         <tag>window</tag>
         <tag>modal</tag>
         <tag>non modal</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Windows] 32 位元應用程式在 64 位元作業系統運作的原理</title>
-    <url>/2021/06/11/3264/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
-<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
-<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
-<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
-<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
-<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
-<ul>
-<li>system32 放的是 64 位元的 API</li>
-<li>SysWOW64 放的是 32 位元的 API</li>
-</ul>
-<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
-<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
-<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>bit</tag>
-        <tag>32</tag>
-        <tag>64</tag>
-        <tag>application</tag>
-        <tag>os</tag>
-        <tag>wow64</tag>
       </tags>
   </entry>
   <entry>
@@ -1472,31 +1502,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[apt] Unable to locate package 問題</title>
-    <url>/2021/06/17/apt_unable_to_locate_package/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我遇到的情況是這樣子的，要安裝 <code>ntpdate</code> 時卻發現出現錯誤訊息 <code>Unable to locate package ntpdate</code>，意思是說無法找到 <code>ntpdate</code> 套件</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree       </span><br><span class="line">Reading state information... Done</span><br><span class="line">E: Unable to locate package ntpdate</span><br></pre></td></tr></table></figure>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>很有可能是因為 <code>apt-get</code> 沒有更新，所以資料庫裡面沒有 <code>ntpdate</code> 的連結，這時只需簡單的更新 <code>apt-get</code>，並且再次嘗試安裝就發現可以找到套件了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>在使用 <code>apt-get</code> 安裝之前先執行 <code>apt-get update</code> 是一個好習慣，以確保資料庫為最新，減少一個浪費時間的可能。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>apt</tag>
-        <tag>get</tag>
-        <tag>install</tag>
-        <tag>update</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[asm] NEG 的運作與應用</title>
     <url>/2021/06/11/asmneg/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
@@ -1531,6 +1536,31 @@
         <tag>neg</tag>
         <tag>sbb</tag>
         <tag>asm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[apt] Unable to locate package 問題</title>
+    <url>/2021/06/17/apt_unable_to_locate_package/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我遇到的情況是這樣子的，要安裝 <code>ntpdate</code> 時卻發現出現錯誤訊息 <code>Unable to locate package ntpdate</code>，意思是說無法找到 <code>ntpdate</code> 套件</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree       </span><br><span class="line">Reading state information... Done</span><br><span class="line">E: Unable to locate package ntpdate</span><br></pre></td></tr></table></figure>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>很有可能是因為 <code>apt-get</code> 沒有更新，所以資料庫裡面沒有 <code>ntpdate</code> 的連結，這時只需簡單的更新 <code>apt-get</code>，並且再次嘗試安裝就發現可以找到套件了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>在使用 <code>apt-get</code> 安裝之前先執行 <code>apt-get update</code> 是一個好習慣，以確保資料庫為最新，減少一個浪費時間的可能。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>apt</tag>
+        <tag>get</tag>
+        <tag>install</tag>
+        <tag>update</tag>
       </tags>
   </entry>
   <entry>
@@ -1636,44 +1666,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[雙系統] 同步 Ubuntu 與 Windows 的系統時間</title>
-    <url>/2021/06/17/ubuntu_windows_time/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>使用 Ubuntu + Windows 雙系統的用戶，應該會發現 Ubuntu 的時間總是與 Windows 的不一樣，在 UTC+8 的地方，Ubuntu 比 Windows 快 8 小時，切換系統後總是要手動調整時間，造成一定的困擾。最佳解決之道應為將雙系統時間設為同步，因此這裡紀錄了如何將雙系統的時間設為一致。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>Windows 10</li>
-</ul>
-<h2 id="原因說明"><a href="#原因說明" class="headerlink" title="原因說明"></a>原因說明</h2><p>此問題是由於 Ubuntu 和 Windows 的時間設定方式不同所導致，以當地時間 UTC+8 為例</p>
-<ul>
-<li>Windows：取得硬體時間 (BIOS 的時間) 直接為當地時間 (Local Time)。</li>
-<li>Ubuntu：取得硬體時間 (BIOS 的時間) 並視之為 UTC+0，所以顯示出來的時間是硬體時間 +8 後的結果，也就是 Windows 的時間 +8。</li>
-</ul>
-<p>簡而言之，正是因為 Ubuntu 會把硬體時間視為 UTC+0，切到 Windows 顯示出來的時間才會比 Ubuntu 慢上 8 個小時！</p>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>以下皆是在 Ubuntu 操作，先取得正確時間，若發現找不到 <code>ntpdate</code> 套件，可以參考：<a href="/2021/06/17/apt_unable_to_locate_package/">[apt] Unable to locate package 問題</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate            <span class="comment"># network time protocol date </span></span><br><span class="line">user@pc:~$ sudo ntpdate time.windows.com           <span class="comment"># 從微軟公司的時間伺服器取得時間</span></span><br></pre></td></tr></table></figure>
-<p>把系統中的時間更新到硬體上，並請 Ubuntu 將硬體時間視為當地時間，這樣就會與 Windows 顯示時間的運作方式一樣，再重開機進入 Windows 查看是否同步</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo hwclock --systohc --localtime    <span class="comment"># hardware clock</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>--systohc</code>：將系統時間同步到硬體內</li>
-<li><code>--localtime</code>：將硬體時間當作當地時間</li>
-</ul>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>18.04</tag>
-        <tag>time</tag>
-        <tag>10</tag>
-        <tag>synchronize</tag>
-        <tag>system</tag>
-        <tag>dual</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</title>
     <url>/2021/06/16/win_10_ubuntu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 是一個非常輕便且好用的作業系統，在 Windows 下使用 Linux 大多是透過虛擬機器 (VM, Virtual Machine)，但對一個想要深入研究 Linux 的同好來說，灌雙系統是一個不錯的選擇。灌完雙系統之後，有機率會遇到一種情況「電腦會直接進Windows，不會出現選擇作業系統的畫面」。</p>
@@ -1706,14 +1698,52 @@
         <tag>ubuntu</tag>
         <tag>linux</tag>
         <tag>18.04</tag>
-        <tag>10</tag>
-        <tag>system</tag>
         <tag>dual</tag>
+        <tag>system</tag>
+        <tag>10</tag>
         <tag>option</tag>
         <tag>boot</tag>
         <tag>menu</tag>
         <tag>grub</tag>
         <tag>grubx64.efi</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[雙系統] 同步 Ubuntu 與 Windows 的系統時間</title>
+    <url>/2021/06/17/ubuntu_windows_time/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>使用 Ubuntu + Windows 雙系統的用戶，應該會發現 Ubuntu 的時間總是與 Windows 的不一樣，在 UTC+8 的地方，Ubuntu 比 Windows 快 8 小時，切換系統後總是要手動調整時間，造成一定的困擾。最佳解決之道應為將雙系統時間設為同步，因此這裡紀錄了如何將雙系統的時間設為一致。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="原因說明"><a href="#原因說明" class="headerlink" title="原因說明"></a>原因說明</h2><p>此問題是由於 Ubuntu 和 Windows 的時間設定方式不同所導致，以當地時間 UTC+8 為例</p>
+<ul>
+<li>Windows：取得硬體時間 (BIOS 的時間) 直接為當地時間 (Local Time)。</li>
+<li>Ubuntu：取得硬體時間 (BIOS 的時間) 並視之為 UTC+0，所以顯示出來的時間是硬體時間 +8 後的結果，也就是 Windows 的時間 +8。</li>
+</ul>
+<p>簡而言之，正是因為 Ubuntu 會把硬體時間視為 UTC+0，切到 Windows 顯示出來的時間才會比 Ubuntu 慢上 8 個小時！</p>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>以下皆是在 Ubuntu 操作，先取得正確時間，若發現找不到 <code>ntpdate</code> 套件，可以參考：<a href="/2021/06/17/apt_unable_to_locate_package/">[apt] Unable to locate package 問題</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate            <span class="comment"># network time protocol date </span></span><br><span class="line">user@pc:~$ sudo ntpdate time.windows.com           <span class="comment"># 從微軟公司的時間伺服器取得時間</span></span><br></pre></td></tr></table></figure>
+<p>把系統中的時間更新到硬體上，並請 Ubuntu 將硬體時間視為當地時間，這樣就會與 Windows 顯示時間的運作方式一樣，再重開機進入 Windows 查看是否同步</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo hwclock --systohc --localtime    <span class="comment"># hardware clock</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>--systohc</code>：將系統時間同步到硬體內</li>
+<li><code>--localtime</code>：將硬體時間當作當地時間</li>
+</ul>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>time</tag>
+        <tag>dual</tag>
+        <tag>system</tag>
+        <tag>10</tag>
+        <tag>synchronize</tag>
       </tags>
   </entry>
   <entry>
@@ -1741,9 +1771,9 @@
         <tag>ubuntu</tag>
         <tag>linux</tag>
         <tag>18.04</tag>
-        <tag>10</tag>
-        <tag>system</tag>
         <tag>dual</tag>
+        <tag>system</tag>
+        <tag>10</tag>
         <tag>option</tag>
         <tag>boot</tag>
         <tag>menu</tag>
