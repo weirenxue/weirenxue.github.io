@@ -29,7 +29,7 @@
 <meta property="og:description" content="在 CentOS 中有多種防火牆 (iptables、firewalld 等)，其中 iptables 是為黑名單規則 (原則允許、例外禁止)，而 firewalld 為白名單規則 (原則禁止、例外允許)。為了要讓服務能正常運作、防止惡意連線，且讓外部可以通過網路服務來使用，這些是必定要學習如何設定的。然而相較於 iptables，firewalld 較人性化，因此選擇使用它來做 CentOS 的">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-06-18T11:40:19.000Z">
-<meta property="article:modified_time" content="2021-06-18T12:29:58.185Z">
+<meta property="article:modified_time" content="2021-06-18T12:50:14.421Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="linux">
 <meta property="article:tag" content="firewall">
@@ -140,7 +140,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">275</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">280</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -150,7 +150,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">61</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">62</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -232,7 +232,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2021-06-18 19:40:19 / 修改時間：20:29:58" itemprop="dateCreated datePublished" datetime="2021-06-18T19:40:19+08:00">2021-06-18</time>
+              <time title="創建時間：2021-06-18 19:40:19 / 修改時間：20:50:14" itemprop="dateCreated datePublished" datetime="2021-06-18T19:40:19+08:00">2021-06-18</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -302,6 +302,12 @@
 </ul>
 <p>使用 <code>--reload</code> 將設定重新載入配置，並查看所設定的規則是否已經有效，這時在瀏覽器輸入 <code>localhost</code>，就可以瀏覽掛在 80 Port 的網站了！</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --reload</span></span><br><span class="line">success</span><br><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --zone=public --list-ports</span></span><br><span class="line">5001/tcp</span><br><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --zone=public --list-services </span></span><br><span class="line">cockpit dhcpv6-client http ssh</span><br></pre></td></tr></table></figure>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://kknews.cc/zh-tw/code/y38kggb.html">CentOS 7/8 預裝的新型防火牆firewalld配置詳解，你會用嗎</a></p>
+</li>
+<li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://firewalld.org/documentation/configuration/runtime-versus-permanent.html">Runtime versus Permanent</a></p>
+</li>
+</ol>
 
     </div>
 
@@ -348,7 +354,10 @@
     <a href="/2021/06/18/nginx_centos_nginx/" rel="prev" title="[Nginx] CentOS 安裝網頁伺服器 Nginx">
       <i class="fa fa-chevron-left"></i> [Nginx] CentOS 安裝網頁伺服器 Nginx
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/06/18/mysql_centos_mysql_8_0_root/" rel="next" title="[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼">
+      [MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -414,7 +423,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%92%B0%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A2%BA%E8%AA%8D%E7%B6%B2%E8%B7%AF%E7%92%B0%E5%A2%83"><span class="nav-number">3.</span> <span class="nav-text">確認網路環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E9%98%B2%E7%81%AB%E7%89%86%E8%A8%AD%E5%AE%9A"><span class="nav-number">4.</span> <span class="nav-text">修改防火牆設定</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%92%B0%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A2%BA%E8%AA%8D%E7%B6%B2%E8%B7%AF%E7%92%B0%E5%A2%83"><span class="nav-number">3.</span> <span class="nav-text">確認網路環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E9%98%B2%E7%81%AB%E7%89%86%E8%A8%AD%E5%AE%9A"><span class="nav-number">4.</span> <span class="nav-text">修改防火牆設定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E6%96%87%E7%8D%BB"><span class="nav-number">5.</span> <span class="nav-text">參考文獻</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -429,7 +438,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -442,7 +451,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">275</span>
+        <span class="site-state-item-count">280</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
