@@ -45,7 +45,7 @@
 <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2Fline_bot_structure.png?alt=media&amp;token=ff533353-2119-4ef4-848a-1364266c356b">
 <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/YOLOv4%2Fline_bot_QRCode.png?alt=media&amp;token=7bc6c4e7-1a90-437a-919a-11d3fe04cc13">
 <meta property="article:published_time" content="2021-06-10T05:20:07.000Z">
-<meta property="article:modified_time" content="2021-06-19T02:54:38.084Z">
+<meta property="article:modified_time" content="2021-06-21T03:23:01.968Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="yolov4">
 <meta property="article:tag" content="kaggle">
@@ -250,7 +250,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-06-19 10:54:38" itemprop="dateModified" datetime="2021-06-19T10:54:38+08:00">2021-06-19</time>
+                <time title="修改時間：2021-06-21 11:23:01" itemprop="dateModified" datetime="2021-06-21T11:23:01+08:00">2021-06-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -302,7 +302,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>台灣疫情爆發，天天增加百例，已經升到三級警戒，室內最多 5 人室外最多 10 人聚集。到這種時候還有人不想戴口罩，剛好到了期末做個專題讓 AI 來抓爆這些人。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>至五月以來，疫情爆發升級成三級警戒，戴口罩已成為日常生活不可或缺的一部分。然而，還是時常在新聞上看到不配合戴口罩的名眾，想成為防疫破口，為了監視這些人的行為還需要額外人力去支援。剛好，在課堂上學到如何用 CNN 網路模型來做圖片辨識，因此以時事為主題，學習為主旨來做這份期末報告。</p>
+<p>我們從國際上著名的數據庫 Kaggle 平台取得想要的資料集 Face Mask Detection，裡面有853張照片、三種物件，分別為戴口罩的人頭、沒戴口罩的人頭、口罩戴的不完全的人頭。並使用 YOLOv4 (You Only Look Once) 物件辨識演算法來偵測戴口罩的人。最後的訓練成效 mAP 為 79%，同時為了能公開讓大家一同使用，將結果透過 Line 平台的 Line Bot 系統整合 YOLOv4 訓練結果，只需直接上傳圖片就可以即時得到回饋。</p>
 <h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
 <li><p>此篇開發環境為 <code>Ubuntu 16.04 LTS</code> 桌面版本，並且每個路徑都以絕對路徑來呈現，盡量使所有路徑透明化，避免讀者混淆。因此若要照著本文提供的程式運行的話，路徑中的 <code>user</code> 需改為登入環境的帳號名稱。</p>
 </li>
@@ -470,6 +471,8 @@
 <li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://arxiv.org/pdf/2004.10934.pdf">YOLOv4: Optimal Speed and Accuracy of Object Detection</a></p>
 </li>
 <li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://hackmd.io/@shaoeChen/SJXmp66KG?type=view#3-8Anchor-boxes">Anchor boxes</a></p>
+</li>
+<li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://medium.com/ching-i/yolo-c49f70241aa7">YOLOv4 訓練教學</a></p>
 </li>
 </ol>
 <h2 id="問題排除"><a href="#問題排除" class="headerlink" title="問題排除"></a>問題排除</h2><h3 id="編譯-darknet-時可能遇到的問題"><a href="#編譯-darknet-時可能遇到的問題" class="headerlink" title="編譯 darknet 時可能遇到的問題"></a>編譯 darknet 時可能遇到的問題</h3><ol>
