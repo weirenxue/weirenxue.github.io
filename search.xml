@@ -382,7 +382,6 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>file</tag>
         <tag>centos</tag>
         <tag>7.9</tag>
         <tag>vsftpd</tag>
@@ -390,6 +389,7 @@
         <tag>425</tag>
         <tag>vm</tag>
         <tag>copy</tag>
+        <tag>file</tag>
       </tags>
   </entry>
   <entry>
@@ -479,10 +479,10 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>centos</tag>
-        <tag>windows</tag>
         <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>windows</tag>
         <tag>10</tag>
         <tag>vmware</tag>
       </tags>
@@ -507,10 +507,10 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>linux</tag>
+        <tag>mariadb</tag>
         <tag>centos</tag>
         <tag>8.2</tag>
-        <tag>mariadb</tag>
+        <tag>linux</tag>
         <tag>latest</tag>
         <tag>update</tag>
         <tag>version</tag>
@@ -538,17 +538,17 @@
       </categories>
       <tags>
         <tag>server</tag>
-        <tag>linux</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
         <tag>characterset</tag>
         <tag>client</tag>
         <tag>mariadb</tag>
         <tag>mysql</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
         <tag>default</tag>
         <tag>collation</tag>
         <tag>utf8</tag>
         <tag>utf8mb4</tag>
+        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -608,10 +608,10 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>linux</tag>
+        <tag>mariadb</tag>
         <tag>centos</tag>
         <tag>8.2</tag>
-        <tag>mariadb</tag>
+        <tag>linux</tag>
         <tag>php</tag>
         <tag>10</tag>
         <tag>7.2</tag>
@@ -644,10 +644,10 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>linux</tag>
+        <tag>mysql</tag>
         <tag>centos</tag>
         <tag>8.2</tag>
-        <tag>mysql</tag>
+        <tag>linux</tag>
         <tag>8</tag>
         <tag>root</tag>
         <tag>password</tag>
@@ -687,10 +687,10 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>linux</tag>
         <tag>centos</tag>
-        <tag>firewall</tag>
         <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>firewall</tag>
         <tag>firewalld</tag>
         <tag>port</tag>
         <tag>service</tag>
@@ -718,9 +718,9 @@
       <tags>
         <tag>server</tag>
         <tag>web</tag>
-        <tag>linux</tag>
         <tag>centos</tag>
         <tag>8.2</tag>
+        <tag>linux</tag>
         <tag>nginx</tag>
       </tags>
   </entry>
@@ -751,12 +751,12 @@
         <tag>ubuntu</tag>
         <tag>20.04</tag>
         <tag>netcat</tag>
+        <tag>linux</tag>
+        <tag>file</tag>
         <tag>CR</tag>
         <tag>carriage</tag>
         <tag>return</tag>
         <tag>echo</tag>
-        <tag>file</tag>
-        <tag>linux</tag>
         <tag>cat</tag>
       </tags>
   </entry>
@@ -901,9 +901,9 @@
       </categories>
       <tags>
         <tag>ubuntu</tag>
-        <tag>linux</tag>
         <tag>centos</tag>
         <tag>8.2</tag>
+        <tag>linux</tag>
         <tag>18.04</tag>
         <tag>user</tag>
         <tag>adduser</tag>
@@ -1437,10 +1437,10 @@
         <tag>asp</tag>
         <tag>.net</tag>
         <tag>core</tag>
+        <tag>publish</tag>
         <tag>3.1</tag>
         <tag>visual studio</tag>
         <tag>2019</tag>
-        <tag>publish</tag>
       </tags>
   </entry>
   <entry>
@@ -1475,8 +1475,8 @@
         <tag>core</tag>
         <tag>3.1</tag>
         <tag>visual studio</tag>
-        <tag>razor</tag>
         <tag>2019</tag>
+        <tag>razor</tag>
       </tags>
   </entry>
   <entry>
@@ -1503,12 +1503,12 @@
         <tag>ssl</tag>
         <tag>ca</tag>
         <tag>key</tag>
+        <tag>crt</tag>
+        <tag>csr</tag>
         <tag>self</tag>
         <tag>sign</tag>
         <tag>openssl</tag>
         <tag>mitm</tag>
-        <tag>csr</tag>
-        <tag>crt</tag>
       </tags>
   </entry>
   <entry>
@@ -1614,10 +1614,10 @@
         <tag>18.04</tag>
         <tag>ssl</tag>
         <tag>key</tag>
-        <tag>csr</tag>
         <tag>crt</tag>
         <tag>match</tag>
         <tag>cert</tag>
+        <tag>csr</tag>
       </tags>
   </entry>
   <entry>
@@ -1725,8 +1725,8 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>dll</tag>
         <tag>cpp</tag>
+        <tag>dll</tag>
         <tag>invoke</tag>
         <tag>loadlibrarya</tag>
         <tag>loadlibraryw</tag>
@@ -1758,11 +1758,11 @@
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>cpp</tag>
         <tag>visual studio</tag>
         <tag>dll</tag>
         <tag>2017</tag>
         <tag>dllmain</tag>
-        <tag>cpp</tag>
       </tags>
   </entry>
   <entry>
@@ -2205,9 +2205,9 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>matlab</tag>
         <tag>k</tag>
         <tag>means</tag>
+        <tag>matlab</tag>
         <tag>pseudo</tag>
         <tag>algorithm</tag>
       </tags>
@@ -2279,11 +2279,11 @@
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>matlab</tag>
         <tag>ip</tag>
         <tag>finder</tag>
         <tag>equipment</tag>
         <tag>wireshark</tag>
-        <tag>matlab</tag>
         <tag>ptu</tag>
         <tag>flir</tag>
       </tags>
@@ -2479,8 +2479,8 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>cpp</tag>
         <tag>FARPROC</tag>
+        <tag>cpp</tag>
         <tag>加密與解密</tag>
       </tags>
   </entry>
