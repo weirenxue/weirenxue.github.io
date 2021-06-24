@@ -1,78 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>[Apache] 修改 HTTP 標頭中的 Server 欄位</title>
-    <url>/2021/06/17/apache_http_server/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>伺服器資訊包含類型 (IIS、Apache 或 Nginx) 與版本是一個很重要的資訊，當駭客想針對一個網頁應用程式下手時，必定先蒐集這些情報，下一步再看有沒有尚未修復的漏洞可以利用。</p>
-<p>因此，若不想使這些資訊這麼透明，我們可以採取一些手段。這篇文章以 Apache 2 為例子隱藏伺服器資訊，不同類型的伺服器的概念都是一樣的。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 20.04 LTS</li>
-</ul>
-<h2 id="文章結構"><a href="#文章結構" class="headerlink" title="文章結構"></a>文章結構</h2><p>此篇文章分為兩個段落</p>
-<ol>
-<li>第一個段落說明如何從 HTTP 回應標頭 (HTTP Response Header) 來蒐集伺服器資訊，讓讀者心裡有個底為什麼接下來要這樣改。</li>
-<li>第二個段落動手修改 HTTP 回應頭欄位中的 Server 欄位，這裡會採取兩個方式<ul>
-<li>使 Server 欄位只剩下 <code>Apache</code>，版本與作業系統資訊不會顯示。</li>
-<li>將 Server 欄位改為自己想要的輸出顯示，可以連 <code>Apache</code> 都不顯示。</li>
-</ul>
-</li>
-</ol>
-<h2 id="蒐集伺服器資訊"><a href="#蒐集伺服器資訊" class="headerlink" title="蒐集伺服器資訊"></a>蒐集伺服器資訊</h2><h3 id="前置環境與作業"><a href="#前置環境與作業" class="headerlink" title="前置環境與作業"></a>前置環境與作業</h3><p>伺服器 IP 為 localhost，並在當前目錄下創建檔案 <code>message</code>，內容如下</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HEAD / HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>16 進位形式</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
-<p>這裡特別附上該檔案的 16 進位形式，注意每一行後都有 <code>\r\n</code>，也就是 <code>0x0d0a</code>，最後一個空白行 <code>\r\n</code> 可別忘了！因為 linux 的換行只有 <code>\n</code>，如何加上 <code>\r</code> 可以參考：<a href="/2021/06/17/echo_ubuntu_r/">[Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案</a>。</p>
-<h3 id="NetCat"><a href="#NetCat" class="headerlink" title="NetCat"></a>NetCat</h3><p>NetCat 是一把網路瑞士刀，用它來進行網路相關操作是最好用且方便的</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 01:37:03 GMT</span><br><span class="line">Server: Apache/2.4.41 (Ubuntu)</span><br><span class="line">Last-Modified: Thu, 03 Sep 2020 01:24:28 GMT</span><br><span class="line">ETag: <span class="string">&quot;2aa6-5ae5e9d0acf52&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 10918</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
-<h3 id="資訊洩漏"><a href="#資訊洩漏" class="headerlink" title="資訊洩漏"></a>資訊洩漏</h3><p>從輸出結果可以準確知道使用的伺服器與運行版本資訊，甚至是作業系統的資訊，這些資訊都是當服務被發現有漏洞時，對我們不利的點！</p>
-<p>因此，要如何隱藏這個資訊是我們該學的，雖然不能說隱藏起來就萬無一失，只是攻擊方在沒有這些情報下會比較難鎖定，若能拖延到補丁出現，受到攻擊的機率就被降低了！</p>
-<h2 id="修改標頭的-Server-欄位"><a href="#修改標頭的-Server-欄位" class="headerlink" title="修改標頭的 Server 欄位"></a>修改標頭的 Server 欄位</h2><p>修改的方法有兩種，各有利弊，這篇文章兩種方法都會記錄，但實際上需要哪一種還是要看個人</p>
-<ol>
-<li>修改 <code>conf</code> 檔：用 <code>apt-get</code> 安裝的 <code>Apache</code> 只能用這個方法。優點是快速，缺點是最少還是會留下 <code>Apache</code> 的字眼，讓使用者知道伺服器是 Apache。</li>
-<li>修改原始碼再自行編譯：優點是可以完全改為自己想顯示的文字，缺點是因為要自行編譯，導致若要更新 Apache，還要再重新下載新的原始碼，重複一樣的步驟，無法像 <code>apt-get</code> 安裝的套件那樣直接更新。</li>
-</ol>
-<h3 id="修改-conf-檔"><a href="#修改-conf-檔" class="headerlink" title="修改 conf 檔"></a>修改 conf 檔</h3><p>這裡使用的 Apache 版本為 2.4.41，不同版本所要修改的 <code>conf</code> 檔與其所在位置可能不同。</p>
-<p>修改 <code>security.conf</code>，其位置在 <code>/etc/apache2/conf-available/security.conf</code>，將內容中 <code>ServerTokens</code> 所對應的值改為 <code>Prod</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ServerTokens</span></span><br><span class="line"><span class="comment"># This directive configures what you return as the Server HTTP response</span></span><br><span class="line"><span class="comment"># Header. The default is &#x27;Full&#x27; which sends information about the OS-Type</span></span><br><span class="line"><span class="comment"># and compiled in modules.</span></span><br><span class="line"><span class="comment"># Set to one of:  Full | OS | Minimal | Minor | Major | Prod</span></span><br><span class="line"><span class="comment"># where Full conveys the most information, and Prod the least.</span></span><br><span class="line"><span class="comment">#ServerTokens Minimal</span></span><br><span class="line">ServerTokens Prod</span><br><span class="line"><span class="comment">#ServerTokens Full</span></span><br></pre></td></tr></table></figure>
-<p>重啟 Apache 服務，並且再做一次資訊蒐集，可以發現版本與 OS 的資訊已被隱蔽</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo /etc/init.d/apache2 restart</span><br><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 07:50:50 GMT</span><br><span class="line">Server: Apache</span><br><span class="line">Last-Modified: Thu, 03 Sep 2020 07:25:19 GMT</span><br><span class="line">ETag: <span class="string">&quot;2aa6-5ae63a79037be&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 10918</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
-<p>這個方法最多只能只能遮蔽到這個程度，知道伺服器是 Apache，但版本與 OS 無法從此處得知。</p>
-<h3 id="修改原始碼自行編譯"><a href="#修改原始碼自行編譯" class="headerlink" title="修改原始碼自行編譯"></a>修改原始碼自行編譯</h3><p><a href="https://httpd.apache.org/docs/2.4/install.html">Apache 編譯步驟</a> 官網都有教學，但我們需要修改原始碼，所以還是會細講一下步驟。</p>
-<h4 id="下載原始碼"><a href="#下載原始碼" class="headerlink" title="下載原始碼"></a>下載原始碼</h4><p>先到 <a href="https://httpd.apache.org/">Apache 官網</a> 下載想要的版本 (選 tar.gz)，解壓縮後進到資料。其中的 <code>httpd-NN</code> 就是下載的版本啦！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ gzip -d httpd-NN.tar.gz <span class="comment"># 解 gz</span></span><br><span class="line">user@pc:~$ tar xvf httpd-NN.tar    <span class="comment"># 解 tar</span></span><br><span class="line">user@pc:~$ <span class="built_in">cd</span> httpd-NN             <span class="comment"># 進到目錄下</span></span><br></pre></td></tr></table></figure>
-<h4 id="修改原始碼"><a href="#修改原始碼" class="headerlink" title="修改原始碼"></a>修改原始碼</h4><p>開啟 <code>httpd-NN/include/ap_release.h</code> 找到 <code>#define AP_SERVER_BASEPRODUCT &quot;Apache&quot;</code>，將 <code>Apache</code> 改為想要顯示在 Server 欄位的文字，僅需修改此處就可以往下個步驟</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AP_SERVER_BASEPRODUCT <span class="meta-string">&quot;Server field masked!&quot;</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="編譯原始碼"><a href="#編譯原始碼" class="headerlink" title="編譯原始碼"></a>編譯原始碼</h4><p>產出 <code>Makefile</code>，在這步驟可能會遇到相依套件沒裝的問題 <code>apr</code>、<code>apr-util</code> 與 <code>prec</code>，所以先安裝相關套件，網路上很多都教下載這些套件的原碼再 compile，但我認為若可以使用 <code>apt-get install</code> 就盡量使用它，因為之後可以用 <code>apt-get update/upgrade</code> 來更新套件！管理上省事許多</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ sudo apt-get install gcc libapr1 libapr1-dev libaprutil1 libaprutil1-dev libpcre3 libpcre3-dev</span><br><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ ./configure      </span><br></pre></td></tr></table></figure>
-<p>若有看官網教學會看到 <code>./configure --prefix=PREFIX</code>，其中 <code>PREFIX</code> 是想安裝 Apache 的地方，不指定的話，就是安裝在預設路徑 <code>/usr/local/apache2</code>，若沒特殊需求就安裝在預設路徑即可。</p>
-<p><code>configure</code> 執行成功後目錄下應該會有 <code>Makefile</code>，現在就可以來編譯然後安裝啦。安裝完預設是關閉服務的，記得開啟嘿！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ make                                           <span class="comment"># 編譯</span></span><br><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ sudo make install                              <span class="comment"># 安裝</span></span><br><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ sudo /usr/<span class="built_in">local</span>/apache2/bin/apachectl -k start <span class="comment"># 開啟服務</span></span><br></pre></td></tr></table></figure>
-<p>開啟服務後，檢查 Server 欄位是否被修改了，可以看到的確是剛修改的內容 <code>Server field masked!</code>，但是版本與 OS 的資訊還在，要改的東西還沒完，請繼續下一步修改！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 09:29:14 GMT</span><br><span class="line">Server: Server field masked!/2.4.46 (Unix)</span><br><span class="line">Last-Modified: Mon, 11 Jun 2007 18:53:14 GMT</span><br><span class="line">ETag: <span class="string">&quot;2d-432a5e4a73a80&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 45</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
-<h4 id="修改設定檔"><a href="#修改設定檔" class="headerlink" title="修改設定檔"></a>修改設定檔</h4><p>跟第一個修改方法很類似，要去修改一個 <code>conf</code> 檔，這裡為 <code>/usr/local/apache2/conf/extra/httpd-default.conf</code>，將內容中 <code>ServerTokens</code> 所對應的值改為 <code>Prod</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ServerTokens</span></span><br><span class="line"><span class="comment"># This directive configures what you return as the Server HTTP response</span></span><br><span class="line"><span class="comment"># Header. The default is &#x27;Full&#x27; which sends information about the OS-Type</span></span><br><span class="line"><span class="comment"># and compiled in modules.</span></span><br><span class="line"><span class="comment"># Set to one of:  Full | OS | Minor | Minimal | Major | Prod</span></span><br><span class="line"><span class="comment"># where Full conveys the most information, and Prod the least.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">ServerTokens Prod</span><br></pre></td></tr></table></figure>
-<p>還沒結束喔！還要修改一個 conf 檔，這裡為 <code>/usr/local/apache2/conf/httpd.conf</code>，將內容中 <code>#Include conf/extra/httpd-default.conf</code> 前的井字號拿掉, 確保上一步的 <code>httpd-default.conf</code> 設定會被載入</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Various default settings</span></span><br><span class="line">Include conf/extra/httpd-default.conf</span><br></pre></td></tr></table></figure>
-<p>重啟服務，檢查 Server 欄位，可以看到的只剩下剛修改的內容 <code>Server field masked!</code> 完全無法從 Server 欄位得知這是什麼伺服器，更狠一點，也可以改為 <code>Microsoft-IIS/10.0</code> 來混淆視聽</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo /usr/<span class="built_in">local</span>/apache2/bin/apachectl -k restart <span class="comment"># 重啟服務</span></span><br><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 09:49:28 GMT</span><br><span class="line">Server: Server field masked!</span><br><span class="line">Last-Modified: Mon, 11 Jun 2007 18:53:14 GMT</span><br><span class="line">ETag: <span class="string">&quot;2d-432a5e4a73a80&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 45</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>apache</tag>
-        <tag>ubuntu</tag>
-        <tag>20.04</tag>
-        <tag>http</tag>
-        <tag>server</tag>
-        <tag>header</tag>
-        <tag>web</tag>
-        <tag>modification</tag>
-        <tag>netcat</tag>
-        <tag>nc</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[C++] (FARPROC&amp;) 的含意</title>
     <url>/2021/06/11/cfarproc/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
@@ -104,6 +32,42 @@
         <tag>FARPROC</tag>
         <tag>cpp</tag>
         <tag>加密與解密</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
+    <url>/2021/06/15/cs_asp_net_core_3_1/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio Enterprise 2019 (16.7.2)</li>
+<li>.Net Core 3.1</li>
+</ul>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>必需使用 Visual Studio 2019 以上版本才可以用 .NET Core 3.1 (<a href="https://dotnet.microsoft.com/download/dotnet-core/3.1">參考資訊</a>)，也因為 2.1 版在 2021/08/21 就會結束支援，所以建議使用較新的 Core (3.1)。</p>
+<p>開啟「Visual Studio 2019」→「Create a new project」→ 選「ASP.NET Core Web Application」→ Project name 為「CorePractice」→ 選「Web Application」(請注意上方要為 .NET Core 與 ASP.NET Core 3.1，且右方的 HTTPS 不要勾) →「Create」</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fcreate_project.png?alt=media&amp;token=fc23ffc7-0664-4325-bd3f-9d052cf073d7" alt="創建專案步驟"><span class="image-caption">創建專案步驟</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>目錄結構如下，目前只會用到 <code>Index.cshtml</code> 與 <code>Index.cshtml.cs</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">│  appsettings.Development.json</span><br><span class="line">│  appsettings.json</span><br><span class="line">│  CorePractice.csproj</span><br><span class="line">│  Program.cs</span><br><span class="line">│  Startup.cs</span><br><span class="line">├─bin</span><br><span class="line">├─obj</span><br><span class="line">├─Pages</span><br><span class="line">│  │  Error.cshtml</span><br><span class="line">│  │  Error.cshtml.cs</span><br><span class="line">│  │  Index.cshtml</span><br><span class="line">│  │  Index.cshtml.cs</span><br><span class="line">│  │  Privacy.cshtml</span><br><span class="line">│  │  Privacy.cshtml.cs</span><br><span class="line">│  │  _ViewImports.cshtml</span><br><span class="line">│  │  _ViewStart.cshtml</span><br><span class="line">│  │</span><br><span class="line">│  └─Shared</span><br><span class="line">├─Properties</span><br><span class="line">└─wwwroot</span><br></pre></td></tr></table></figure>
+<p>修改 <code>Index.cshtml.cs</code> 內 <code>OnGet</code> 函式的內容，透過 <code>ViewData</code> 將資料傳給 View</p>
+<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.RazorPages;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CorePractice.Pages</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">IndexModel</span> : <span class="title">PageModel</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;IndexModel&gt; _logger;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">IndexModel</span>(<span class="params">ILogger&lt;IndexModel&gt; logger</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            _logger = logger;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGet</span>(<span class="params"></span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span>[] names = <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; <span class="string">&quot;Alfreda Stephenson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Swanson Swanson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Walker Pace&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Katina Le&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Lesley Calderon&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Ruth Merrill&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Cristina Buchanan&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Gallegos May&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Macdonald Lucas&quot;</span>&#125;;</span><br><span class="line">            <span class="built_in">int</span> num = <span class="number">3</span>;</span><br><span class="line">            <span class="built_in">int</span>[] age = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            <span class="built_in">string</span>[] name = <span class="keyword">new</span> <span class="built_in">string</span>[num];</span><br><span class="line">            <span class="built_in">int</span>[] family = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            Random rnd = <span class="keyword">new</span> Random();</span><br><span class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; num; i++)</span><br><span class="line">            &#123;</span><br><span class="line">                age[i] = rnd.Next(<span class="number">50</span>);</span><br><span class="line">                name[i] = names[rnd.Next(names.Length)];</span><br><span class="line">                family[i] = rnd.Next(<span class="number">5</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            ViewData[<span class="string">&quot;age&quot;</span>] = age;</span><br><span class="line">            ViewData[<span class="string">&quot;name&quot;</span>] = name;</span><br><span class="line">            ViewData[<span class="string">&quot;family&quot;</span>] = family;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>將 <code>Index.cshtml</code> 修改如下，透過 <code>ViewData</code> 將 Controller 的資料取出，在 View 中渲染</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">@page</span><br><span class="line">@model IndexModel</span><br><span class="line">@&#123;</span><br><span class="line">    ViewData[&quot;Title&quot;] = &quot;Home page&quot;;</span><br><span class="line"></span><br><span class="line">    int[] age = ViewData[&quot;age&quot;] as int[];</span><br><span class="line">    string[] name = ViewData[&quot;name&quot;] as string[];</span><br><span class="line">    int[] family = ViewData[&quot;family&quot;] as int[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;text-center&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">&quot;display-4&quot;</span>&gt;</span>Welcome<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Learn about <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://docs.microsoft.com/aspnet/core&quot;</span>&gt;</span>building Web apps with ASP.NET Core<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">style</span>=<span class="string">&quot;border-style: solid; margin-left: auto; margin-right: auto;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>名字<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>歲數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>家庭人數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    @for (var i = 0; i &lt; name.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@name[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@age[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@family[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">    <span class="selector-tag">table</span> <span class="selector-tag">td</span>, <span class="selector-tag">table</span> <span class="selector-tag">th</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">1px</span> solid black;</span></span><br><span class="line"><span class="css">    &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>編譯與建置 (F5) 後一個簡單的 ASP.NET Core 應用程式就此完成</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fproject_demo.png?alt=media&amp;token=7e1625c1-5d92-4acd-84b5-8de508a799f0" alt="完成頁面"><span class="image-caption">完成頁面</span></p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/core-practice">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>csharp</tag>
+        <tag>asp</tag>
+        <tag>.net</tag>
+        <tag>core</tag>
+        <tag>3.1</tag>
+        <tag>visual studio</tag>
+        <tag>razor</tag>
+        <tag>2019</tag>
       </tags>
   </entry>
   <entry>
@@ -201,46 +165,44 @@
         <tag>asp</tag>
         <tag>.net</tag>
         <tag>core</tag>
-        <tag>publish</tag>
         <tag>3.1</tag>
         <tag>visual studio</tag>
         <tag>2019</tag>
+        <tag>publish</tag>
       </tags>
   </entry>
   <entry>
-    <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
-    <url>/2021/06/15/cs_asp_net_core_3_1/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
+    <title>[CharSet] CentOS 修改 MariaDB／MySQL 預設字符集</title>
+    <url>/2021/06/19/charset_centos_mariadb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL 是瑞典人開發的，所以預設字符集是 latin1，與其每次要創建資料庫都要指定字符集，不如直接更改預設的字符集。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio Enterprise 2019 (16.7.2)</li>
-<li>.Net Core 3.1</li>
+<li>CentOS 8.2</li>
+<li>MariaDB 10.3.17</li>
 </ul>
-<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>必需使用 Visual Studio 2019 以上版本才可以用 .NET Core 3.1 (<a href="https://dotnet.microsoft.com/download/dotnet-core/3.1">參考資訊</a>)，也因為 2.1 版在 2021/08/21 就會結束支援，所以建議使用較新的 Core (3.1)。</p>
-<p>開啟「Visual Studio 2019」→「Create a new project」→ 選「ASP.NET Core Web Application」→ Project name 為「CorePractice」→ 選「Web Application」(請注意上方要為 .NET Core 與 ASP.NET Core 3.1，且右方的 HTTPS 不要勾) →「Create」</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fcreate_project.png?alt=media&amp;token=fc23ffc7-0664-4325-bd3f-9d052cf073d7" alt="創建專案步驟"><span class="image-caption">創建專案步驟</span></p>
-<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>目錄結構如下，目前只會用到 <code>Index.cshtml</code> 與 <code>Index.cshtml.cs</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">│  appsettings.Development.json</span><br><span class="line">│  appsettings.json</span><br><span class="line">│  CorePractice.csproj</span><br><span class="line">│  Program.cs</span><br><span class="line">│  Startup.cs</span><br><span class="line">├─bin</span><br><span class="line">├─obj</span><br><span class="line">├─Pages</span><br><span class="line">│  │  Error.cshtml</span><br><span class="line">│  │  Error.cshtml.cs</span><br><span class="line">│  │  Index.cshtml</span><br><span class="line">│  │  Index.cshtml.cs</span><br><span class="line">│  │  Privacy.cshtml</span><br><span class="line">│  │  Privacy.cshtml.cs</span><br><span class="line">│  │  _ViewImports.cshtml</span><br><span class="line">│  │  _ViewStart.cshtml</span><br><span class="line">│  │</span><br><span class="line">│  └─Shared</span><br><span class="line">├─Properties</span><br><span class="line">└─wwwroot</span><br></pre></td></tr></table></figure>
-<p>修改 <code>Index.cshtml.cs</code> 內 <code>OnGet</code> 函式的內容，透過 <code>ViewData</code> 將資料傳給 View</p>
-<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.RazorPages;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CorePractice.Pages</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">IndexModel</span> : <span class="title">PageModel</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;IndexModel&gt; _logger;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">IndexModel</span>(<span class="params">ILogger&lt;IndexModel&gt; logger</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            _logger = logger;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGet</span>(<span class="params"></span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span>[] names = <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; <span class="string">&quot;Alfreda Stephenson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Swanson Swanson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Walker Pace&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Katina Le&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Lesley Calderon&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Ruth Merrill&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Cristina Buchanan&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Gallegos May&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Macdonald Lucas&quot;</span>&#125;;</span><br><span class="line">            <span class="built_in">int</span> num = <span class="number">3</span>;</span><br><span class="line">            <span class="built_in">int</span>[] age = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            <span class="built_in">string</span>[] name = <span class="keyword">new</span> <span class="built_in">string</span>[num];</span><br><span class="line">            <span class="built_in">int</span>[] family = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            Random rnd = <span class="keyword">new</span> Random();</span><br><span class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; num; i++)</span><br><span class="line">            &#123;</span><br><span class="line">                age[i] = rnd.Next(<span class="number">50</span>);</span><br><span class="line">                name[i] = names[rnd.Next(names.Length)];</span><br><span class="line">                family[i] = rnd.Next(<span class="number">5</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            ViewData[<span class="string">&quot;age&quot;</span>] = age;</span><br><span class="line">            ViewData[<span class="string">&quot;name&quot;</span>] = name;</span><br><span class="line">            ViewData[<span class="string">&quot;family&quot;</span>] = family;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>將 <code>Index.cshtml</code> 修改如下，透過 <code>ViewData</code> 將 Controller 的資料取出，在 View 中渲染</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">@page</span><br><span class="line">@model IndexModel</span><br><span class="line">@&#123;</span><br><span class="line">    ViewData[&quot;Title&quot;] = &quot;Home page&quot;;</span><br><span class="line"></span><br><span class="line">    int[] age = ViewData[&quot;age&quot;] as int[];</span><br><span class="line">    string[] name = ViewData[&quot;name&quot;] as string[];</span><br><span class="line">    int[] family = ViewData[&quot;family&quot;] as int[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;text-center&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">&quot;display-4&quot;</span>&gt;</span>Welcome<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Learn about <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://docs.microsoft.com/aspnet/core&quot;</span>&gt;</span>building Web apps with ASP.NET Core<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">style</span>=<span class="string">&quot;border-style: solid; margin-left: auto; margin-right: auto;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>名字<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>歲數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>家庭人數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    @for (var i = 0; i &lt; name.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@name[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@age[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@family[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">    <span class="selector-tag">table</span> <span class="selector-tag">td</span>, <span class="selector-tag">table</span> <span class="selector-tag">th</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">1px</span> solid black;</span></span><br><span class="line"><span class="css">    &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>編譯與建置 (F5) 後一個簡單的 ASP.NET Core 應用程式就此完成</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fproject_demo.png?alt=media&amp;token=7e1625c1-5d92-4acd-84b5-8de508a799f0" alt="完成頁面"><span class="image-caption">完成頁面</span></p>
-<p>參考原始碼：<a href="https://github.com/weirenxue/core-practice">GitHub</a></p>
-]]></content>
+<h2 id="確認預設字符集"><a href="#確認預設字符集" class="headerlink" title="確認預設字符集"></a>確認預設字符集</h2><p>登入 MariaDB</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mysql -u user -p</span><br></pre></td></tr></table></figure>
+<p>查看預設字符集，<code>Server characterset</code>、<code>Db characterset</code>、<code>Client characterset</code> 與 <code>Conn. characterset</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          8</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    latin1</span><br><span class="line">Db     characterset:    latin1</span><br><span class="line">Client characterset:    utf8</span><br><span class="line">Conn.  characterset:    utf8</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 8 sec</span><br></pre></td></tr></table></figure>
+<h2 id="更改-cnf-設定"><a href="#更改-cnf-設定" class="headerlink" title="更改 cnf 設定"></a>更改 cnf 設定</h2><p>為了不影響到原先就在的 cnf 檔，在 <code>/etc/my.cnf.d/</code> 目錄下新增一個 cnf 檔 (檔名任意)，內容如下</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8mb4        <span class="comment">## 修改 Client characterset 與 Conn. characterset</span></span><br><span class="line">[mysqld]</span><br><span class="line">character-set-server=utf8mb4         <span class="comment">## 修改 Server characterset 與 Db characterset</span></span><br><span class="line">collation-server=utf8mb4_unicode_ci  <span class="comment">## 會修改預設的校驗比對方法</span></span><br></pre></td></tr></table></figure>
+<h2 id="載入設定"><a href="#載入設定" class="headerlink" title="載入設定"></a>載入設定</h2><p>重啟 MariaDB，確認字符集已更改為所設定的</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mariadb</span><br><span class="line">[user@localhost ~]$ mysql -u user -p</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          9</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    utf8mb4</span><br><span class="line">Db     characterset:    utf8mb4</span><br><span class="line">Client characterset:    utf8mb4</span><br><span class="line">Conn.  characterset:    utf8mb4</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 3 min 39 sec</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>csharp</tag>
-        <tag>asp</tag>
-        <tag>.net</tag>
-        <tag>core</tag>
-        <tag>3.1</tag>
-        <tag>visual studio</tag>
-        <tag>2019</tag>
-        <tag>razor</tag>
+        <tag>characterset</tag>
+        <tag>server</tag>
+        <tag>client</tag>
+        <tag>mariadb</tag>
+        <tag>mysql</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>default</tag>
+        <tag>collation</tag>
+        <tag>utf8</tag>
+        <tag>utf8mb4</tag>
+        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -274,40 +236,6 @@
         <tag>dll</tag>
         <tag>2017</tag>
         <tag>dllmain</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[CharSet] CentOS 修改 MariaDB/MySQL 預設字符集</title>
-    <url>/2021/06/19/charset_centos_mariadb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL 是瑞典人開發的，所以預設字符集是 latin1，與其每次要創建資料庫都要指定字符集，不如直接更改預設的字符集。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-<li>MariaDB 10.3.17</li>
-</ul>
-<h2 id="確認預設字符集"><a href="#確認預設字符集" class="headerlink" title="確認預設字符集"></a>確認預設字符集</h2><p>登入 MariaDB</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mysql -u user -p</span><br></pre></td></tr></table></figure>
-<p>查看預設字符集，<code>Server characterset</code>、<code>Db characterset</code>、<code>Client characterset</code> 與 <code>Conn. characterset</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          8</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    latin1</span><br><span class="line">Db     characterset:    latin1</span><br><span class="line">Client characterset:    utf8</span><br><span class="line">Conn.  characterset:    utf8</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 8 sec</span><br></pre></td></tr></table></figure>
-<h2 id="更改-cnf-設定"><a href="#更改-cnf-設定" class="headerlink" title="更改 cnf 設定"></a>更改 cnf 設定</h2><p>為了不影響到原先就在的 cnf 檔，在 <code>/etc/my.cnf.d/</code> 目錄下新增一個 cnf 檔 (檔名任意)，內容如下</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8mb4        <span class="comment">## 修改 Client characterset 與 Conn. characterset</span></span><br><span class="line">[mysqld]</span><br><span class="line">character-set-server=utf8mb4         <span class="comment">## 修改 Server characterset 與 Db characterset</span></span><br><span class="line">collation-server=utf8mb4_unicode_ci  <span class="comment">## 會修改預設的校驗比對方法</span></span><br></pre></td></tr></table></figure>
-<h2 id="載入設定"><a href="#載入設定" class="headerlink" title="載入設定"></a>載入設定</h2><p>重啟 MariaDB，確認字符集已更改為所設定的</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mariadb</span><br><span class="line">[user@localhost ~]$ mysql -u user -p</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          9</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    utf8mb4</span><br><span class="line">Db     characterset:    utf8mb4</span><br><span class="line">Client characterset:    utf8mb4</span><br><span class="line">Conn.  characterset:    utf8mb4</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 3 min 39 sec</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>server</tag>
-        <tag>characterset</tag>
-        <tag>client</tag>
-        <tag>mariadb</tag>
-        <tag>mysql</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>default</tag>
-        <tag>collation</tag>
-        <tag>utf8</tag>
-        <tag>utf8mb4</tag>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -389,6 +317,78 @@
       </tags>
   </entry>
   <entry>
+    <title>[Apache] 修改 HTTP 標頭中的 Server 欄位</title>
+    <url>/2021/06/17/apache_http_server/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>伺服器資訊包含類型 (IIS、Apache 或 Nginx) 與版本是一個很重要的資訊，當駭客想針對一個網頁應用程式下手時，必定先蒐集這些情報，下一步再看有沒有尚未修復的漏洞可以利用。</p>
+<p>因此，若不想使這些資訊這麼透明，我們可以採取一些手段。這篇文章以 Apache 2 為例子隱藏伺服器資訊，不同類型的伺服器的概念都是一樣的。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 20.04 LTS</li>
+</ul>
+<h2 id="文章結構"><a href="#文章結構" class="headerlink" title="文章結構"></a>文章結構</h2><p>此篇文章分為兩個段落</p>
+<ol>
+<li>第一個段落說明如何從 HTTP 回應標頭 (HTTP Response Header) 來蒐集伺服器資訊，讓讀者心裡有個底為什麼接下來要這樣改。</li>
+<li>第二個段落動手修改 HTTP 回應頭欄位中的 Server 欄位，這裡會採取兩個方式<ul>
+<li>使 Server 欄位只剩下 <code>Apache</code>，版本與作業系統資訊不會顯示。</li>
+<li>將 Server 欄位改為自己想要的輸出顯示，可以連 <code>Apache</code> 都不顯示。</li>
+</ul>
+</li>
+</ol>
+<h2 id="蒐集伺服器資訊"><a href="#蒐集伺服器資訊" class="headerlink" title="蒐集伺服器資訊"></a>蒐集伺服器資訊</h2><h3 id="前置環境與作業"><a href="#前置環境與作業" class="headerlink" title="前置環境與作業"></a>前置環境與作業</h3><p>伺服器 IP 為 localhost，並在當前目錄下創建檔案 <code>message</code>，內容如下</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HEAD / HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>16 進位形式</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
+<p>這裡特別附上該檔案的 16 進位形式，注意每一行後都有 <code>\r\n</code>，也就是 <code>0x0d0a</code>，最後一個空白行 <code>\r\n</code> 可別忘了！因為 linux 的換行只有 <code>\n</code>，如何加上 <code>\r</code> 可以參考：<a href="/2021/06/17/echo_ubuntu_r/">[Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案</a>。</p>
+<h3 id="NetCat"><a href="#NetCat" class="headerlink" title="NetCat"></a>NetCat</h3><p>NetCat 是一把網路瑞士刀，用它來進行網路相關操作是最好用且方便的</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 01:37:03 GMT</span><br><span class="line">Server: Apache/2.4.41 (Ubuntu)</span><br><span class="line">Last-Modified: Thu, 03 Sep 2020 01:24:28 GMT</span><br><span class="line">ETag: <span class="string">&quot;2aa6-5ae5e9d0acf52&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 10918</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
+<h3 id="資訊洩漏"><a href="#資訊洩漏" class="headerlink" title="資訊洩漏"></a>資訊洩漏</h3><p>從輸出結果可以準確知道使用的伺服器與運行版本資訊，甚至是作業系統的資訊，這些資訊都是當服務被發現有漏洞時，對我們不利的點！</p>
+<p>因此，要如何隱藏這個資訊是我們該學的，雖然不能說隱藏起來就萬無一失，只是攻擊方在沒有這些情報下會比較難鎖定，若能拖延到補丁出現，受到攻擊的機率就被降低了！</p>
+<h2 id="修改標頭的-Server-欄位"><a href="#修改標頭的-Server-欄位" class="headerlink" title="修改標頭的 Server 欄位"></a>修改標頭的 Server 欄位</h2><p>修改的方法有兩種，各有利弊，這篇文章兩種方法都會記錄，但實際上需要哪一種還是要看個人</p>
+<ol>
+<li>修改 <code>conf</code> 檔：用 <code>apt-get</code> 安裝的 <code>Apache</code> 只能用這個方法。優點是快速，缺點是最少還是會留下 <code>Apache</code> 的字眼，讓使用者知道伺服器是 Apache。</li>
+<li>修改原始碼再自行編譯：優點是可以完全改為自己想顯示的文字，缺點是因為要自行編譯，導致若要更新 Apache，還要再重新下載新的原始碼，重複一樣的步驟，無法像 <code>apt-get</code> 安裝的套件那樣直接更新。</li>
+</ol>
+<h3 id="修改-conf-檔"><a href="#修改-conf-檔" class="headerlink" title="修改 conf 檔"></a>修改 conf 檔</h3><p>這裡使用的 Apache 版本為 2.4.41，不同版本所要修改的 <code>conf</code> 檔與其所在位置可能不同。</p>
+<p>修改 <code>security.conf</code>，其位置在 <code>/etc/apache2/conf-available/security.conf</code>，將內容中 <code>ServerTokens</code> 所對應的值改為 <code>Prod</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ServerTokens</span></span><br><span class="line"><span class="comment"># This directive configures what you return as the Server HTTP response</span></span><br><span class="line"><span class="comment"># Header. The default is &#x27;Full&#x27; which sends information about the OS-Type</span></span><br><span class="line"><span class="comment"># and compiled in modules.</span></span><br><span class="line"><span class="comment"># Set to one of:  Full | OS | Minimal | Minor | Major | Prod</span></span><br><span class="line"><span class="comment"># where Full conveys the most information, and Prod the least.</span></span><br><span class="line"><span class="comment">#ServerTokens Minimal</span></span><br><span class="line">ServerTokens Prod</span><br><span class="line"><span class="comment">#ServerTokens Full</span></span><br></pre></td></tr></table></figure>
+<p>重啟 Apache 服務，並且再做一次資訊蒐集，可以發現版本與 OS 的資訊已被隱蔽</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo /etc/init.d/apache2 restart</span><br><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 07:50:50 GMT</span><br><span class="line">Server: Apache</span><br><span class="line">Last-Modified: Thu, 03 Sep 2020 07:25:19 GMT</span><br><span class="line">ETag: <span class="string">&quot;2aa6-5ae63a79037be&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 10918</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
+<p>這個方法最多只能只能遮蔽到這個程度，知道伺服器是 Apache，但版本與 OS 無法從此處得知。</p>
+<h3 id="修改原始碼自行編譯"><a href="#修改原始碼自行編譯" class="headerlink" title="修改原始碼自行編譯"></a>修改原始碼自行編譯</h3><p><a href="https://httpd.apache.org/docs/2.4/install.html">Apache 編譯步驟</a> 官網都有教學，但我們需要修改原始碼，所以還是會細講一下步驟。</p>
+<h4 id="下載原始碼"><a href="#下載原始碼" class="headerlink" title="下載原始碼"></a>下載原始碼</h4><p>先到 <a href="https://httpd.apache.org/">Apache 官網</a> 下載想要的版本 (選 tar.gz)，解壓縮後進到資料。其中的 <code>httpd-NN</code> 就是下載的版本啦！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ gzip -d httpd-NN.tar.gz <span class="comment"># 解 gz</span></span><br><span class="line">user@pc:~$ tar xvf httpd-NN.tar    <span class="comment"># 解 tar</span></span><br><span class="line">user@pc:~$ <span class="built_in">cd</span> httpd-NN             <span class="comment"># 進到目錄下</span></span><br></pre></td></tr></table></figure>
+<h4 id="修改原始碼"><a href="#修改原始碼" class="headerlink" title="修改原始碼"></a>修改原始碼</h4><p>開啟 <code>httpd-NN/include/ap_release.h</code> 找到 <code>#define AP_SERVER_BASEPRODUCT &quot;Apache&quot;</code>，將 <code>Apache</code> 改為想要顯示在 Server 欄位的文字，僅需修改此處就可以往下個步驟</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AP_SERVER_BASEPRODUCT <span class="meta-string">&quot;Server field masked!&quot;</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="編譯原始碼"><a href="#編譯原始碼" class="headerlink" title="編譯原始碼"></a>編譯原始碼</h4><p>產出 <code>Makefile</code>，在這步驟可能會遇到相依套件沒裝的問題 <code>apr</code>、<code>apr-util</code> 與 <code>prec</code>，所以先安裝相關套件，網路上很多都教下載這些套件的原碼再 compile，但我認為若可以使用 <code>apt-get install</code> 就盡量使用它，因為之後可以用 <code>apt-get update/upgrade</code> 來更新套件！管理上省事許多</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ sudo apt-get install gcc libapr1 libapr1-dev libaprutil1 libaprutil1-dev libpcre3 libpcre3-dev</span><br><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ ./configure      </span><br></pre></td></tr></table></figure>
+<p>若有看官網教學會看到 <code>./configure --prefix=PREFIX</code>，其中 <code>PREFIX</code> 是想安裝 Apache 的地方，不指定的話，就是安裝在預設路徑 <code>/usr/local/apache2</code>，若沒特殊需求就安裝在預設路徑即可。</p>
+<p><code>configure</code> 執行成功後目錄下應該會有 <code>Makefile</code>，現在就可以來編譯然後安裝啦。安裝完預設是關閉服務的，記得開啟嘿！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ make                                           <span class="comment"># 編譯</span></span><br><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ sudo make install                              <span class="comment"># 安裝</span></span><br><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ sudo /usr/<span class="built_in">local</span>/apache2/bin/apachectl -k start <span class="comment"># 開啟服務</span></span><br></pre></td></tr></table></figure>
+<p>開啟服務後，檢查 Server 欄位是否被修改了，可以看到的確是剛修改的內容 <code>Server field masked!</code>，但是版本與 OS 的資訊還在，要改的東西還沒完，請繼續下一步修改！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 09:29:14 GMT</span><br><span class="line">Server: Server field masked!/2.4.46 (Unix)</span><br><span class="line">Last-Modified: Mon, 11 Jun 2007 18:53:14 GMT</span><br><span class="line">ETag: <span class="string">&quot;2d-432a5e4a73a80&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 45</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
+<h4 id="修改設定檔"><a href="#修改設定檔" class="headerlink" title="修改設定檔"></a>修改設定檔</h4><p>跟第一個修改方法很類似，要去修改一個 <code>conf</code> 檔，這裡為 <code>/usr/local/apache2/conf/extra/httpd-default.conf</code>，將內容中 <code>ServerTokens</code> 所對應的值改為 <code>Prod</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ServerTokens</span></span><br><span class="line"><span class="comment"># This directive configures what you return as the Server HTTP response</span></span><br><span class="line"><span class="comment"># Header. The default is &#x27;Full&#x27; which sends information about the OS-Type</span></span><br><span class="line"><span class="comment"># and compiled in modules.</span></span><br><span class="line"><span class="comment"># Set to one of:  Full | OS | Minor | Minimal | Major | Prod</span></span><br><span class="line"><span class="comment"># where Full conveys the most information, and Prod the least.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">ServerTokens Prod</span><br></pre></td></tr></table></figure>
+<p>還沒結束喔！還要修改一個 conf 檔，這裡為 <code>/usr/local/apache2/conf/httpd.conf</code>，將內容中 <code>#Include conf/extra/httpd-default.conf</code> 前的井字號拿掉, 確保上一步的 <code>httpd-default.conf</code> 設定會被載入</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Various default settings</span></span><br><span class="line">Include conf/extra/httpd-default.conf</span><br></pre></td></tr></table></figure>
+<p>重啟服務，檢查 Server 欄位，可以看到的只剩下剛修改的內容 <code>Server field masked!</code> 完全無法從 Server 欄位得知這是什麼伺服器，更狠一點，也可以改為 <code>Microsoft-IIS/10.0</code> 來混淆視聽</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo /usr/<span class="built_in">local</span>/apache2/bin/apachectl -k restart <span class="comment"># 重啟服務</span></span><br><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 09:49:28 GMT</span><br><span class="line">Server: Server field masked!</span><br><span class="line">Last-Modified: Mon, 11 Jun 2007 18:53:14 GMT</span><br><span class="line">ETag: <span class="string">&quot;2d-432a5e4a73a80&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 45</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>server</tag>
+        <tag>apache</tag>
+        <tag>ubuntu</tag>
+        <tag>20.04</tag>
+        <tag>http</tag>
+        <tag>header</tag>
+        <tag>web</tag>
+        <tag>modification</tag>
+        <tag>netcat</tag>
+        <tag>nc</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[EJS] 單獨使用 EJS 渲染前端畫面</title>
     <url>/2021/06/15/ejs_ejs/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>網路上有許多 <code>EJS</code> 使用範例，通常是以 <code>Node.js</code> 與 <code>Express</code> 搭配的教學，而這裡紀錄如何單獨使用 <code>EJS</code> 來渲染前端畫面。</p>
@@ -435,10 +435,10 @@
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>linux</tag>
         <tag>ubuntu</tag>
         <tag>20.04</tag>
         <tag>netcat</tag>
-        <tag>linux</tag>
         <tag>CR</tag>
         <tag>carriage</tag>
         <tag>return</tag>
@@ -637,6 +637,34 @@
       </tags>
   </entry>
   <entry>
+    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
+    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>IIS 10.0</li>
+</ul>
+<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>server</tag>
+        <tag>windows</tag>
+        <tag>header</tag>
+        <tag>iis</tag>
+        <tag>x powered by</tag>
+        <tag>x aspnet version</tag>
+        <tag>hide</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[IME] 在 Ubuntu 安裝嘸蝦米等輸入法</title>
     <url>/2021/06/17/ime_ubuntu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 預設中的輸入法為 IBus 框架，除 IBus 外還有很多如 gcin、fcitx 等不同的輸入法框架，若想要使用如嘸 (ㄈㄨˇ) 蝦米等輸入法的話就需要使用有支援的框架，這篇文章主要紀錄如何安裝嘸蝦米輸入法與酷音輸入法。</p>
@@ -656,8 +684,8 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
         <tag>linux</tag>
+        <tag>ubuntu</tag>
         <tag>ibus</tag>
         <tag>gcin</tag>
         <tag>fcitx</tag>
@@ -688,34 +716,6 @@
         <tag>fcitx</tag>
         <tag>18.04</tag>
         <tag>remove</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
-    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>IIS 10.0</li>
-</ul>
-<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>server</tag>
-        <tag>header</tag>
-        <tag>windows</tag>
-        <tag>iis</tag>
-        <tag>x powered by</tag>
-        <tag>x aspnet version</tag>
-        <tag>hide</tag>
       </tags>
   </entry>
   <entry>
@@ -767,6 +767,102 @@
         <tag>not work</tag>
         <tag>jump</tag>
         <tag>click</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[MQTT] CentOS 7 安裝 mosquitto 並使用帳密驗證</title>
+    <url>/2021/06/19/mqtt_centos_7/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 mosquitto，網路上有許多 mosquitto 的說明，這裡只紀錄如何架設與測試。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 7.9</li>
+</ul>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>mosquitto 預設是不在安裝套件內的，因此需要先安裝 Extra Packages for Enterprise Linux (EPEL)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y epel-release</span><br></pre></td></tr></table></figure>
+<p>安裝 mosquitto 並啟動服務</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y mosquitto</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mosquitto   <span class="comment"># 讓 mosquitto 重開機會自動啟動</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl start mosquitto    <span class="comment"># 現在馬上啟動 mosquitto</span></span><br></pre></td></tr></table></figure>
+<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>開啟一個新的 Terminal (在此稱 tty1)，輸入指令來訂閱主題</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mosquitto_sub</code>：訂閱主題。</li>
+<li><code>-h</code>：指定 MQTT Broker 的 IP 或 FQDN。</li>
+<li><code>-t</code>：指定訂閱的主題名稱。</li>
+</ul>
+<p>開啟另一個新的 Terminal (在此稱 tty2)，輸入指令來發布主題</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_pub -h localhost -t Try/MQTT/CentOS7 -m <span class="string">&quot;Test Message&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mosquitto_pub</code>：發布主題。</li>
+<li><code>-h</code>：指定 MQTT Broker 的 IP 或 FQDN。</li>
+<li><code>-t</code>：指定發布的主題。</li>
+<li><code>-m</code>：發布的訊息。</li>
+</ul>
+<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表 mosquitto 安裝完成且可以正常運行！測試完畢後，可以關閉 tty1 與 tty2。</p>
+<h2 id="建立使用者帳號"><a href="#建立使用者帳號" class="headerlink" title="建立使用者帳號"></a>建立使用者帳號</h2><p>創建帳號</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mosquitto_passwd -c /etc/mosquitto/passwd test_account</span><br><span class="line">Password:           <span class="comment"># 輸入 test_account 的密碼</span></span><br><span class="line">Reenter password:   <span class="comment"># 再次輸入 test_account 的密碼</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-c</code>：執行指令的同時建立一個帳密檔。</li>
+<li><code>/etc/mosquitto/passwd</code>：為帳密檔位置。</li>
+<li><code>test_account</code>：為所要新增的帳號，可以自行更改。</li>
+</ul>
+<p>修改 mosquitto 設定檔 (<code>/etc/mosquitto/mosquitto.conf</code>)，加入以下兩行</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">allow_anonymous <span class="literal">false</span>               <span class="comment"># 不可匿名登入，一定要輸入帳密</span></span><br><span class="line">password_file /etc/mosquitto/passwd <span class="comment"># 讓 mosquitto 知道帳密檔在哪裡</span></span><br></pre></td></tr></table></figure>
+<p>重啟 mosquitto 服務</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mosquitto</span><br></pre></td></tr></table></figure>
+<h3 id="使用者帳號測試"><a href="#使用者帳號測試" class="headerlink" title="使用者帳號測試"></a>使用者帳號測試</h3><p>開啟一個新的 Terminal (在此稱 tty1)，使用指令來訂閱主題。但由於我們已經設定為不可匿名登入，可以預想到的是會無法正常運作，因為沒有授權 (也就是沒有輸入帳號)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7</span><br><span class="line">Connection error: Connection Refused: not authorised.</span><br></pre></td></tr></table></figure>
+<p>tty1 中的指令更改如下</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7 -u test_account -P 1234</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-u</code>：指定使用者帳號。</li>
+<li><code>-P</code>：指定密碼，注意是大寫 P。</li>
+</ul>
+<p>開啟另一個新的 Terminal (在此稱 tty2)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_pub -h localhost -t Try/MQTT/CentOS7 -m <span class="string">&quot;Test Message&quot;</span> -u test_account -P 1234 </span><br></pre></td></tr></table></figure>
+<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表帳號密碼機制設定完成並且有正常運作！</p>
+<h2 id="設定防火牆"><a href="#設定防火牆" class="headerlink" title="設定防火牆"></a>設定防火牆</h2><p>在 CentOS 中幾乎所有的 Port 預設對外服務都是關閉的，無法由外部連入，因此需要另外設定才能開放給其他主機連線，MQTT 預設的 Port 為 1883</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=1883/tcp</span><br><span class="line">success</span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --reload</span><br><span class="line">success</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>centos</tag>
+        <tag>7.9</tag>
+        <tag>firewall</tag>
+        <tag>mqtt</tag>
+        <tag>mosquitto</tag>
+        <tag>authorise</tag>
+        <tag>account</tag>
+        <tag>user</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
+    <url>/2021/06/19/mariadb_centos/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+</ul>
+<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
+<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
+<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>mariadb</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>latest</tag>
+        <tag>update</tag>
+        <tag>version</tag>
+        <tag>repository</tag>
       </tags>
   </entry>
   <entry>
@@ -846,72 +942,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[MQTT] CentOS 7 安裝 mosquitto 並使用帳密驗證</title>
-    <url>/2021/06/19/mqtt_centos_7/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 mosquitto，網路上有許多 mosquitto 的說明，這裡只紀錄如何架設與測試。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 7.9</li>
-</ul>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>mosquitto 預設是不在安裝套件內的，因此需要先安裝 Extra Packages for Enterprise Linux (EPEL)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y epel-release</span><br></pre></td></tr></table></figure>
-<p>安裝 mosquitto 並啟動服務</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y mosquitto</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mosquitto   <span class="comment"># 讓 mosquitto 重開機會自動啟動</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl start mosquitto    <span class="comment"># 現在馬上啟動 mosquitto</span></span><br></pre></td></tr></table></figure>
-<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>開啟一個新的 Terminal (在此稱 tty1)，輸入指令來訂閱主題</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>mosquitto_sub</code>：訂閱主題。</li>
-<li><code>-h</code>：指定 MQTT Broker 的 IP 或 FQDN。</li>
-<li><code>-t</code>：指定訂閱的主題名稱。</li>
-</ul>
-<p>開啟另一個新的 Terminal (在此稱 tty2)，輸入指令來發布主題</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_pub -h localhost -t Try/MQTT/CentOS7 -m <span class="string">&quot;Test Message&quot;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>mosquitto_pub</code>：發布主題。</li>
-<li><code>-h</code>：指定 MQTT Broker 的 IP 或 FQDN。</li>
-<li><code>-t</code>：指定發布的主題。</li>
-<li><code>-m</code>：發布的訊息。</li>
-</ul>
-<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表 mosquitto 安裝完成且可以正常運行！測試完畢後，可以關閉 tty1 與 tty2。</p>
-<h2 id="建立使用者帳號"><a href="#建立使用者帳號" class="headerlink" title="建立使用者帳號"></a>建立使用者帳號</h2><p>創建帳號</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mosquitto_passwd -c /etc/mosquitto/passwd test_account</span><br><span class="line">Password:           <span class="comment"># 輸入 test_account 的密碼</span></span><br><span class="line">Reenter password:   <span class="comment"># 再次輸入 test_account 的密碼</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-c</code>：執行指令的同時建立一個帳密檔。</li>
-<li><code>/etc/mosquitto/passwd</code>：為帳密檔位置。</li>
-<li><code>test_account</code>：為所要新增的帳號，可以自行更改。</li>
-</ul>
-<p>修改 mosquitto 設定檔 (<code>/etc/mosquitto/mosquitto.conf</code>)，加入以下兩行</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">allow_anonymous <span class="literal">false</span>               <span class="comment"># 不可匿名登入，一定要輸入帳密</span></span><br><span class="line">password_file /etc/mosquitto/passwd <span class="comment"># 讓 mosquitto 知道帳密檔在哪裡</span></span><br></pre></td></tr></table></figure>
-<p>重啟 mosquitto 服務</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mosquitto</span><br></pre></td></tr></table></figure>
-<h3 id="使用者帳號測試"><a href="#使用者帳號測試" class="headerlink" title="使用者帳號測試"></a>使用者帳號測試</h3><p>開啟一個新的 Terminal (在此稱 tty1)，使用指令來訂閱主題。但由於我們已經設定為不可匿名登入，可以預想到的是會無法正常運作，因為沒有授權 (也就是沒有輸入帳號)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7</span><br><span class="line">Connection error: Connection Refused: not authorised.</span><br></pre></td></tr></table></figure>
-<p>tty1 中的指令更改如下</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7 -u test_account -P 1234</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-u</code>：指定使用者帳號。</li>
-<li><code>-P</code>：指定密碼，注意是大寫 P。</li>
-</ul>
-<p>開啟另一個新的 Terminal (在此稱 tty2)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_pub -h localhost -t Try/MQTT/CentOS7 -m <span class="string">&quot;Test Message&quot;</span> -u test_account -P 1234 </span><br></pre></td></tr></table></figure>
-<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表帳號密碼機制設定完成並且有正常運作！</p>
-<h2 id="設定防火牆"><a href="#設定防火牆" class="headerlink" title="設定防火牆"></a>設定防火牆</h2><p>在 CentOS 中幾乎所有的 Port 預設對外服務都是關閉的，無法由外部連入，因此需要另外設定才能開放給其他主機連線，MQTT 預設的 Port 為 1883</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=1883/tcp</span><br><span class="line">success</span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --reload</span><br><span class="line">success</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>centos</tag>
-        <tag>7.9</tag>
-        <tag>firewall</tag>
-        <tag>mqtt</tag>
-        <tag>mosquitto</tag>
-        <tag>authorise</tag>
-        <tag>account</tag>
-        <tag>user</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[MATLAB] k-means 演算法說明與實作</title>
     <url>/2021/06/12/matlab_k_means/</url>
     <content><![CDATA[<h2 id="k-means-介紹"><a href="#k-means-介紹" class="headerlink" title="k-means 介紹"></a>k-means 介紹</h2><p><code>k-means</code> 又稱 <code>c-means Clustering</code>，是一種分群演算法，k 表示群集的數量，演算法如下</p>
@@ -942,36 +972,6 @@
         <tag>means</tag>
         <tag>pseudo</tag>
         <tag>algorithm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
-    <url>/2021/06/19/mariadb_centos/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
-<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
-<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>mariadb</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>latest</tag>
-        <tag>update</tag>
-        <tag>version</tag>
-        <tag>repository</tag>
       </tags>
   </entry>
   <entry>
@@ -1010,34 +1010,29 @@
       </tags>
   </entry>
   <entry>
-    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
-    <url>/2021/06/17/mount_iso/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
+    <title>[Nginx] CentOS 安裝網頁伺服器 Nginx</title>
+    <url>/2021/06/18/nginx_centos_nginx/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>相較於 Apache，Nginx 消耗資源少且處理速度快，又支援高併發，是大流量應用的好選擇。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
+<li>CentOS 8.2</li>
 </ul>
-<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
-<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-o loop</code>：使用 loop device 來掛載</li>
-</ul>
-<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
-<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>開啟 Terminal，使用 <code>dnf</code> 來安裝 Nginx</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install -y nginx</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Complete!    <span class="comment">#看到這就行代表完成</span></span><br></pre></td></tr></table></figure>
+<h2 id="啟動並確認"><a href="#啟動並確認" class="headerlink" title="啟動並確認"></a>啟動並確認</h2><p>Nginx 預設是沒有開啟的，預設當系統開機時也不會自動開啟，所以通過指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start nginx   <span class="comment"># 現在馬上開啟 nginx 服務</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx  <span class="comment"># 之後開機也要自動開啟 nginx 服務</span></span><br></pre></td></tr></table></figure>
+<p>確認 Nginx 的服務狀態，看到 <code>active (running)</code> 代表正在運行囉</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl status nginx</span><br><span class="line">● nginx.service - The nginx HTTP and reverse proxy server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Thu 2020-09-10 09:08:10 CST; 3min 51s ago</span><br><span class="line">  Process: 2892 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2890 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2888 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)</span><br><span class="line"> Main PID: 2893 (nginx)</span><br><span class="line">    Tasks: 3 (<span class="built_in">limit</span>: 49448)</span><br><span class="line">   Memory: 5.7M</span><br><span class="line">   CGroup: /system.slice/nginx.service</span><br><span class="line">           ├─2893 nginx: master process /usr/sbin/nginx</span><br><span class="line">           ├─2894 nginx: worker process</span><br><span class="line">           └─2895 nginx: worker process</span><br><span class="line"></span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Starting The nginx HTTP and reverse proxy server...</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Started The nginx HTTP and reverse proxy server.</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
+        <tag>server</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
         <tag>linux</tag>
-        <tag>18.04</tag>
-        <tag>mount</tag>
-        <tag>unmount</tag>
-        <tag>iso</tag>
-        <tag>media</tag>
+        <tag>web</tag>
+        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -1075,29 +1070,114 @@
       </tags>
   </entry>
   <entry>
-    <title>[Nginx] CentOS 安裝網頁伺服器 Nginx</title>
-    <url>/2021/06/18/nginx_centos_nginx/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>相較於 Apache，Nginx 消耗資源少且處理速度快，又支援高併發，是大流量應用的好選擇。</p>
+    <title>[PHP] CentOS 8.2 + Nginx + MariaDB + php-fpm + phpMyAdmin</title>
+    <url>/2021/06/18/centos_phpmyadmin/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到使用 MySQL/MariaDB 就會想到 phpMyAdmin 這個使用者圖像介面，它是用 PHP 寫出來與 MySQL/MariaDB 互動的介面，所以若要使用，必須先安裝網頁伺服器與 PHP。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>CentOS 8.2</li>
 </ul>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>開啟 Terminal，使用 <code>dnf</code> 來安裝 Nginx</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install -y nginx</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Complete!    <span class="comment">#看到這就行代表完成</span></span><br></pre></td></tr></table></figure>
-<h2 id="啟動並確認"><a href="#啟動並確認" class="headerlink" title="啟動並確認"></a>啟動並確認</h2><p>Nginx 預設是沒有開啟的，預設當系統開機時也不會自動開啟，所以通過指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start nginx   <span class="comment"># 現在馬上開啟 nginx 服務</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx  <span class="comment"># 之後開機也要自動開啟 nginx 服務</span></span><br></pre></td></tr></table></figure>
-<p>確認 Nginx 的服務狀態，看到 <code>active (running)</code> 代表正在運行囉</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl status nginx</span><br><span class="line">● nginx.service - The nginx HTTP and reverse proxy server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Thu 2020-09-10 09:08:10 CST; 3min 51s ago</span><br><span class="line">  Process: 2892 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2890 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2888 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)</span><br><span class="line"> Main PID: 2893 (nginx)</span><br><span class="line">    Tasks: 3 (<span class="built_in">limit</span>: 49448)</span><br><span class="line">   Memory: 5.7M</span><br><span class="line">   CGroup: /system.slice/nginx.service</span><br><span class="line">           ├─2893 nginx: master process /usr/sbin/nginx</span><br><span class="line">           ├─2894 nginx: worker process</span><br><span class="line">           └─2895 nginx: worker process</span><br><span class="line"></span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Starting The nginx HTTP and reverse proxy server...</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Started The nginx HTTP and reverse proxy server.</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-EPEL"><a href="#安裝-EPEL" class="headerlink" title="安裝 EPEL"></a>安裝 EPEL</h2><p>安裝由 Fedora 社群打造的第三方源 EPEL (Extra Packages for Enterprise Linux)，其中包含比官方 repository 還要新的套件版本</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install epel-release</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-Nginx"><a href="#安裝-Nginx" class="headerlink" title="安裝 Nginx"></a>安裝 Nginx</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/nginx_centos_nginx/">[Nginx] CentOS 安裝網頁伺服器 Nginx</a>，安裝好後從瀏覽器輸入 <a href="http://localhost">http://localhost</a> 確定可看到 Nginx 預設頁面</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl start nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-MariaDB"><a href="#安裝-MariaDB" class="headerlink" title="安裝 MariaDB"></a>安裝 MariaDB</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install mariadb-server mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl start mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mariadb</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-php-fpm"><a href="#安裝-php-fpm" class="headerlink" title="安裝 php-fpm"></a>安裝 php-fpm</h2><p>這裡安裝預設版本 (目前是7.2版)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install php php-fpm php-json php-mysqlnd php-mbstring</span><br></pre></td></tr></table></figure>
+<h3 id="修改-www-conf-設定"><a href="#修改-www-conf-設定" class="headerlink" title="修改 www.conf 設定"></a>修改 www.conf 設定</h3><p>修改 <code>/etc/php-fpm.d/www.conf</code> 檔案內容</p>
+<ol>
+<li>改 <code>user = apache</code> 為 <code>user = nginx</code></li>
+<li>改 <code>group = apache</code> 為 <code>group = nginx</code></li>
+<li>改 <code>listen = /run/php-fpm/www.sock</code> 為 <code>listen = /var/run/php-fpm/php-fpm.sock</code></li>
+<li>拿掉 <code>;listen.owner = nobody</code> 的分號，並改為 <code>listen.owner = nginx</code></li>
+<li>拿掉 <code>;listen.group = nobody</code> 的分號，並改為 <code>listen.group = nginx</code></li>
+<li>拿掉 <code>;listen.mode = 0660</code> 的分號</li>
+</ol>
+<h3 id="啟動-php-fpm-服務"><a href="#啟動-php-fpm-服務" class="headerlink" title="啟動 php-fpm 服務"></a>啟動 php-fpm 服務</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start php-fpm</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> php-fpm</span><br></pre></td></tr></table></figure>
+<h3 id="修改-php-fpm-conf-設定"><a href="#修改-php-fpm-conf-設定" class="headerlink" title="修改 php-fpm.conf 設定"></a>修改 php-fpm.conf 設定</h3><p>修改 <code>/etc/nginx/conf.d/php-fpm.conf</code> 檔案內容</p>
+<ol>
+<li>改 <code>server unix:/run/php-fpm/www.sock;</code> 為 <code>server unix:/var/run/php-fpm/php-fpm.sock;</code></li>
+</ol>
+<h3 id="新增-phpmyadmin-conf-檔案"><a href="#新增-phpmyadmin-conf-檔案" class="headerlink" title="新增 phpmyadmin.conf 檔案"></a>新增 phpmyadmin.conf 檔案</h3><p>新增 <code>/etc/nginx/conf.d/phpmyadmin.conf</code> 檔案，內容如下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  server_domain_or_IP;</span><br><span class="line"></span><br><span class="line">    root   /usr/share/nginx/html;</span><br><span class="line">    index index.php index.html index.htm;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        try_files $uri $uri/ =404;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 /404.html;</span><br><span class="line">    error_page 500 502 503 504 /50x.html;</span><br><span class="line"></span><br><span class="line">    location = /50x.html &#123;</span><br><span class="line">        root /usr/share/nginx/html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ~ \.php$ &#123;</span><br><span class="line">        try_files $uri =404;</span><br><span class="line">        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;</span><br><span class="line">        fastcgi_index index.php;</span><br><span class="line">        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">        include fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="重新載入設定"><a href="#重新載入設定" class="headerlink" title="重新載入設定"></a>重新載入設定</h3><p>Nginx 重新載入設定檔，要看到 <code>ok</code> 與 <code>/etc/nginx/nginx.conf test is successful</code> 才是對的哦！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl reload nginx</span><br><span class="line">[user@localhost ~]$ sudo nginx -t</span><br><span class="line">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br></pre></td></tr></table></figure>
+<h3 id="確認-php-fpm-運作"><a href="#確認-php-fpm-運作" class="headerlink" title="確認 php-fpm 運作"></a>確認 php-fpm 運作</h3><p>創建 <code>/usr/share/nginx/html/info.php</code> 其內容如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">phpinfo();</span><br></pre></td></tr></table></figure>
+<p>這時從瀏覽器輸入 <a href="http://localhost/info.php">http://localhost/info.php</a> 確定可看到 <code>phpinfo</code> 的頁面，若看得到代表 Nginx + php-fpm 有在正常運作囉</p>
+<h2 id="安裝-phpMyAdmin"><a href="#安裝-phpMyAdmin" class="headerlink" title="安裝 phpMyAdmin"></a>安裝 phpMyAdmin</h2><p>下載 <a href="https://www.phpmyadmin.net/">phpMyAdmin</a> 並解壓縮到 <code>/usr/share/nginx/html</code> 目錄</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ unzip Downloads/phpMyAdmin-5.0.2-all-languages.zip </span><br><span class="line">[user@localhost ~]$ sudo mv phpMyAdmin-5.0.2-all-languages/ /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
+<h3 id="創建-tmp-目錄"><a href="#創建-tmp-目錄" class="headerlink" title="創建 tmp 目錄"></a>創建 tmp 目錄</h3><p>創建 <code>phpMyAdmin/tmp/</code> 目錄並更改擁有者與群組為 <code>nginx:nginx</code>，同時更改權限為 <code>755</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo chown nginx:nginx /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo chmod 755 /usr/share/nginx/html/phpMyAdmin/tmp</span><br></pre></td></tr></table></figure>
+<h3 id="設定-blowfish-secret-金鑰"><a href="#設定-blowfish-secret-金鑰" class="headerlink" title="設定 blowfish_secret 金鑰"></a>設定 blowfish_secret 金鑰</h3><p>複製一個 config 樣板，並改名為 <code>config.inc.php</code>，此樣板會被 phpMyAdmin 載入</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo cp /usr/share/nginx/html/phpMyAdmin/config.sample.inc.php  /usr/share/nginx/html/phpMyAdmin/config.inc.php</span><br></pre></td></tr></table></figure>
+<p>再從 <a href="https://phpsolved.com/phpmyadmin-blowfish-secret-generator/?g=[insert_php]echo%20$code;[/insert_php]">phpMyAdmin blowfish secret generator</a> 取得安全的金鑰，並複製到 <code>config.inc.php</code> 檔案中，例如</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$cfg</span>[<span class="string">&#x27;blowfish_secret&#x27;</span>] = <span class="string">&#x27;Jh448H=tn1sfkb3b3EKwvofq=QVuitPn&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="權限設定"><a href="#權限設定" class="headerlink" title="權限設定"></a>權限設定</h2><h3 id="開啟-php-session-權限"><a href="#開啟-php-session-權限" class="headerlink" title="開啟 php session 權限"></a>開啟 php session 權限</h3><p>設定 Nginx 對 php session 的權限，需將權限開啟，否則無法使用 phpMyAdmin 的登入功能</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo chown nginx:nginx /var/lib/php/session/</span><br></pre></td></tr></table></figure>
+<h3 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h3><p>修改 phpMyAdmin 的安全性文本，讓 Nginx 可以有權限可以讀寫，否則 SELinux 會阻檔，然後在瀏覽器出現 403 的錯誤碼</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo chcon -R -t httpd_sys_rw_content_t /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>在瀏覽器網址輸入 <a href="http://localhost/phpMyAdmin">http://localhost/phpMyAdmin</a> 就可以如同 Windows 上使用 xampp 一般，使用 phpMyAdmin 操作作資料庫啦！</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-centos-7">How To Install Linux, Nginx, MySQL, PHP (LEMP) stack On CentOS 7</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>mariadb</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>php</tag>
+        <tag>10</tag>
+        <tag>7.2</tag>
+        <tag>php-fpm</tag>
+        <tag>phpmyadmin</tag>
+        <tag>xampp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[PHP] Ubuntu 安裝 Apache 2 + PHP 7.4 + Phalcon 4.0</title>
+    <url>/2021/06/17/php_ubuntu_apache_php_phalcon/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Apache 是一個輕量級的網頁伺服器，搭配 <code>PHP</code> 與高效能的 MVC 框架 Phalcon 是一個不錯的選擇，這裡紀錄如何在 Ubuntu 安裝這些開發環境。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="安裝-Apache"><a href="#安裝-Apache" class="headerlink" title="安裝 Apache"></a>安裝 Apache</h2><p>首先安裝 Apache 2，較簡單</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install apache2</span><br></pre></td></tr></table></figure>
+<p>安裝完後，可以用瀏覽器，在網址處輸入 <a href="http://localhost">http://localhost</a>，確認是否有顯示正常的網頁；或者可以用命令來查詢 Apache 2 是否有正常運作，看到 <code>active (running)</code> 代表正在運行服務囉！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo systemctl status apache2</span><br><span class="line">● apache2.service - The Apache HTTP Server</span><br><span class="line">   Loaded: loaded (/lib/systemd/system/apache2.service; enabled; vendor preset:</span><br><span class="line">  Drop-In: /lib/systemd/system/apache2.service.d</span><br><span class="line">           └─apache2-systemd.conf</span><br><span class="line">   Active: active (running) since Mon 2020-03-30 22:26:50 CST; 2min 44s ago</span><br><span class="line"> Main PID: 2185 (apache2)</span><br><span class="line">    Tasks: 55 (<span class="built_in">limit</span>: 4915)</span><br><span class="line">   CGroup: /system.slice/apache2.service</span><br><span class="line">           ├─2185 /usr/sbin/apache2 -k start</span><br><span class="line">           ├─2187 /usr/sbin/apache2 -k start</span><br><span class="line">           └─2188 /usr/sbin/apache2 -k start</span><br><span class="line"></span><br><span class="line"> 三  30 22:26:50 user-VirtualBox systemd[1]: Starting The Apache HTTP Server..</span><br><span class="line"> 三  30 22:26:50 user-VirtualBox apachectl[2174]: AH00558: apache2: Could not </span><br><span class="line"> 三  30 22:26:50 user-VirtualBox systemd[1]: Started The Apache HTTP Server.</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-PHP"><a href="#安裝-PHP" class="headerlink" title="安裝 PHP"></a>安裝 PHP</h2><p>接著安裝 PHP 7.4，要先引入 ppa 並更新，才能安裝</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-add-repository ppa:ondrej/php</span><br><span class="line">user@pc:~$ sudo apt-get update         <span class="comment">#一定要，不然封包庫還是沒有php</span></span><br><span class="line">user@pc:~$ sudo apt-get install php7.4 <span class="comment">#php+版本號，依照自己需求更改</span></span><br></pre></td></tr></table></figure>
+<p>查看 <code>PHP</code> 版本，確認為 7.4 版</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ php -v</span><br><span class="line">PHP 7.4.4 (cli) (built: Mar 20 2020 13:47:45) ( NTS )</span><br><span class="line">Copyright (c) The PHP Group</span><br><span class="line">Zend Engine v3.4.0, Copyright (c) Zend Technologies</span><br><span class="line">    with Zend OPcache v7.4.4, Copyright (c), by Zend Technologies</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-Phalcon"><a href="#安裝-Phalcon" class="headerlink" title="安裝 Phalcon"></a>安裝 Phalcon</h2><p>直接指令安裝 Phalcon</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install php7.4-phalcon <span class="comment"># 7.4 為版本號，可依照自己需求更改</span></span><br></pre></td></tr></table></figure>
+<p>查看 <code>PHP</code> 的模組，初步確定 Phalcon 有安裝完成</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ php -m</span><br><span class="line">⋮</span><br><span class="line">⋮</span><br><span class="line">PDO</span><br><span class="line">phalcon</span><br><span class="line">Phar</span><br><span class="line">⋮</span><br><span class="line">⋮</span><br></pre></td></tr></table></figure>
+<p>Apache 2 服務需要重新啟動，才會載入 Phalcon 的套件</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo systemctl stop  apache2 <span class="comment"># 關閉</span></span><br><span class="line">user@pc:~$ sudo systemctl start apache2 <span class="comment"># 開啟</span></span><br></pre></td></tr></table></figure>
+<p>將 <code>/var/www/html/</code> 目錄下的 <code>index.html</code> 刪除，並新增 <code>index.php</code>，其內容如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> phpinfo()<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>這時在瀏覽器輸入 <a href="http://localhost">http://localhost</a>，應該要能夠看到如下方的資訊，並確認版本正確 (Phalcon 4.0)</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/PHP-Ubuntu-%E5%AE%89%E8%A3%9D-Apache-2-PHP-7-4-Phalcon-4-0%2Fphalcon_version.png?alt=media&amp;token=856a2b20-00d4-46c0-8a83-e0bb5c101e97" alt="phpinfo"><span class="image-caption">phpinfo</span></p>
+<p>這時在 Ubuntu 上運作的就是 Apache 2 + PHP 7.4 + Phalcon4.0 囉！</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
         <tag>server</tag>
-        <tag>web</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
         <tag>linux</tag>
-        <tag>nginx</tag>
+        <tag>apache</tag>
+        <tag>ubuntu</tag>
+        <tag>web</tag>
+        <tag>18.04</tag>
+        <tag>php</tag>
+        <tag>phalcon</tag>
+        <tag>install</tag>
       </tags>
   </entry>
   <entry>
@@ -1226,117 +1306,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[PHP] CentOS 8.2 + Nginx + MariaDB + php-fpm + phpMyAdmin</title>
-    <url>/2021/06/18/centos_phpmyadmin/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到使用 MySQL/MariaDB 就會想到 phpMyAdmin 這個使用者圖像介面，它是用 PHP 寫出來與 MySQL/MariaDB 互動的介面，所以若要使用，必須先安裝網頁伺服器與 PHP。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="安裝-EPEL"><a href="#安裝-EPEL" class="headerlink" title="安裝 EPEL"></a>安裝 EPEL</h2><p>安裝由 Fedora 社群打造的第三方源 EPEL (Extra Packages for Enterprise Linux)，其中包含比官方 repository 還要新的套件版本</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install epel-release</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-Nginx"><a href="#安裝-Nginx" class="headerlink" title="安裝 Nginx"></a>安裝 Nginx</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/nginx_centos_nginx/">[Nginx] CentOS 安裝網頁伺服器 Nginx</a>，安裝好後從瀏覽器輸入 <a href="http://localhost">http://localhost</a> 確定可看到 Nginx 預設頁面</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl start nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-MariaDB"><a href="#安裝-MariaDB" class="headerlink" title="安裝 MariaDB"></a>安裝 MariaDB</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install mariadb-server mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl start mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mariadb</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-php-fpm"><a href="#安裝-php-fpm" class="headerlink" title="安裝 php-fpm"></a>安裝 php-fpm</h2><p>這裡安裝預設版本 (目前是7.2版)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install php php-fpm php-json php-mysqlnd php-mbstring</span><br></pre></td></tr></table></figure>
-<h3 id="修改-www-conf-設定"><a href="#修改-www-conf-設定" class="headerlink" title="修改 www.conf 設定"></a>修改 www.conf 設定</h3><p>修改 <code>/etc/php-fpm.d/www.conf</code> 檔案內容</p>
-<ol>
-<li>改 <code>user = apache</code> 為 <code>user = nginx</code></li>
-<li>改 <code>group = apache</code> 為 <code>group = nginx</code></li>
-<li>改 <code>listen = /run/php-fpm/www.sock</code> 為 <code>listen = /var/run/php-fpm/php-fpm.sock</code></li>
-<li>拿掉 <code>;listen.owner = nobody</code> 的分號，並改為 <code>listen.owner = nginx</code></li>
-<li>拿掉 <code>;listen.group = nobody</code> 的分號，並改為 <code>listen.group = nginx</code></li>
-<li>拿掉 <code>;listen.mode = 0660</code> 的分號</li>
-</ol>
-<h3 id="啟動-php-fpm-服務"><a href="#啟動-php-fpm-服務" class="headerlink" title="啟動 php-fpm 服務"></a>啟動 php-fpm 服務</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start php-fpm</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> php-fpm</span><br></pre></td></tr></table></figure>
-<h3 id="修改-php-fpm-conf-設定"><a href="#修改-php-fpm-conf-設定" class="headerlink" title="修改 php-fpm.conf 設定"></a>修改 php-fpm.conf 設定</h3><p>修改 <code>/etc/nginx/conf.d/php-fpm.conf</code> 檔案內容</p>
-<ol>
-<li>改 <code>server unix:/run/php-fpm/www.sock;</code> 為 <code>server unix:/var/run/php-fpm/php-fpm.sock;</code></li>
-</ol>
-<h3 id="新增-phpmyadmin-conf-檔案"><a href="#新增-phpmyadmin-conf-檔案" class="headerlink" title="新增 phpmyadmin.conf 檔案"></a>新增 phpmyadmin.conf 檔案</h3><p>新增 <code>/etc/nginx/conf.d/phpmyadmin.conf</code> 檔案，內容如下</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  server_domain_or_IP;</span><br><span class="line"></span><br><span class="line">    root   /usr/share/nginx/html;</span><br><span class="line">    index index.php index.html index.htm;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        try_files $uri $uri/ =404;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 /404.html;</span><br><span class="line">    error_page 500 502 503 504 /50x.html;</span><br><span class="line"></span><br><span class="line">    location = /50x.html &#123;</span><br><span class="line">        root /usr/share/nginx/html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ~ \.php$ &#123;</span><br><span class="line">        try_files $uri =404;</span><br><span class="line">        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;</span><br><span class="line">        fastcgi_index index.php;</span><br><span class="line">        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">        include fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="重新載入設定"><a href="#重新載入設定" class="headerlink" title="重新載入設定"></a>重新載入設定</h3><p>Nginx 重新載入設定檔，要看到 <code>ok</code> 與 <code>/etc/nginx/nginx.conf test is successful</code> 才是對的哦！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl reload nginx</span><br><span class="line">[user@localhost ~]$ sudo nginx -t</span><br><span class="line">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br></pre></td></tr></table></figure>
-<h3 id="確認-php-fpm-運作"><a href="#確認-php-fpm-運作" class="headerlink" title="確認 php-fpm 運作"></a>確認 php-fpm 運作</h3><p>創建 <code>/usr/share/nginx/html/info.php</code> 其內容如下</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">phpinfo();</span><br></pre></td></tr></table></figure>
-<p>這時從瀏覽器輸入 <a href="http://localhost/info.php">http://localhost/info.php</a> 確定可看到 <code>phpinfo</code> 的頁面，若看得到代表 Nginx + php-fpm 有在正常運作囉</p>
-<h2 id="安裝-phpMyAdmin"><a href="#安裝-phpMyAdmin" class="headerlink" title="安裝 phpMyAdmin"></a>安裝 phpMyAdmin</h2><p>下載 <a href="https://www.phpmyadmin.net/">phpMyAdmin</a> 並解壓縮到 <code>/usr/share/nginx/html</code> 目錄</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ unzip Downloads/phpMyAdmin-5.0.2-all-languages.zip </span><br><span class="line">[user@localhost ~]$ sudo mv phpMyAdmin-5.0.2-all-languages/ /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
-<h3 id="創建-tmp-目錄"><a href="#創建-tmp-目錄" class="headerlink" title="創建 tmp 目錄"></a>創建 tmp 目錄</h3><p>創建 <code>phpMyAdmin/tmp/</code> 目錄並更改擁有者與群組為 <code>nginx:nginx</code>，同時更改權限為 <code>755</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo chown nginx:nginx /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo chmod 755 /usr/share/nginx/html/phpMyAdmin/tmp</span><br></pre></td></tr></table></figure>
-<h3 id="設定-blowfish-secret-金鑰"><a href="#設定-blowfish-secret-金鑰" class="headerlink" title="設定 blowfish_secret 金鑰"></a>設定 blowfish_secret 金鑰</h3><p>複製一個 config 樣板，並改名為 <code>config.inc.php</code>，此樣板會被 phpMyAdmin 載入</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo cp /usr/share/nginx/html/phpMyAdmin/config.sample.inc.php  /usr/share/nginx/html/phpMyAdmin/config.inc.php</span><br></pre></td></tr></table></figure>
-<p>再從 <a href="https://phpsolved.com/phpmyadmin-blowfish-secret-generator/?g=[insert_php]echo%20$code;[/insert_php]">phpMyAdmin blowfish secret generator</a> 取得安全的金鑰，並複製到 <code>config.inc.php</code> 檔案中，例如</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$cfg</span>[<span class="string">&#x27;blowfish_secret&#x27;</span>] = <span class="string">&#x27;Jh448H=tn1sfkb3b3EKwvofq=QVuitPn&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<h2 id="權限設定"><a href="#權限設定" class="headerlink" title="權限設定"></a>權限設定</h2><h3 id="開啟-php-session-權限"><a href="#開啟-php-session-權限" class="headerlink" title="開啟 php session 權限"></a>開啟 php session 權限</h3><p>設定 Nginx 對 php session 的權限，需將權限開啟，否則無法使用 phpMyAdmin 的登入功能</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo chown nginx:nginx /var/lib/php/session/</span><br></pre></td></tr></table></figure>
-<h3 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h3><p>修改 phpMyAdmin 的安全性文本，讓 Nginx 可以有權限可以讀寫，否則 SELinux 會阻檔，然後在瀏覽器出現 403 的錯誤碼</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo chcon -R -t httpd_sys_rw_content_t /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>在瀏覽器網址輸入 <a href="http://localhost/phpMyAdmin">http://localhost/phpMyAdmin</a> 就可以如同 Windows 上使用 xampp 一般，使用 phpMyAdmin 操作作資料庫啦！</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-centos-7">How To Install Linux, Nginx, MySQL, PHP (LEMP) stack On CentOS 7</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>mariadb</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>php</tag>
-        <tag>10</tag>
-        <tag>7.2</tag>
-        <tag>php-fpm</tag>
-        <tag>phpmyadmin</tag>
-        <tag>xampp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[PHP] Ubuntu 安裝 Apache 2 + PHP 7.4 + Phalcon 4.0</title>
-    <url>/2021/06/17/php_ubuntu_apache_php_phalcon/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Apache 是一個輕量級的網頁伺服器，搭配 <code>PHP</code> 與高效能的 MVC 框架 Phalcon 是一個不錯的選擇，這裡紀錄如何在 Ubuntu 安裝這些開發環境。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="安裝-Apache"><a href="#安裝-Apache" class="headerlink" title="安裝 Apache"></a>安裝 Apache</h2><p>首先安裝 Apache 2，較簡單</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install apache2</span><br></pre></td></tr></table></figure>
-<p>安裝完後，可以用瀏覽器，在網址處輸入 <a href="http://localhost">http://localhost</a>，確認是否有顯示正常的網頁；或者可以用命令來查詢 Apache 2 是否有正常運作，看到 <code>active (running)</code> 代表正在運行服務囉！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo systemctl status apache2</span><br><span class="line">● apache2.service - The Apache HTTP Server</span><br><span class="line">   Loaded: loaded (/lib/systemd/system/apache2.service; enabled; vendor preset:</span><br><span class="line">  Drop-In: /lib/systemd/system/apache2.service.d</span><br><span class="line">           └─apache2-systemd.conf</span><br><span class="line">   Active: active (running) since Mon 2020-03-30 22:26:50 CST; 2min 44s ago</span><br><span class="line"> Main PID: 2185 (apache2)</span><br><span class="line">    Tasks: 55 (<span class="built_in">limit</span>: 4915)</span><br><span class="line">   CGroup: /system.slice/apache2.service</span><br><span class="line">           ├─2185 /usr/sbin/apache2 -k start</span><br><span class="line">           ├─2187 /usr/sbin/apache2 -k start</span><br><span class="line">           └─2188 /usr/sbin/apache2 -k start</span><br><span class="line"></span><br><span class="line"> 三  30 22:26:50 user-VirtualBox systemd[1]: Starting The Apache HTTP Server..</span><br><span class="line"> 三  30 22:26:50 user-VirtualBox apachectl[2174]: AH00558: apache2: Could not </span><br><span class="line"> 三  30 22:26:50 user-VirtualBox systemd[1]: Started The Apache HTTP Server.</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-PHP"><a href="#安裝-PHP" class="headerlink" title="安裝 PHP"></a>安裝 PHP</h2><p>接著安裝 PHP 7.4，要先引入 ppa 並更新，才能安裝</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-add-repository ppa:ondrej/php</span><br><span class="line">user@pc:~$ sudo apt-get update         <span class="comment">#一定要，不然封包庫還是沒有php</span></span><br><span class="line">user@pc:~$ sudo apt-get install php7.4 <span class="comment">#php+版本號，依照自己需求更改</span></span><br></pre></td></tr></table></figure>
-<p>查看 <code>PHP</code> 版本，確認為 7.4 版</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ php -v</span><br><span class="line">PHP 7.4.4 (cli) (built: Mar 20 2020 13:47:45) ( NTS )</span><br><span class="line">Copyright (c) The PHP Group</span><br><span class="line">Zend Engine v3.4.0, Copyright (c) Zend Technologies</span><br><span class="line">    with Zend OPcache v7.4.4, Copyright (c), by Zend Technologies</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-Phalcon"><a href="#安裝-Phalcon" class="headerlink" title="安裝 Phalcon"></a>安裝 Phalcon</h2><p>直接指令安裝 Phalcon</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install php7.4-phalcon <span class="comment"># 7.4 為版本號，可依照自己需求更改</span></span><br></pre></td></tr></table></figure>
-<p>查看 <code>PHP</code> 的模組，初步確定 Phalcon 有安裝完成</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ php -m</span><br><span class="line">⋮</span><br><span class="line">⋮</span><br><span class="line">PDO</span><br><span class="line">phalcon</span><br><span class="line">Phar</span><br><span class="line">⋮</span><br><span class="line">⋮</span><br></pre></td></tr></table></figure>
-<p>Apache 2 服務需要重新啟動，才會載入 Phalcon 的套件</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo systemctl stop  apache2 <span class="comment"># 關閉</span></span><br><span class="line">user@pc:~$ sudo systemctl start apache2 <span class="comment"># 開啟</span></span><br></pre></td></tr></table></figure>
-<p>將 <code>/var/www/html/</code> 目錄下的 <code>index.html</code> 刪除，並新增 <code>index.php</code>，其內容如下</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> phpinfo()<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>這時在瀏覽器輸入 <a href="http://localhost">http://localhost</a>，應該要能夠看到如下方的資訊，並確認版本正確 (Phalcon 4.0)</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/PHP-Ubuntu-%E5%AE%89%E8%A3%9D-Apache-2-PHP-7-4-Phalcon-4-0%2Fphalcon_version.png?alt=media&amp;token=856a2b20-00d4-46c0-8a83-e0bb5c101e97" alt="phpinfo"><span class="image-caption">phpinfo</span></p>
-<p>這時在 Ubuntu 上運作的就是 Apache 2 + PHP 7.4 + Phalcon4.0 囉！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>apache</tag>
-        <tag>ubuntu</tag>
-        <tag>server</tag>
-        <tag>web</tag>
-        <tag>linux</tag>
-        <tag>18.04</tag>
-        <tag>php</tag>
-        <tag>phalcon</tag>
-        <tag>install</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[PHP] 在 Phalcon 新增一個 namespace</title>
     <url>/2021/06/15/php_phalcon_namespace/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
@@ -1412,6 +1381,37 @@
         <tag>agent</tag>
         <tag>crawl</tag>
         <tag>requests</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
+    <url>/2021/06/17/mount_iso/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
+<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-o loop</code>：使用 loop device 來掛載</li>
+</ul>
+<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
+<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>mount</tag>
+        <tag>unmount</tag>
+        <tag>iso</tag>
+        <tag>media</tag>
       </tags>
   </entry>
   <entry>
@@ -1581,38 +1581,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</title>
-    <url>/2021/06/17/remote_ubuntu_xrdp/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>xrdp (X Remote Desktop Protocal) 是 Linux 系統上的遠端桌面伺服器，能夠讓透過遠端連線的使用者有 GUI 能夠使用。但在 Ubuntu 18.04 似乎沒辦法簡單的安裝，找了許多資料，終於找到可行的辦法。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="安裝-xrdp"><a href="#安裝-xrdp" class="headerlink" title="安裝 xrdp"></a>安裝 xrdp</h2><p>由於在 Ubuntu18.04 中 xrdp 會需要某些不相容的軟體包 (參考：<a href="https://c-nergy.be/blog/?p=13455">Better Fix xRDP issue on Ubuntu 18.04.2</a>)，因此要先安裝修正檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo add-apt-repository ppa:martinx/xrdp-hwe-18.04</span><br><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
-<p>再行安裝 xrdp</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install xrdp xorg</span><br></pre></td></tr></table></figure>
-<p>需將 xrdp 加入 ssl-cert 群組，然後重新啟動。這步很重要，無法連線很可能是這步驟沒做到</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo adduser xrdp ssl-cert</span><br><span class="line">user@pc:~$ sudo reboot</span><br></pre></td></tr></table></figure>
-<h2 id="遠端連線"><a href="#遠端連線" class="headerlink" title="遠端連線"></a>遠端連線</h2><p>在 Windows 開啟內建 mstsc (遠端桌面連線)，輸入 server 的 IP、username 與 password，這些就是自己在 server 上的使用者帳密。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Remote-%E5%9C%A8-Ubuntu-18-04-%E4%BD%BF%E7%94%A8-xrdp-%E9%81%A0%E7%AB%AF%E5%A4%9A%E4%BA%BA%E5%A4%9A%E5%B7%A5%2Fxrdp.png?alt=media&amp;token=b9905535-0f5c-42eb-ba33-c20510d2e71f" alt="遠端畫面"><span class="image-caption">遠端畫面</span></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>remote</tag>
-        <tag>18.04</tag>
-        <tag>rdp</tag>
-        <tag>mstsc</tag>
-        <tag>多人</tag>
-        <tag>多工</tag>
-        <tag>xrdp</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[RDP] xrdp 遠端 menu 不見時登出的方法</title>
     <url>/2021/06/17/rdp_xrdp_menu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在一台電腦上開啟 xrdp 伺服器，讓大家可以各自用自己的帳號登入，且互不相干擾。但使用過程中遇到一些突發性圖形介面的問題，需要重新登入才能正常運作。</p>
@@ -1646,38 +1614,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[SSL] 數位簽名與驗證的過程</title>
-    <url>/2021/06/15/ssl_digital_signed_verify/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作。但我有發現一個現象，就是當講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並整理後記錄在這。</p>
-<h2 id="產製數位憑證"><a href="#產製數位憑證" class="headerlink" title="產製數位憑證"></a>產製數位憑證</h2><p>認證機構 (CA) 會先對要簽署的數據 (Data, 例如：Public Key, Subject ... 等等憑證資訊，皆為明碼) 做雜湊 (Hash) 運算，得到雜湊值 (Hash Value)，再以 CA 的私鑰 (Private Key) 對其加密以達到防止更改效果，這個產出即為數位簽章 (Digital Signature)</p>
-<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;CA}Hash\;Value\xrightarrow{Private\;Key\;of\;CA}Digital\;Signature</script><p>得到數位簽章後，將其與原本資料合起來，就為所謂的數位憑證 (Digital Certificate)</p>
-<script type="math/tex; mode=display">Data+Digital\;Signature=Digital\;Certificate</script><p>這個數位憑證就會被稱為被某 CA 所簽發的憑證。</p>
-<h2 id="驗證數位簽章"><a href="#驗證數位簽章" class="headerlink" title="驗證數位簽章"></a>驗證數位簽章</h2><p>在進行 https 連線的過程中，Server 會給 Client 一個數位憑證，當 Client 拿到數位憑證後，會馬上驗證是否真的為憑證上說的CA所發。</p>
-<p>第一步把憑證拆回 Data 與 Digital Signature</p>
-<script type="math/tex; mode=display">Digital\;Certificate=Data+Digital\;Signature</script><p>Client 先自行對 Data 做 Hash 運算</p>
-<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;Client}Hash\;Value</script><p>再對 Digital Signature 做解密運算，取得 CA 對 Data 做 Hash 運算的結果</p>
-<script type="math/tex; mode=display">Digital\;Signature\xrightarrow{Public\;Key\;of\;CA}Hash\;Value\;via\;Signature</script><p>再比對 Client 自己算出的 Hash Value 與經由數位簽章解密所得到的 Hash Value 是否相同，若相同，表示此憑證確實是該 CA 所發！</p>
-<script type="math/tex; mode=display">Hash\;Value\overset{\underset{\mathrm{?}}{}}{=}Hash\;Value\;via\;Signature</script><h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a href="https://cheapsslsecurity.com/blog/digital-signature-vs-digital-certificate-the-difference-explained/">What is the difference between a digital signature and a digital certificate</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ssl</tag>
-        <tag>digital</tag>
-        <tag>signature</tag>
-        <tag>verify</tag>
-        <tag>process</tag>
-        <tag>ca</tag>
-        <tag>certificate</tag>
-        <tag>private</tag>
-        <tag>public</tag>
-        <tag>key</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Remove] Ubuntu 解除安裝應用程式</title>
     <url>/2021/06/17/remove_ubuntu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>安裝與移除幾乎是每天都會作到的動作，移除相較安裝困難，Windows 作業系統中只需要進控制台移除程式，而在 Linux 只能使用指令來做移除的動作，且不確定是否真的移除乾淨相關檔案，最近剛好要移除 libreoffice，因此藉此紀錄移除程式的步驟與指令相對的意義。</p>
@@ -1704,6 +1640,38 @@
       </tags>
   </entry>
   <entry>
+    <title>[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</title>
+    <url>/2021/06/17/remote_ubuntu_xrdp/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>xrdp (X Remote Desktop Protocal) 是 Linux 系統上的遠端桌面伺服器，能夠讓透過遠端連線的使用者有 GUI 能夠使用。但在 Ubuntu 18.04 似乎沒辦法簡單的安裝，找了許多資料，終於找到可行的辦法。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="安裝-xrdp"><a href="#安裝-xrdp" class="headerlink" title="安裝 xrdp"></a>安裝 xrdp</h2><p>由於在 Ubuntu18.04 中 xrdp 會需要某些不相容的軟體包 (參考：<a href="https://c-nergy.be/blog/?p=13455">Better Fix xRDP issue on Ubuntu 18.04.2</a>)，因此要先安裝修正檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo add-apt-repository ppa:martinx/xrdp-hwe-18.04</span><br><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+<p>再行安裝 xrdp</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install xrdp xorg</span><br></pre></td></tr></table></figure>
+<p>需將 xrdp 加入 ssl-cert 群組，然後重新啟動。這步很重要，無法連線很可能是這步驟沒做到</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo adduser xrdp ssl-cert</span><br><span class="line">user@pc:~$ sudo reboot</span><br></pre></td></tr></table></figure>
+<h2 id="遠端連線"><a href="#遠端連線" class="headerlink" title="遠端連線"></a>遠端連線</h2><p>在 Windows 開啟內建 mstsc (遠端桌面連線)，輸入 server 的 IP、username 與 password，這些就是自己在 server 上的使用者帳密。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Remote-%E5%9C%A8-Ubuntu-18-04-%E4%BD%BF%E7%94%A8-xrdp-%E9%81%A0%E7%AB%AF%E5%A4%9A%E4%BA%BA%E5%A4%9A%E5%B7%A5%2Fxrdp.png?alt=media&amp;token=b9905535-0f5c-42eb-ba33-c20510d2e71f" alt="遠端畫面"><span class="image-caption">遠端畫面</span></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>ubuntu</tag>
+        <tag>remote</tag>
+        <tag>18.04</tag>
+        <tag>rdp</tag>
+        <tag>mstsc</tag>
+        <tag>多人</tag>
+        <tag>多工</tag>
+        <tag>xrdp</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
     <url>/2021/06/15/ssl_crt_key/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
@@ -1722,43 +1690,11 @@
         <tag>ubuntu</tag>
         <tag>18.04</tag>
         <tag>ssl</tag>
-        <tag>key</tag>
         <tag>crt</tag>
+        <tag>key</tag>
         <tag>match</tag>
         <tag>cert</tag>
         <tag>csr</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[SSL] 自簽憑證過程</title>
-    <url>/2021/06/15/ssl_self_sign/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
-<h2 id="產生-CA-SSL"><a href="#產生-CA-SSL" class="headerlink" title="產生 CA SSL"></a>產生 CA SSL</h2><p>⾸先為我們的 CA 產⽣⼀把屬於 CA 的私鑰</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out root/ca.key 4096</span><br></pre></td></tr></table></figure>
-<p>⽤這把私鑰產⽣⼀份⾃我簽署的 CA 憑證，其中 <code>subj</code> 可依自己需求做更改</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -x509 -days 365 -sha256 \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=localhost&quot;</span> \ </span><br><span class="line">    -key root/ca.key \ </span><br><span class="line">    -out root/ca.crt</span><br></pre></td></tr></table></figure>
-<h2 id="產生-Server-SSL"><a href="#產生-Server-SSL" class="headerlink" title="產生 Server SSL"></a>產生 Server SSL</h2><p>為我們的 Server 產⽣不加密之 PEM 格式的私密⾦鑰</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out server/server.key 2048</span><br></pre></td></tr></table></figure>
-<p>產⽣憑證請求檔 CSR，其中 <code>subj</code> 可依自己需求做更改，要注意的是 <strong>CN 不可與 CA 的 CN 相同</strong></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -key server/server.key \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=your_service_FQDN&quot;</span> \ </span><br><span class="line">    -out server/server.csr</span><br></pre></td></tr></table></figure>
-<p>把 CSR 丟給 CA 簽署</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -req -CAcreateserial -days 30 -sha256 \ </span><br><span class="line">    -CA root/ca.crt -CAkey root/ca.key \ </span><br><span class="line">    -<span class="keyword">in</span> server/server.csr \ </span><br><span class="line">    -out server/server.crt</span><br></pre></td></tr></table></figure>
-<p>現在⽬錄應該有以下這些文件，<code>server.key</code> 是 Server 的私鑰，<code>server.crt</code> 是 Server 的憑證，也因為是用我們自創的 CA 來簽核的一個憑證，又稱為自簽憑證</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ ls -alR . </span><br><span class="line"></span><br><span class="line">./root: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1968 Oct 21 02:05 ca.crt </span><br><span class="line">-rw------- 1 user user 3243 Oct 21 02:05 ca.key </span><br><span class="line">-rw-rw-r-- 1 user user   41 Oct 21 02:05 ca.srl </span><br><span class="line"></span><br><span class="line">./server: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1501 Oct 21 02:05 server.crt </span><br><span class="line">-rw-rw-r-- 1 user user  972 Oct 21 02:05 server.csr </span><br><span class="line">-rw------- 1 user user 1679 Oct 21 02:05 server.key</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ssl</tag>
-        <tag>ca</tag>
-        <tag>key</tag>
-        <tag>crt</tag>
-        <tag>csr</tag>
-        <tag>self</tag>
-        <tag>sign</tag>
-        <tag>openssl</tag>
-        <tag>mitm</tag>
       </tags>
   </entry>
   <entry>
@@ -1788,6 +1724,38 @@
         <tag>windows</tag>
         <tag>10</tag>
         <tag>vmware</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[SSL] 自簽憑證過程</title>
+    <url>/2021/06/15/ssl_self_sign/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
+<h2 id="產生-CA-SSL"><a href="#產生-CA-SSL" class="headerlink" title="產生 CA SSL"></a>產生 CA SSL</h2><p>⾸先為我們的 CA 產⽣⼀把屬於 CA 的私鑰</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out root/ca.key 4096</span><br></pre></td></tr></table></figure>
+<p>⽤這把私鑰產⽣⼀份⾃我簽署的 CA 憑證，其中 <code>subj</code> 可依自己需求做更改</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -x509 -days 365 -sha256 \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=localhost&quot;</span> \ </span><br><span class="line">    -key root/ca.key \ </span><br><span class="line">    -out root/ca.crt</span><br></pre></td></tr></table></figure>
+<h2 id="產生-Server-SSL"><a href="#產生-Server-SSL" class="headerlink" title="產生 Server SSL"></a>產生 Server SSL</h2><p>為我們的 Server 產⽣不加密之 PEM 格式的私密⾦鑰</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out server/server.key 2048</span><br></pre></td></tr></table></figure>
+<p>產⽣憑證請求檔 CSR，其中 <code>subj</code> 可依自己需求做更改，要注意的是 <strong>CN 不可與 CA 的 CN 相同</strong></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -key server/server.key \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=your_service_FQDN&quot;</span> \ </span><br><span class="line">    -out server/server.csr</span><br></pre></td></tr></table></figure>
+<p>把 CSR 丟給 CA 簽署</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -req -CAcreateserial -days 30 -sha256 \ </span><br><span class="line">    -CA root/ca.crt -CAkey root/ca.key \ </span><br><span class="line">    -<span class="keyword">in</span> server/server.csr \ </span><br><span class="line">    -out server/server.crt</span><br></pre></td></tr></table></figure>
+<p>現在⽬錄應該有以下這些文件，<code>server.key</code> 是 Server 的私鑰，<code>server.crt</code> 是 Server 的憑證，也因為是用我們自創的 CA 來簽核的一個憑證，又稱為自簽憑證</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ ls -alR . </span><br><span class="line"></span><br><span class="line">./root: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1968 Oct 21 02:05 ca.crt </span><br><span class="line">-rw------- 1 user user 3243 Oct 21 02:05 ca.key </span><br><span class="line">-rw-rw-r-- 1 user user   41 Oct 21 02:05 ca.srl </span><br><span class="line"></span><br><span class="line">./server: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1501 Oct 21 02:05 server.crt </span><br><span class="line">-rw-rw-r-- 1 user user  972 Oct 21 02:05 server.csr </span><br><span class="line">-rw------- 1 user user 1679 Oct 21 02:05 server.key</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ssl</tag>
+        <tag>crt</tag>
+        <tag>key</tag>
+        <tag>csr</tag>
+        <tag>self</tag>
+        <tag>sign</tag>
+        <tag>openssl</tag>
+        <tag>mitm</tag>
+        <tag>ca</tag>
       </tags>
   </entry>
   <entry>
@@ -1882,6 +1850,38 @@
       </tags>
   </entry>
   <entry>
+    <title>[SSL] 數位簽名與驗證的過程</title>
+    <url>/2021/06/15/ssl_digital_signed_verify/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作。但我有發現一個現象，就是當講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並整理後記錄在這。</p>
+<h2 id="產製數位憑證"><a href="#產製數位憑證" class="headerlink" title="產製數位憑證"></a>產製數位憑證</h2><p>認證機構 (CA) 會先對要簽署的數據 (Data, 例如：Public Key, Subject ... 等等憑證資訊，皆為明碼) 做雜湊 (Hash) 運算，得到雜湊值 (Hash Value)，再以 CA 的私鑰 (Private Key) 對其加密以達到防止更改效果，這個產出即為數位簽章 (Digital Signature)</p>
+<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;CA}Hash\;Value\xrightarrow{Private\;Key\;of\;CA}Digital\;Signature</script><p>得到數位簽章後，將其與原本資料合起來，就為所謂的數位憑證 (Digital Certificate)</p>
+<script type="math/tex; mode=display">Data+Digital\;Signature=Digital\;Certificate</script><p>這個數位憑證就會被稱為被某 CA 所簽發的憑證。</p>
+<h2 id="驗證數位簽章"><a href="#驗證數位簽章" class="headerlink" title="驗證數位簽章"></a>驗證數位簽章</h2><p>在進行 https 連線的過程中，Server 會給 Client 一個數位憑證，當 Client 拿到數位憑證後，會馬上驗證是否真的為憑證上說的CA所發。</p>
+<p>第一步把憑證拆回 Data 與 Digital Signature</p>
+<script type="math/tex; mode=display">Digital\;Certificate=Data+Digital\;Signature</script><p>Client 先自行對 Data 做 Hash 運算</p>
+<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;Client}Hash\;Value</script><p>再對 Digital Signature 做解密運算，取得 CA 對 Data 做 Hash 運算的結果</p>
+<script type="math/tex; mode=display">Digital\;Signature\xrightarrow{Public\;Key\;of\;CA}Hash\;Value\;via\;Signature</script><p>再比對 Client 自己算出的 Hash Value 與經由數位簽章解密所得到的 Hash Value 是否相同，若相同，表示此憑證確實是該 CA 所發！</p>
+<script type="math/tex; mode=display">Hash\;Value\overset{\underset{\mathrm{?}}{}}{=}Hash\;Value\;via\;Signature</script><h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://cheapsslsecurity.com/blog/digital-signature-vs-digital-certificate-the-difference-explained/">What is the difference between a digital signature and a digital certificate</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ssl</tag>
+        <tag>key</tag>
+        <tag>ca</tag>
+        <tag>digital</tag>
+        <tag>signature</tag>
+        <tag>verify</tag>
+        <tag>process</tag>
+        <tag>certificate</tag>
+        <tag>private</tag>
+        <tag>public</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
     <url>/2021/06/17/usb_usb/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
@@ -1898,8 +1898,8 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
         <tag>linux</tag>
+        <tag>ubuntu</tag>
         <tag>port</tag>
         <tag>18.04</tag>
         <tag>privilege</tag>
@@ -1908,44 +1908,6 @@
         <tag>dialout</tag>
         <tag>tty</tag>
         <tag>usermod</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[User] Linux 新增使用者並賦予其使用 sudo 的權限</title>
-    <url>/2021/06/17/user_linux_sudo/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>多人多工是 Linux 本身就具備的功能，因此新增或移除使用者帳號與更改權限是管理員必備的技能。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><div class="tabs" id="環境"><ul class="nav-tabs"><li class="tab active"><a href="#環境-1">Ubuntu</a></li><li class="tab"><a href="#環境-2">CentOS</a></li></ul><div class="tab-content"><div class="tab-pane active" id="環境-1"><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul></div><div class="tab-pane" id="環境-2"><ul>
-<li>CentOS 8.2</li>
-</ul></div></div></div>
-<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><div class="tabs" id="環境"><ul class="nav-tabs"><li class="tab active"><a href="#環境-1">Ubuntu</a></li><li class="tab"><a href="#環境-2">CentOS</a></li></ul><div class="tab-content"><div class="tab-pane active" id="環境-1"><p>開啟 Terminal，新增帳號叫做 <code>test</code>，並填寫相關資料</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo adduser <span class="built_in">test</span>        <span class="comment"># test 是使用者帳號</span></span><br><span class="line">Adding user `<span class="built_in">test</span><span class="string">&#x27; ...</span></span><br><span class="line"><span class="string">Adding new group `test&#x27;</span> (1003) ...</span><br><span class="line">Adding new user `<span class="built_in">test</span><span class="string">&#x27; (1003) with group `test&#x27;</span> ...</span><br><span class="line">Creating home directory `/home/<span class="built_in">test</span><span class="string">&#x27; ...</span></span><br><span class="line"><span class="string">Copying files from `/etc/skel&#x27;</span> ...</span><br><span class="line">Enter new UNIX password:     <span class="comment"># 這裡是輸入密碼</span></span><br><span class="line">Retype new UNIX password:    <span class="comment"># 這裡是確認密碼</span></span><br><span class="line">passwd: password updated successfully</span><br><span class="line">Changing the user information <span class="keyword">for</span> <span class="built_in">test</span></span><br><span class="line">Enter the new value, or press ENTER <span class="keyword">for</span> the default</span><br><span class="line"> Full Name []: <span class="built_in">test</span>   <span class="comment"># 使用者全名</span></span><br><span class="line"> Room Number []:      <span class="comment"># 使用者房號</span></span><br><span class="line"> Work Phone []:       <span class="comment"># 使用者工作電話</span></span><br><span class="line"> Home Phone []:       <span class="comment"># 家用電話</span></span><br><span class="line"> Other []:            <span class="comment"># 備註</span></span><br><span class="line">Is the information correct? [Y/n] Y     <span class="comment"># 確認上述資料無誤後給Y</span></span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="環境-2"><p>開啟 Terminal，新增帳號叫做 <code>test</code>，並填寫相關資料</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo adduser <span class="built_in">test</span>  <span class="comment"># 新增帳號 test</span></span><br><span class="line">[user@localhost ~]$ sudo passwd <span class="built_in">test</span>   <span class="comment"># 修改 test 的密碼</span></span><br></pre></td></tr></table></figure></div></div></div>
-<h2 id="賦予使用-sudo-指令的權限"><a href="#賦予使用-sudo-指令的權限" class="headerlink" title="賦予使用 sudo 指令的權限"></a>賦予使用 sudo 指令的權限</h2><div class="tabs" id="賦予使用sudo指令的權限"><ul class="nav-tabs"><li class="tab active"><a href="#賦予使用sudo指令的權限-1">Ubuntu</a></li><li class="tab"><a href="#賦予使用sudo指令的權限-2">CentOS</a></li></ul><div class="tab-content"><div class="tab-pane active" id="賦予使用sudo指令的權限-1"><p>需將該使用者增加至 <code>sudo</code> 群組，才可使用 <code>sudo</code> 指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo adduser <span class="built_in">test</span> sudo</span><br></pre></td></tr></table></figure>
-<p>此時登入 <code>test</code> 帳號，開啟 Terminal，輸入以下指令驗證有使用 <code>sudo</code> 的權限，若看到有列出 <code>/root</code> 目錄下的檔案資訊，則表示 <code>test</code> 帳號擁有可以使用 <code>sudo</code> 的權限了</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">test</span>@pc:~$ sudo ls -al /root</span><br><span class="line">[sudo] password <span class="keyword">for</span> <span class="built_in">test</span>:</span><br><span class="line">total 20</span><br><span class="line">drwx------  3 root root 4096  八   6  2019 .</span><br><span class="line">drwxr-xr-x 24 root root 4096  三   6 13:55 ..</span><br><span class="line">-rw-r--r--  1 root root 3106  四   9  2018 .bashrc</span><br><span class="line">drwx------  2 root root 4096  八   6  2019 .cache</span><br><span class="line">-rw-r--r--  1 root root  148  八  17  2015 .profile</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="賦予使用sudo指令的權限-2"><p>接下來要將使用者加到 <code>sudoer</code> 群組，與 Ubuntu 不同的是在 CentOS 是直接去更改文件中的內容</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo visudo     <span class="comment"># visudo 就是 vi sudoers啦！</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 以下為 suduers 檔案內容</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Next comes the main part: which users can run what software on</span></span><br><span class="line"><span class="comment">## which machines (the sudoers file can be shared between multiple</span></span><br><span class="line"><span class="comment">## systems).</span></span><br><span class="line"><span class="comment">## Syntax:</span></span><br><span class="line"><span class="comment">##</span></span><br><span class="line"><span class="comment">##      user    MACHINE=COMMANDS</span></span><br><span class="line"><span class="comment">##</span></span><br><span class="line"><span class="comment">## The COMMANDS section may have other options added to it.</span></span><br><span class="line"><span class="comment">##</span></span><br><span class="line"><span class="comment">## Allow root to run any commands anywhere</span></span><br><span class="line">root    ALL=(ALL)       ALL   <span class="comment"># 這行是預設</span></span><br><span class="line">user    ALL=(ALL)       ALL   <span class="comment"># 這行是用「root」身份加的，若沒有這行，就無法以「user」執行sudo</span></span><br><span class="line"><span class="built_in">test</span>    ALL=(ALL)       ALL   <span class="comment"># 這個步驟要加上這行</span></span><br></pre></td></tr></table></figure>
-<p>此時登入 <code>test</code> 帳號，開啟 Terminal，輸入以下指令驗證有使用 <code>sudo</code> 的權限，若看到有列出 <code>/root</code> 目錄下的檔案資訊，則表示 <code>test</code> 帳號擁有可以使用 <code>sudo</code> 的權限了</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[<span class="built_in">test</span>@localhost ~]$ sudo ls -al /root</span><br><span class="line">[sudo] password <span class="keyword">for</span> <span class="built_in">test</span>: </span><br><span class="line">total 32</span><br><span class="line">dr-xr-x---.  5 root root  205 Sep 10 08:18 .</span><br><span class="line">dr-xr-xr-x. 17 root root  224 Sep  9 16:48 ..</span><br><span class="line">-rw-------.  1 root root 1369 Sep  9 16:57 anaconda-ks.cfg</span><br><span class="line">-rw-------.  1 root root   13 Sep 10 08:18 .bash_history</span><br><span class="line">-rw-r--r--.  1 root root   18 May 11  2019 .bash_logout</span><br><span class="line">-rw-r--r--.  1 root root  176 May 11  2019 .bash_profile</span><br><span class="line">-rw-r--r--.  1 root root  176 May 11  2019 .bashrc</span><br><span class="line">drwx------.  3 root root   19 Sep  9 19:50 .cache</span><br><span class="line">drwx------.  3 root root   18 Sep  9 19:50 .config</span><br><span class="line">-rw-r--r--.  1 root root  100 May 11  2019 .cshrc</span><br><span class="line">drwx------.  3 root root   25 Sep  9 19:50 .dbus</span><br><span class="line">-rw-r--r--.  1 root root 1479 Sep  9 19:50 initial-setup-ks.cfg</span><br><span class="line">-rw-r--r--.  1 root root  129 May 11  2019 .tcshrc</span><br></pre></td></tr></table></figure></div></div></div>
-<h2 id="移除使用-sudo-指令的權限"><a href="#移除使用-sudo-指令的權限" class="headerlink" title="移除使用 sudo 指令的權限"></a>移除使用 sudo 指令的權限</h2><div class="tabs" id="移除使用sudo指令的權限"><ul class="nav-tabs"><li class="tab active"><a href="#移除使用sudo指令的權限-1">Ubuntu</a></li><li class="tab"><a href="#移除使用sudo指令的權限-2">CentOS</a></li></ul><div class="tab-content"><div class="tab-pane active" id="移除使用sudo指令的權限-1"><p>與 <code>adduser</code> 相對的指令是 <code>deluser</code>，將使用者 <code>test</code> 從 <code>sudo</code> 群組中移除，必須注意一定要加上群組名稱 <code>sudo</code>，否則會直接將該使用者移除</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo deluser <span class="built_in">test</span> sudo</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="移除使用sudo指令的權限-2"><p>與加入使用者進 <code>sudoer</code> 群組的步驟相反，將使用者從文件中移除，即可移除使用者使用 <code>sudo</code> 指令的權限囉！</p></div></div></div>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>18.04</tag>
-        <tag>user</tag>
-        <tag>adduser</tag>
-        <tag>deluser</tag>
-        <tag>sudo</tag>
-        <tag>sudoer</tag>
       </tags>
   </entry>
   <entry>
@@ -2007,21 +1969,111 @@
       </tags>
   </entry>
   <entry>
-    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
-    <url>/2021/06/15/window_modal_non_modal/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
-<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
-<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
-<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
-<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
+    <title>[Windows] 32 位元應用程式在 64 位元作業系統運作的原理</title>
+    <url>/2021/06/11/3264/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
+<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
+<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
+<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
+<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
+<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
+<ul>
+<li>system32 放的是 64 位元的 API</li>
+<li>SysWOW64 放的是 32 位元的 API</li>
+</ul>
+<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
+<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
+<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>window</tag>
-        <tag>modal</tag>
-        <tag>non modal</tag>
+        <tag>windows</tag>
+        <tag>bit</tag>
+        <tag>32</tag>
+        <tag>64</tag>
+        <tag>application</tag>
+        <tag>os</tag>
+        <tag>wow64</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[User] Linux 新增使用者並賦予其使用 sudo 的權限</title>
+    <url>/2021/06/17/user_linux_sudo/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>多人多工是 Linux 本身就具備的功能，因此新增或移除使用者帳號與更改權限是管理員必備的技能。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><div class="tabs" id="環境"><ul class="nav-tabs"><li class="tab active"><a href="#環境-1">Ubuntu</a></li><li class="tab"><a href="#環境-2">CentOS</a></li></ul><div class="tab-content"><div class="tab-pane active" id="環境-1"><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul></div><div class="tab-pane" id="環境-2"><ul>
+<li>CentOS 8.2</li>
+</ul></div></div></div>
+<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><div class="tabs" id="環境"><ul class="nav-tabs"><li class="tab active"><a href="#環境-1">Ubuntu</a></li><li class="tab"><a href="#環境-2">CentOS</a></li></ul><div class="tab-content"><div class="tab-pane active" id="環境-1"><p>開啟 Terminal，新增帳號叫做 <code>test</code>，並填寫相關資料</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo adduser <span class="built_in">test</span>        <span class="comment"># test 是使用者帳號</span></span><br><span class="line">Adding user `<span class="built_in">test</span><span class="string">&#x27; ...</span></span><br><span class="line"><span class="string">Adding new group `test&#x27;</span> (1003) ...</span><br><span class="line">Adding new user `<span class="built_in">test</span><span class="string">&#x27; (1003) with group `test&#x27;</span> ...</span><br><span class="line">Creating home directory `/home/<span class="built_in">test</span><span class="string">&#x27; ...</span></span><br><span class="line"><span class="string">Copying files from `/etc/skel&#x27;</span> ...</span><br><span class="line">Enter new UNIX password:     <span class="comment"># 這裡是輸入密碼</span></span><br><span class="line">Retype new UNIX password:    <span class="comment"># 這裡是確認密碼</span></span><br><span class="line">passwd: password updated successfully</span><br><span class="line">Changing the user information <span class="keyword">for</span> <span class="built_in">test</span></span><br><span class="line">Enter the new value, or press ENTER <span class="keyword">for</span> the default</span><br><span class="line"> Full Name []: <span class="built_in">test</span>   <span class="comment"># 使用者全名</span></span><br><span class="line"> Room Number []:      <span class="comment"># 使用者房號</span></span><br><span class="line"> Work Phone []:       <span class="comment"># 使用者工作電話</span></span><br><span class="line"> Home Phone []:       <span class="comment"># 家用電話</span></span><br><span class="line"> Other []:            <span class="comment"># 備註</span></span><br><span class="line">Is the information correct? [Y/n] Y     <span class="comment"># 確認上述資料無誤後給Y</span></span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="環境-2"><p>開啟 Terminal，新增帳號叫做 <code>test</code>，並填寫相關資料</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo adduser <span class="built_in">test</span>  <span class="comment"># 新增帳號 test</span></span><br><span class="line">[user@localhost ~]$ sudo passwd <span class="built_in">test</span>   <span class="comment"># 修改 test 的密碼</span></span><br></pre></td></tr></table></figure></div></div></div>
+<h2 id="賦予使用-sudo-指令的權限"><a href="#賦予使用-sudo-指令的權限" class="headerlink" title="賦予使用 sudo 指令的權限"></a>賦予使用 sudo 指令的權限</h2><div class="tabs" id="賦予使用sudo指令的權限"><ul class="nav-tabs"><li class="tab active"><a href="#賦予使用sudo指令的權限-1">Ubuntu</a></li><li class="tab"><a href="#賦予使用sudo指令的權限-2">CentOS</a></li></ul><div class="tab-content"><div class="tab-pane active" id="賦予使用sudo指令的權限-1"><p>需將該使用者增加至 <code>sudo</code> 群組，才可使用 <code>sudo</code> 指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo adduser <span class="built_in">test</span> sudo</span><br></pre></td></tr></table></figure>
+<p>此時登入 <code>test</code> 帳號，開啟 Terminal，輸入以下指令驗證有使用 <code>sudo</code> 的權限，若看到有列出 <code>/root</code> 目錄下的檔案資訊，則表示 <code>test</code> 帳號擁有可以使用 <code>sudo</code> 的權限了</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">test</span>@pc:~$ sudo ls -al /root</span><br><span class="line">[sudo] password <span class="keyword">for</span> <span class="built_in">test</span>:</span><br><span class="line">total 20</span><br><span class="line">drwx------  3 root root 4096  八   6  2019 .</span><br><span class="line">drwxr-xr-x 24 root root 4096  三   6 13:55 ..</span><br><span class="line">-rw-r--r--  1 root root 3106  四   9  2018 .bashrc</span><br><span class="line">drwx------  2 root root 4096  八   6  2019 .cache</span><br><span class="line">-rw-r--r--  1 root root  148  八  17  2015 .profile</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="賦予使用sudo指令的權限-2"><p>接下來要將使用者加到 <code>sudoer</code> 群組，與 Ubuntu 不同的是在 CentOS 是直接去更改文件中的內容</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo visudo     <span class="comment"># visudo 就是 vi sudoers啦！</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 以下為 suduers 檔案內容</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Next comes the main part: which users can run what software on</span></span><br><span class="line"><span class="comment">## which machines (the sudoers file can be shared between multiple</span></span><br><span class="line"><span class="comment">## systems).</span></span><br><span class="line"><span class="comment">## Syntax:</span></span><br><span class="line"><span class="comment">##</span></span><br><span class="line"><span class="comment">##      user    MACHINE=COMMANDS</span></span><br><span class="line"><span class="comment">##</span></span><br><span class="line"><span class="comment">## The COMMANDS section may have other options added to it.</span></span><br><span class="line"><span class="comment">##</span></span><br><span class="line"><span class="comment">## Allow root to run any commands anywhere</span></span><br><span class="line">root    ALL=(ALL)       ALL   <span class="comment"># 這行是預設</span></span><br><span class="line">user    ALL=(ALL)       ALL   <span class="comment"># 這行是用「root」身份加的，若沒有這行，就無法以「user」執行sudo</span></span><br><span class="line"><span class="built_in">test</span>    ALL=(ALL)       ALL   <span class="comment"># 這個步驟要加上這行</span></span><br></pre></td></tr></table></figure>
+<p>此時登入 <code>test</code> 帳號，開啟 Terminal，輸入以下指令驗證有使用 <code>sudo</code> 的權限，若看到有列出 <code>/root</code> 目錄下的檔案資訊，則表示 <code>test</code> 帳號擁有可以使用 <code>sudo</code> 的權限了</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[<span class="built_in">test</span>@localhost ~]$ sudo ls -al /root</span><br><span class="line">[sudo] password <span class="keyword">for</span> <span class="built_in">test</span>: </span><br><span class="line">total 32</span><br><span class="line">dr-xr-x---.  5 root root  205 Sep 10 08:18 .</span><br><span class="line">dr-xr-xr-x. 17 root root  224 Sep  9 16:48 ..</span><br><span class="line">-rw-------.  1 root root 1369 Sep  9 16:57 anaconda-ks.cfg</span><br><span class="line">-rw-------.  1 root root   13 Sep 10 08:18 .bash_history</span><br><span class="line">-rw-r--r--.  1 root root   18 May 11  2019 .bash_logout</span><br><span class="line">-rw-r--r--.  1 root root  176 May 11  2019 .bash_profile</span><br><span class="line">-rw-r--r--.  1 root root  176 May 11  2019 .bashrc</span><br><span class="line">drwx------.  3 root root   19 Sep  9 19:50 .cache</span><br><span class="line">drwx------.  3 root root   18 Sep  9 19:50 .config</span><br><span class="line">-rw-r--r--.  1 root root  100 May 11  2019 .cshrc</span><br><span class="line">drwx------.  3 root root   25 Sep  9 19:50 .dbus</span><br><span class="line">-rw-r--r--.  1 root root 1479 Sep  9 19:50 initial-setup-ks.cfg</span><br><span class="line">-rw-r--r--.  1 root root  129 May 11  2019 .tcshrc</span><br></pre></td></tr></table></figure></div></div></div>
+<h2 id="移除使用-sudo-指令的權限"><a href="#移除使用-sudo-指令的權限" class="headerlink" title="移除使用 sudo 指令的權限"></a>移除使用 sudo 指令的權限</h2><div class="tabs" id="移除使用sudo指令的權限"><ul class="nav-tabs"><li class="tab active"><a href="#移除使用sudo指令的權限-1">Ubuntu</a></li><li class="tab"><a href="#移除使用sudo指令的權限-2">CentOS</a></li></ul><div class="tab-content"><div class="tab-pane active" id="移除使用sudo指令的權限-1"><p>與 <code>adduser</code> 相對的指令是 <code>deluser</code>，將使用者 <code>test</code> 從 <code>sudo</code> 群組中移除，必須注意一定要加上群組名稱 <code>sudo</code>，否則會直接將該使用者移除</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo deluser <span class="built_in">test</span> sudo</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="移除使用sudo指令的權限-2"><p>與加入使用者進 <code>sudoer</code> 群組的步驟相反，將使用者從文件中移除，即可移除使用者使用 <code>sudo</code> 指令的權限囉！</p></div></div></div>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>user</tag>
+        <tag>adduser</tag>
+        <tag>deluser</tag>
+        <tag>sudo</tag>
+        <tag>sudoer</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題</title>
+    <url>/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>sdk</tag>
+        <tag>xilinx</tag>
+        <tag>make</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[apt] Unable to locate package 問題</title>
+    <url>/2021/06/17/apt_unable_to_locate_package/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我遇到的情況是這樣子的，要安裝 <code>ntpdate</code> 時卻發現出現錯誤訊息 <code>Unable to locate package ntpdate</code>，意思是說無法找到 <code>ntpdate</code> 套件</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree       </span><br><span class="line">Reading state information... Done</span><br><span class="line">E: Unable to locate package ntpdate</span><br></pre></td></tr></table></figure>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>很有可能是因為 <code>apt-get</code> 沒有更新，所以資料庫裡面沒有 <code>ntpdate</code> 的連結，這時只需簡單的更新 <code>apt-get</code>，並且再次嘗試安裝就發現可以找到套件了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>在使用 <code>apt-get</code> 安裝之前先執行 <code>apt-get update</code> 是一個好習慣，以確保資料庫為最新，減少一個浪費時間的可能。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>update</tag>
+        <tag>install</tag>
+        <tag>apt</tag>
+        <tag>get</tag>
       </tags>
   </entry>
   <entry>
@@ -2053,51 +2105,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Windows] 32 位元應用程式在 64 位元作業系統運作的原理</title>
-    <url>/2021/06/11/3264/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
-<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
-<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
-<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
-<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
-<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
-<ul>
-<li>system32 放的是 64 位元的 API</li>
-<li>SysWOW64 放的是 32 位元的 API</li>
-</ul>
-<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
-<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
-<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>bit</tag>
-        <tag>32</tag>
-        <tag>64</tag>
-        <tag>application</tag>
-        <tag>os</tag>
-        <tag>wow64</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題</title>
-    <url>/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
-<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>sdk</tag>
-        <tag>xilinx</tag>
-        <tag>make</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[ZIP] 壓縮檔內中文檔名呈現亂碼的解決方法</title>
     <url>/2021/06/15/zip_chinese_garbled/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想練英文從生活周遭開始是最直接的，安裝英文版版作業系統也不奇怪，但身在中文環境工作與學習，通常經手的會是中文檔名的檔案，當英文版作業系統遇見中文檔名，總是會發生一些惱人的錯誤。這次遇到的問題是，在瀏灠內含中文檔名的 zip 壓縮檔時，中文會呈現出亂碼型態。</p>
@@ -2117,31 +2124,6 @@
         <tag>chinese</tag>
         <tag>garbled</tag>
         <tag>name</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[apt] Unable to locate package 問題</title>
-    <url>/2021/06/17/apt_unable_to_locate_package/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我遇到的情況是這樣子的，要安裝 <code>ntpdate</code> 時卻發現出現錯誤訊息 <code>Unable to locate package ntpdate</code>，意思是說無法找到 <code>ntpdate</code> 套件</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree       </span><br><span class="line">Reading state information... Done</span><br><span class="line">E: Unable to locate package ntpdate</span><br></pre></td></tr></table></figure>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>很有可能是因為 <code>apt-get</code> 沒有更新，所以資料庫裡面沒有 <code>ntpdate</code> 的連結，這時只需簡單的更新 <code>apt-get</code>，並且再次嘗試安裝就發現可以找到套件了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>在使用 <code>apt-get</code> 安裝之前先執行 <code>apt-get update</code> 是一個好習慣，以確保資料庫為最新，減少一個浪費時間的可能。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>update</tag>
-        <tag>install</tag>
-        <tag>apt</tag>
-        <tag>get</tag>
       </tags>
   </entry>
   <entry>
@@ -2208,6 +2190,24 @@
         <tag>i386</tag>
         <tag>cp</tag>
         <tag>ln</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
+    <url>/2021/06/15/window_modal_non_modal/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
+<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
+<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
+<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>window</tag>
+        <tag>modal</tag>
+        <tag>non modal</tag>
       </tags>
   </entry>
   <entry>
@@ -2285,49 +2285,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</title>
-    <url>/2021/06/16/win_10_ubuntu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 是一個非常輕便且好用的作業系統，在 Windows 下使用 Linux 大多是透過虛擬機器 (VM, Virtual Machine)，但對一個想要深入研究 Linux 的同好來說，灌雙系統是一個不錯的選擇。灌完雙系統之後，有機率會遇到一種情況「電腦會直接進Windows，不會出現選擇作業系統的畫面」。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>Windows 10</li>
-</ul>
-<h2 id="環境確認"><a href="#環境確認" class="headerlink" title="環境確認"></a>環境確認</h2><p>灌好 Ubuntu 後重新開機，若沒有出現系統選單，而直接進入 Windows 系統的話，那就要先確定一些設定：</p>
-<ol>
-<li><p>控制台 -&gt; 電源選項 -&gt; 選擇蓋上螢幕時的行為(左方) -&gt; 「取消勾選」開啟快速啟動</p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-Win10-Ubuntu-%E9%96%8B%E6%A9%9F%E9%81%B8%E5%96%AE%EF%BC%8C%E8%AE%93%E4%BD%BF%E7%94%A8%E8%80%85%E9%96%8B%E6%A9%9F%E5%8F%AF%E4%BB%A5%E9%81%B8%E6%93%87%E7%B3%BB%E7%B5%B1%2Fcancel_quick_boot.png?alt=media&amp;token=0b90e051-8718-46fd-9888-2ba9c1af1fd6" alt="不要勾選開啟快速啟動"><span class="image-caption">不要勾選開啟快速啟動</span></p>
-</li>
-<li><p>重新開機進入 BIOS -&gt; Fast Boot -&gt; Disabled</p>
-</li>
-<li><p>同樣在 BIOS -&gt; Secure Boot Contorl -&gt; Disabled</p>
-</li>
-</ol>
-<p>以上三點都確認完，重開機後還是沒有出現選單的話，再接著去做下面的事情</p>
-<h2 id="grubx64-efi-確認"><a href="#grubx64-efi-確認" class="headerlink" title="grubx64.efi 確認"></a>grubx64.efi 確認</h2><p>進 EFI 系統分割磁碟區(參考：<a href="/2021/06/16/efi_windows_efi/">[EFI] 顯示 Windows 的 EFI 系統分割磁碟</a>)下的 ubuntu 資料夾，看是否有關鍵檔案 <code>grubx64.efi</code>，這是 Linux 的引導開機檔案，若沒有看到的話請 <a href="https://mega.nz/#!iIonWA4a!unTw_2I5r6pXLZaXUe-gU5D_lOqCHQJVwgcDeQyl0FU">點此下載 grubx64.efi</a> 並將其移到這個目錄下，再繼續下一步</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">P:\EFI\ubuntu&gt;dir</span><br><span class="line"></span><br><span class="line"> P:\EFI\ubuntu 的目錄</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          .</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          ..</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          fw</span><br><span class="line">2019/09/27  下午 06:16            75,992 fwupx64.efi</span><br><span class="line">2019/09/27  下午 06:20               121 grub.cfg</span><br><span class="line">2019/09/27  下午 06:20         1,334,816 shimx64.efi</span><br><span class="line">2019/09/27  下午 06:20         1,269,496 mmx64.efi</span><br><span class="line">2019/09/27  下午 06:20               108 BOOTX64.CSV</span><br><span class="line">2019/09/28  下午 01:01           956,792 grubx64.efi</span><br><span class="line">               6 個檔案       3,637,325 位元組</span><br><span class="line">               3 個目錄     236,093,440 位元組可用</span><br></pre></td></tr></table></figure>
-<p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;bcdedit /<span class="built_in">set</span> &#123;bootmgr&#125; path \EFI\ubuntu\grubx64.efi</span><br><span class="line"></span><br><span class="line">操作順利完成。</span><br></pre></td></tr></table></figure>
-<p>重新開機之後就可以看到選單啦！不過它等 10 秒沒操作的話就會自動進入預設的系統哦，所以要開機時需要注意，否則錯過進錯系統也只能再重開機。若想修改預設選項，可以參考 <a href="/2021/06/16/dual_system_change_default/">[雙系統] 更改開機系統選單的預設值</a>。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>18.04</tag>
-        <tag>10</tag>
-        <tag>menu</tag>
-        <tag>dual</tag>
-        <tag>system</tag>
-        <tag>option</tag>
-        <tag>boot</tag>
-        <tag>grub</tag>
-        <tag>grubx64.efi</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[轉檔] 將 rpm 檔轉為 deb 檔</title>
     <url>/2021/06/17/rpm_deb/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些軟體只提供 rpm 檔，但在 Ubuntu 的系統只能安裝 deb 檔，這時候就需要將 rpm 轉為 deb。</p>
@@ -2356,29 +2313,37 @@
       </tags>
   </entry>
   <entry>
-    <title>[雙系統] 更改開機系統選單的預設值</title>
-    <url>/2021/06/16/dual_system_change_default/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>要切換雙系統的方法主要有兩種，一是修改 BIOS 的 Boot Option，另一個是使用 grub (參考：<a href="/2021/06/16/win_10_ubuntu/">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a>])。grub 預設是以 Ubuntu 開機，若在選單畫面超過 10 秒沒有動作，預設直接進入 Ubuntu。對於主要是用 Windows 的人來說稍嫌不便，因為每次開機都要等選單出現，以免不小心進其他系統，這篇主要紀錄如何將預設系統改為 Windows。</p>
+    <title>[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</title>
+    <url>/2021/06/16/win_10_ubuntu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 是一個非常輕便且好用的作業系統，在 Windows 下使用 Linux 大多是透過虛擬機器 (VM, Virtual Machine)，但對一個想要深入研究 Linux 的同好來說，灌雙系統是一個不錯的選擇。灌完雙系統之後，有機率會遇到一種情況「電腦會直接進Windows，不會出現選擇作業系統的畫面」。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Ubuntu 18.04 LTS</li>
 <li>Windows 10</li>
 </ul>
-<h2 id="修改-grub"><a href="#修改-grub" class="headerlink" title="修改 grub"></a>修改 grub</h2><p>以下動作皆在 Ubuntu 中執行，先知道 Windows 啟動檔的位置</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ cat /boot/grub/grub.cfg | grep windows</span><br><span class="line">menuentry <span class="string">&#x27;Windows Boot Manager (於 /dev/sdb2)&#x27;</span> --class windows --class os <span class="variable">$menuentry_id_option</span> <span class="string">&#x27;osprober-efi-264C-BB58&#x27;</span> &#123;</span><br></pre></td></tr></table></figure>
-<p>記住檔案位置 <code>&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 後，再開啟 <code>/ect/default/grub</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo gedit /etc/default/grub</span><br></pre></td></tr></table></figure>
-<p>修改 <code>GRUB_DEFAULT=0</code> 為 <code>GRUB_DEFAULT=&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 並儲存，注意不要少了單引號</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-%E6%9B%B4%E6%94%B9%E9%96%8B%E6%A9%9F%E7%B3%BB%E7%B5%B1%E9%81%B8%E5%96%AE%E7%9A%84%E9%A0%90%E8%A8%AD%E5%80%BC%2Fchange_setting.png?alt=media&amp;token=55bafa2f-b2ff-4fb6-94a1-7a81fc3e9107" alt="修改 GRUB_DEFAULT"><span class="image-caption">修改 GRUB_DEFAULT</span></p>
-<p>更新 grub 後重新開機，就可以發現預設選項落在 Windows 上囉！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo update-grub</span><br></pre></td></tr></table></figure>
+<h2 id="環境確認"><a href="#環境確認" class="headerlink" title="環境確認"></a>環境確認</h2><p>灌好 Ubuntu 後重新開機，若沒有出現系統選單，而直接進入 Windows 系統的話，那就要先確定一些設定：</p>
+<ol>
+<li><p>控制台 -&gt; 電源選項 -&gt; 選擇蓋上螢幕時的行為(左方) -&gt; 「取消勾選」開啟快速啟動</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-Win10-Ubuntu-%E9%96%8B%E6%A9%9F%E9%81%B8%E5%96%AE%EF%BC%8C%E8%AE%93%E4%BD%BF%E7%94%A8%E8%80%85%E9%96%8B%E6%A9%9F%E5%8F%AF%E4%BB%A5%E9%81%B8%E6%93%87%E7%B3%BB%E7%B5%B1%2Fcancel_quick_boot.png?alt=media&amp;token=0b90e051-8718-46fd-9888-2ba9c1af1fd6" alt="不要勾選開啟快速啟動"><span class="image-caption">不要勾選開啟快速啟動</span></p>
+</li>
+<li><p>重新開機進入 BIOS -&gt; Fast Boot -&gt; Disabled</p>
+</li>
+<li><p>同樣在 BIOS -&gt; Secure Boot Contorl -&gt; Disabled</p>
+</li>
+</ol>
+<p>以上三點都確認完，重開機後還是沒有出現選單的話，再接著去做下面的事情</p>
+<h2 id="grubx64-efi-確認"><a href="#grubx64-efi-確認" class="headerlink" title="grubx64.efi 確認"></a>grubx64.efi 確認</h2><p>進 EFI 系統分割磁碟區(參考：<a href="/2021/06/16/efi_windows_efi/">[EFI] 顯示 Windows 的 EFI 系統分割磁碟</a>)下的 ubuntu 資料夾，看是否有關鍵檔案 <code>grubx64.efi</code>，這是 Linux 的引導開機檔案，若沒有看到的話請 <a href="https://mega.nz/#!iIonWA4a!unTw_2I5r6pXLZaXUe-gU5D_lOqCHQJVwgcDeQyl0FU">點此下載 grubx64.efi</a> 並將其移到這個目錄下，再繼續下一步</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">P:\EFI\ubuntu&gt;dir</span><br><span class="line"></span><br><span class="line"> P:\EFI\ubuntu 的目錄</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          .</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          ..</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          fw</span><br><span class="line">2019/09/27  下午 06:16            75,992 fwupx64.efi</span><br><span class="line">2019/09/27  下午 06:20               121 grub.cfg</span><br><span class="line">2019/09/27  下午 06:20         1,334,816 shimx64.efi</span><br><span class="line">2019/09/27  下午 06:20         1,269,496 mmx64.efi</span><br><span class="line">2019/09/27  下午 06:20               108 BOOTX64.CSV</span><br><span class="line">2019/09/28  下午 01:01           956,792 grubx64.efi</span><br><span class="line">               6 個檔案       3,637,325 位元組</span><br><span class="line">               3 個目錄     236,093,440 位元組可用</span><br></pre></td></tr></table></figure>
+<p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;bcdedit /<span class="built_in">set</span> &#123;bootmgr&#125; path \EFI\ubuntu\grubx64.efi</span><br><span class="line"></span><br><span class="line">操作順利完成。</span><br></pre></td></tr></table></figure>
+<p>重新開機之後就可以看到選單啦！不過它等 10 秒沒操作的話就會自動進入預設的系統哦，所以要開機時需要注意，否則錯過進錯系統也只能再重開機。若想修改預設選項，可以參考 <a href="/2021/06/16/dual_system_change_default/">[雙系統] 更改開機系統選單的預設值</a>。</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
         <tag>linux</tag>
         <tag>windows</tag>
+        <tag>ubuntu</tag>
         <tag>18.04</tag>
         <tag>10</tag>
         <tag>menu</tag>
@@ -2387,6 +2352,7 @@
         <tag>option</tag>
         <tag>boot</tag>
         <tag>grub</tag>
+        <tag>grubx64.efi</tag>
       </tags>
   </entry>
   <entry>
@@ -2416,15 +2382,49 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
         <tag>linux</tag>
         <tag>windows</tag>
+        <tag>ubuntu</tag>
         <tag>18.04</tag>
         <tag>10</tag>
         <tag>time</tag>
         <tag>dual</tag>
         <tag>system</tag>
         <tag>synchronize</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[雙系統] 更改開機系統選單的預設值</title>
+    <url>/2021/06/16/dual_system_change_default/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>要切換雙系統的方法主要有兩種，一是修改 BIOS 的 Boot Option，另一個是使用 grub (參考：<a href="/2021/06/16/win_10_ubuntu/">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a>])。grub 預設是以 Ubuntu 開機，若在選單畫面超過 10 秒沒有動作，預設直接進入 Ubuntu。對於主要是用 Windows 的人來說稍嫌不便，因為每次開機都要等選單出現，以免不小心進其他系統，這篇主要紀錄如何將預設系統改為 Windows。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="修改-grub"><a href="#修改-grub" class="headerlink" title="修改 grub"></a>修改 grub</h2><p>以下動作皆在 Ubuntu 中執行，先知道 Windows 啟動檔的位置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ cat /boot/grub/grub.cfg | grep windows</span><br><span class="line">menuentry <span class="string">&#x27;Windows Boot Manager (於 /dev/sdb2)&#x27;</span> --class windows --class os <span class="variable">$menuentry_id_option</span> <span class="string">&#x27;osprober-efi-264C-BB58&#x27;</span> &#123;</span><br></pre></td></tr></table></figure>
+<p>記住檔案位置 <code>&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 後，再開啟 <code>/ect/default/grub</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo gedit /etc/default/grub</span><br></pre></td></tr></table></figure>
+<p>修改 <code>GRUB_DEFAULT=0</code> 為 <code>GRUB_DEFAULT=&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 並儲存，注意不要少了單引號</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-%E6%9B%B4%E6%94%B9%E9%96%8B%E6%A9%9F%E7%B3%BB%E7%B5%B1%E9%81%B8%E5%96%AE%E7%9A%84%E9%A0%90%E8%A8%AD%E5%80%BC%2Fchange_setting.png?alt=media&amp;token=55bafa2f-b2ff-4fb6-94a1-7a81fc3e9107" alt="修改 GRUB_DEFAULT"><span class="image-caption">修改 GRUB_DEFAULT</span></p>
+<p>更新 grub 後重新開機，就可以發現預設選項落在 Windows 上囉！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo update-grub</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>10</tag>
+        <tag>menu</tag>
+        <tag>dual</tag>
+        <tag>system</tag>
+        <tag>option</tag>
+        <tag>boot</tag>
+        <tag>grub</tag>
       </tags>
   </entry>
   <entry>
