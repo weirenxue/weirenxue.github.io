@@ -73,76 +73,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[C++] (FARPROC&amp;) 的含意</title>
-    <url>/2021/06/11/cfarproc/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr; </span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...省略...)</span><br></pre></td></tr></table></figure>
-<p>平常只會看到像是 <code>(int)</code>、<code>(int*)</code> 之類的轉型，第一次看到轉型是帶著 <code>&amp;</code> 符號的，引發我的好奇心，藉此研究一番。</p>
-<h2 id="探討"><a href="#探討" class="headerlink" title="探討"></a>探討</h2><p>要探討這問題，就要先知道一般再宣告的時候，<code>&amp;</code> 運算元到底發揮甚麼功用，所以先用最簡單的整數(<code>int</code>)宣告來測試，內容分為以下三種：</p>
-<ol>
-<li><p><code>int a = b;   //這應該大家都知道，就是把b的值給a</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> a = b;</span><br><span class="line"><span class="comment">//結果：a = 2; b = 2; &amp;a = 006FF8C0; &amp;b = 006FF8CC;</span></span><br><span class="line"><span class="comment">//結論：值一樣但記憶體位址不一樣</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>int *a = &amp;b; //程度好一些的應該知道，這是把b的記憶體位址存到a裡面</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> *a = &amp;b;</span><br><span class="line"><span class="comment">//結果：a = 006FF8B4; b = 3; &amp;a = 006FF8A8; &amp;b = 006FF8B4;</span></span><br><span class="line"><span class="comment">//結論：a存著b的位址，但兩個記憶體位址還是不一樣</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>int &amp;a = b;  //但這個呢？讓我們繼續看下去</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">int</span> &amp;a = b;</span><br><span class="line"><span class="comment">//結果：a = 4; b = 4; &amp;a = 006FF89C; &amp;b = 006FF89C;</span></span><br><span class="line"><span class="comment">//結論：a的位址跟b一樣，所以a跟b一模一樣了！</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>以這些實驗可以得到結論：在宣告的時候 ，<code>int&amp;</code> 會把「等號左邊(<code>a</code>)的變數地址」改變成「等號右邊(<code>b</code>)變數的地址」，因此 <code>a</code> 與 <code>b</code> 兩個是一樣的東西（也就是記憶體位址一樣）！</p>
-<p>回到最一開始的問題：<code>(FARPROC&amp;) addr</code> 到底是甚麼呢？我還是用程式做一下實驗，先以書上的程式碼為第一個實驗，用 <code>(FARPROC&amp;)</code> 去接 <code>GetProcAddress</code> 的值，看會如何；再用 <code>addr</code> 直接去接，又會如何。以下是實驗結果：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA94; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA88; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
-<p>可以發現其實沒有像是我們在最原本例子 <code>int &amp;a=b;</code> 看到的把 <code>addr</code> 位址變為 <code>GetProcAddress</code> 的位址，反而是addr的值變化了，變為 <code>GetProcAddress</code> 回傳的地址，也就是說 <code>(FARPROC&amp;)</code> 在這個實驗中看起來是沒有作用到的。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p><code>(FARPROC&amp;) addr = GetProcAddress(...)</code> 等同於 <code>addr = GetProcAddress(...)</code>，只是不知道書上為何多此一舉。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>FARPROC</tag>
-        <tag>cpp</tag>
-        <tag>加密與解密</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
-    <url>/2021/06/15/cs_asp_net_core_3_1/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio Enterprise 2019 (16.7.2)</li>
-<li>.Net Core 3.1</li>
-</ul>
-<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>必需使用 Visual Studio 2019 以上版本才可以用 .NET Core 3.1 (<a href="https://dotnet.microsoft.com/download/dotnet-core/3.1">參考資訊</a>)，也因為 2.1 版在 2021/08/21 就會結束支援，所以建議使用較新的 Core (3.1)。</p>
-<p>開啟「Visual Studio 2019」→「Create a new project」→ 選「ASP.NET Core Web Application」→ Project name 為「CorePractice」→ 選「Web Application」(請注意上方要為 .NET Core 與 ASP.NET Core 3.1，且右方的 HTTPS 不要勾) →「Create」</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fcreate_project.png?alt=media&amp;token=fc23ffc7-0664-4325-bd3f-9d052cf073d7" alt="創建專案步驟"><span class="image-caption">創建專案步驟</span></p>
-<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>目錄結構如下，目前只會用到 <code>Index.cshtml</code> 與 <code>Index.cshtml.cs</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">│  appsettings.Development.json</span><br><span class="line">│  appsettings.json</span><br><span class="line">│  CorePractice.csproj</span><br><span class="line">│  Program.cs</span><br><span class="line">│  Startup.cs</span><br><span class="line">├─bin</span><br><span class="line">├─obj</span><br><span class="line">├─Pages</span><br><span class="line">│  │  Error.cshtml</span><br><span class="line">│  │  Error.cshtml.cs</span><br><span class="line">│  │  Index.cshtml</span><br><span class="line">│  │  Index.cshtml.cs</span><br><span class="line">│  │  Privacy.cshtml</span><br><span class="line">│  │  Privacy.cshtml.cs</span><br><span class="line">│  │  _ViewImports.cshtml</span><br><span class="line">│  │  _ViewStart.cshtml</span><br><span class="line">│  │</span><br><span class="line">│  └─Shared</span><br><span class="line">├─Properties</span><br><span class="line">└─wwwroot</span><br></pre></td></tr></table></figure>
-<p>修改 <code>Index.cshtml.cs</code> 內 <code>OnGet</code> 函式的內容，透過 <code>ViewData</code> 將資料傳給 View</p>
-<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.RazorPages;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CorePractice.Pages</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">IndexModel</span> : <span class="title">PageModel</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;IndexModel&gt; _logger;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">IndexModel</span>(<span class="params">ILogger&lt;IndexModel&gt; logger</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            _logger = logger;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGet</span>(<span class="params"></span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span>[] names = <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; <span class="string">&quot;Alfreda Stephenson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Swanson Swanson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Walker Pace&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Katina Le&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Lesley Calderon&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Ruth Merrill&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Cristina Buchanan&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Gallegos May&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Macdonald Lucas&quot;</span>&#125;;</span><br><span class="line">            <span class="built_in">int</span> num = <span class="number">3</span>;</span><br><span class="line">            <span class="built_in">int</span>[] age = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            <span class="built_in">string</span>[] name = <span class="keyword">new</span> <span class="built_in">string</span>[num];</span><br><span class="line">            <span class="built_in">int</span>[] family = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            Random rnd = <span class="keyword">new</span> Random();</span><br><span class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; num; i++)</span><br><span class="line">            &#123;</span><br><span class="line">                age[i] = rnd.Next(<span class="number">50</span>);</span><br><span class="line">                name[i] = names[rnd.Next(names.Length)];</span><br><span class="line">                family[i] = rnd.Next(<span class="number">5</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            ViewData[<span class="string">&quot;age&quot;</span>] = age;</span><br><span class="line">            ViewData[<span class="string">&quot;name&quot;</span>] = name;</span><br><span class="line">            ViewData[<span class="string">&quot;family&quot;</span>] = family;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>將 <code>Index.cshtml</code> 修改如下，透過 <code>ViewData</code> 將 Controller 的資料取出，在 View 中渲染</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">@page</span><br><span class="line">@model IndexModel</span><br><span class="line">@&#123;</span><br><span class="line">    ViewData[&quot;Title&quot;] = &quot;Home page&quot;;</span><br><span class="line"></span><br><span class="line">    int[] age = ViewData[&quot;age&quot;] as int[];</span><br><span class="line">    string[] name = ViewData[&quot;name&quot;] as string[];</span><br><span class="line">    int[] family = ViewData[&quot;family&quot;] as int[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;text-center&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">&quot;display-4&quot;</span>&gt;</span>Welcome<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Learn about <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://docs.microsoft.com/aspnet/core&quot;</span>&gt;</span>building Web apps with ASP.NET Core<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">style</span>=<span class="string">&quot;border-style: solid; margin-left: auto; margin-right: auto;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>名字<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>歲數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>家庭人數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    @for (var i = 0; i &lt; name.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@name[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@age[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@family[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">    <span class="selector-tag">table</span> <span class="selector-tag">td</span>, <span class="selector-tag">table</span> <span class="selector-tag">th</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">1px</span> solid black;</span></span><br><span class="line"><span class="css">    &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>編譯與建置 (F5) 後一個簡單的 ASP.NET Core 應用程式就此完成</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fproject_demo.png?alt=media&amp;token=7e1625c1-5d92-4acd-84b5-8de508a799f0" alt="完成頁面"><span class="image-caption">完成頁面</span></p>
-<p>參考原始碼：<a href="https://github.com/weirenxue/core-practice">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>csharp</tag>
-        <tag>asp</tag>
-        <tag>.net</tag>
-        <tag>core</tag>
-        <tag>3.1</tag>
-        <tag>visual studio</tag>
-        <tag>razor</tag>
-        <tag>2019</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[C#] 在高 DPI 的螢幕上，有些應用程式內的字會模糊的原因以及解決方法！</title>
     <url>/2021/06/11/cs_dpi/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>開啟 Visual Studio <code>C#</code> 的 Windows Form 應用程式來設計，一定曾經注意到雖然在 VS 裡面設計 Form 時，預覽的字是清晰的，結果 Compiler 之後跑出來的字是模糊的！以下圖幫各位回憶一下。</p>
@@ -211,6 +141,76 @@
         <tag>pt</tag>
         <tag>blurry</tag>
         <tag>windows forms</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[C++] (FARPROC&amp;) 的含意</title>
+    <url>/2021/06/11/cfarproc/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr; </span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...省略...)</span><br></pre></td></tr></table></figure>
+<p>平常只會看到像是 <code>(int)</code>、<code>(int*)</code> 之類的轉型，第一次看到轉型是帶著 <code>&amp;</code> 符號的，引發我的好奇心，藉此研究一番。</p>
+<h2 id="探討"><a href="#探討" class="headerlink" title="探討"></a>探討</h2><p>要探討這問題，就要先知道一般再宣告的時候，<code>&amp;</code> 運算元到底發揮甚麼功用，所以先用最簡單的整數(<code>int</code>)宣告來測試，內容分為以下三種：</p>
+<ol>
+<li><p><code>int a = b;   //這應該大家都知道，就是把b的值給a</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> a = b;</span><br><span class="line"><span class="comment">//結果：a = 2; b = 2; &amp;a = 006FF8C0; &amp;b = 006FF8CC;</span></span><br><span class="line"><span class="comment">//結論：值一樣但記憶體位址不一樣</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>int *a = &amp;b; //程度好一些的應該知道，這是把b的記憶體位址存到a裡面</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> *a = &amp;b;</span><br><span class="line"><span class="comment">//結果：a = 006FF8B4; b = 3; &amp;a = 006FF8A8; &amp;b = 006FF8B4;</span></span><br><span class="line"><span class="comment">//結論：a存著b的位址，但兩個記憶體位址還是不一樣</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>int &amp;a = b;  //但這個呢？讓我們繼續看下去</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">int</span> &amp;a = b;</span><br><span class="line"><span class="comment">//結果：a = 4; b = 4; &amp;a = 006FF89C; &amp;b = 006FF89C;</span></span><br><span class="line"><span class="comment">//結論：a的位址跟b一樣，所以a跟b一模一樣了！</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>以這些實驗可以得到結論：在宣告的時候 ，<code>int&amp;</code> 會把「等號左邊(<code>a</code>)的變數地址」改變成「等號右邊(<code>b</code>)變數的地址」，因此 <code>a</code> 與 <code>b</code> 兩個是一樣的東西（也就是記憶體位址一樣）！</p>
+<p>回到最一開始的問題：<code>(FARPROC&amp;) addr</code> 到底是甚麼呢？我還是用程式做一下實驗，先以書上的程式碼為第一個實驗，用 <code>(FARPROC&amp;)</code> 去接 <code>GetProcAddress</code> 的值，看會如何；再用 <code>addr</code> 直接去接，又會如何。以下是實驗結果：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA94; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA88; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
+<p>可以發現其實沒有像是我們在最原本例子 <code>int &amp;a=b;</code> 看到的把 <code>addr</code> 位址變為 <code>GetProcAddress</code> 的位址，反而是addr的值變化了，變為 <code>GetProcAddress</code> 回傳的地址，也就是說 <code>(FARPROC&amp;)</code> 在這個實驗中看起來是沒有作用到的。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p><code>(FARPROC&amp;) addr = GetProcAddress(...)</code> 等同於 <code>addr = GetProcAddress(...)</code>，只是不知道書上為何多此一舉。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>FARPROC</tag>
+        <tag>cpp</tag>
+        <tag>加密與解密</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
+    <url>/2021/06/15/cs_asp_net_core_3_1/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio Enterprise 2019 (16.7.2)</li>
+<li>.Net Core 3.1</li>
+</ul>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>必需使用 Visual Studio 2019 以上版本才可以用 .NET Core 3.1 (<a href="https://dotnet.microsoft.com/download/dotnet-core/3.1">參考資訊</a>)，也因為 2.1 版在 2021/08/21 就會結束支援，所以建議使用較新的 Core (3.1)。</p>
+<p>開啟「Visual Studio 2019」→「Create a new project」→ 選「ASP.NET Core Web Application」→ Project name 為「CorePractice」→ 選「Web Application」(請注意上方要為 .NET Core 與 ASP.NET Core 3.1，且右方的 HTTPS 不要勾) →「Create」</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fcreate_project.png?alt=media&amp;token=fc23ffc7-0664-4325-bd3f-9d052cf073d7" alt="創建專案步驟"><span class="image-caption">創建專案步驟</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>目錄結構如下，目前只會用到 <code>Index.cshtml</code> 與 <code>Index.cshtml.cs</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">│  appsettings.Development.json</span><br><span class="line">│  appsettings.json</span><br><span class="line">│  CorePractice.csproj</span><br><span class="line">│  Program.cs</span><br><span class="line">│  Startup.cs</span><br><span class="line">├─bin</span><br><span class="line">├─obj</span><br><span class="line">├─Pages</span><br><span class="line">│  │  Error.cshtml</span><br><span class="line">│  │  Error.cshtml.cs</span><br><span class="line">│  │  Index.cshtml</span><br><span class="line">│  │  Index.cshtml.cs</span><br><span class="line">│  │  Privacy.cshtml</span><br><span class="line">│  │  Privacy.cshtml.cs</span><br><span class="line">│  │  _ViewImports.cshtml</span><br><span class="line">│  │  _ViewStart.cshtml</span><br><span class="line">│  │</span><br><span class="line">│  └─Shared</span><br><span class="line">├─Properties</span><br><span class="line">└─wwwroot</span><br></pre></td></tr></table></figure>
+<p>修改 <code>Index.cshtml.cs</code> 內 <code>OnGet</code> 函式的內容，透過 <code>ViewData</code> 將資料傳給 View</p>
+<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.RazorPages;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CorePractice.Pages</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">IndexModel</span> : <span class="title">PageModel</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;IndexModel&gt; _logger;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">IndexModel</span>(<span class="params">ILogger&lt;IndexModel&gt; logger</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            _logger = logger;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGet</span>(<span class="params"></span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span>[] names = <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; <span class="string">&quot;Alfreda Stephenson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Swanson Swanson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Walker Pace&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Katina Le&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Lesley Calderon&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Ruth Merrill&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Cristina Buchanan&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Gallegos May&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Macdonald Lucas&quot;</span>&#125;;</span><br><span class="line">            <span class="built_in">int</span> num = <span class="number">3</span>;</span><br><span class="line">            <span class="built_in">int</span>[] age = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            <span class="built_in">string</span>[] name = <span class="keyword">new</span> <span class="built_in">string</span>[num];</span><br><span class="line">            <span class="built_in">int</span>[] family = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            Random rnd = <span class="keyword">new</span> Random();</span><br><span class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; num; i++)</span><br><span class="line">            &#123;</span><br><span class="line">                age[i] = rnd.Next(<span class="number">50</span>);</span><br><span class="line">                name[i] = names[rnd.Next(names.Length)];</span><br><span class="line">                family[i] = rnd.Next(<span class="number">5</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            ViewData[<span class="string">&quot;age&quot;</span>] = age;</span><br><span class="line">            ViewData[<span class="string">&quot;name&quot;</span>] = name;</span><br><span class="line">            ViewData[<span class="string">&quot;family&quot;</span>] = family;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>將 <code>Index.cshtml</code> 修改如下，透過 <code>ViewData</code> 將 Controller 的資料取出，在 View 中渲染</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">@page</span><br><span class="line">@model IndexModel</span><br><span class="line">@&#123;</span><br><span class="line">    ViewData[&quot;Title&quot;] = &quot;Home page&quot;;</span><br><span class="line"></span><br><span class="line">    int[] age = ViewData[&quot;age&quot;] as int[];</span><br><span class="line">    string[] name = ViewData[&quot;name&quot;] as string[];</span><br><span class="line">    int[] family = ViewData[&quot;family&quot;] as int[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;text-center&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">&quot;display-4&quot;</span>&gt;</span>Welcome<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Learn about <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://docs.microsoft.com/aspnet/core&quot;</span>&gt;</span>building Web apps with ASP.NET Core<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">style</span>=<span class="string">&quot;border-style: solid; margin-left: auto; margin-right: auto;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>名字<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>歲數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>家庭人數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    @for (var i = 0; i &lt; name.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@name[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@age[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@family[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">    <span class="selector-tag">table</span> <span class="selector-tag">td</span>, <span class="selector-tag">table</span> <span class="selector-tag">th</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">1px</span> solid black;</span></span><br><span class="line"><span class="css">    &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>編譯與建置 (F5) 後一個簡單的 ASP.NET Core 應用程式就此完成</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fproject_demo.png?alt=media&amp;token=7e1625c1-5d92-4acd-84b5-8de508a799f0" alt="完成頁面"><span class="image-caption">完成頁面</span></p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/core-practice">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>csharp</tag>
+        <tag>asp</tag>
+        <tag>.net</tag>
+        <tag>core</tag>
+        <tag>3.1</tag>
+        <tag>visual studio</tag>
+        <tag>razor</tag>
+        <tag>2019</tag>
       </tags>
   </entry>
   <entry>
@@ -412,6 +412,42 @@
       </tags>
   </entry>
   <entry>
+    <title>[Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案</title>
+    <url>/2021/06/17/echo_ubuntu_r/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 與 Linux 使用上有一個很顯著的差異，就是兩種系統的換行字元不一樣，在 Windows 上的換行字元為 CRLF <code>\r\n</code>，而 Linux 的換行字元只有 LF <code>\n</code>。然而總會有在 Ubuntu 需要產生一個換行為 CRLF 的檔案的需求，因此紀錄一下如何使用簡單的指令 <code>echo</code> 來解決這個問題。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 20.04</li>
+</ul>
+<h2 id="檔案內容敘述"><a href="#檔案內容敘述" class="headerlink" title="檔案內容敘述"></a>檔案內容敘述</h2><p>假設現在我想製作一個 HTTP 標頭檔，因 HTTP 標頭格式的換行必須為 CRLF，若直接開啟文件並使用文字編輯器來編輯，換行一定只有 LF，因此需藉由指令的力量來完成這件事，希望的檔案內容如下，注意最後一行空白是必要的</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HEAD / HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>看文字不清楚，轉為 16 進位形式來看清楚，每個換行皆為 CLRF，最後有一個單獨的 CLRF，才會讓檔案內容看起來有一個空白行。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
+<h2 id="產製檔案"><a href="#產製檔案" class="headerlink" title="產製檔案"></a>產製檔案</h2><p>使用基本指令 <code>echo</code> 就能解決我們的困擾囉</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> -ne <span class="string">&quot;HEAD / HTTP/1.1\r\nHost: localhost\r\n\r\n&quot;</span> &gt; message</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-n</code>：不要輸出最後的換行 (<code>echo</code> 指令自己預設最後會輸出換行 LF)。</li>
+<li><code>-e</code>：會直譯跳脫字元，讓我們可以輸入 <code>\r</code>、<code>\n</code> 等跳脫字元。</li>
+</ul>
+<p>查看該檔案 16 進位形式確認完成！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ xxd message</span><br><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>20.04</tag>
+        <tag>netcat</tag>
+        <tag>linux</tag>
+        <tag>CR</tag>
+        <tag>carriage</tag>
+        <tag>return</tag>
+        <tag>echo</tag>
+        <tag>file</tag>
+        <tag>cat</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[FTP] CentOS 7 安裝 vsftpd 省去實體與虛擬機之間傳輸設定</title>
     <url>/2021/06/19/ftp_centos_vsftpd/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在開發時免不了會使用到虛擬機的可能性，而在虛擬機與主機之間做檔案轉移時總會遇到奇奇怪怪的問題，先不論是否是虛擬機的問題，但總是會再這無關緊要的問題上浪費掉許多寶貴時間，因此研究如何架設 FTP，讓主機直接上傳檔案到 FTP 伺服器，再從虛擬機中下載，避免檔案轉移遇到的麻煩！</p>
@@ -435,13 +471,13 @@
       </categories>
       <tags>
         <tag>centos</tag>
+        <tag>file</tag>
         <tag>7.9</tag>
         <tag>vsftpd</tag>
         <tag>ftp</tag>
         <tag>425</tag>
         <tag>vm</tag>
         <tag>copy</tag>
-        <tag>file</tag>
       </tags>
   </entry>
   <entry>
@@ -485,42 +521,6 @@
         <tag>service</tag>
         <tag>iptables</tag>
         <tag>zone</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案</title>
-    <url>/2021/06/17/echo_ubuntu_r/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 與 Linux 使用上有一個很顯著的差異，就是兩種系統的換行字元不一樣，在 Windows 上的換行字元為 CRLF <code>\r\n</code>，而 Linux 的換行字元只有 LF <code>\n</code>。然而總會有在 Ubuntu 需要產生一個換行為 CRLF 的檔案的需求，因此紀錄一下如何使用簡單的指令 <code>echo</code> 來解決這個問題。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 20.04</li>
-</ul>
-<h2 id="檔案內容敘述"><a href="#檔案內容敘述" class="headerlink" title="檔案內容敘述"></a>檔案內容敘述</h2><p>假設現在我想製作一個 HTTP 標頭檔，因 HTTP 標頭格式的換行必須為 CRLF，若直接開啟文件並使用文字編輯器來編輯，換行一定只有 LF，因此需藉由指令的力量來完成這件事，希望的檔案內容如下，注意最後一行空白是必要的</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HEAD / HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>看文字不清楚，轉為 16 進位形式來看清楚，每個換行皆為 CLRF，最後有一個單獨的 CLRF，才會讓檔案內容看起來有一個空白行。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
-<h2 id="產製檔案"><a href="#產製檔案" class="headerlink" title="產製檔案"></a>產製檔案</h2><p>使用基本指令 <code>echo</code> 就能解決我們的困擾囉</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> -ne <span class="string">&quot;HEAD / HTTP/1.1\r\nHost: localhost\r\n\r\n&quot;</span> &gt; message</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-n</code>：不要輸出最後的換行 (<code>echo</code> 指令自己預設最後會輸出換行 LF)。</li>
-<li><code>-e</code>：會直譯跳脫字元，讓我們可以輸入 <code>\r</code>、<code>\n</code> 等跳脫字元。</li>
-</ul>
-<p>查看該檔案 16 進位形式確認完成！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ xxd message</span><br><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>20.04</tag>
-        <tag>netcat</tag>
-        <tag>linux</tag>
-        <tag>file</tag>
-        <tag>CR</tag>
-        <tag>carriage</tag>
-        <tag>return</tag>
-        <tag>echo</tag>
-        <tag>cat</tag>
       </tags>
   </entry>
   <entry>
@@ -945,6 +945,36 @@
       </tags>
   </entry>
   <entry>
+    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
+    <url>/2021/06/19/mariadb_centos/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+</ul>
+<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
+<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
+<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>mariadb</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>latest</tag>
+        <tag>update</tag>
+        <tag>version</tag>
+        <tag>repository</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Math] 以移位運算優化除數為 2 的冪次方的除法</title>
     <url>/2021/06/15/math_2/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>除法指令在 CPU 中的執行周期相較於其它運算 (加/減/乘) 還要來得長，所以會盡可能的找替代方案來算出除法結果。這裡討論的是，當除以一個 2 的冪次方數時要怎麼減化過程，特別是被除數為負數時的情況。</p>
@@ -976,67 +1006,6 @@
         <tag>bit</tag>
         <tag>division</tag>
         <tag>power of 2</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
-    <url>/2021/06/19/mariadb_centos/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
-<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
-<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>mariadb</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>latest</tag>
-        <tag>update</tag>
-        <tag>version</tag>
-        <tag>repository</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
-    <url>/2021/06/17/mount_iso/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
-<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-o loop</code>：使用 loop device 來掛載</li>
-</ul>
-<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
-<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>18.04</tag>
-        <tag>mount</tag>
-        <tag>unmount</tag>
-        <tag>iso</tag>
-        <tag>media</tag>
       </tags>
   </entry>
   <entry>
@@ -1075,6 +1044,37 @@
       </tags>
   </entry>
   <entry>
+    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
+    <url>/2021/06/17/mount_iso/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
+<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-o loop</code>：使用 loop device 來掛載</li>
+</ul>
+<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
+<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>mount</tag>
+        <tag>unmount</tag>
+        <tag>iso</tag>
+        <tag>media</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Nginx] CentOS 安裝網頁伺服器 Nginx</title>
     <url>/2021/06/18/nginx_centos_nginx/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>相較於 Apache，Nginx 消耗資源少且處理速度快，又支援高併發，是大流量應用的好選擇。</p>
@@ -1098,75 +1098,6 @@
         <tag>8.2</tag>
         <tag>linux</tag>
         <tag>nginx</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[PHP] CentOS 8.2 + Nginx + MariaDB + php-fpm + phpMyAdmin</title>
-    <url>/2021/06/18/centos_phpmyadmin/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到使用 MySQL/MariaDB 就會想到 phpMyAdmin 這個使用者圖像介面，它是用 PHP 寫出來與 MySQL/MariaDB 互動的介面，所以若要使用，必須先安裝網頁伺服器與 PHP。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="安裝-EPEL"><a href="#安裝-EPEL" class="headerlink" title="安裝 EPEL"></a>安裝 EPEL</h2><p>安裝由 Fedora 社群打造的第三方源 EPEL (Extra Packages for Enterprise Linux)，其中包含比官方 repository 還要新的套件版本</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install epel-release</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-Nginx"><a href="#安裝-Nginx" class="headerlink" title="安裝 Nginx"></a>安裝 Nginx</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/nginx_centos_nginx/">[Nginx] CentOS 安裝網頁伺服器 Nginx</a>，安裝好後從瀏覽器輸入 <a href="http://localhost">http://localhost</a> 確定可看到 Nginx 預設頁面</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl start nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-MariaDB"><a href="#安裝-MariaDB" class="headerlink" title="安裝 MariaDB"></a>安裝 MariaDB</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install mariadb-server mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl start mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mariadb</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-php-fpm"><a href="#安裝-php-fpm" class="headerlink" title="安裝 php-fpm"></a>安裝 php-fpm</h2><p>這裡安裝預設版本 (目前是7.2版)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install php php-fpm php-json php-mysqlnd php-mbstring</span><br></pre></td></tr></table></figure>
-<h3 id="修改-www-conf-設定"><a href="#修改-www-conf-設定" class="headerlink" title="修改 www.conf 設定"></a>修改 www.conf 設定</h3><p>修改 <code>/etc/php-fpm.d/www.conf</code> 檔案內容</p>
-<ol>
-<li>改 <code>user = apache</code> 為 <code>user = nginx</code></li>
-<li>改 <code>group = apache</code> 為 <code>group = nginx</code></li>
-<li>改 <code>listen = /run/php-fpm/www.sock</code> 為 <code>listen = /var/run/php-fpm/php-fpm.sock</code></li>
-<li>拿掉 <code>;listen.owner = nobody</code> 的分號，並改為 <code>listen.owner = nginx</code></li>
-<li>拿掉 <code>;listen.group = nobody</code> 的分號，並改為 <code>listen.group = nginx</code></li>
-<li>拿掉 <code>;listen.mode = 0660</code> 的分號</li>
-</ol>
-<h3 id="啟動-php-fpm-服務"><a href="#啟動-php-fpm-服務" class="headerlink" title="啟動 php-fpm 服務"></a>啟動 php-fpm 服務</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start php-fpm</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> php-fpm</span><br></pre></td></tr></table></figure>
-<h3 id="修改-php-fpm-conf-設定"><a href="#修改-php-fpm-conf-設定" class="headerlink" title="修改 php-fpm.conf 設定"></a>修改 php-fpm.conf 設定</h3><p>修改 <code>/etc/nginx/conf.d/php-fpm.conf</code> 檔案內容</p>
-<ol>
-<li>改 <code>server unix:/run/php-fpm/www.sock;</code> 為 <code>server unix:/var/run/php-fpm/php-fpm.sock;</code></li>
-</ol>
-<h3 id="新增-phpmyadmin-conf-檔案"><a href="#新增-phpmyadmin-conf-檔案" class="headerlink" title="新增 phpmyadmin.conf 檔案"></a>新增 phpmyadmin.conf 檔案</h3><p>新增 <code>/etc/nginx/conf.d/phpmyadmin.conf</code> 檔案，內容如下</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  server_domain_or_IP;</span><br><span class="line"></span><br><span class="line">    root   /usr/share/nginx/html;</span><br><span class="line">    index index.php index.html index.htm;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        try_files $uri $uri/ =404;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 /404.html;</span><br><span class="line">    error_page 500 502 503 504 /50x.html;</span><br><span class="line"></span><br><span class="line">    location = /50x.html &#123;</span><br><span class="line">        root /usr/share/nginx/html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ~ \.php$ &#123;</span><br><span class="line">        try_files $uri =404;</span><br><span class="line">        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;</span><br><span class="line">        fastcgi_index index.php;</span><br><span class="line">        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">        include fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="重新載入設定"><a href="#重新載入設定" class="headerlink" title="重新載入設定"></a>重新載入設定</h3><p>Nginx 重新載入設定檔，要看到 <code>ok</code> 與 <code>/etc/nginx/nginx.conf test is successful</code> 才是對的哦！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl reload nginx</span><br><span class="line">[user@localhost ~]$ sudo nginx -t</span><br><span class="line">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br></pre></td></tr></table></figure>
-<h3 id="確認-php-fpm-運作"><a href="#確認-php-fpm-運作" class="headerlink" title="確認 php-fpm 運作"></a>確認 php-fpm 運作</h3><p>創建 <code>/usr/share/nginx/html/info.php</code> 其內容如下</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">phpinfo();</span><br></pre></td></tr></table></figure>
-<p>這時從瀏覽器輸入 <a href="http://localhost/info.php">http://localhost/info.php</a> 確定可看到 <code>phpinfo</code> 的頁面，若看得到代表 Nginx + php-fpm 有在正常運作囉</p>
-<h2 id="安裝-phpMyAdmin"><a href="#安裝-phpMyAdmin" class="headerlink" title="安裝 phpMyAdmin"></a>安裝 phpMyAdmin</h2><p>下載 <a href="https://www.phpmyadmin.net/">phpMyAdmin</a> 並解壓縮到 <code>/usr/share/nginx/html</code> 目錄</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ unzip Downloads/phpMyAdmin-5.0.2-all-languages.zip </span><br><span class="line">[user@localhost ~]$ sudo mv phpMyAdmin-5.0.2-all-languages/ /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
-<h3 id="創建-tmp-目錄"><a href="#創建-tmp-目錄" class="headerlink" title="創建 tmp 目錄"></a>創建 tmp 目錄</h3><p>創建 <code>phpMyAdmin/tmp/</code> 目錄並更改擁有者與群組為 <code>nginx:nginx</code>，同時更改權限為 <code>755</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo chown nginx:nginx /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo chmod 755 /usr/share/nginx/html/phpMyAdmin/tmp</span><br></pre></td></tr></table></figure>
-<h3 id="設定-blowfish-secret-金鑰"><a href="#設定-blowfish-secret-金鑰" class="headerlink" title="設定 blowfish_secret 金鑰"></a>設定 blowfish_secret 金鑰</h3><p>複製一個 config 樣板，並改名為 <code>config.inc.php</code>，此樣板會被 phpMyAdmin 載入</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo cp /usr/share/nginx/html/phpMyAdmin/config.sample.inc.php  /usr/share/nginx/html/phpMyAdmin/config.inc.php</span><br></pre></td></tr></table></figure>
-<p>再從 <a href="https://phpsolved.com/phpmyadmin-blowfish-secret-generator/?g=[insert_php]echo%20$code;[/insert_php]">phpMyAdmin blowfish secret generator</a> 取得安全的金鑰，並複製到 <code>config.inc.php</code> 檔案中，例如</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$cfg</span>[<span class="string">&#x27;blowfish_secret&#x27;</span>] = <span class="string">&#x27;Jh448H=tn1sfkb3b3EKwvofq=QVuitPn&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<h2 id="權限設定"><a href="#權限設定" class="headerlink" title="權限設定"></a>權限設定</h2><h3 id="開啟-php-session-權限"><a href="#開啟-php-session-權限" class="headerlink" title="開啟 php session 權限"></a>開啟 php session 權限</h3><p>設定 Nginx 對 php session 的權限，需將權限開啟，否則無法使用 phpMyAdmin 的登入功能</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo chown nginx:nginx /var/lib/php/session/</span><br></pre></td></tr></table></figure>
-<h3 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h3><p>修改 phpMyAdmin 的安全性文本，讓 Nginx 可以有權限可以讀寫，否則 SELinux 會阻檔，然後在瀏覽器出現 403 的錯誤碼</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo chcon -R -t httpd_sys_rw_content_t /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>在瀏覽器網址輸入 <a href="http://localhost/phpMyAdmin">http://localhost/phpMyAdmin</a> 就可以如同 Windows 上使用 xampp 一般，使用 phpMyAdmin 操作作資料庫啦！</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-centos-7">How To Install Linux, Nginx, MySQL, PHP (LEMP) stack On CentOS 7</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>mariadb</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>php</tag>
-        <tag>10</tag>
-        <tag>7.2</tag>
-        <tag>php-fpm</tag>
-        <tag>phpmyadmin</tag>
-        <tag>xampp</tag>
       </tags>
   </entry>
   <entry>
@@ -1295,6 +1226,100 @@
       </tags>
   </entry>
   <entry>
+    <title>[PHP] CentOS 8.2 + Nginx + MariaDB + php-fpm + phpMyAdmin</title>
+    <url>/2021/06/18/centos_phpmyadmin/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到使用 MySQL/MariaDB 就會想到 phpMyAdmin 這個使用者圖像介面，它是用 PHP 寫出來與 MySQL/MariaDB 互動的介面，所以若要使用，必須先安裝網頁伺服器與 PHP。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+</ul>
+<h2 id="安裝-EPEL"><a href="#安裝-EPEL" class="headerlink" title="安裝 EPEL"></a>安裝 EPEL</h2><p>安裝由 Fedora 社群打造的第三方源 EPEL (Extra Packages for Enterprise Linux)，其中包含比官方 repository 還要新的套件版本</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install epel-release</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-Nginx"><a href="#安裝-Nginx" class="headerlink" title="安裝 Nginx"></a>安裝 Nginx</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/nginx_centos_nginx/">[Nginx] CentOS 安裝網頁伺服器 Nginx</a>，安裝好後從瀏覽器輸入 <a href="http://localhost">http://localhost</a> 確定可看到 Nginx 預設頁面</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl start nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-MariaDB"><a href="#安裝-MariaDB" class="headerlink" title="安裝 MariaDB"></a>安裝 MariaDB</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install mariadb-server mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl start mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mariadb</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-php-fpm"><a href="#安裝-php-fpm" class="headerlink" title="安裝 php-fpm"></a>安裝 php-fpm</h2><p>這裡安裝預設版本 (目前是7.2版)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install php php-fpm php-json php-mysqlnd php-mbstring</span><br></pre></td></tr></table></figure>
+<h3 id="修改-www-conf-設定"><a href="#修改-www-conf-設定" class="headerlink" title="修改 www.conf 設定"></a>修改 www.conf 設定</h3><p>修改 <code>/etc/php-fpm.d/www.conf</code> 檔案內容</p>
+<ol>
+<li>改 <code>user = apache</code> 為 <code>user = nginx</code></li>
+<li>改 <code>group = apache</code> 為 <code>group = nginx</code></li>
+<li>改 <code>listen = /run/php-fpm/www.sock</code> 為 <code>listen = /var/run/php-fpm/php-fpm.sock</code></li>
+<li>拿掉 <code>;listen.owner = nobody</code> 的分號，並改為 <code>listen.owner = nginx</code></li>
+<li>拿掉 <code>;listen.group = nobody</code> 的分號，並改為 <code>listen.group = nginx</code></li>
+<li>拿掉 <code>;listen.mode = 0660</code> 的分號</li>
+</ol>
+<h3 id="啟動-php-fpm-服務"><a href="#啟動-php-fpm-服務" class="headerlink" title="啟動 php-fpm 服務"></a>啟動 php-fpm 服務</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start php-fpm</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> php-fpm</span><br></pre></td></tr></table></figure>
+<h3 id="修改-php-fpm-conf-設定"><a href="#修改-php-fpm-conf-設定" class="headerlink" title="修改 php-fpm.conf 設定"></a>修改 php-fpm.conf 設定</h3><p>修改 <code>/etc/nginx/conf.d/php-fpm.conf</code> 檔案內容</p>
+<ol>
+<li>改 <code>server unix:/run/php-fpm/www.sock;</code> 為 <code>server unix:/var/run/php-fpm/php-fpm.sock;</code></li>
+</ol>
+<h3 id="新增-phpmyadmin-conf-檔案"><a href="#新增-phpmyadmin-conf-檔案" class="headerlink" title="新增 phpmyadmin.conf 檔案"></a>新增 phpmyadmin.conf 檔案</h3><p>新增 <code>/etc/nginx/conf.d/phpmyadmin.conf</code> 檔案，內容如下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  server_domain_or_IP;</span><br><span class="line"></span><br><span class="line">    root   /usr/share/nginx/html;</span><br><span class="line">    index index.php index.html index.htm;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        try_files $uri $uri/ =404;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 /404.html;</span><br><span class="line">    error_page 500 502 503 504 /50x.html;</span><br><span class="line"></span><br><span class="line">    location = /50x.html &#123;</span><br><span class="line">        root /usr/share/nginx/html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ~ \.php$ &#123;</span><br><span class="line">        try_files $uri =404;</span><br><span class="line">        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;</span><br><span class="line">        fastcgi_index index.php;</span><br><span class="line">        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">        include fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="重新載入設定"><a href="#重新載入設定" class="headerlink" title="重新載入設定"></a>重新載入設定</h3><p>Nginx 重新載入設定檔，要看到 <code>ok</code> 與 <code>/etc/nginx/nginx.conf test is successful</code> 才是對的哦！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl reload nginx</span><br><span class="line">[user@localhost ~]$ sudo nginx -t</span><br><span class="line">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br></pre></td></tr></table></figure>
+<h3 id="確認-php-fpm-運作"><a href="#確認-php-fpm-運作" class="headerlink" title="確認 php-fpm 運作"></a>確認 php-fpm 運作</h3><p>創建 <code>/usr/share/nginx/html/info.php</code> 其內容如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">phpinfo();</span><br></pre></td></tr></table></figure>
+<p>這時從瀏覽器輸入 <a href="http://localhost/info.php">http://localhost/info.php</a> 確定可看到 <code>phpinfo</code> 的頁面，若看得到代表 Nginx + php-fpm 有在正常運作囉</p>
+<h2 id="安裝-phpMyAdmin"><a href="#安裝-phpMyAdmin" class="headerlink" title="安裝 phpMyAdmin"></a>安裝 phpMyAdmin</h2><p>下載 <a href="https://www.phpmyadmin.net/">phpMyAdmin</a> 並解壓縮到 <code>/usr/share/nginx/html</code> 目錄</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ unzip Downloads/phpMyAdmin-5.0.2-all-languages.zip </span><br><span class="line">[user@localhost ~]$ sudo mv phpMyAdmin-5.0.2-all-languages/ /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
+<h3 id="創建-tmp-目錄"><a href="#創建-tmp-目錄" class="headerlink" title="創建 tmp 目錄"></a>創建 tmp 目錄</h3><p>創建 <code>phpMyAdmin/tmp/</code> 目錄並更改擁有者與群組為 <code>nginx:nginx</code>，同時更改權限為 <code>755</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo chown nginx:nginx /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo chmod 755 /usr/share/nginx/html/phpMyAdmin/tmp</span><br></pre></td></tr></table></figure>
+<h3 id="設定-blowfish-secret-金鑰"><a href="#設定-blowfish-secret-金鑰" class="headerlink" title="設定 blowfish_secret 金鑰"></a>設定 blowfish_secret 金鑰</h3><p>複製一個 config 樣板，並改名為 <code>config.inc.php</code>，此樣板會被 phpMyAdmin 載入</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo cp /usr/share/nginx/html/phpMyAdmin/config.sample.inc.php  /usr/share/nginx/html/phpMyAdmin/config.inc.php</span><br></pre></td></tr></table></figure>
+<p>再從 <a href="https://phpsolved.com/phpmyadmin-blowfish-secret-generator/?g=[insert_php]echo%20$code;[/insert_php]">phpMyAdmin blowfish secret generator</a> 取得安全的金鑰，並複製到 <code>config.inc.php</code> 檔案中，例如</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$cfg</span>[<span class="string">&#x27;blowfish_secret&#x27;</span>] = <span class="string">&#x27;Jh448H=tn1sfkb3b3EKwvofq=QVuitPn&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="權限設定"><a href="#權限設定" class="headerlink" title="權限設定"></a>權限設定</h2><h3 id="開啟-php-session-權限"><a href="#開啟-php-session-權限" class="headerlink" title="開啟 php session 權限"></a>開啟 php session 權限</h3><p>設定 Nginx 對 php session 的權限，需將權限開啟，否則無法使用 phpMyAdmin 的登入功能</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo chown nginx:nginx /var/lib/php/session/</span><br></pre></td></tr></table></figure>
+<h3 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h3><p>修改 phpMyAdmin 的安全性文本，讓 Nginx 可以有權限可以讀寫，否則 SELinux 會阻檔，然後在瀏覽器出現 403 的錯誤碼</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo chcon -R -t httpd_sys_rw_content_t /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>在瀏覽器網址輸入 <a href="http://localhost/phpMyAdmin">http://localhost/phpMyAdmin</a> 就可以如同 Windows 上使用 xampp 一般，使用 phpMyAdmin 操作作資料庫啦！</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-centos-7">How To Install Linux, Nginx, MySQL, PHP (LEMP) stack On CentOS 7</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>mariadb</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>php</tag>
+        <tag>10</tag>
+        <tag>7.2</tag>
+        <tag>php-fpm</tag>
+        <tag>phpmyadmin</tag>
+        <tag>xampp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
+    <url>/2021/06/15/php_phalcon_namespace/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Phalcon 4.0.3</li>
+</ul>
+<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
+<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
+<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
+<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>php</tag>
+        <tag>phalcon</tag>
+        <tag>namespace</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[PHP] Ubuntu 安裝 Apache 2 + PHP 7.4 + Phalcon 4.0</title>
     <url>/2021/06/17/php_ubuntu_apache_php_phalcon/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Apache 是一個輕量級的網頁伺服器，搭配 <code>PHP</code> 與高效能的 MVC 框架 Phalcon 是一個不錯的選擇，這裡紀錄如何在 Ubuntu 安裝這些開發環境。</p>
@@ -1337,28 +1362,26 @@
       </tags>
   </entry>
   <entry>
-    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
-    <url>/2021/06/15/php_phalcon_namespace/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
+    <title>[Python] 爬蟲修改 User-Agent 標頭</title>
+    <url>/2021/06/15/python_user_agent/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲是一個很方便的工具，可以自動化且大量分析網頁，將別人的網頁當作自己資料庫，但也因為如此，有些網頁會偵測連線來源是否為爬蟲工具，若是的話會阻擋 (404)，或者有些會顯示出與正常使用瀏覽器瀏覽時不一樣的內容。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Phalcon 4.0.3</li>
+<li>python 3.8.5</li>
 </ul>
-<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
-<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
-<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
-<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p><code>Python</code> 爬蟲第一步大多數是使用 <code>requests</code> 這個套件，它內建的請求標頭 <code>User-Agent</code> 為 <code>python-requests/2.24.0</code>，也許版本號會不同，但一看就知道是爬蟲而不是真的使用者的連線請求，所以應用程式可根據這個線索來拒絕服務。但「道高一尺，魔高一丈」不是沒有道理的，只要我們改了 <code>User-Agent</code>，就能繞過根據這個標頭欄位過濾請求的網站</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://abcde.example.com&quot;</span></span><br><span class="line">response = requests.get(url, headers = headers)</span><br></pre></td></tr></table></figure>
+<p>這時，所有的請求標頭 <code>User-Agent</code> 都將顯示為 <code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36</code>。</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>php</tag>
-        <tag>phalcon</tag>
-        <tag>namespace</tag>
+        <tag>header</tag>
+        <tag>python</tag>
+        <tag>user</tag>
+        <tag>agent</tag>
+        <tag>crawl</tag>
+        <tag>requests</tag>
       </tags>
   </entry>
   <entry>
@@ -1389,29 +1412,6 @@
         <tag>suspend</tag>
         <tag>poweroff</tag>
         <tag>hibernate</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Python] 爬蟲修改 User-Agent 標頭</title>
-    <url>/2021/06/15/python_user_agent/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲是一個很方便的工具，可以自動化且大量分析網頁，將別人的網頁當作自己資料庫，但也因為如此，有些網頁會偵測連線來源是否為爬蟲工具，若是的話會阻擋 (404)，或者有些會顯示出與正常使用瀏覽器瀏覽時不一樣的內容。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>python 3.8.5</li>
-</ul>
-<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p><code>Python</code> 爬蟲第一步大多數是使用 <code>requests</code> 這個套件，它內建的請求標頭 <code>User-Agent</code> 為 <code>python-requests/2.24.0</code>，也許版本號會不同，但一看就知道是爬蟲而不是真的使用者的連線請求，所以應用程式可根據這個線索來拒絕服務。但「道高一尺，魔高一丈」不是沒有道理的，只要我們改了 <code>User-Agent</code>，就能繞過根據這個標頭欄位過濾請求的網站</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://abcde.example.com&quot;</span></span><br><span class="line">response = requests.get(url, headers = headers)</span><br></pre></td></tr></table></figure>
-<p>這時，所有的請求標頭 <code>User-Agent</code> 都將顯示為 <code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36</code>。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>header</tag>
-        <tag>python</tag>
-        <tag>user</tag>
-        <tag>agent</tag>
-        <tag>crawl</tag>
-        <tag>requests</tag>
       </tags>
   </entry>
   <entry>
@@ -1510,30 +1510,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[RDP] Windows 10 新增使用者並賦予遠端桌面權限</title>
-    <url>/2021/06/13/rdp_windows_10/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在同一台電腦 Windows 上，若想要擁有自己個人桌面，就需要不與他人共用的一個使用者帳號；若想要遠端連線，則需要賦予使用者帳號遠端桌面的權限。</p>
-<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><p>組合鍵 <code>Windows + I</code> 開啟 Windows 的設定視窗。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fnew_account.png?alt=media&amp;token=7de524c5-ffa3-4354-85b8-d9bceabc340a" alt="新增其他使用者帳號"><span class="image-caption">新增其他使用者帳號</span></p>
-<p>若使用者沒有 Microsoft 帳戶或不想用 Microsoft 帳戶登入，可以在此式窗選擇「我沒有這位人員的登入資訊」→「新增沒有 Microsoft 帳戶的使用者」，填寫在地端的帳號、密碼與三個安全性問題。</p>
-<p>填寫完之後會在「家人與其他使用者」的「其他使用者」欄位看到新增的帳戶。</p>
-<h2 id="設定遠端桌面權限"><a href="#設定遠端桌面權限" class="headerlink" title="設定遠端桌面權限"></a>設定遠端桌面權限</h2><p>將設定畫面點回到「首頁」，並點選「系統」→「遠端桌面」→「啟用遠端桌面」→「選取可以從遠端存取此電腦的使用者」→「新增」，輸入使用者帳號後按兩次確定即可增加權限</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fadd_remote_privilege.png?alt=media&amp;token=e523d5c2-14ee-4afe-9931-b465b268c6cd" alt="賦予使用者遠端桌面權限"><span class="image-caption">賦予使用者遠端桌面權限</span></p>
-<p>使用者便可以遠端登入，並擁有自己的桌面與環境！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>remote</tag>
-        <tag>account</tag>
-        <tag>user</tag>
-        <tag>rdp</tag>
-        <tag>privilege</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[RDP] Windows 10 設定遠端多人多工</title>
     <url>/2021/06/13/rdp_windows_10_multi/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在許多實驗室內擁有被稱作 Super 的高配備電腦，希望能藉由提高運算速度，進而使產能增加。大多數人熟悉的作業系統是 Windows，為了配合使用者，Super 也是採用 Windows 的作業系統。</p>
@@ -1578,6 +1554,30 @@
         <tag>多工</tag>
         <tag>mutiplex</tag>
         <tag>wrapper</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[RDP] Windows 10 新增使用者並賦予遠端桌面權限</title>
+    <url>/2021/06/13/rdp_windows_10/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在同一台電腦 Windows 上，若想要擁有自己個人桌面，就需要不與他人共用的一個使用者帳號；若想要遠端連線，則需要賦予使用者帳號遠端桌面的權限。</p>
+<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><p>組合鍵 <code>Windows + I</code> 開啟 Windows 的設定視窗。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fnew_account.png?alt=media&amp;token=7de524c5-ffa3-4354-85b8-d9bceabc340a" alt="新增其他使用者帳號"><span class="image-caption">新增其他使用者帳號</span></p>
+<p>若使用者沒有 Microsoft 帳戶或不想用 Microsoft 帳戶登入，可以在此式窗選擇「我沒有這位人員的登入資訊」→「新增沒有 Microsoft 帳戶的使用者」，填寫在地端的帳號、密碼與三個安全性問題。</p>
+<p>填寫完之後會在「家人與其他使用者」的「其他使用者」欄位看到新增的帳戶。</p>
+<h2 id="設定遠端桌面權限"><a href="#設定遠端桌面權限" class="headerlink" title="設定遠端桌面權限"></a>設定遠端桌面權限</h2><p>將設定畫面點回到「首頁」，並點選「系統」→「遠端桌面」→「啟用遠端桌面」→「選取可以從遠端存取此電腦的使用者」→「新增」，輸入使用者帳號後按兩次確定即可增加權限</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fadd_remote_privilege.png?alt=media&amp;token=e523d5c2-14ee-4afe-9931-b465b268c6cd" alt="賦予使用者遠端桌面權限"><span class="image-caption">賦予使用者遠端桌面權限</span></p>
+<p>使用者便可以遠端登入，並擁有自己的桌面與環境！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>remote</tag>
+        <tag>account</tag>
+        <tag>user</tag>
+        <tag>rdp</tag>
+        <tag>privilege</tag>
       </tags>
   </entry>
   <entry>
@@ -1730,6 +1730,67 @@
       </tags>
   </entry>
   <entry>
+    <title>[Share] VMware 裡的 CentOS 使用共享資料夾</title>
+    <url>/2021/06/19/share_vmware_centos/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>共享資料夾是使用虛擬機時常會碰到的需求，最近遇到要在 CentOS 中設定共享資料夾，沒想到挺麻煩的，因此記錄下來方便以後查閱。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>實體機 (Host) 作業系統：Windows 10</li>
+<li>虛擬機 (Guest) 作業系統：CentOS 8.2</li>
+<li>虛擬機軟體：VMware 15.5.6</li>
+</ul>
+<h2 id="設定-Host-共享資料夾"><a href="#設定-Host-共享資料夾" class="headerlink" title="設定 Host 共享資料夾"></a>設定 Host 共享資料夾</h2><p>在 Windows 上於 VMware 設定 Host 要分享的的共享資料夾，這裡的範例是 <code>D:\VMware\Shared</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Share-VMware-%E8%A3%A1%E7%9A%84-CentOS-%E4%BD%BF%E7%94%A8%E5%85%B1%E4%BA%AB%E8%B3%87%E6%96%99%E5%A4%BE%2Fshare_folder.png?alt=media&amp;token=311502b1-730c-4d26-8d29-6eea00ea2fd0" alt="Host 共享資料夾"><span class="image-caption">Host 共享資料夾</span></p>
+<h2 id="設定-Guest-共享資料夾"><a href="#設定-Guest-共享資料夾" class="headerlink" title="設定 Guest 共享資料夾"></a>設定 Guest 共享資料夾</h2><p>在 CentOS 8.2 中建立一個要當共享資料夾的目錄</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mkdir ~/shares</span><br></pre></td></tr></table></figure>
+<p>掛載共享資料夾，其中 <code>Shared</code> 是 Host 的共享資料夾名稱， <code>~/shares</code> 是 Guest 的共享目錄</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ /usr/bin/vmhgfs-fuse .host:/Shared ~/shares</span><br></pre></td></tr></table></figure>
+<p>此時 Guest 內的 <code>~/shares</code> 目錄與 Host 的 <code>D:\VMware\Shared</code> 資料夾就是互通的囉！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>10</tag>
+        <tag>vmware</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[SSL] 自簽憑證過程</title>
+    <url>/2021/06/15/ssl_self_sign/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
+<h2 id="產生-CA-SSL"><a href="#產生-CA-SSL" class="headerlink" title="產生 CA SSL"></a>產生 CA SSL</h2><p>⾸先為我們的 CA 產⽣⼀把屬於 CA 的私鑰</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out root/ca.key 4096</span><br></pre></td></tr></table></figure>
+<p>⽤這把私鑰產⽣⼀份⾃我簽署的 CA 憑證，其中 <code>subj</code> 可依自己需求做更改</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -x509 -days 365 -sha256 \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=localhost&quot;</span> \ </span><br><span class="line">    -key root/ca.key \ </span><br><span class="line">    -out root/ca.crt</span><br></pre></td></tr></table></figure>
+<h2 id="產生-Server-SSL"><a href="#產生-Server-SSL" class="headerlink" title="產生 Server SSL"></a>產生 Server SSL</h2><p>為我們的 Server 產⽣不加密之 PEM 格式的私密⾦鑰</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out server/server.key 2048</span><br></pre></td></tr></table></figure>
+<p>產⽣憑證請求檔 CSR，其中 <code>subj</code> 可依自己需求做更改，要注意的是 <strong>CN 不可與 CA 的 CN 相同</strong></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -key server/server.key \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=your_service_FQDN&quot;</span> \ </span><br><span class="line">    -out server/server.csr</span><br></pre></td></tr></table></figure>
+<p>把 CSR 丟給 CA 簽署</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -req -CAcreateserial -days 30 -sha256 \ </span><br><span class="line">    -CA root/ca.crt -CAkey root/ca.key \ </span><br><span class="line">    -<span class="keyword">in</span> server/server.csr \ </span><br><span class="line">    -out server/server.crt</span><br></pre></td></tr></table></figure>
+<p>現在⽬錄應該有以下這些文件，<code>server.key</code> 是 Server 的私鑰，<code>server.crt</code> 是 Server 的憑證，也因為是用我們自創的 CA 來簽核的一個憑證，又稱為自簽憑證</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ ls -alR . </span><br><span class="line"></span><br><span class="line">./root: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1968 Oct 21 02:05 ca.crt </span><br><span class="line">-rw------- 1 user user 3243 Oct 21 02:05 ca.key </span><br><span class="line">-rw-rw-r-- 1 user user   41 Oct 21 02:05 ca.srl </span><br><span class="line"></span><br><span class="line">./server: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1501 Oct 21 02:05 server.crt </span><br><span class="line">-rw-rw-r-- 1 user user  972 Oct 21 02:05 server.csr </span><br><span class="line">-rw------- 1 user user 1679 Oct 21 02:05 server.key</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ssl</tag>
+        <tag>ca</tag>
+        <tag>key</tag>
+        <tag>crt</tag>
+        <tag>csr</tag>
+        <tag>self</tag>
+        <tag>sign</tag>
+        <tag>openssl</tag>
+        <tag>mitm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Tool] IT 的好幫手 - 帳密顯示器</title>
     <url>/2021/06/15/tool_it_ap_displayer/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 IT 產業中大概率會碰到管理很多伺服器的情況，要如何有組織的記錄這些帳號，是一個很重要的技能，記的好可以增加效率。</p>
@@ -1792,67 +1853,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[SSL] 自簽憑證過程</title>
-    <url>/2021/06/15/ssl_self_sign/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
-<h2 id="產生-CA-SSL"><a href="#產生-CA-SSL" class="headerlink" title="產生 CA SSL"></a>產生 CA SSL</h2><p>⾸先為我們的 CA 產⽣⼀把屬於 CA 的私鑰</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out root/ca.key 4096</span><br></pre></td></tr></table></figure>
-<p>⽤這把私鑰產⽣⼀份⾃我簽署的 CA 憑證，其中 <code>subj</code> 可依自己需求做更改</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -x509 -days 365 -sha256 \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=localhost&quot;</span> \ </span><br><span class="line">    -key root/ca.key \ </span><br><span class="line">    -out root/ca.crt</span><br></pre></td></tr></table></figure>
-<h2 id="產生-Server-SSL"><a href="#產生-Server-SSL" class="headerlink" title="產生 Server SSL"></a>產生 Server SSL</h2><p>為我們的 Server 產⽣不加密之 PEM 格式的私密⾦鑰</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out server/server.key 2048</span><br></pre></td></tr></table></figure>
-<p>產⽣憑證請求檔 CSR，其中 <code>subj</code> 可依自己需求做更改，要注意的是 <strong>CN 不可與 CA 的 CN 相同</strong></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -key server/server.key \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=your_service_FQDN&quot;</span> \ </span><br><span class="line">    -out server/server.csr</span><br></pre></td></tr></table></figure>
-<p>把 CSR 丟給 CA 簽署</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -req -CAcreateserial -days 30 -sha256 \ </span><br><span class="line">    -CA root/ca.crt -CAkey root/ca.key \ </span><br><span class="line">    -<span class="keyword">in</span> server/server.csr \ </span><br><span class="line">    -out server/server.crt</span><br></pre></td></tr></table></figure>
-<p>現在⽬錄應該有以下這些文件，<code>server.key</code> 是 Server 的私鑰，<code>server.crt</code> 是 Server 的憑證，也因為是用我們自創的 CA 來簽核的一個憑證，又稱為自簽憑證</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ ls -alR . </span><br><span class="line"></span><br><span class="line">./root: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1968 Oct 21 02:05 ca.crt </span><br><span class="line">-rw------- 1 user user 3243 Oct 21 02:05 ca.key </span><br><span class="line">-rw-rw-r-- 1 user user   41 Oct 21 02:05 ca.srl </span><br><span class="line"></span><br><span class="line">./server: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1501 Oct 21 02:05 server.crt </span><br><span class="line">-rw-rw-r-- 1 user user  972 Oct 21 02:05 server.csr </span><br><span class="line">-rw------- 1 user user 1679 Oct 21 02:05 server.key</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ssl</tag>
-        <tag>ca</tag>
-        <tag>key</tag>
-        <tag>crt</tag>
-        <tag>csr</tag>
-        <tag>self</tag>
-        <tag>sign</tag>
-        <tag>openssl</tag>
-        <tag>mitm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Share] VMware 裡的 CentOS 使用共享資料夾</title>
-    <url>/2021/06/19/share_vmware_centos/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>共享資料夾是使用虛擬機時常會碰到的需求，最近遇到要在 CentOS 中設定共享資料夾，沒想到挺麻煩的，因此記錄下來方便以後查閱。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>實體機 (Host) 作業系統：Windows 10</li>
-<li>虛擬機 (Guest) 作業系統：CentOS 8.2</li>
-<li>虛擬機軟體：VMware 15.5.6</li>
-</ul>
-<h2 id="設定-Host-共享資料夾"><a href="#設定-Host-共享資料夾" class="headerlink" title="設定 Host 共享資料夾"></a>設定 Host 共享資料夾</h2><p>在 Windows 上於 VMware 設定 Host 要分享的的共享資料夾，這裡的範例是 <code>D:\VMware\Shared</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Share-VMware-%E8%A3%A1%E7%9A%84-CentOS-%E4%BD%BF%E7%94%A8%E5%85%B1%E4%BA%AB%E8%B3%87%E6%96%99%E5%A4%BE%2Fshare_folder.png?alt=media&amp;token=311502b1-730c-4d26-8d29-6eea00ea2fd0" alt="Host 共享資料夾"><span class="image-caption">Host 共享資料夾</span></p>
-<h2 id="設定-Guest-共享資料夾"><a href="#設定-Guest-共享資料夾" class="headerlink" title="設定 Guest 共享資料夾"></a>設定 Guest 共享資料夾</h2><p>在 CentOS 8.2 中建立一個要當共享資料夾的目錄</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mkdir ~/shares</span><br></pre></td></tr></table></figure>
-<p>掛載共享資料夾，其中 <code>Shared</code> 是 Host 的共享資料夾名稱， <code>~/shares</code> 是 Guest 的共享目錄</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ /usr/bin/vmhgfs-fuse .host:/Shared ~/shares</span><br></pre></td></tr></table></figure>
-<p>此時 Guest 內的 <code>~/shares</code> 目錄與 Host 的 <code>D:\VMware\Shared</code> 資料夾就是互通的囉！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>10</tag>
-        <tag>vmware</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</title>
     <url>/2021/06/15/tool_sql_injection/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
@@ -1879,6 +1879,35 @@
         <tag>tutorial</tag>
         <tag>penetrate</tag>
         <tag>pentest</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
+    <url>/2021/06/17/usb_usb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>先確認目標裝置的權限，可以看到是 <code>660</code> 權限，也就是說非擁有者 (root) 且非群組 (dialout) 成員的其他人，是不能讀取的，這也是為什麼應用程式內讀不到的原因</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ ls -al /dev/ttyUSB*</span><br><span class="line">crw-rw---- 1 root dialout 188, 0 十二  4 16:53 /dev/ttyUSB0</span><br><span class="line">crw-rw---- 1 root dialout 188, 1 十二  4 16:53 /dev/ttyUSB1</span><br><span class="line">crw-rw---- 1 root dialout 188, 2 十二  4 16:53 /dev/ttyUSB2</span><br><span class="line">crw-rw---- 1 root dialout 188, 3 十二  4 16:53 /dev/ttyUSB3</span><br></pre></td></tr></table></figure>
+<h2 id="加入群組"><a href="#加入群組" class="headerlink" title="加入群組"></a>加入群組</h2><p>一般使用者預設是沒有加入 <code>dialout</code> 群組的，因此將自己加入此群組藉此繼承擁有讀取序列埠的權限</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo usermod -a -G dialout user  <span class="comment"># user 當然就是使用者帳號，依需求更改</span></span><br></pre></td></tr></table></figure>
+<p>再回到應用程式內找尋 Serial Port 應該就能看到囉！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>port</tag>
+        <tag>18.04</tag>
+        <tag>privilege</tag>
+        <tag>usb</tag>
+        <tag>serail</tag>
+        <tag>dialout</tag>
+        <tag>tty</tag>
+        <tag>usermod</tag>
       </tags>
   </entry>
   <entry>
@@ -1920,35 +1949,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
-    <url>/2021/06/17/usb_usb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>先確認目標裝置的權限，可以看到是 <code>660</code> 權限，也就是說非擁有者 (root) 且非群組 (dialout) 成員的其他人，是不能讀取的，這也是為什麼應用程式內讀不到的原因</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ ls -al /dev/ttyUSB*</span><br><span class="line">crw-rw---- 1 root dialout 188, 0 十二  4 16:53 /dev/ttyUSB0</span><br><span class="line">crw-rw---- 1 root dialout 188, 1 十二  4 16:53 /dev/ttyUSB1</span><br><span class="line">crw-rw---- 1 root dialout 188, 2 十二  4 16:53 /dev/ttyUSB2</span><br><span class="line">crw-rw---- 1 root dialout 188, 3 十二  4 16:53 /dev/ttyUSB3</span><br></pre></td></tr></table></figure>
-<h2 id="加入群組"><a href="#加入群組" class="headerlink" title="加入群組"></a>加入群組</h2><p>一般使用者預設是沒有加入 <code>dialout</code> 群組的，因此將自己加入此群組藉此繼承擁有讀取序列埠的權限</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo usermod -a -G dialout user  <span class="comment"># user 當然就是使用者帳號，依需求更改</span></span><br></pre></td></tr></table></figure>
-<p>再回到應用程式內找尋 Serial Port 應該就能看到囉！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>port</tag>
-        <tag>18.04</tag>
-        <tag>privilege</tag>
-        <tag>usb</tag>
-        <tag>serail</tag>
-        <tag>dialout</tag>
-        <tag>tty</tag>
-        <tag>usermod</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Vivado Vitis] 在軟體開發環境中缺少一堆 .h 檔的解決方法</title>
     <url>/2021/06/13/vivado_vitis/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近接手一個 Zynq 的開發板 (RFSoC ZCU111)，新手上路肯定是要參考網路上豐富的文件，才會學得快。但在參考文獻的過程中碰到一個似乎教學的作者沒有提及，但自己遇到的問題，也就是 Build 時缺少一堆 <code>.h</code> 檔案的錯誤提示。</p>
@@ -1982,6 +1982,24 @@
       </tags>
   </entry>
   <entry>
+    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
+    <url>/2021/06/15/window_modal_non_modal/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
+<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
+<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
+<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>window</tag>
+        <tag>modal</tag>
+        <tag>non modal</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[WIN32 API] 函數使用範例</title>
     <url>/2021/06/15/win32_api_function_example/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接 Build 看效果。</p>
@@ -2004,24 +2022,6 @@
         <tag>getsubmenu</tag>
         <tag>getmenuitemid</tag>
         <tag>settimer</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
-    <url>/2021/06/15/window_modal_non_modal/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
-<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
-<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
-<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
-<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>window</tag>
-        <tag>modal</tag>
-        <tag>non modal</tag>
       </tags>
   </entry>
   <entry>
@@ -2098,28 +2098,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[ZIP] 壓縮檔內中文檔名呈現亂碼的解決方法</title>
-    <url>/2021/06/15/zip_chinese_garbled/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想練英文從生活周遭開始是最直接的，安裝英文版版作業系統也不奇怪，但身在中文環境工作與學習，通常經手的會是中文檔名的檔案，當英文版作業系統遇見中文檔名，總是會發生一些惱人的錯誤。這次遇到的問題是，在瀏灠內含中文檔名的 zip 壓縮檔時，中文會呈現出亂碼型態。</p>
-<h2 id="狀況描述"><a href="#狀況描述" class="headerlink" title="狀況描述"></a>狀況描述</h2><p>原本資料夾為中文(示範用)，壓縮後開啟瀏覽呈現為亂碼</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fgarbled.png?alt=media&amp;token=2c282188-e3cb-4481-9f3b-24d820ed2d74" alt="亂碼的檔案名稱"><span class="image-caption">亂碼的檔案名稱</span></p>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>先開啟控制台 (Control Panel)，按照下圖所示操作，將語言更換為 <code>Chinese (Traditional, Taiwan)</code> 之後，電腦會要求重開機，就重開機吧！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Foperation.png?alt=media&amp;token=0933c050-25ae-4a77-a8c6-1f42ca9840a0" alt="操作步驟"><span class="image-caption">操作步驟</span></p>
-<h2 id="結果"><a href="#結果" class="headerlink" title="結果"></a>結果</h2><p>重開機後就能再次開啟該 zip 壓縮檔來查看正常的檔案名稱啦！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fno_grabled.png?alt=media&amp;token=174f988f-0f11-46e0-abb7-903c57691af0" alt="沒有亂碼的檔案名稱"><span class="image-caption">沒有亂碼的檔案名稱</span></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>file</tag>
-        <tag>zip</tag>
-        <tag>chinese</tag>
-        <tag>garbled</tag>
-        <tag>name</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[apt] Unable to locate package 問題</title>
     <url>/2021/06/17/apt_unable_to_locate_package/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
@@ -2145,32 +2123,25 @@
       </tags>
   </entry>
   <entry>
-    <title>[link] 缺少 libudev.so.0 的解決方法</title>
-    <url>/2021/06/17/link_libdev_so_0/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在安裝德州儀器的軟體時出現缺少 <code>libudev.so.0</code> 的字樣，有些解法是直接安裝 <code>libudev0:i386</code> 的套件，不幸的是這在 Ubuntu 14.04 之後的版本就移除了，取而代之的是 <code>libudev1:i386</code>，但軟體安裝就是硬要 <code>libudev.so.0</code> 這個檔案存在。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>解決的方法就是自己創一個連結檔，連結到 <code>libudev.so.1</code>，名為 <code>libudev.so.0</code> (雖然 <code>libudev.so.1</code> 本身也是連結檔 XD)。建立連結檔有兩種方式</p>
-<h3 id="使用-cp-指令"><a href="#使用-cp-指令" class="headerlink" title="使用 cp 指令"></a>使用 cp 指令</h3><p>用 <code>cp</code> 指令建立連結檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo cp -s /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>$(arch)</code>：是在指令執行之前，先執行 <code>arch</code> 命令，取得當前電腦的硬體架構 (例如：x86_64) 並填回當前位置。</li>
-</ul>
-<p>可以看到 <code>libudev.so.1 -&gt; libudev.so.1.6.9</code>，也就是說最終是連結到 <code>libudev.so.1.6.9</code> 實體檔案。</p>
-<h3 id="使用-ln-指令"><a href="#使用-ln-指令" class="headerlink" title="使用 ln 指令"></a>使用 ln 指令</h3><p>其實步驟都與上面一樣，只是用不同指令達成。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
+    <title>[ZIP] 壓縮檔內中文檔名呈現亂碼的解決方法</title>
+    <url>/2021/06/15/zip_chinese_garbled/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想練英文從生活周遭開始是最直接的，安裝英文版版作業系統也不奇怪，但身在中文環境工作與學習，通常經手的會是中文檔名的檔案，當英文版作業系統遇見中文檔名，總是會發生一些惱人的錯誤。這次遇到的問題是，在瀏灠內含中文檔名的 zip 壓縮檔時，中文會呈現出亂碼型態。</p>
+<h2 id="狀況描述"><a href="#狀況描述" class="headerlink" title="狀況描述"></a>狀況描述</h2><p>原本資料夾為中文(示範用)，壓縮後開啟瀏覽呈現為亂碼</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fgarbled.png?alt=media&amp;token=2c282188-e3cb-4481-9f3b-24d820ed2d74" alt="亂碼的檔案名稱"><span class="image-caption">亂碼的檔案名稱</span></p>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>先開啟控制台 (Control Panel)，按照下圖所示操作，將語言更換為 <code>Chinese (Traditional, Taiwan)</code> 之後，電腦會要求重開機，就重開機吧！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Foperation.png?alt=media&amp;token=0933c050-25ae-4a77-a8c6-1f42ca9840a0" alt="操作步驟"><span class="image-caption">操作步驟</span></p>
+<h2 id="結果"><a href="#結果" class="headerlink" title="結果"></a>結果</h2><p>重開機後就能再次開啟該 zip 壓縮檔來查看正常的檔案名稱啦！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fno_grabled.png?alt=media&amp;token=174f988f-0f11-46e0-abb7-903c57691af0" alt="沒有亂碼的檔案名稱"><span class="image-caption">沒有亂碼的檔案名稱</span></p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>link</tag>
-        <tag>libudev</tag>
-        <tag>so</tag>
-        <tag>i386</tag>
-        <tag>cp</tag>
-        <tag>ln</tag>
+        <tag>file</tag>
+        <tag>zip</tag>
+        <tag>chinese</tag>
+        <tag>garbled</tag>
+        <tag>name</tag>
       </tags>
   </entry>
   <entry>
@@ -2208,6 +2179,35 @@
         <tag>neg</tag>
         <tag>sbb</tag>
         <tag>asm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[link] 缺少 libudev.so.0 的解決方法</title>
+    <url>/2021/06/17/link_libdev_so_0/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在安裝德州儀器的軟體時出現缺少 <code>libudev.so.0</code> 的字樣，有些解法是直接安裝 <code>libudev0:i386</code> 的套件，不幸的是這在 Ubuntu 14.04 之後的版本就移除了，取而代之的是 <code>libudev1:i386</code>，但軟體安裝就是硬要 <code>libudev.so.0</code> 這個檔案存在。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>解決的方法就是自己創一個連結檔，連結到 <code>libudev.so.1</code>，名為 <code>libudev.so.0</code> (雖然 <code>libudev.so.1</code> 本身也是連結檔 XD)。建立連結檔有兩種方式</p>
+<h3 id="使用-cp-指令"><a href="#使用-cp-指令" class="headerlink" title="使用 cp 指令"></a>使用 cp 指令</h3><p>用 <code>cp</code> 指令建立連結檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo cp -s /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$(arch)</code>：是在指令執行之前，先執行 <code>arch</code> 命令，取得當前電腦的硬體架構 (例如：x86_64) 並填回當前位置。</li>
+</ul>
+<p>可以看到 <code>libudev.so.1 -&gt; libudev.so.1.6.9</code>，也就是說最終是連結到 <code>libudev.so.1.6.9</code> 實體檔案。</p>
+<h3 id="使用-ln-指令"><a href="#使用-ln-指令" class="headerlink" title="使用 ln 指令"></a>使用 ln 指令</h3><p>其實步驟都與上面一樣，只是用不同指令達成。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>link</tag>
+        <tag>libudev</tag>
+        <tag>so</tag>
+        <tag>i386</tag>
+        <tag>cp</tag>
+        <tag>ln</tag>
       </tags>
   </entry>
   <entry>
@@ -2275,35 +2275,6 @@
         <tag>credit</tag>
         <tag>task</tag>
         <tag>schedular</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[轉檔] Keynote 轉 PowerPoint (pptx 而不是 ppsx)</title>
-    <url>/2021/06/27/mac_keynote_powerpoint_pptx/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Mac 上使用 Keynote 來做投影片非常方便，但在有些場合必須提供 pptx 檔案，這時必定需要使用到轉檔功能了。然而在新版的 Keynote 選擇 PowerPoint 格式輸出時，竟然輸出為奇怪的格式 ppsx，找了許久才找到解決方法，正常轉為 pptx 檔案，因此在此紀錄下來。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>macOS Big Sur 11.4</li>
-<li>Keynote 11.1</li>
-</ul>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>要轉檔為 <code>pptx</code> 的方法很繞圈子，必須先將 Keynote 轉為 <code>Keynote &#39;09</code>，再開啟 <code>Keynote &#39;09</code> 檔轉為 <code>pptx</code>，若用最原始的 Keynote 檔案來轉檔只會得到 <code>ppsx</code>。</p>
-<h3 id="Keynote-39-09"><a href="#Keynote-39-09" class="headerlink" title="Keynote &#39;09"></a>Keynote &#39;09</h3><p>開啟想要轉的 Keynote，依照指示 <code>File -&gt; Export To -&gt; Keynote &#39;09... -&gt; Next</code> 轉為 Keynote &#39;09 類型檔案</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fexport_keynote09.png?alt=media&amp;token=74d16eb4-25c9-40f4-a4d4-02af3b840eb4" alt="轉檔為 Keynote &#39;09"><span class="image-caption">轉檔為 Keynote &#39;09</span></p>
-<p>可以觀察一下有沒有 &#39;09 到底差在哪裡，我自己除了檔案大小外，看不出差異，所以要我判斷出某個檔案是 Keynote 還是 Keynote &#39;09 是不太可能的！若有知道如何分辨的朋友們，歡迎在底下討論區留言！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2FkeynoteVSkeynote09.png?alt=media&amp;token=80e7fc49-1ee5-4c7b-b07f-c2d71fdf3ad1" alt="Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較"><span class="image-caption">Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較</span></p>
-<h3 id="pptx"><a href="#pptx" class="headerlink" title="pptx"></a>pptx</h3><p>最後就是重頭戲了，開啟剛剛轉好的 Keynote &#39;09&#39; 檔案，依照指示 <code>File -&gt; Export To -&gt; PowerPoint... -&gt; Advanced Options -&gt; .pptx -&gt; Next</code>，最後得到 pptx 檔案</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fkey09topptx.png?alt=media&amp;token=14b8ee4b-5c46-46a6-a38b-5c4847c39bb4" alt="Keynote &#39;09 轉 pptx"><span class="image-caption">Keynote &#39;09 轉 pptx</span></p>
-<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>不知道為什麼 Apple 要繞成這樣，需要先轉為 Keynote &#39;09 才能轉為 pptx，還不說明白讓人困擾。另外個人覺得根本不應該將 Keynote 轉為 pptx，有非常多格式會因此跑掉，因此強烈建議是直接將 Keynote 轉為 pdf 即可，但最終要轉檔成甚麼還是需要看應用場景。</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><p>1 <a href="https://discussions.apple.com/thread/8524312">Keynote exports to PPSX instead of PPTX</a></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>mac</tag>
-        <tag>keynote</tag>
-        <tag>powerpoint</tag>
-        <tag>pptx</tag>
-        <tag>ppsx</tag>
       </tags>
   </entry>
   <entry>
@@ -2392,6 +2363,63 @@
       </tags>
   </entry>
   <entry>
+    <title>[轉檔] Keynote 轉 PowerPoint (pptx 而不是 ppsx)</title>
+    <url>/2021/06/27/mac_keynote_powerpoint_pptx/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Mac 上使用 Keynote 來做投影片非常方便，但在有些場合必須提供 pptx 檔案，這時必定需要使用到轉檔功能了。然而在新版的 Keynote 選擇 PowerPoint 格式輸出時，竟然輸出為奇怪的格式 ppsx，找了許久才找到解決方法，正常轉為 pptx 檔案，因此在此紀錄下來。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>macOS Big Sur 11.4</li>
+<li>Keynote 11.1</li>
+</ul>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>要轉檔為 <code>pptx</code> 的方法很繞圈子，必須先將 Keynote 轉為 <code>Keynote &#39;09</code>，再開啟 <code>Keynote &#39;09</code> 檔轉為 <code>pptx</code>，若用最原始的 Keynote 檔案來轉檔只會得到 <code>ppsx</code>。</p>
+<h3 id="Keynote-39-09"><a href="#Keynote-39-09" class="headerlink" title="Keynote &#39;09"></a>Keynote &#39;09</h3><p>開啟想要轉的 Keynote，依照指示 <code>File -&gt; Export To -&gt; Keynote &#39;09... -&gt; Next</code> 轉為 Keynote &#39;09 類型檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fexport_keynote09.png?alt=media&amp;token=74d16eb4-25c9-40f4-a4d4-02af3b840eb4" alt="轉檔為 Keynote &#39;09"><span class="image-caption">轉檔為 Keynote &#39;09</span></p>
+<p>可以觀察一下有沒有 &#39;09 到底差在哪裡，我自己除了檔案大小外，看不出差異，所以要我判斷出某個檔案是 Keynote 還是 Keynote &#39;09 是不太可能的！若有知道如何分辨的朋友們，歡迎在底下討論區留言！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2FkeynoteVSkeynote09.png?alt=media&amp;token=80e7fc49-1ee5-4c7b-b07f-c2d71fdf3ad1" alt="Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較"><span class="image-caption">Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較</span></p>
+<h3 id="pptx"><a href="#pptx" class="headerlink" title="pptx"></a>pptx</h3><p>最後就是重頭戲了，開啟剛剛轉好的 Keynote &#39;09&#39; 檔案，依照指示 <code>File -&gt; Export To -&gt; PowerPoint... -&gt; Advanced Options -&gt; .pptx -&gt; Next</code>，最後得到 pptx 檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fkey09topptx.png?alt=media&amp;token=14b8ee4b-5c46-46a6-a38b-5c4847c39bb4" alt="Keynote &#39;09 轉 pptx"><span class="image-caption">Keynote &#39;09 轉 pptx</span></p>
+<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>不知道為什麼 Apple 要繞成這樣，需要先轉為 Keynote &#39;09 才能轉為 pptx，還不說明白讓人困擾。另外個人覺得根本不應該將 Keynote 轉為 pptx，有非常多格式會因此跑掉，因此強烈建議是直接將 Keynote 轉為 pdf 即可，但最終要轉檔成甚麼還是需要看應用場景。</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><p>1 <a href="https://discussions.apple.com/thread/8524312">Keynote exports to PPSX instead of PPTX</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>mac</tag>
+        <tag>keynote</tag>
+        <tag>powerpoint</tag>
+        <tag>pptx</tag>
+        <tag>ppsx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[轉檔] 將 rpm 檔轉為 deb 檔</title>
+    <url>/2021/06/17/rpm_deb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些軟體只提供 rpm 檔，但在 Ubuntu 的系統只能安裝 deb 檔，這時候就需要將 rpm 轉為 deb。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="轉檔並安裝"><a href="#轉檔並安裝" class="headerlink" title="轉檔並安裝"></a>轉檔並安裝</h2><p><a href="https://wiki.ubuntu-tw.org/index.php?title=HowtoInstallRPM">alien</a> 套件可以幫忙把 rpm 等其他安裝檔轉成 deb 安裝檔，在 Ubuntu 中預設是沒有安裝 <code>alien</code> 套件的，因此要先安裝</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install alien</span><br></pre></td></tr></table></figure>
+<p>將 <code>name.rpm</code> 轉為 <code>name.deb</code> 檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ~/somedir/name.rpm  <span class="comment"># 會轉為同檔名的 deb 檔案，但都改為小寫</span></span><br><span class="line">                                    <span class="comment"># ~/somedir 是 rpm 的檔案路徑，依情況改寫</span></span><br></pre></td></tr></table></figure>
+<p>用 dpkg 套件執行 deb 安裝檔安裝應用程式</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo dpkg -i ~/somedir/name.deb  <span class="comment">#開始安裝</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>file</tag>
+        <tag>18.04</tag>
+        <tag>rpm</tag>
+        <tag>deb</tag>
+        <tag>alien</tag>
+        <tag>dpkg</tag>
+        <tag>convert</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</title>
     <url>/2021/06/16/win_10_ubuntu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 是一個非常輕便且好用的作業系統，在 Windows 下使用 Linux 大多是透過虛擬機器 (VM, Virtual Machine)，但對一個想要深入研究 Linux 的同好來說，灌雙系統是一個不錯的選擇。灌完雙系統之後，有機率會遇到一種情況「電腦會直接進Windows，不會出現選擇作業系統的畫面」。</p>
@@ -2435,68 +2463,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[轉檔] 將 rpm 檔轉為 deb 檔</title>
-    <url>/2021/06/17/rpm_deb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些軟體只提供 rpm 檔，但在 Ubuntu 的系統只能安裝 deb 檔，這時候就需要將 rpm 轉為 deb。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="轉檔並安裝"><a href="#轉檔並安裝" class="headerlink" title="轉檔並安裝"></a>轉檔並安裝</h2><p><a href="https://wiki.ubuntu-tw.org/index.php?title=HowtoInstallRPM">alien</a> 套件可以幫忙把 rpm 等其他安裝檔轉成 deb 安裝檔，在 Ubuntu 中預設是沒有安裝 <code>alien</code> 套件的，因此要先安裝</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install alien</span><br></pre></td></tr></table></figure>
-<p>將 <code>name.rpm</code> 轉為 <code>name.deb</code> 檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ~/somedir/name.rpm  <span class="comment"># 會轉為同檔名的 deb 檔案，但都改為小寫</span></span><br><span class="line">                                    <span class="comment"># ~/somedir 是 rpm 的檔案路徑，依情況改寫</span></span><br></pre></td></tr></table></figure>
-<p>用 dpkg 套件執行 deb 安裝檔安裝應用程式</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo dpkg -i ~/somedir/name.deb  <span class="comment">#開始安裝</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>file</tag>
-        <tag>18.04</tag>
-        <tag>rpm</tag>
-        <tag>deb</tag>
-        <tag>alien</tag>
-        <tag>dpkg</tag>
-        <tag>convert</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[雙系統] 更改開機系統選單的預設值</title>
-    <url>/2021/06/16/dual_system_change_default/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>要切換雙系統的方法主要有兩種，一是修改 BIOS 的 Boot Option，另一個是使用 grub (參考：<a href="/2021/06/16/win_10_ubuntu/">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a>])。grub 預設是以 Ubuntu 開機，若在選單畫面超過 10 秒沒有動作，預設直接進入 Ubuntu。對於主要是用 Windows 的人來說稍嫌不便，因為每次開機都要等選單出現，以免不小心進其他系統，這篇主要紀錄如何將預設系統改為 Windows。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>Windows 10</li>
-</ul>
-<h2 id="修改-grub"><a href="#修改-grub" class="headerlink" title="修改 grub"></a>修改 grub</h2><p>以下動作皆在 Ubuntu 中執行，先知道 Windows 啟動檔的位置</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ cat /boot/grub/grub.cfg | grep windows</span><br><span class="line">menuentry <span class="string">&#x27;Windows Boot Manager (於 /dev/sdb2)&#x27;</span> --class windows --class os <span class="variable">$menuentry_id_option</span> <span class="string">&#x27;osprober-efi-264C-BB58&#x27;</span> &#123;</span><br></pre></td></tr></table></figure>
-<p>記住檔案位置 <code>&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 後，再開啟 <code>/ect/default/grub</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo gedit /etc/default/grub</span><br></pre></td></tr></table></figure>
-<p>修改 <code>GRUB_DEFAULT=0</code> 為 <code>GRUB_DEFAULT=&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 並儲存，注意不要少了單引號</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-%E6%9B%B4%E6%94%B9%E9%96%8B%E6%A9%9F%E7%B3%BB%E7%B5%B1%E9%81%B8%E5%96%AE%E7%9A%84%E9%A0%90%E8%A8%AD%E5%80%BC%2Fchange_setting.png?alt=media&amp;token=55bafa2f-b2ff-4fb6-94a1-7a81fc3e9107" alt="修改 GRUB_DEFAULT"><span class="image-caption">修改 GRUB_DEFAULT</span></p>
-<p>更新 grub 後重新開機，就可以發現預設選項落在 Windows 上囉！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo update-grub</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>18.04</tag>
-        <tag>10</tag>
-        <tag>menu</tag>
-        <tag>dual</tag>
-        <tag>system</tag>
-        <tag>option</tag>
-        <tag>boot</tag>
-        <tag>grub</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[雙系統] 同步 Ubuntu 與 Windows 的系統時間</title>
     <url>/2021/06/17/ubuntu_windows_time/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>使用 Ubuntu + Windows 雙系統的用戶，應該會發現 Ubuntu 的時間總是與 Windows 的不一樣，在 UTC+8 的地方，Ubuntu 比 Windows 快 8 小時，切換系統後總是要手動調整時間，造成一定的困擾。最佳解決之道應為將雙系統時間設為同步，因此這裡紀錄了如何將雙系統的時間設為一致。</p>
@@ -2532,6 +2498,40 @@
         <tag>dual</tag>
         <tag>system</tag>
         <tag>synchronize</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[雙系統] 更改開機系統選單的預設值</title>
+    <url>/2021/06/16/dual_system_change_default/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>要切換雙系統的方法主要有兩種，一是修改 BIOS 的 Boot Option，另一個是使用 grub (參考：<a href="/2021/06/16/win_10_ubuntu/">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a>])。grub 預設是以 Ubuntu 開機，若在選單畫面超過 10 秒沒有動作，預設直接進入 Ubuntu。對於主要是用 Windows 的人來說稍嫌不便，因為每次開機都要等選單出現，以免不小心進其他系統，這篇主要紀錄如何將預設系統改為 Windows。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="修改-grub"><a href="#修改-grub" class="headerlink" title="修改 grub"></a>修改 grub</h2><p>以下動作皆在 Ubuntu 中執行，先知道 Windows 啟動檔的位置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ cat /boot/grub/grub.cfg | grep windows</span><br><span class="line">menuentry <span class="string">&#x27;Windows Boot Manager (於 /dev/sdb2)&#x27;</span> --class windows --class os <span class="variable">$menuentry_id_option</span> <span class="string">&#x27;osprober-efi-264C-BB58&#x27;</span> &#123;</span><br></pre></td></tr></table></figure>
+<p>記住檔案位置 <code>&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 後，再開啟 <code>/ect/default/grub</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo gedit /etc/default/grub</span><br></pre></td></tr></table></figure>
+<p>修改 <code>GRUB_DEFAULT=0</code> 為 <code>GRUB_DEFAULT=&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 並儲存，注意不要少了單引號</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-%E6%9B%B4%E6%94%B9%E9%96%8B%E6%A9%9F%E7%B3%BB%E7%B5%B1%E9%81%B8%E5%96%AE%E7%9A%84%E9%A0%90%E8%A8%AD%E5%80%BC%2Fchange_setting.png?alt=media&amp;token=55bafa2f-b2ff-4fb6-94a1-7a81fc3e9107" alt="修改 GRUB_DEFAULT"><span class="image-caption">修改 GRUB_DEFAULT</span></p>
+<p>更新 grub 後重新開機，就可以發現預設選項落在 Windows 上囉！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo update-grub</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>18.04</tag>
+        <tag>10</tag>
+        <tag>menu</tag>
+        <tag>dual</tag>
+        <tag>system</tag>
+        <tag>option</tag>
+        <tag>boot</tag>
+        <tag>grub</tag>
       </tags>
   </entry>
   <entry>
