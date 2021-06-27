@@ -107,77 +107,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[C#] 在高 DPI 的螢幕上，有些應用程式內的字會模糊的原因以及解決方法！</title>
-    <url>/2021/06/11/cs_dpi/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>開啟 Visual Studio <code>C#</code> 的 Windows Form 應用程式來設計，一定曾經注意到雖然在 VS 裡面設計 Form 時，預覽的字是清晰的，結果 Compiler 之後跑出來的字是模糊的！以下圖幫各位回憶一下。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E5%9C%A8%E9%AB%98DPI%E7%9A%84%E8%9E%A2%E5%B9%95%E4%B8%8A%EF%BC%8C%E6%9C%89%E4%BA%9B%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E5%85%A7%E7%9A%84%E5%AD%97%E6%9C%83%E6%A8%A1%E7%B3%8A%E7%9A%84%E5%8E%9F%E5%9B%A0%E4%BB%A5%E5%8F%8A%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fblur_text_in_cs.png?alt=media&amp;token=08356925-327f-4387-a8ed-5f9815aeab62" alt="在 C# 視窗程式中模糊的字"><span class="image-caption">在 C# 視窗程式中模糊的字</span></p>
-<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這最主要原因是 DPI 太高的關係，但你可能會想說 DPI 高的話解析度就高呀，為什麼會 DPI 越高越模糊！先來聊聊一些單位的定義。</p>
-<h3 id="單位定義"><a href="#單位定義" class="headerlink" title="單位定義"></a>單位定義</h3><ul>
-<li><code>DPI</code>：是 dots per inch 的縮寫，即每英吋內的點數量，也叫做螢幕密度，通常一個點 dot 就是一個像素 pixel，所以越大 DPI 的螢幕，可以使用更多像素來顯示一張圖，因此能顯示的更精緻。</li>
-<li><code>pt</code>：文字大小的單位是 pt(point)，定義為 72 pt 為一英吋(<em>inch</em>)，但這是對於全型字來說，例如漢字(下圖)；如果是英文半型字，就要看各自的寬度了。<script type="math/tex; mode=display">72\ pt=1\ inch</script>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E5%9C%A8%E9%AB%98DPI%E7%9A%84%E8%9E%A2%E5%B9%95%E4%B8%8A%EF%BC%8C%E6%9C%89%E4%BA%9B%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E5%85%A7%E7%9A%84%E5%AD%97%E6%9C%83%E6%A8%A1%E7%B3%8A%E7%9A%84%E5%8E%9F%E5%9B%A0%E4%BB%A5%E5%8F%8A%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fpt_unit.png?alt=media&amp;token=c0f0fcf9-b8dd-45d1-a3d2-4ebf44ca0aac" alt="pt 與英吋的關係"><span class="image-caption">pt 與英吋的關係</span></li>
-</ul>
-<h3 id="原因說明"><a href="#原因說明" class="headerlink" title="原因說明"></a>原因說明</h3><p>現在就來回答問題吧！為什麼在高 DPI 的螢幕會顯示出這麼模糊的文字呢？魔鬼就藏在單位轉換裡面。</p>
-<p>程式有分為 <strong>DPI 感知</strong>與<strong>非 DPI 感知</strong>的應用程式，端看當初程式中是否有加入此功能，在早期的作業系統下螢幕還沒這麼高級，大多為 96 DPI，導致許多程式就沒考慮到現在的高 DPI 螢幕例如現在的 120、144、192 等，因此大部分舊應用程式都為非感知 DPI 的類型。</p>
-<p>到後來 Microsoft 發展出 <strong>DPI Virtualization</strong>，此技術運作模式大概是這樣的，當應用程式沒有先聲明它能支援多少 DPI 時，Windows 會先將它放進沙盒裡，在這裡面沙盒內是先將應用程式渲染成 96 DPI 解析度下的畫面，然後看實際上的解析度多少再進行<strong>縮放</strong>，也因為如此，非感知 DPI 的應用程式在高 DPI 的螢幕下會出現模糊的情況。</p>
-<p>現在先來進行單位換算：</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Environment</th>
-<th>Convert</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>96  DPI</td>
-<td>1.33 dots = 1 pt</td>
-</tr>
-<tr>
-<td>120 DPI</td>
-<td>1.67 dots = 1 pt</td>
-</tr>
-<tr>
-<td>144 DPI</td>
-<td>2 dots = 1 pt</td>
-</tr>
-<tr>
-<td>192 DPI</td>
-<td>2.67 dots = 1 pt</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>從上面表格來解讀，假設現在要顯示一個字，其大小為 1 pt，在各種解析度的螢幕上需要使用來顯示點數，例如 96 DPI 需要用 1.33 dots，其兩倍解析度的 192 DPI 就需要其兩倍的點數 2.67 dots 來表示。</p>
-<p>可以看得出來吧？當一張圖的解析度為 96 DPI，你需要放大兩倍才能在 192 DPI 的螢幕上顯示出一樣大小的畫面，但是圖片本身解析度是不會變高的！所以如果將其放大(點陣圖放大)的話必定會模糊。用講的很難想像，讓我用圖來說明。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E5%9C%A8%E9%AB%98DPI%E7%9A%84%E8%9E%A2%E5%B9%95%E4%B8%8A%EF%BC%8C%E6%9C%89%E4%BA%9B%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E5%85%A7%E7%9A%84%E5%AD%97%E6%9C%83%E6%A8%A1%E7%B3%8A%E7%9A%84%E5%8E%9F%E5%9B%A0%E4%BB%A5%E5%8F%8A%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fhigh_dpi_screen_blur_reson.png?alt=media&amp;token=aaa313cc-1a96-4923-bfc9-0573af79ef5d" alt="高解析度螢幕顯示文字會模糊的原因示意圖"><span class="image-caption">高解析度螢幕顯示文字會模糊的原因示意圖</span></p>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>到這裡已經知道為何高 DPI 的螢幕會影響到字體的顯示了，接下來就要說說如何讓 <code>C#</code> 設計出來的視窗字體不會模糊，先上程式碼再解釋</p>
-<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line">[<span class="meta">STAThread</span>]</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (Environment.OSVersion.Version.Major &gt;= <span class="number">6</span>)</span><br><span class="line">        SetProcessDPIAware();</span><br><span class="line">    Application.EnableVisualStyles();</span><br><span class="line">    Application.SetCompatibleTextRenderingDefault(<span class="literal">false</span>);</span><br><span class="line">    Application.Run(<span class="keyword">new</span> Form1());</span><br><span class="line">&#125;</span><br><span class="line">[<span class="meta">System.Runtime.InteropServices.DllImport(<span class="meta-string">&quot;user32.dll&quot;</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="built_in">bool</span> <span class="title">SetProcessDPIAware</span>(<span class="params"></span>)</span>;</span><br></pre></td></tr></table></figure>
-<p>原理很簡單，在 <code>Main()</code> 的附近加上 4、5、10、11 行，使程式為 DPI 感知即大功告成，結果如下</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E5%9C%A8%E9%AB%98DPI%E7%9A%84%E8%9E%A2%E5%B9%95%E4%B8%8A%EF%BC%8C%E6%9C%89%E4%BA%9B%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E5%85%A7%E7%9A%84%E5%AD%97%E6%9C%83%E6%A8%A1%E7%B3%8A%E7%9A%84%E5%8E%9F%E5%9B%A0%E4%BB%A5%E5%8F%8A%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fplain_text_in_cs.png?alt=media&amp;token=7467c99e-411a-426d-abb2-d0d67cc15af8" alt="DPI 感知程式顯示出清晰文字"><span class="image-caption">DPI 感知程式顯示出清晰文字</span></p>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ol>
-<li><p><a href="https://www.telerik.com/blogs/winforms-scaling-at-large-dpi-settings-is-it-even-possible-">WinForms Scaling at Large DPI Settings–Is It Even Possible?</a></p>
-</li>
-<li><p><a href="https://kknews.cc/zh-tw/digital/x56n4g.html">Windows微信DPI適配</a></p>
-</li>
-<li><p><a href="http://crsouza.com/2015/04/13/how-to-fix-blurry-windows-forms-windows-in-high-dpi-settings/">How to fix blurry Windows Forms Windows in high-dpi settings</a></p>
-</li>
-<li><p><a href="https://docs.microsoft.com/zh-tw/windows/win32/api/winnt/ns-winnt-osversioninfoa">OSVERSIONINFOA structure</a></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>csharp</tag>
-        <tag>dpi</tag>
-        <tag>pt</tag>
-        <tag>blurry</tag>
-        <tag>windows forms</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
     <url>/2021/06/15/cs_asp_net_core_3_1/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
@@ -278,6 +207,77 @@
       </tags>
   </entry>
   <entry>
+    <title>[C#] 在高 DPI 的螢幕上，有些應用程式內的字會模糊的原因以及解決方法！</title>
+    <url>/2021/06/11/cs_dpi/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>開啟 Visual Studio <code>C#</code> 的 Windows Form 應用程式來設計，一定曾經注意到雖然在 VS 裡面設計 Form 時，預覽的字是清晰的，結果 Compiler 之後跑出來的字是模糊的！以下圖幫各位回憶一下。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E5%9C%A8%E9%AB%98DPI%E7%9A%84%E8%9E%A2%E5%B9%95%E4%B8%8A%EF%BC%8C%E6%9C%89%E4%BA%9B%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E5%85%A7%E7%9A%84%E5%AD%97%E6%9C%83%E6%A8%A1%E7%B3%8A%E7%9A%84%E5%8E%9F%E5%9B%A0%E4%BB%A5%E5%8F%8A%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fblur_text_in_cs.png?alt=media&amp;token=08356925-327f-4387-a8ed-5f9815aeab62" alt="在 C# 視窗程式中模糊的字"><span class="image-caption">在 C# 視窗程式中模糊的字</span></p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這最主要原因是 DPI 太高的關係，但你可能會想說 DPI 高的話解析度就高呀，為什麼會 DPI 越高越模糊！先來聊聊一些單位的定義。</p>
+<h3 id="單位定義"><a href="#單位定義" class="headerlink" title="單位定義"></a>單位定義</h3><ul>
+<li><code>DPI</code>：是 dots per inch 的縮寫，即每英吋內的點數量，也叫做螢幕密度，通常一個點 dot 就是一個像素 pixel，所以越大 DPI 的螢幕，可以使用更多像素來顯示一張圖，因此能顯示的更精緻。</li>
+<li><code>pt</code>：文字大小的單位是 pt(point)，定義為 72 pt 為一英吋(<em>inch</em>)，但這是對於全型字來說，例如漢字(下圖)；如果是英文半型字，就要看各自的寬度了。<script type="math/tex; mode=display">72\ pt=1\ inch</script>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E5%9C%A8%E9%AB%98DPI%E7%9A%84%E8%9E%A2%E5%B9%95%E4%B8%8A%EF%BC%8C%E6%9C%89%E4%BA%9B%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E5%85%A7%E7%9A%84%E5%AD%97%E6%9C%83%E6%A8%A1%E7%B3%8A%E7%9A%84%E5%8E%9F%E5%9B%A0%E4%BB%A5%E5%8F%8A%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fpt_unit.png?alt=media&amp;token=c0f0fcf9-b8dd-45d1-a3d2-4ebf44ca0aac" alt="pt 與英吋的關係"><span class="image-caption">pt 與英吋的關係</span></li>
+</ul>
+<h3 id="原因說明"><a href="#原因說明" class="headerlink" title="原因說明"></a>原因說明</h3><p>現在就來回答問題吧！為什麼在高 DPI 的螢幕會顯示出這麼模糊的文字呢？魔鬼就藏在單位轉換裡面。</p>
+<p>程式有分為 <strong>DPI 感知</strong>與<strong>非 DPI 感知</strong>的應用程式，端看當初程式中是否有加入此功能，在早期的作業系統下螢幕還沒這麼高級，大多為 96 DPI，導致許多程式就沒考慮到現在的高 DPI 螢幕例如現在的 120、144、192 等，因此大部分舊應用程式都為非感知 DPI 的類型。</p>
+<p>到後來 Microsoft 發展出 <strong>DPI Virtualization</strong>，此技術運作模式大概是這樣的，當應用程式沒有先聲明它能支援多少 DPI 時，Windows 會先將它放進沙盒裡，在這裡面沙盒內是先將應用程式渲染成 96 DPI 解析度下的畫面，然後看實際上的解析度多少再進行<strong>縮放</strong>，也因為如此，非感知 DPI 的應用程式在高 DPI 的螢幕下會出現模糊的情況。</p>
+<p>現在先來進行單位換算：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Environment</th>
+<th>Convert</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>96  DPI</td>
+<td>1.33 dots = 1 pt</td>
+</tr>
+<tr>
+<td>120 DPI</td>
+<td>1.67 dots = 1 pt</td>
+</tr>
+<tr>
+<td>144 DPI</td>
+<td>2 dots = 1 pt</td>
+</tr>
+<tr>
+<td>192 DPI</td>
+<td>2.67 dots = 1 pt</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>從上面表格來解讀，假設現在要顯示一個字，其大小為 1 pt，在各種解析度的螢幕上需要使用來顯示點數，例如 96 DPI 需要用 1.33 dots，其兩倍解析度的 192 DPI 就需要其兩倍的點數 2.67 dots 來表示。</p>
+<p>可以看得出來吧？當一張圖的解析度為 96 DPI，你需要放大兩倍才能在 192 DPI 的螢幕上顯示出一樣大小的畫面，但是圖片本身解析度是不會變高的！所以如果將其放大(點陣圖放大)的話必定會模糊。用講的很難想像，讓我用圖來說明。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E5%9C%A8%E9%AB%98DPI%E7%9A%84%E8%9E%A2%E5%B9%95%E4%B8%8A%EF%BC%8C%E6%9C%89%E4%BA%9B%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E5%85%A7%E7%9A%84%E5%AD%97%E6%9C%83%E6%A8%A1%E7%B3%8A%E7%9A%84%E5%8E%9F%E5%9B%A0%E4%BB%A5%E5%8F%8A%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fhigh_dpi_screen_blur_reson.png?alt=media&amp;token=aaa313cc-1a96-4923-bfc9-0573af79ef5d" alt="高解析度螢幕顯示文字會模糊的原因示意圖"><span class="image-caption">高解析度螢幕顯示文字會模糊的原因示意圖</span></p>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>到這裡已經知道為何高 DPI 的螢幕會影響到字體的顯示了，接下來就要說說如何讓 <code>C#</code> 設計出來的視窗字體不會模糊，先上程式碼再解釋</p>
+<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line">[<span class="meta">STAThread</span>]</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (Environment.OSVersion.Version.Major &gt;= <span class="number">6</span>)</span><br><span class="line">        SetProcessDPIAware();</span><br><span class="line">    Application.EnableVisualStyles();</span><br><span class="line">    Application.SetCompatibleTextRenderingDefault(<span class="literal">false</span>);</span><br><span class="line">    Application.Run(<span class="keyword">new</span> Form1());</span><br><span class="line">&#125;</span><br><span class="line">[<span class="meta">System.Runtime.InteropServices.DllImport(<span class="meta-string">&quot;user32.dll&quot;</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> <span class="built_in">bool</span> <span class="title">SetProcessDPIAware</span>(<span class="params"></span>)</span>;</span><br></pre></td></tr></table></figure>
+<p>原理很簡單，在 <code>Main()</code> 的附近加上 4、5、10、11 行，使程式為 DPI 感知即大功告成，結果如下</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E5%9C%A8%E9%AB%98DPI%E7%9A%84%E8%9E%A2%E5%B9%95%E4%B8%8A%EF%BC%8C%E6%9C%89%E4%BA%9B%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E5%85%A7%E7%9A%84%E5%AD%97%E6%9C%83%E6%A8%A1%E7%B3%8A%E7%9A%84%E5%8E%9F%E5%9B%A0%E4%BB%A5%E5%8F%8A%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fplain_text_in_cs.png?alt=media&amp;token=7467c99e-411a-426d-abb2-d0d67cc15af8" alt="DPI 感知程式顯示出清晰文字"><span class="image-caption">DPI 感知程式顯示出清晰文字</span></p>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ol>
+<li><p><a href="https://www.telerik.com/blogs/winforms-scaling-at-large-dpi-settings-is-it-even-possible-">WinForms Scaling at Large DPI Settings–Is It Even Possible?</a></p>
+</li>
+<li><p><a href="https://kknews.cc/zh-tw/digital/x56n4g.html">Windows微信DPI適配</a></p>
+</li>
+<li><p><a href="http://crsouza.com/2015/04/13/how-to-fix-blurry-windows-forms-windows-in-high-dpi-settings/">How to fix blurry Windows Forms Windows in high-dpi settings</a></p>
+</li>
+<li><p><a href="https://docs.microsoft.com/zh-tw/windows/win32/api/winnt/ns-winnt-osversioninfoa">OSVERSIONINFOA structure</a></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>csharp</tag>
+        <tag>dpi</tag>
+        <tag>pt</tag>
+        <tag>blurry</tag>
+        <tag>windows forms</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</title>
     <url>/2021/06/15/dll_vs_2017_dllmain_dll/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 VS 2017 寫一個 dll，其包含 <code>DllMain</code> 與一個 <code>dllexport</code> 函數。若要知道如何在其它的 C++ 專案中調用在 dll 中的函數，請參考 <a href="/2021/06/15/dll_cpp_dll/">[DLL] 在 C++ 中調用 dll 的函式</a>。</p>
@@ -308,41 +308,6 @@
         <tag>dll</tag>
         <tag>2017</tag>
         <tag>dllmain</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[DLL] 在 C++ 中調用 dll 的函式</title>
-    <url>/2021/06/15/dll_cpp_dll/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 <code>C++</code> 中，使用 <code>LoadLibraryA</code>/<code>LoadLibraryW</code> 調用 dll。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio 2017</li>
-</ul>
-<h2 id="準備一個-DLL"><a href="#準備一個-DLL" class="headerlink" title="準備一個 DLL"></a>準備一個 DLL</h2><p>先自己寫一個 dll，詳細步驟說明請參考：<a href="/2021/06/15/dll_vs_2017_dllmain_dll/">[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</a>。</p>
-<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fcreate_project.png?alt=media&amp;token=fbe282e9-5cb1-4090-a01e-817bc244411e" alt="新建專案"><span class="image-caption">新建專案</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_project_type.png?alt=media&amp;token=c4a871cc-40d8-49d3-ac26-2857fb355c1d" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
-<p>Application type 選 <code>Console Application(.exe)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>&#123;project_name&#125;.cpp</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_exe.png?alt=media&amp;token=a3933b05-a276-4d7a-a0a0-7129bb6912a5" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
-<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>&#123;project_name&#125;.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-load-in-cpp">GitHub</a>)</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*voidFun)</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HMODULE hDll = <span class="built_in">LoadLibraryA</span>(<span class="string">&quot;dllMainAndFun.dll&quot;</span>);</span><br><span class="line"></span><br><span class="line">    voidFun pHelloWorldFun = (<span class="built_in"><span class="keyword">void</span></span>(*)())<span class="built_in">GetProcAddress</span>(hDll, <span class="string">&quot;helloWorldFun&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">pHelloWorldFun</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>將要匯入的 dll 放到 Debug 資料夾下，否則 <code>LoadLibraryA</code> 需要給 dll 的絕對路徑，因為 Debug 模式編譯出來的執行檔都存在此處。</p>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>按下 F5，開始 Debug 模式，看到彈出視窗 (<code>MessageBoxA</code>/<code>MessageBoxW</code>)，就代表載入成功了！顯示順序應為</p>
-<ol>
-<li>程序建立時被呼叫</li>
-<li>此函式呼叫成功</li>
-<li>程序退出時被呼叫</li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>cpp</tag>
-        <tag>dll</tag>
-        <tag>invoke</tag>
-        <tag>loadlibrarya</tag>
-        <tag>loadlibraryw</tag>
       </tags>
   </entry>
   <entry>
@@ -448,67 +413,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[FTP] CentOS 7 安裝 vsftpd 省去實體與虛擬機之間傳輸設定</title>
-    <url>/2021/06/19/ftp_centos_vsftpd/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在開發時免不了會使用到虛擬機的可能性，而在虛擬機與主機之間做檔案轉移時總會遇到奇奇怪怪的問題，先不論是否是虛擬機的問題，但總是會再這無關緊要的問題上浪費掉許多寶貴時間，因此研究如何架設 FTP，讓主機直接上傳檔案到 FTP 伺服器，再從虛擬機中下載，避免檔案轉移遇到的麻煩！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 7.9</li>
-</ul>
-<h2 id="安裝-vsftpd"><a href="#安裝-vsftpd" class="headerlink" title="安裝 vsftpd"></a>安裝 vsftpd</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y vsftpd</span><br></pre></td></tr></table></figure>
-<p>修改設定檔 (<code>/etc/vsftpd/vsftpd.conf</code>)，因為目標只是要讓 VM 可以讀取我們 Host 想傳的檔案，因此只需要將 FTP server 掛在區域網路內，這樣匿名登入是可以接受的</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 修改以下設定值</span></span><br><span class="line">anonymous_enable=YES    <span class="comment"># 允許匿名登入</span></span><br><span class="line">local_enable=NO         <span class="comment"># 不允許實體使用者登入</span></span><br><span class="line">write_enable=YES        <span class="comment"># 可寫入</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 新增以下設定值</span></span><br><span class="line">pasv_enable=YES     <span class="comment"># 使用被動式連線，避免客戶端還需另外設定防火牆</span></span><br><span class="line">pasv_min_port=60101 <span class="comment"># 被動式連線的 FTP Data Port 設定為 60101 ~ 60110</span></span><br><span class="line">pasv_max_port=60110</span><br><span class="line"></span><br><span class="line">no_anon_password=YES        <span class="comment"># 匿名使用者不用輸入密碼</span></span><br><span class="line"></span><br><span class="line">anon_other_write_enable=YES <span class="comment"># 匿名使用者權限設定</span></span><br><span class="line">anon_mkdir_write_enable=YES</span><br><span class="line">anon_upload_enable=YES</span><br><span class="line"></span><br><span class="line">anon_umask=022      <span class="comment"># 匿名使用者上傳的檔案的預設權限</span></span><br><span class="line">                    <span class="comment"># user 與 other 需有 r 權限才可以被匿名使用者下載</span></span><br><span class="line">                    <span class="comment"># 此設定值預設為 077</span></span><br></pre></td></tr></table></figure>
-<p>啟用 vsftpd</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> vsftpd</span><br><span class="line">[user@localhost ~]$ sudo systemctl start vsftpd</span><br></pre></td></tr></table></figure>
-<h2 id="設定防火牆"><a href="#設定防火牆" class="headerlink" title="設定防火牆"></a>設定防火牆</h2><p>在 CentOS 中幾乎所有的 Port 預設對外服務都是關閉的，無法由外部連入，因此需要另外設定才能開放給其他主機連線，FTP 有兩種 Port 需要設定</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=21/tcp           <span class="comment"># Command Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=60101-60110/tcp  <span class="comment"># Data Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
-<h2 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_connect_all_unreserved=1 <span class="comment"># 設定這個才能使用 ls/dir 指令，否則出現 425 錯誤</span></span><br><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_full_access=1 <span class="comment"># 設定這個才能上傳、修改檔名、刪除</span></span><br></pre></td></tr></table></figure>
-<h2 id="創建資料夾"><a href="#創建資料夾" class="headerlink" title="創建資料夾"></a>創建資料夾</h2><p>以 <code>anonymous</code> 登入後是以 ftp 角色進行操作的，因此需另外創建匿名使用者可以上傳與下載檔案的資料夾</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /var/ftp/upload_anonymous</span><br><span class="line">[user@localhost ~]$ sudo chown ftp:ftp /var/ftp/upload_anonymous/</span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>至此萬事俱全，可以開始使用 ftp 了，匿名使用者被限制只能在 <code>upload_anonymous</code> 目錄中上傳或下載檔案！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>centos</tag>
-        <tag>file</tag>
-        <tag>7.9</tag>
-        <tag>vsftpd</tag>
-        <tag>ftp</tag>
-        <tag>425</tag>
-        <tag>vm</tag>
-        <tag>copy</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Git] git remote add origin 中 origin 的意思解析</title>
-    <url>/2021/06/13/git_git_remote_add_origin/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>Git</code> 真的是對程式開發者的一個大福音，在知道 <code>Git</code> 之前常常在實驗室用桌電開發，回宿舍前上傳雲端或隨身碟，然後回到宿再抓下來繼續開發，久了之後檔案多了，非常難管理，也很難找到之前到底修改了哪裡。使用 <code>Git</code> 之後，光是管理程式碼的部份就省很多時間。</p>
-<p>其中一個很常下的指令是 <code>git remote add origin</code>，它很基本以至於很少有文章介紹它的意思，因此在自己的好奇心之下，驅使自己理解這個指令的含意。</p>
-<h2 id="origin-意思解析"><a href="#origin-意思解析" class="headerlink" title="origin 意思解析"></a>origin 意思解析</h2><p>當想要從 Local 端 <code>push</code> 資料上 <code>Git</code> 管理網 (例如 GitHub、GitLab ，統稱為 <code>remote</code> 端) 時，會先在網頁上先建一個 Repository，然後跟著網頁的指示做。以下以個人的 <a href="https://github.com/weirenxue">GitHub</a> 為例，創建一個 Repository 名稱為 zcu111-EMIO，且「不」打勾 &quot;Initialize this repository with a README&quot;，創建好之後 GitHub 會提示以下訊息讓我們能順利上傳程式碼</p>
-<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">…or push an existing repository from the command line</span><br><span class="line"></span><br><span class="line">git remote add origin https://github.com/weirenxue/zcu111-EMIO.git</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
-<p>依照它的提示執行這些指令後，就能把在地端的程式碼 <code>push</code> 上去，這時再用 <code>git remote -v</code> 來看看 <code>remote</code> 資料</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
-<p>可以發現 <code>origin</code> 就只是那 <code>remote git</code> 的代名詞！為了讓使用者不必每次對 <code>remote</code> 操作都要打一長串網址。</p>
-<h2 id="應用"><a href="#應用" class="headerlink" title="應用"></a>應用</h2><p>理解意思之後，就能自己做變化！我們可以把 <code>origin</code> 改為別的名稱</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote rename origin origin-github  <span class="comment"># 改名</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
-<p>更甚者，如果有兩個 <code>Git</code> 管理網要 <code>push</code> 的話 (例如：公司專用/個人習慣用)，可以再加入一個 <code>remote</code>！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote add origin-company http://192.168.0.123/fake/zcu111-EMIO.git</span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
-<p><code>push</code> 的方法都沒變，只是將原本是 origin 的地方改為對應的代名詞</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git push origin-github master  <span class="comment"># 到 GitHub</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git push origin-company master <span class="comment"># 到公司</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-        <tag>remote</tag>
-        <tag>origin</tag>
-        <tag>push</tag>
-        <tag>upstream</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Firewall] CentOS 開啟指定的 Port 或服務</title>
     <url>/2021/06/18/firewall_centos_port/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 CentOS 中有多種防火牆 (iptables、firewalld 等)，其中 iptables 是為黑名單規則 (原則允許、例外禁止)，而 firewalld 為白名單規則 (原則禁止、例外允許)。</p>
@@ -552,29 +456,66 @@
       </tags>
   </entry>
   <entry>
-    <title>[Hyper-V] 讓 Windows 的硬碟可以超過 16 TB</title>
-    <url>/2021/06/15/hyper_v_windows_16_tb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 檔案系統預設的 Cluster Size 為 4KB，進一步導致分割區最多只能到 16 TB，當要延伸磁區且總容量會超過 16 TB 時，就會出現「磁碟區無法延伸 因為叢集數目將超過檔案系統支援的最大叢集數目」的提示視窗。</p>
-<p>若想要讓 C 槽可到 16 TB 以上的容量，需要在安裝 Windows 時就先設定 (若沒設定但又需要延伸大容量硬碟的話，就重灌吧 QQ)！這篇文章便是紀錄如何設定 C 槽預設能使用更大容量的硬碟！</p>
-<h2 id="查看所需-Cluster-Size"><a href="#查看所需-Cluster-Size" class="headerlink" title="查看所需 Cluster Size"></a>查看所需 Cluster Size</h2><p>請先參考 <a href="https://support.microsoft.com/zh-tw/topic/%E9%A0%90%E8%A8%AD-ntfs-fat-%E5%92%8C-exfat-%E7%9A%84%E5%8F%A2%E9%9B%86%E5%A4%A7%E5%B0%8F-9772e6f1-e31a-00d7-e18f-73169155af95">預設 NTFS、 FAT，和 exFAT 的叢集大小。</a> 中的表格，找出自己需要的 Cluster Size ，例如我是需要將 OS 灌在 Hyper-V 之中，目前 (2021/01/29) 官方所建議的最大容量為 64 TB ，因此查表得知對應的 Cluster Size 應為 16 KB！記住這個資訊下面步驟會用到。</p>
-<h2 id="修改預設-Cluster-Size"><a href="#修改預設-Cluster-Size" class="headerlink" title="修改預設 Cluster Size"></a>修改預設 Cluster Size</h2><p>參考影片設定步驟，會用到的指令及順序如下，其中的 <code>16K</code> 請改為上一步所查找出來的結果</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART</span><br><span class="line">LIST DISK</span><br><span class="line">SELECT DISK 0</span><br><span class="line">LIST PARTITION</span><br><span class="line">SELECT PARTITION 4</span><br><span class="line">FORMAT QUICK UNIT=16K</span><br><span class="line">EXIT </span><br><span class="line">SETUP</span><br></pre></td></tr></table></figure>
-<!-- markdownlint-disable MD033 -->
-<iframe width="560" height="315" src="https://www.youtube.com/embed/KmW_b57L2Ao" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-<!-- markdownlint-restore MD033 -->
-<p>按照影片步驟做完後，該 VM 的 C 槽的 Cluster Size 就為 16 KB 囉！讓 C 槽可延伸最多到 64 TB 的容量！</p>
+    <title>[Git] git remote add origin 中 origin 的意思解析</title>
+    <url>/2021/06/13/git_git_remote_add_origin/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>Git</code> 真的是對程式開發者的一個大福音，在知道 <code>Git</code> 之前常常在實驗室用桌電開發，回宿舍前上傳雲端或隨身碟，然後回到宿再抓下來繼續開發，久了之後檔案多了，非常難管理，也很難找到之前到底修改了哪裡。使用 <code>Git</code> 之後，光是管理程式碼的部份就省很多時間。</p>
+<p>其中一個很常下的指令是 <code>git remote add origin</code>，它很基本以至於很少有文章介紹它的意思，因此在自己的好奇心之下，驅使自己理解這個指令的含意。</p>
+<h2 id="origin-意思解析"><a href="#origin-意思解析" class="headerlink" title="origin 意思解析"></a>origin 意思解析</h2><p>當想要從 Local 端 <code>push</code> 資料上 <code>Git</code> 管理網 (例如 GitHub、GitLab ，統稱為 <code>remote</code> 端) 時，會先在網頁上先建一個 Repository，然後跟著網頁的指示做。以下以個人的 <a href="https://github.com/weirenxue">GitHub</a> 為例，創建一個 Repository 名稱為 zcu111-EMIO，且「不」打勾 &quot;Initialize this repository with a README&quot;，創建好之後 GitHub 會提示以下訊息讓我們能順利上傳程式碼</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">…or push an existing repository from the command line</span><br><span class="line"></span><br><span class="line">git remote add origin https://github.com/weirenxue/zcu111-EMIO.git</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+<p>依照它的提示執行這些指令後，就能把在地端的程式碼 <code>push</code> 上去，這時再用 <code>git remote -v</code> 來看看 <code>remote</code> 資料</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
+<p>可以發現 <code>origin</code> 就只是那 <code>remote git</code> 的代名詞！為了讓使用者不必每次對 <code>remote</code> 操作都要打一長串網址。</p>
+<h2 id="應用"><a href="#應用" class="headerlink" title="應用"></a>應用</h2><p>理解意思之後，就能自己做變化！我們可以把 <code>origin</code> 改為別的名稱</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote rename origin origin-github  <span class="comment"># 改名</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
+<p>更甚者，如果有兩個 <code>Git</code> 管理網要 <code>push</code> 的話 (例如：公司專用/個人習慣用)，可以再加入一個 <code>remote</code>！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote add origin-company http://192.168.0.123/fake/zcu111-EMIO.git</span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
+<p><code>push</code> 的方法都沒變，只是將原本是 origin 的地方改為對應的代名詞</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git push origin-github master  <span class="comment"># 到 GitHub</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git push origin-company master <span class="comment"># 到公司</span></span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>windows</tag>
-        <tag>16 tb</tag>
-        <tag>hyperv</tag>
-        <tag>drive</tag>
-        <tag>cluster</tag>
-        <tag>size</tag>
+        <tag>git</tag>
+        <tag>remote</tag>
+        <tag>origin</tag>
+        <tag>push</tag>
+        <tag>upstream</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[DLL] 在 C++ 中調用 dll 的函式</title>
+    <url>/2021/06/15/dll_cpp_dll/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 <code>C++</code> 中，使用 <code>LoadLibraryA</code>/<code>LoadLibraryW</code> 調用 dll。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio 2017</li>
+</ul>
+<h2 id="準備一個-DLL"><a href="#準備一個-DLL" class="headerlink" title="準備一個 DLL"></a>準備一個 DLL</h2><p>先自己寫一個 dll，詳細步驟說明請參考：<a href="/2021/06/15/dll_vs_2017_dllmain_dll/">[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</a>。</p>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fcreate_project.png?alt=media&amp;token=fbe282e9-5cb1-4090-a01e-817bc244411e" alt="新建專案"><span class="image-caption">新建專案</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_project_type.png?alt=media&amp;token=c4a871cc-40d8-49d3-ac26-2857fb355c1d" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
+<p>Application type 選 <code>Console Application(.exe)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>&#123;project_name&#125;.cpp</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_exe.png?alt=media&amp;token=a3933b05-a276-4d7a-a0a0-7129bb6912a5" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>&#123;project_name&#125;.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-load-in-cpp">GitHub</a>)</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*voidFun)</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HMODULE hDll = <span class="built_in">LoadLibraryA</span>(<span class="string">&quot;dllMainAndFun.dll&quot;</span>);</span><br><span class="line"></span><br><span class="line">    voidFun pHelloWorldFun = (<span class="built_in"><span class="keyword">void</span></span>(*)())<span class="built_in">GetProcAddress</span>(hDll, <span class="string">&quot;helloWorldFun&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">pHelloWorldFun</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>將要匯入的 dll 放到 Debug 資料夾下，否則 <code>LoadLibraryA</code> 需要給 dll 的絕對路徑，因為 Debug 模式編譯出來的執行檔都存在此處。</p>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>按下 F5，開始 Debug 模式，看到彈出視窗 (<code>MessageBoxA</code>/<code>MessageBoxW</code>)，就代表載入成功了！顯示順序應為</p>
+<ol>
+<li>程序建立時被呼叫</li>
+<li>此函式呼叫成功</li>
+<li>程序退出時被呼叫</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>cpp</tag>
+        <tag>dll</tag>
+        <tag>invoke</tag>
+        <tag>loadlibrarya</tag>
+        <tag>loadlibraryw</tag>
       </tags>
   </entry>
   <entry>
@@ -637,6 +578,98 @@
       </tags>
   </entry>
   <entry>
+    <title>[FTP] CentOS 7 安裝 vsftpd 省去實體與虛擬機之間傳輸設定</title>
+    <url>/2021/06/19/ftp_centos_vsftpd/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在開發時免不了會使用到虛擬機的可能性，而在虛擬機與主機之間做檔案轉移時總會遇到奇奇怪怪的問題，先不論是否是虛擬機的問題，但總是會再這無關緊要的問題上浪費掉許多寶貴時間，因此研究如何架設 FTP，讓主機直接上傳檔案到 FTP 伺服器，再從虛擬機中下載，避免檔案轉移遇到的麻煩！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 7.9</li>
+</ul>
+<h2 id="安裝-vsftpd"><a href="#安裝-vsftpd" class="headerlink" title="安裝 vsftpd"></a>安裝 vsftpd</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y vsftpd</span><br></pre></td></tr></table></figure>
+<p>修改設定檔 (<code>/etc/vsftpd/vsftpd.conf</code>)，因為目標只是要讓 VM 可以讀取我們 Host 想傳的檔案，因此只需要將 FTP server 掛在區域網路內，這樣匿名登入是可以接受的</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 修改以下設定值</span></span><br><span class="line">anonymous_enable=YES    <span class="comment"># 允許匿名登入</span></span><br><span class="line">local_enable=NO         <span class="comment"># 不允許實體使用者登入</span></span><br><span class="line">write_enable=YES        <span class="comment"># 可寫入</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 新增以下設定值</span></span><br><span class="line">pasv_enable=YES     <span class="comment"># 使用被動式連線，避免客戶端還需另外設定防火牆</span></span><br><span class="line">pasv_min_port=60101 <span class="comment"># 被動式連線的 FTP Data Port 設定為 60101 ~ 60110</span></span><br><span class="line">pasv_max_port=60110</span><br><span class="line"></span><br><span class="line">no_anon_password=YES        <span class="comment"># 匿名使用者不用輸入密碼</span></span><br><span class="line"></span><br><span class="line">anon_other_write_enable=YES <span class="comment"># 匿名使用者權限設定</span></span><br><span class="line">anon_mkdir_write_enable=YES</span><br><span class="line">anon_upload_enable=YES</span><br><span class="line"></span><br><span class="line">anon_umask=022      <span class="comment"># 匿名使用者上傳的檔案的預設權限</span></span><br><span class="line">                    <span class="comment"># user 與 other 需有 r 權限才可以被匿名使用者下載</span></span><br><span class="line">                    <span class="comment"># 此設定值預設為 077</span></span><br></pre></td></tr></table></figure>
+<p>啟用 vsftpd</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> vsftpd</span><br><span class="line">[user@localhost ~]$ sudo systemctl start vsftpd</span><br></pre></td></tr></table></figure>
+<h2 id="設定防火牆"><a href="#設定防火牆" class="headerlink" title="設定防火牆"></a>設定防火牆</h2><p>在 CentOS 中幾乎所有的 Port 預設對外服務都是關閉的，無法由外部連入，因此需要另外設定才能開放給其他主機連線，FTP 有兩種 Port 需要設定</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=21/tcp           <span class="comment"># Command Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=60101-60110/tcp  <span class="comment"># Data Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<h2 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_connect_all_unreserved=1 <span class="comment"># 設定這個才能使用 ls/dir 指令，否則出現 425 錯誤</span></span><br><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_full_access=1 <span class="comment"># 設定這個才能上傳、修改檔名、刪除</span></span><br></pre></td></tr></table></figure>
+<h2 id="創建資料夾"><a href="#創建資料夾" class="headerlink" title="創建資料夾"></a>創建資料夾</h2><p>以 <code>anonymous</code> 登入後是以 ftp 角色進行操作的，因此需另外創建匿名使用者可以上傳與下載檔案的資料夾</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /var/ftp/upload_anonymous</span><br><span class="line">[user@localhost ~]$ sudo chown ftp:ftp /var/ftp/upload_anonymous/</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>至此萬事俱全，可以開始使用 ftp 了，匿名使用者被限制只能在 <code>upload_anonymous</code> 目錄中上傳或下載檔案！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>centos</tag>
+        <tag>file</tag>
+        <tag>7.9</tag>
+        <tag>vsftpd</tag>
+        <tag>ftp</tag>
+        <tag>425</tag>
+        <tag>vm</tag>
+        <tag>copy</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
+    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>IIS 10.0</li>
+</ul>
+<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>server</tag>
+        <tag>header</tag>
+        <tag>windows</tag>
+        <tag>iis</tag>
+        <tag>x powered by</tag>
+        <tag>x aspnet version</tag>
+        <tag>hide</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[IME] 在 Ubuntu 安裝嘸蝦米等輸入法</title>
+    <url>/2021/06/17/ime_ubuntu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 預設中的輸入法為 IBus 框架，除 IBus 外還有很多如 gcin、fcitx 等不同的輸入法框架，若想要使用如嘸 (ㄈㄨˇ) 蝦米等輸入法的話就需要使用有支援的框架，這篇文章主要紀錄如何安裝嘸蝦米輸入法與酷音輸入法。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="安裝輸入法"><a href="#安裝輸入法" class="headerlink" title="安裝輸入法"></a>安裝輸入法</h2><p>我是選擇使用 fcitx (Free Chinese Input Tool for X) 框架新增輸入法。</p>
+<p>首先先安裝該框架，在安裝需要的輸入法</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install fcitx                 <span class="comment"># fcitx 框架安裝</span></span><br><span class="line">user@pc:~$ sudo apt-get install fcitx-table-boshiamy  <span class="comment"># 嘸蝦米碼表</span></span><br><span class="line">user@pc:~$ sudo apt-get install fcitx-chewing         <span class="comment"># 酷音</span></span><br></pre></td></tr></table></figure>
+<h2 id="系統設定"><a href="#系統設定" class="headerlink" title="系統設定"></a>系統設定</h2><p>在 Languague Support 做設定，將輸入法系統改為 fcitx，重新開機後在畫面右上方可以看到 fcitx 框架的圖示，若原本是用 IBus，IBus 圖示依舊會存在 (參考：<a href="/2021/06/17/ime_ibus/">[IME] 有其他輸入法框架後移除 IBus 圖示</a>)。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E5%9C%A8-Ubuntu-%E5%AE%89%E8%A3%9D%E5%98%B8%E8%9D%A6%E7%B1%B3%E7%AD%89%E8%BC%B8%E5%85%A5%E6%B3%95%2Fchange_ime.png?alt=media&amp;token=9bc6f6db-41b9-417e-ab0f-fb1bc249c097" alt="設定輸入法系統"><span class="image-caption">設定輸入法系統</span></p>
+<p>點擊 fcitx 圖示 -&gt; Configure，若有看到嘸蝦米 (Boshiamy) 等自己安裝的輸入法，就代表安裝完成，可以開始使用了。若沒有看到，可點擊左下角的「＋」按鈕，在搜尋框內輸入 Chewing 來新增。若很確定有安裝輸入法但找不到的話，試著把「Only Show Current Language」取消勾選，就會有了</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E5%9C%A8-Ubuntu-%E5%AE%89%E8%A3%9D%E5%98%B8%E8%9D%A6%E7%B1%B3%E7%AD%89%E8%BC%B8%E5%85%A5%E6%B3%95%2Fadd_ime.png?alt=media&amp;token=14b764f6-c8e6-44cc-927a-e9dbb3d27152" alt="fcitx 介面"><span class="image-caption">fcitx 介面</span></p>
+<h2 id="貼心小提醒"><a href="#貼心小提醒" class="headerlink" title="貼心小提醒"></a>貼心小提醒</h2><p>嘸蝦米的預設通常是簡體中文，若要換成繁體中文的話可按組合鍵「Ctrl + Shift + F」做切換。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>ibus</tag>
+        <tag>gcin</tag>
+        <tag>fcitx</tag>
+        <tag>boshiamy</tag>
+        <tag>chewing</tag>
+        <tag>ime</tag>
+        <tag>18.04</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Jupyter] 改變 Jupyter notebook 預設路徑與瀏覽器</title>
     <url>/2021/06/12/python_jupyter/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Jupyter notebook 是一種很方便開發 <code>Python</code> 程式的軟體，可以一步一步地來執行 Python，近年使用率也逐步提高。而我也是使用 Jupyter notebook 的愛用者，最一開始會遇到幾個問題，就是預設的瀏覽器為什麼是 Edge！要怎麼改？再來是預設路徑要怎麼改到我想放 <code>Python</code> 檔案的地方？</p>
@@ -688,6 +721,32 @@
       </tags>
   </entry>
   <entry>
+    <title>[Hyper-V] 讓 Windows 的硬碟可以超過 16 TB</title>
+    <url>/2021/06/15/hyper_v_windows_16_tb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 檔案系統預設的 Cluster Size 為 4KB，進一步導致分割區最多只能到 16 TB，當要延伸磁區且總容量會超過 16 TB 時，就會出現「磁碟區無法延伸 因為叢集數目將超過檔案系統支援的最大叢集數目」的提示視窗。</p>
+<p>若想要讓 C 槽可到 16 TB 以上的容量，需要在安裝 Windows 時就先設定 (若沒設定但又需要延伸大容量硬碟的話，就重灌吧 QQ)！這篇文章便是紀錄如何設定 C 槽預設能使用更大容量的硬碟！</p>
+<h2 id="查看所需-Cluster-Size"><a href="#查看所需-Cluster-Size" class="headerlink" title="查看所需 Cluster Size"></a>查看所需 Cluster Size</h2><p>請先參考 <a href="https://support.microsoft.com/zh-tw/topic/%E9%A0%90%E8%A8%AD-ntfs-fat-%E5%92%8C-exfat-%E7%9A%84%E5%8F%A2%E9%9B%86%E5%A4%A7%E5%B0%8F-9772e6f1-e31a-00d7-e18f-73169155af95">預設 NTFS、 FAT，和 exFAT 的叢集大小。</a> 中的表格，找出自己需要的 Cluster Size ，例如我是需要將 OS 灌在 Hyper-V 之中，目前 (2021/01/29) 官方所建議的最大容量為 64 TB ，因此查表得知對應的 Cluster Size 應為 16 KB！記住這個資訊下面步驟會用到。</p>
+<h2 id="修改預設-Cluster-Size"><a href="#修改預設-Cluster-Size" class="headerlink" title="修改預設 Cluster Size"></a>修改預設 Cluster Size</h2><p>參考影片設定步驟，會用到的指令及順序如下，其中的 <code>16K</code> 請改為上一步所查找出來的結果</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART</span><br><span class="line">LIST DISK</span><br><span class="line">SELECT DISK 0</span><br><span class="line">LIST PARTITION</span><br><span class="line">SELECT PARTITION 4</span><br><span class="line">FORMAT QUICK UNIT=16K</span><br><span class="line">EXIT </span><br><span class="line">SETUP</span><br></pre></td></tr></table></figure>
+<!-- markdownlint-disable MD033 -->
+<iframe width="560" height="315" src="https://www.youtube.com/embed/KmW_b57L2Ao" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<!-- markdownlint-restore MD033 -->
+<p>按照影片步驟做完後，該 VM 的 C 槽的 Cluster Size 就為 16 KB 囉！讓 C 槽可延伸最多到 64 TB 的容量！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>16 tb</tag>
+        <tag>hyperv</tag>
+        <tag>drive</tag>
+        <tag>cluster</tag>
+        <tag>size</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[IME] 有其他輸入法框架後移除 IBus 圖示</title>
     <url>/2021/06/17/ime_ibus/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 在安裝完非預設的輸入法框架之後，在畫面右上角會看到新的輸入法圖示，但預設的 IBus 圖示仍然會存在，讓人看到就覺得煩躁進而想要移除掉圖示。</p>
@@ -704,9 +763,9 @@
       </categories>
       <tags>
         <tag>ubuntu</tag>
-        <tag>18.04</tag>
         <tag>ibus</tag>
         <tag>fcitx</tag>
+        <tag>18.04</tag>
         <tag>remove</tag>
       </tags>
   </entry>
@@ -787,70 +846,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[MATLAB] k-means 演算法說明與實作</title>
-    <url>/2021/06/12/matlab_k_means/</url>
-    <content><![CDATA[<h2 id="k-means-介紹"><a href="#k-means-介紹" class="headerlink" title="k-means 介紹"></a>k-means 介紹</h2><p><code>k-means</code> 又稱 <code>c-means Clustering</code>，是一種分群演算法，k 表示群集的數量，演算法如下</p>
-<ol>
-<li>給定一資料集 S，選擇 k 個點當群集中心，也稱為群心。</li>
-<li>計算每一資料與各群心距離，資料歸類在與之最短距離的群心那群。</li>
-<li>歸類好的資料再算出一個新的群心，通常是使用平均值。</li>
-<li>比較新的群心與舊的群心位置是否接近或者固定。</li>
-<li>重複 2 ~ 4 直到 4 成立，則分群完畢。</li>
-</ol>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/MATLAB-k-means-%E6%BC%94%E7%AE%97%E6%B3%95%2Fk_means_alg.png?alt=media&amp;token=954cb2ec-bdda-4a67-a154-8181dde1c09e" alt="k-means 流程圖"><span class="image-caption">k-means 流程圖</span></p>
-<h2 id="Pseudo-code"><a href="#Pseudo-code" class="headerlink" title="Pseudo code"></a>Pseudo code</h2><p>Pseudo code 如下，先定義參數</p>
-<ul>
-<li>Input : 群數 <code>k</code>, 群心 Centers of clusters(<code>kC</code>)</li>
-<li>Output：分群結果 <code>team</code></li>
-<li>Subroutine：算距離 <code>distFunc</code>, 算新的群心 <code>re_center</code>, 分群 <code>clustering</code></li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">main k_means(Database, k, kC, distFunc, re_center, k_clustering)</span><br><span class="line">    While 1</span><br><span class="line">        分群結果 team = clustering(Database, kC, distFunc)</span><br><span class="line">        重新找群心 NewkC = re_center(Database, team, k)</span><br><span class="line">        If 新的群心NewkC和舊群心kC差距可接受 Then 　//差距可接受代表分類完成</span><br><span class="line">            kC = NewkC //更新群心</span><br><span class="line">            break;</span><br><span class="line">        Else //還沒找到滿意的群心就繼續找</span><br><span class="line">            kC = NewkC //更新群心</span><br><span class="line">        End If</span><br><span class="line">    End While 1</span><br><span class="line">    return team, kC //回傳資料群集編號和群心</span><br><span class="line">End k_means</span><br><span class="line">    </span><br><span class="line">sub re_center(Database, team, k)</span><br><span class="line">    For each Cluster of k</span><br><span class="line">        新群心NewkC = 屬於第team(Cluster)組的資料取算術平均數為新的群心</span><br><span class="line">    End For Cluster </span><br><span class="line">    return NewkC</span><br><span class="line">End re_center</span><br><span class="line"></span><br><span class="line">sub clustering(Database, kC)</span><br><span class="line">    tempDist = ? //距離暫存器，?要比所有可能的距離都大</span><br><span class="line">    For each P of Database</span><br><span class="line">        For each C of kC</span><br><span class="line">            距離dist = distFunc(C, P)</span><br><span class="line">            If dist &lt; tempDist Then //紀錄哪個群心最近</span><br><span class="line">                tempDist = dist</span><br><span class="line">                FLAG = C </span><br><span class="line">            End If</span><br><span class="line">        End For C</span><br><span class="line">        將tempDist 變回 ?</span><br><span class="line">        team(P) = FLAG //P點的分類完成</span><br><span class="line">    End For P</span><br><span class="line">    return team</span><br><span class="line">End clustering</span><br></pre></td></tr></table></figure>
-<h2 id="MATLAB-code"><a href="#MATLAB-code" class="headerlink" title="MATLAB code"></a>MATLAB code</h2><p><code>MATLAB</code> code</p>
-<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">function [team kx ky]<span class="built_in">=</span> k_means(x, y, kx, ky, seed_num)</span><br><span class="line">while <span class="number">1</span></span><br><span class="line">    team <span class="built_in">=</span> k_Clustering( x, y, kx, ky);<span class="comment">% 分群</span></span><br><span class="line">    [nkx, nky] <span class="built_in">=</span> k_re_center(x, y, team, seed_num); <span class="comment">%更新新的群心</span></span><br><span class="line">    <span class="built_in">if</span> ( sum(kx <span class="built_in">=</span><span class="built_in">=</span> nkx) <span class="built_in">=</span><span class="built_in">=</span> seed_num ) &amp;&amp; ( sum(ky <span class="built_in">=</span><span class="built_in">=</span> nky) <span class="built_in">=</span><span class="built_in">=</span> seed_num) <span class="comment">%新的群心是否跟舊的一樣</span></span><br><span class="line">        kx <span class="built_in">=</span> nkx;</span><br><span class="line">        ky <span class="built_in">=</span> nky;</span><br><span class="line">        break; <span class="comment">%一樣的話就跳出</span></span><br><span class="line">    <span class="built_in">else</span> <span class="comment">%不一樣就繼續</span></span><br><span class="line">        kx <span class="built_in">=</span> nkx;</span><br><span class="line">        ky <span class="built_in">=</span> nky;</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function team <span class="built_in">=</span> k_Clustering(x, y, kx, ky)</span><br><span class="line"><span class="comment">% This is for K-Clustering</span></span><br><span class="line"><span class="comment">% (x,y) are dataset and (kx, ky) are Cluster-center</span></span><br><span class="line"></span><br><span class="line">mid_dis <span class="built_in">=</span> <span class="number">9999999999</span>; <span class="comment">%距離的暫存器</span></span><br><span class="line">for i <span class="built_in">=</span> <span class="number">1</span> : length(x); <span class="comment">%總共要判斷 length(x) 個資料</span></span><br><span class="line">    for j <span class="built_in">=</span> <span class="number">1</span> : length(kx); <span class="comment">%總共有 length(kx) 個群集中心</span></span><br><span class="line">        dist <span class="built_in">=</span> k_distFunc( [x(i) y(i)], [kx(j) ky(j)]); <span class="comment">%計算第i個資料和第j個群集中心的距離</span></span><br><span class="line">        <span class="built_in">if</span> dist &lt; mid_dis <span class="comment">%判斷距離哪個群集中心較近</span></span><br><span class="line">            mid_dis <span class="built_in">=</span> dist; <span class="comment">%更新距離的暫存器</span></span><br><span class="line">            FLAG <span class="built_in">=</span> j; <span class="comment">%紀錄現在距離哪個群集中心最近</span></span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">    mid_dis <span class="built_in">=</span> <span class="number">9999999999</span>; <span class="comment">%距離的暫存器變回初始值</span></span><br><span class="line">    team(i,<span class="number">1</span>) <span class="built_in">=</span> FLAG; <span class="comment">%第 i 個資料屬於第 FLAG 個群集</span></span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function [kx, ky] <span class="built_in">=</span> k_re_center( x, y, team, seed_num)</span><br><span class="line"><span class="comment">% re-find clustered data for new cluster center</span></span><br><span class="line">for i <span class="built_in">=</span> <span class="number">1</span> : seed_num</span><br><span class="line">    kx(i) <span class="built_in">=</span> sum(x(team <span class="built_in">=</span><span class="built_in">=</span> i )) / sum(team <span class="built_in">=</span><span class="built_in">=</span> i);</span><br><span class="line">    ky(i) <span class="built_in">=</span> sum(y(team <span class="built_in">=</span><span class="built_in">=</span> i )) / sum(team <span class="built_in">=</span><span class="built_in">=</span> i);</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function D <span class="built_in">=</span> k_distFunc(P1, P2)</span><br><span class="line"><span class="comment">% This is for finding Distance Between 2D Points</span></span><br><span class="line"><span class="comment">% Input can be an vector</span></span><br><span class="line">D <span class="built_in">=</span> norm(P1 - P2);</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>matlab</tag>
-        <tag>k</tag>
-        <tag>means</tag>
-        <tag>pseudo</tag>
-        <tag>algorithm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[IME] 在 Ubuntu 安裝嘸蝦米等輸入法</title>
-    <url>/2021/06/17/ime_ubuntu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 預設中的輸入法為 IBus 框架，除 IBus 外還有很多如 gcin、fcitx 等不同的輸入法框架，若想要使用如嘸 (ㄈㄨˇ) 蝦米等輸入法的話就需要使用有支援的框架，這篇文章主要紀錄如何安裝嘸蝦米輸入法與酷音輸入法。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="安裝輸入法"><a href="#安裝輸入法" class="headerlink" title="安裝輸入法"></a>安裝輸入法</h2><p>我是選擇使用 fcitx (Free Chinese Input Tool for X) 框架新增輸入法。</p>
-<p>首先先安裝該框架，在安裝需要的輸入法</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install fcitx                 <span class="comment"># fcitx 框架安裝</span></span><br><span class="line">user@pc:~$ sudo apt-get install fcitx-table-boshiamy  <span class="comment"># 嘸蝦米碼表</span></span><br><span class="line">user@pc:~$ sudo apt-get install fcitx-chewing         <span class="comment"># 酷音</span></span><br></pre></td></tr></table></figure>
-<h2 id="系統設定"><a href="#系統設定" class="headerlink" title="系統設定"></a>系統設定</h2><p>在 Languague Support 做設定，將輸入法系統改為 fcitx，重新開機後在畫面右上方可以看到 fcitx 框架的圖示，若原本是用 IBus，IBus 圖示依舊會存在 (參考：<a href="/2021/06/17/ime_ibus/">[IME] 有其他輸入法框架後移除 IBus 圖示</a>)。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E5%9C%A8-Ubuntu-%E5%AE%89%E8%A3%9D%E5%98%B8%E8%9D%A6%E7%B1%B3%E7%AD%89%E8%BC%B8%E5%85%A5%E6%B3%95%2Fchange_ime.png?alt=media&amp;token=9bc6f6db-41b9-417e-ab0f-fb1bc249c097" alt="設定輸入法系統"><span class="image-caption">設定輸入法系統</span></p>
-<p>點擊 fcitx 圖示 -&gt; Configure，若有看到嘸蝦米 (Boshiamy) 等自己安裝的輸入法，就代表安裝完成，可以開始使用了。若沒有看到，可點擊左下角的「＋」按鈕，在搜尋框內輸入 Chewing 來新增。若很確定有安裝輸入法但找不到的話，試著把「Only Show Current Language」取消勾選，就會有了</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E5%9C%A8-Ubuntu-%E5%AE%89%E8%A3%9D%E5%98%B8%E8%9D%A6%E7%B1%B3%E7%AD%89%E8%BC%B8%E5%85%A5%E6%B3%95%2Fadd_ime.png?alt=media&amp;token=14b764f6-c8e6-44cc-927a-e9dbb3d27152" alt="fcitx 介面"><span class="image-caption">fcitx 介面</span></p>
-<h2 id="貼心小提醒"><a href="#貼心小提醒" class="headerlink" title="貼心小提醒"></a>貼心小提醒</h2><p>嘸蝦米的預設通常是簡體中文，若要換成繁體中文的話可按組合鍵「Ctrl + Shift + F」做切換。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>18.04</tag>
-        <tag>ibus</tag>
-        <tag>fcitx</tag>
-        <tag>gcin</tag>
-        <tag>boshiamy</tag>
-        <tag>chewing</tag>
-        <tag>ime</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[MQTT] CentOS 7 安裝 mosquitto 並使用帳密驗證</title>
     <url>/2021/06/19/mqtt_centos_7/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 mosquitto，網路上有許多 mosquitto 的說明，這裡只紀錄如何架設與測試。</p>
@@ -907,8 +902,8 @@
       </categories>
       <tags>
         <tag>centos</tag>
-        <tag>7.9</tag>
         <tag>firewall</tag>
+        <tag>7.9</tag>
         <tag>mqtt</tag>
         <tag>mosquitto</tag>
         <tag>authorise</tag>
@@ -917,95 +912,36 @@
       </tags>
   </entry>
   <entry>
-    <title>[Math] 以移位運算優化除數為 2 的冪次方的除法</title>
-    <url>/2021/06/15/math_2/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>除法指令在 CPU 中的執行周期相較於其它運算 (加/減/乘) 還要來得長，所以會盡可能的找替代方案來算出除法結果。這裡討論的是，當除以一個 2 的冪次方數時要怎麼減化過程，特別是被除數為負數時的情況。</p>
-<h2 id="問題敘述"><a href="#問題敘述" class="headerlink" title="問題敘述"></a>問題敘述</h2><p>基本上 $x\gg k$ 等同於 $\dfrac{x}{2^k}$，但這個結果只能保證在 $x \geq 0$ 時是對的，若在 $x &lt; 0$ 時，可就不一定了！舉例來說，若 $x=-12345$ 且 $k=4$</p>
-<p>以除法運算來看，取整數後即 $-771$。</p>
-<script type="math/tex; mode=display">x\gg k=-12345\gg 4=\dfrac{-12345}{2^4}=-771.5625</script><p>在以位元運算來看</p>
-<script type="math/tex; mode=display">-12345_{10}\gg 4_{10}=1100\_1111\_1100\_0111_2 \gg 4_{10} = 1111\_1100\_1111\_1100_2 = -772</script><p>這與我們想要的結果 ($-771$) 不一樣，因為移位運算後的結果都是取 <code>floor</code> 後的值，即</p>
-<script type="math/tex; mode=display">x \gg k = floor(\dfrac{x}{2^k})</script><p>當 $x \geq 0$，我們要得到整數部份就要取 <code>floor</code>，這與移位運算的特性一致；而當 $x &lt; 0$ 時，我們要得到整數部份就要取 <code>ceil</code>，但此時移位運算是取 <code>floor</code>，所以就會有誤。</p>
-<p>因此，我們需要一個函數，當 $x &lt; 0$ 時作移位運算後結果為 $ceil(\dfrac{x}{2^k})$ 的演算法</p>
-<script type="math/tex; mode=display">(x + (2^k - 1)) >> k</script><h2 id="證明"><a href="#證明" class="headerlink" title="證明"></a>證明</h2><p>目標</p>
-<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = (x + (2^k - 1)) \gg k</script><p>要證明上式，必須先證明下式成立，</p>
-<script type="math/tex; mode=display">ceil(\dfrac{x}{y})=floor(\dfrac{x+y-1}{y}), \ \textrm{if}\ x\ \in \mathbb{Z}\ \textrm{and}\ y\ \in \mathbb{Z^+}</script><p>令</p>
-<script type="math/tex; mode=display">x=qy+r,\ 0 \leq r\leq y-1</script><p>q 為除法商數且 r 為除法餘數。再將此試代入目標等式右邊</p>
-<script type="math/tex; mode=display">\dfrac{x+y-1}{y}=\dfrac{qy+r+y-1}{y}=q+\dfrac{r+y-1}{y}</script><p>討論：</p>
-<p><code>case 1</code>：如果 $x$ 可以被 $y$ 整除，則 $r=0$</p>
-<script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{y-1}{y})=q=ceil(\dfrac{x}{y})</script><p><code>case 2</code>：如果 $x$ 不能被 $y$ 整除，則 $1\leq r\leq y-1$</p>
-<script type="math/tex; mode=display">\dfrac{y}{y}\leq \dfrac{r+y-1}{y}\leq \dfrac{2y-2}{y}</script><script type="math/tex; mode=display">1\leq\dfrac{r+y-1}{y}<2</script><script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{r+y-1}{y})=q+1=ceil(\dfrac{x}{y})</script><p>最後，再利用這個等式，可以得到若 <code>x &lt; 0</code></p>
-<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = floor ( \dfrac{x + 2^k - 1}{2^k}) = (x + (2^k - 1)) \gg k</script><p>得證</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a href="https://www.itread01.com/content/1548192791.html">計算機中如何實現除數是2的冪次的除法</a></li>
+    <title>[MATLAB] k-means 演算法說明與實作</title>
+    <url>/2021/06/12/matlab_k_means/</url>
+    <content><![CDATA[<h2 id="k-means-介紹"><a href="#k-means-介紹" class="headerlink" title="k-means 介紹"></a>k-means 介紹</h2><p><code>k-means</code> 又稱 <code>c-means Clustering</code>，是一種分群演算法，k 表示群集的數量，演算法如下</p>
+<ol>
+<li>給定一資料集 S，選擇 k 個點當群集中心，也稱為群心。</li>
+<li>計算每一資料與各群心距離，資料歸類在與之最短距離的群心那群。</li>
+<li>歸類好的資料再算出一個新的群心，通常是使用平均值。</li>
+<li>比較新的群心與舊的群心位置是否接近或者固定。</li>
+<li>重複 2 ~ 4 直到 4 成立，則分群完畢。</li>
 </ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>math</tag>
-        <tag>shift</tag>
-        <tag>bit</tag>
-        <tag>division</tag>
-        <tag>power of 2</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
-    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>IIS 10.0</li>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/MATLAB-k-means-%E6%BC%94%E7%AE%97%E6%B3%95%2Fk_means_alg.png?alt=media&amp;token=954cb2ec-bdda-4a67-a154-8181dde1c09e" alt="k-means 流程圖"><span class="image-caption">k-means 流程圖</span></p>
+<h2 id="Pseudo-code"><a href="#Pseudo-code" class="headerlink" title="Pseudo code"></a>Pseudo code</h2><p>Pseudo code 如下，先定義參數</p>
+<ul>
+<li>Input : 群數 <code>k</code>, 群心 Centers of clusters(<code>kC</code>)</li>
+<li>Output：分群結果 <code>team</code></li>
+<li>Subroutine：算距離 <code>distFunc</code>, 算新的群心 <code>re_center</code>, 分群 <code>clustering</code></li>
 </ul>
-<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">main k_means(Database, k, kC, distFunc, re_center, k_clustering)</span><br><span class="line">    While 1</span><br><span class="line">        分群結果 team = clustering(Database, kC, distFunc)</span><br><span class="line">        重新找群心 NewkC = re_center(Database, team, k)</span><br><span class="line">        If 新的群心NewkC和舊群心kC差距可接受 Then 　//差距可接受代表分類完成</span><br><span class="line">            kC = NewkC //更新群心</span><br><span class="line">            break;</span><br><span class="line">        Else //還沒找到滿意的群心就繼續找</span><br><span class="line">            kC = NewkC //更新群心</span><br><span class="line">        End If</span><br><span class="line">    End While 1</span><br><span class="line">    return team, kC //回傳資料群集編號和群心</span><br><span class="line">End k_means</span><br><span class="line">    </span><br><span class="line">sub re_center(Database, team, k)</span><br><span class="line">    For each Cluster of k</span><br><span class="line">        新群心NewkC = 屬於第team(Cluster)組的資料取算術平均數為新的群心</span><br><span class="line">    End For Cluster </span><br><span class="line">    return NewkC</span><br><span class="line">End re_center</span><br><span class="line"></span><br><span class="line">sub clustering(Database, kC)</span><br><span class="line">    tempDist = ? //距離暫存器，?要比所有可能的距離都大</span><br><span class="line">    For each P of Database</span><br><span class="line">        For each C of kC</span><br><span class="line">            距離dist = distFunc(C, P)</span><br><span class="line">            If dist &lt; tempDist Then //紀錄哪個群心最近</span><br><span class="line">                tempDist = dist</span><br><span class="line">                FLAG = C </span><br><span class="line">            End If</span><br><span class="line">        End For C</span><br><span class="line">        將tempDist 變回 ?</span><br><span class="line">        team(P) = FLAG //P點的分類完成</span><br><span class="line">    End For P</span><br><span class="line">    return team</span><br><span class="line">End clustering</span><br></pre></td></tr></table></figure>
+<h2 id="MATLAB-code"><a href="#MATLAB-code" class="headerlink" title="MATLAB code"></a>MATLAB code</h2><p><code>MATLAB</code> code</p>
+<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">function [team kx ky]<span class="built_in">=</span> k_means(x, y, kx, ky, seed_num)</span><br><span class="line">while <span class="number">1</span></span><br><span class="line">    team <span class="built_in">=</span> k_Clustering( x, y, kx, ky);<span class="comment">% 分群</span></span><br><span class="line">    [nkx, nky] <span class="built_in">=</span> k_re_center(x, y, team, seed_num); <span class="comment">%更新新的群心</span></span><br><span class="line">    <span class="built_in">if</span> ( sum(kx <span class="built_in">=</span><span class="built_in">=</span> nkx) <span class="built_in">=</span><span class="built_in">=</span> seed_num ) &amp;&amp; ( sum(ky <span class="built_in">=</span><span class="built_in">=</span> nky) <span class="built_in">=</span><span class="built_in">=</span> seed_num) <span class="comment">%新的群心是否跟舊的一樣</span></span><br><span class="line">        kx <span class="built_in">=</span> nkx;</span><br><span class="line">        ky <span class="built_in">=</span> nky;</span><br><span class="line">        break; <span class="comment">%一樣的話就跳出</span></span><br><span class="line">    <span class="built_in">else</span> <span class="comment">%不一樣就繼續</span></span><br><span class="line">        kx <span class="built_in">=</span> nkx;</span><br><span class="line">        ky <span class="built_in">=</span> nky;</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function team <span class="built_in">=</span> k_Clustering(x, y, kx, ky)</span><br><span class="line"><span class="comment">% This is for K-Clustering</span></span><br><span class="line"><span class="comment">% (x,y) are dataset and (kx, ky) are Cluster-center</span></span><br><span class="line"></span><br><span class="line">mid_dis <span class="built_in">=</span> <span class="number">9999999999</span>; <span class="comment">%距離的暫存器</span></span><br><span class="line">for i <span class="built_in">=</span> <span class="number">1</span> : length(x); <span class="comment">%總共要判斷 length(x) 個資料</span></span><br><span class="line">    for j <span class="built_in">=</span> <span class="number">1</span> : length(kx); <span class="comment">%總共有 length(kx) 個群集中心</span></span><br><span class="line">        dist <span class="built_in">=</span> k_distFunc( [x(i) y(i)], [kx(j) ky(j)]); <span class="comment">%計算第i個資料和第j個群集中心的距離</span></span><br><span class="line">        <span class="built_in">if</span> dist &lt; mid_dis <span class="comment">%判斷距離哪個群集中心較近</span></span><br><span class="line">            mid_dis <span class="built_in">=</span> dist; <span class="comment">%更新距離的暫存器</span></span><br><span class="line">            FLAG <span class="built_in">=</span> j; <span class="comment">%紀錄現在距離哪個群集中心最近</span></span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">    mid_dis <span class="built_in">=</span> <span class="number">9999999999</span>; <span class="comment">%距離的暫存器變回初始值</span></span><br><span class="line">    team(i,<span class="number">1</span>) <span class="built_in">=</span> FLAG; <span class="comment">%第 i 個資料屬於第 FLAG 個群集</span></span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function [kx, ky] <span class="built_in">=</span> k_re_center( x, y, team, seed_num)</span><br><span class="line"><span class="comment">% re-find clustered data for new cluster center</span></span><br><span class="line">for i <span class="built_in">=</span> <span class="number">1</span> : seed_num</span><br><span class="line">    kx(i) <span class="built_in">=</span> sum(x(team <span class="built_in">=</span><span class="built_in">=</span> i )) / sum(team <span class="built_in">=</span><span class="built_in">=</span> i);</span><br><span class="line">    ky(i) <span class="built_in">=</span> sum(y(team <span class="built_in">=</span><span class="built_in">=</span> i )) / sum(team <span class="built_in">=</span><span class="built_in">=</span> i);</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function D <span class="built_in">=</span> k_distFunc(P1, P2)</span><br><span class="line"><span class="comment">% This is for finding Distance Between 2D Points</span></span><br><span class="line"><span class="comment">% Input can be an vector</span></span><br><span class="line">D <span class="built_in">=</span> norm(P1 - P2);</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>server</tag>
-        <tag>header</tag>
-        <tag>windows</tag>
-        <tag>iis</tag>
-        <tag>x powered by</tag>
-        <tag>x aspnet version</tag>
-        <tag>hide</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
-    <url>/2021/06/19/mariadb_centos/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
-<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
-<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>mariadb</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>latest</tag>
-        <tag>update</tag>
-        <tag>version</tag>
-        <tag>repository</tag>
+        <tag>matlab</tag>
+        <tag>k</tag>
+        <tag>means</tag>
+        <tag>pseudo</tag>
+        <tag>algorithm</tag>
       </tags>
   </entry>
   <entry>
@@ -1044,34 +980,29 @@
       </tags>
   </entry>
   <entry>
-    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
-    <url>/2021/06/17/mount_iso/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
+    <title>[Nginx] CentOS 安裝網頁伺服器 Nginx</title>
+    <url>/2021/06/18/nginx_centos_nginx/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>相較於 Apache，Nginx 消耗資源少且處理速度快，又支援高併發，是大流量應用的好選擇。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
+<li>CentOS 8.2</li>
 </ul>
-<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
-<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-o loop</code>：使用 loop device 來掛載</li>
-</ul>
-<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
-<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>開啟 Terminal，使用 <code>dnf</code> 來安裝 Nginx</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install -y nginx</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Complete!    <span class="comment">#看到這就行代表完成</span></span><br></pre></td></tr></table></figure>
+<h2 id="啟動並確認"><a href="#啟動並確認" class="headerlink" title="啟動並確認"></a>啟動並確認</h2><p>Nginx 預設是沒有開啟的，預設當系統開機時也不會自動開啟，所以通過指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start nginx   <span class="comment"># 現在馬上開啟 nginx 服務</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx  <span class="comment"># 之後開機也要自動開啟 nginx 服務</span></span><br></pre></td></tr></table></figure>
+<p>確認 Nginx 的服務狀態，看到 <code>active (running)</code> 代表正在運行囉</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl status nginx</span><br><span class="line">● nginx.service - The nginx HTTP and reverse proxy server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Thu 2020-09-10 09:08:10 CST; 3min 51s ago</span><br><span class="line">  Process: 2892 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2890 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2888 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)</span><br><span class="line"> Main PID: 2893 (nginx)</span><br><span class="line">    Tasks: 3 (<span class="built_in">limit</span>: 49448)</span><br><span class="line">   Memory: 5.7M</span><br><span class="line">   CGroup: /system.slice/nginx.service</span><br><span class="line">           ├─2893 nginx: master process /usr/sbin/nginx</span><br><span class="line">           ├─2894 nginx: worker process</span><br><span class="line">           └─2895 nginx: worker process</span><br><span class="line"></span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Starting The nginx HTTP and reverse proxy server...</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Started The nginx HTTP and reverse proxy server.</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
+        <tag>server</tag>
+        <tag>web</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
         <tag>linux</tag>
-        <tag>18.04</tag>
-        <tag>mount</tag>
-        <tag>unmount</tag>
-        <tag>iso</tag>
-        <tag>media</tag>
+        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -1200,29 +1131,98 @@
       </tags>
   </entry>
   <entry>
-    <title>[Nginx] CentOS 安裝網頁伺服器 Nginx</title>
-    <url>/2021/06/18/nginx_centos_nginx/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>相較於 Apache，Nginx 消耗資源少且處理速度快，又支援高併發，是大流量應用的好選擇。</p>
+    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
+    <url>/2021/06/17/mount_iso/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
+<li>Ubuntu 18.04 LTS</li>
 </ul>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>開啟 Terminal，使用 <code>dnf</code> 來安裝 Nginx</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install -y nginx</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Complete!    <span class="comment">#看到這就行代表完成</span></span><br></pre></td></tr></table></figure>
-<h2 id="啟動並確認"><a href="#啟動並確認" class="headerlink" title="啟動並確認"></a>啟動並確認</h2><p>Nginx 預設是沒有開啟的，預設當系統開機時也不會自動開啟，所以通過指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start nginx   <span class="comment"># 現在馬上開啟 nginx 服務</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx  <span class="comment"># 之後開機也要自動開啟 nginx 服務</span></span><br></pre></td></tr></table></figure>
-<p>確認 Nginx 的服務狀態，看到 <code>active (running)</code> 代表正在運行囉</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl status nginx</span><br><span class="line">● nginx.service - The nginx HTTP and reverse proxy server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Thu 2020-09-10 09:08:10 CST; 3min 51s ago</span><br><span class="line">  Process: 2892 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2890 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2888 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)</span><br><span class="line"> Main PID: 2893 (nginx)</span><br><span class="line">    Tasks: 3 (<span class="built_in">limit</span>: 49448)</span><br><span class="line">   Memory: 5.7M</span><br><span class="line">   CGroup: /system.slice/nginx.service</span><br><span class="line">           ├─2893 nginx: master process /usr/sbin/nginx</span><br><span class="line">           ├─2894 nginx: worker process</span><br><span class="line">           └─2895 nginx: worker process</span><br><span class="line"></span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Starting The nginx HTTP and reverse proxy server...</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Started The nginx HTTP and reverse proxy server.</span><br></pre></td></tr></table></figure>
+<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
+<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-o loop</code>：使用 loop device 來掛載</li>
+</ul>
+<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
+<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>server</tag>
-        <tag>web</tag>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>mount</tag>
+        <tag>unmount</tag>
+        <tag>iso</tag>
+        <tag>media</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Math] 以移位運算優化除數為 2 的冪次方的除法</title>
+    <url>/2021/06/15/math_2/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>除法指令在 CPU 中的執行周期相較於其它運算 (加/減/乘) 還要來得長，所以會盡可能的找替代方案來算出除法結果。這裡討論的是，當除以一個 2 的冪次方數時要怎麼減化過程，特別是被除數為負數時的情況。</p>
+<h2 id="問題敘述"><a href="#問題敘述" class="headerlink" title="問題敘述"></a>問題敘述</h2><p>基本上 $x\gg k$ 等同於 $\dfrac{x}{2^k}$，但這個結果只能保證在 $x \geq 0$ 時是對的，若在 $x &lt; 0$ 時，可就不一定了！舉例來說，若 $x=-12345$ 且 $k=4$</p>
+<p>以除法運算來看，取整數後即 $-771$。</p>
+<script type="math/tex; mode=display">x\gg k=-12345\gg 4=\dfrac{-12345}{2^4}=-771.5625</script><p>在以位元運算來看</p>
+<script type="math/tex; mode=display">-12345_{10}\gg 4_{10}=1100\_1111\_1100\_0111_2 \gg 4_{10} = 1111\_1100\_1111\_1100_2 = -772</script><p>這與我們想要的結果 ($-771$) 不一樣，因為移位運算後的結果都是取 <code>floor</code> 後的值，即</p>
+<script type="math/tex; mode=display">x \gg k = floor(\dfrac{x}{2^k})</script><p>當 $x \geq 0$，我們要得到整數部份就要取 <code>floor</code>，這與移位運算的特性一致；而當 $x &lt; 0$ 時，我們要得到整數部份就要取 <code>ceil</code>，但此時移位運算是取 <code>floor</code>，所以就會有誤。</p>
+<p>因此，我們需要一個函數，當 $x &lt; 0$ 時作移位運算後結果為 $ceil(\dfrac{x}{2^k})$ 的演算法</p>
+<script type="math/tex; mode=display">(x + (2^k - 1)) >> k</script><h2 id="證明"><a href="#證明" class="headerlink" title="證明"></a>證明</h2><p>目標</p>
+<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = (x + (2^k - 1)) \gg k</script><p>要證明上式，必須先證明下式成立，</p>
+<script type="math/tex; mode=display">ceil(\dfrac{x}{y})=floor(\dfrac{x+y-1}{y}), \ \textrm{if}\ x\ \in \mathbb{Z}\ \textrm{and}\ y\ \in \mathbb{Z^+}</script><p>令</p>
+<script type="math/tex; mode=display">x=qy+r,\ 0 \leq r\leq y-1</script><p>q 為除法商數且 r 為除法餘數。再將此試代入目標等式右邊</p>
+<script type="math/tex; mode=display">\dfrac{x+y-1}{y}=\dfrac{qy+r+y-1}{y}=q+\dfrac{r+y-1}{y}</script><p>討論：</p>
+<p><code>case 1</code>：如果 $x$ 可以被 $y$ 整除，則 $r=0$</p>
+<script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{y-1}{y})=q=ceil(\dfrac{x}{y})</script><p><code>case 2</code>：如果 $x$ 不能被 $y$ 整除，則 $1\leq r\leq y-1$</p>
+<script type="math/tex; mode=display">\dfrac{y}{y}\leq \dfrac{r+y-1}{y}\leq \dfrac{2y-2}{y}</script><script type="math/tex; mode=display">1\leq\dfrac{r+y-1}{y}<2</script><script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{r+y-1}{y})=q+1=ceil(\dfrac{x}{y})</script><p>最後，再利用這個等式，可以得到若 <code>x &lt; 0</code></p>
+<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = floor ( \dfrac{x + 2^k - 1}{2^k}) = (x + (2^k - 1)) \gg k</script><p>得證</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://www.itread01.com/content/1548192791.html">計算機中如何實現除數是2的冪次的除法</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>math</tag>
+        <tag>shift</tag>
+        <tag>bit</tag>
+        <tag>division</tag>
+        <tag>power of 2</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
+    <url>/2021/06/19/mariadb_centos/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+</ul>
+<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
+<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
+<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>mariadb</tag>
         <tag>centos</tag>
         <tag>8.2</tag>
         <tag>linux</tag>
-        <tag>nginx</tag>
+        <tag>latest</tag>
+        <tag>update</tag>
+        <tag>version</tag>
+        <tag>repository</tag>
       </tags>
   </entry>
   <entry>
@@ -1295,6 +1295,31 @@
       </tags>
   </entry>
   <entry>
+    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
+    <url>/2021/06/15/php_phalcon_namespace/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Phalcon 4.0.3</li>
+</ul>
+<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
+<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
+<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
+<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>php</tag>
+        <tag>phalcon</tag>
+        <tag>namespace</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[PHP] Ubuntu 安裝 Apache 2 + PHP 7.4 + Phalcon 4.0</title>
     <url>/2021/06/17/php_ubuntu_apache_php_phalcon/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Apache 是一個輕量級的網頁伺服器，搭配 <code>PHP</code> 與高效能的 MVC 框架 Phalcon 是一個不錯的選擇，這裡紀錄如何在 Ubuntu 安裝這些開發環境。</p>
@@ -1334,31 +1359,6 @@
         <tag>php</tag>
         <tag>phalcon</tag>
         <tag>install</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
-    <url>/2021/06/15/php_phalcon_namespace/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Phalcon 4.0.3</li>
-</ul>
-<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
-<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
-<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
-<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>php</tag>
-        <tag>phalcon</tag>
-        <tag>namespace</tag>
       </tags>
   </entry>
   <entry>
@@ -1510,36 +1510,27 @@
       </tags>
   </entry>
   <entry>
-    <title>[RDP] xrdp 遠端 menu 不見時登出的方法</title>
-    <url>/2021/06/17/rdp_xrdp_menu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在一台電腦上開啟 xrdp 伺服器，讓大家可以各自用自己的帳號登入，且互不相干擾。但使用過程中遇到一些突發性圖形介面的問題，需要重新登入才能正常運作。</p>
-<p>然而，這個問題就是 menu 會不見，因此不能使用 GUI 的方式登出，所以查相關文獻並紀錄能夠不透過 GUI 從 Terminal 中輸入登出的指令。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>問題示意圖如下，menu 不見，Reset Panel 也無法起作用，只能重新登入得到健全的畫面</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_no_menu_icon.png?alt=media&amp;token=e2f6bf02-28ec-4546-a83c-dc819abdc50c" alt="消失的 menu"><span class="image-caption">消失的 menu</span></p>
-<h2 id="登出方法"><a href="#登出方法" class="headerlink" title="登出方法"></a>登出方法</h2><p>登出方法有兩種</p>
-<h3 id="快捷鍵"><a href="#快捷鍵" class="headerlink" title="快捷鍵"></a>快捷鍵</h3><p>第一種是設定快速鍵，設定好之後，可以直接按快捷鍵登出，不需要指令，適合不擅長記指令的人使用，但需要在問題 (menu 不見) 發生前先設定好，才能使用</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_setting_shortcut.png?alt=media&amp;token=9efdd681-5e07-42fe-846d-c3b41ab801dc" alt="設定快捷鍵"><span class="image-caption">設定快捷鍵</span></p>
-<h3 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h3><p>要先知道當前的 Desktop Environment (DE) 是甚麼，可依照自己的 DE 查詢相關的登出指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ env | grep _DESKTOP_SESSION | cut -d <span class="string">&quot;_&quot;</span> -f 1</span><br><span class="line">MATE  <span class="comment"># 這裡依個人環境有所不同</span></span><br></pre></td></tr></table></figure>
-<p>組合鍵 <code>Ctrl + Alt + T</code> 開啟 Terminal，這裡因為是用 mate DE，其登出指令如下。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mate-session-save --<span class="built_in">logout</span>  <span class="comment"># 若是 gnome 的話則為 gnome-session-quit</span></span><br></pre></td></tr></table></figure>
+    <title>[RDP] Windows 10 新增使用者並賦予遠端桌面權限</title>
+    <url>/2021/06/13/rdp_windows_10/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在同一台電腦 Windows 上，若想要擁有自己個人桌面，就需要不與他人共用的一個使用者帳號；若想要遠端連線，則需要賦予使用者帳號遠端桌面的權限。</p>
+<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><p>組合鍵 <code>Windows + I</code> 開啟 Windows 的設定視窗。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fnew_account.png?alt=media&amp;token=7de524c5-ffa3-4354-85b8-d9bceabc340a" alt="新增其他使用者帳號"><span class="image-caption">新增其他使用者帳號</span></p>
+<p>若使用者沒有 Microsoft 帳戶或不想用 Microsoft 帳戶登入，可以在此式窗選擇「我沒有這位人員的登入資訊」→「新增沒有 Microsoft 帳戶的使用者」，填寫在地端的帳號、密碼與三個安全性問題。</p>
+<p>填寫完之後會在「家人與其他使用者」的「其他使用者」欄位看到新增的帳戶。</p>
+<h2 id="設定遠端桌面權限"><a href="#設定遠端桌面權限" class="headerlink" title="設定遠端桌面權限"></a>設定遠端桌面權限</h2><p>將設定畫面點回到「首頁」，並點選「系統」→「遠端桌面」→「啟用遠端桌面」→「選取可以從遠端存取此電腦的使用者」→「新增」，輸入使用者帳號後按兩次確定即可增加權限</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fadd_remote_privilege.png?alt=media&amp;token=e523d5c2-14ee-4afe-9931-b465b268c6cd" alt="賦予使用者遠端桌面權限"><span class="image-caption">賦予使用者遠端桌面權限</span></p>
+<p>使用者便可以遠端登入，並擁有自己的桌面與環境！</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
+        <tag>windows</tag>
+        <tag>remote</tag>
+        <tag>account</tag>
+        <tag>user</tag>
         <tag>rdp</tag>
-        <tag>xrdp</tag>
-        <tag>gnome</tag>
-        <tag>logout</tag>
-        <tag>mate</tag>
-        <tag>menu</tag>
-        <tag>disappear</tag>
+        <tag>privilege</tag>
       </tags>
   </entry>
   <entry>
@@ -1590,30 +1581,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[RDP] Windows 10 新增使用者並賦予遠端桌面權限</title>
-    <url>/2021/06/13/rdp_windows_10/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在同一台電腦 Windows 上，若想要擁有自己個人桌面，就需要不與他人共用的一個使用者帳號；若想要遠端連線，則需要賦予使用者帳號遠端桌面的權限。</p>
-<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><p>組合鍵 <code>Windows + I</code> 開啟 Windows 的設定視窗。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fnew_account.png?alt=media&amp;token=7de524c5-ffa3-4354-85b8-d9bceabc340a" alt="新增其他使用者帳號"><span class="image-caption">新增其他使用者帳號</span></p>
-<p>若使用者沒有 Microsoft 帳戶或不想用 Microsoft 帳戶登入，可以在此式窗選擇「我沒有這位人員的登入資訊」→「新增沒有 Microsoft 帳戶的使用者」，填寫在地端的帳號、密碼與三個安全性問題。</p>
-<p>填寫完之後會在「家人與其他使用者」的「其他使用者」欄位看到新增的帳戶。</p>
-<h2 id="設定遠端桌面權限"><a href="#設定遠端桌面權限" class="headerlink" title="設定遠端桌面權限"></a>設定遠端桌面權限</h2><p>將設定畫面點回到「首頁」，並點選「系統」→「遠端桌面」→「啟用遠端桌面」→「選取可以從遠端存取此電腦的使用者」→「新增」，輸入使用者帳號後按兩次確定即可增加權限</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fadd_remote_privilege.png?alt=media&amp;token=e523d5c2-14ee-4afe-9931-b465b268c6cd" alt="賦予使用者遠端桌面權限"><span class="image-caption">賦予使用者遠端桌面權限</span></p>
-<p>使用者便可以遠端登入，並擁有自己的桌面與環境！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>remote</tag>
-        <tag>account</tag>
-        <tag>user</tag>
-        <tag>rdp</tag>
-        <tag>privilege</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</title>
     <url>/2021/06/17/remote_ubuntu_xrdp/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>xrdp (X Remote Desktop Protocal) 是 Linux 系統上的遠端桌面伺服器，能夠讓透過遠端連線的使用者有 GUI 能夠使用。但在 Ubuntu 18.04 似乎沒辦法簡單的安裝，找了許多資料，終於找到可行的辦法。</p>
@@ -1639,10 +1606,36 @@
         <tag>remote</tag>
         <tag>18.04</tag>
         <tag>rdp</tag>
-        <tag>xrdp</tag>
         <tag>mstsc</tag>
         <tag>多人</tag>
         <tag>多工</tag>
+        <tag>xrdp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Remove] Ubuntu 解除安裝應用程式</title>
+    <url>/2021/06/17/remove_ubuntu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>安裝與移除幾乎是每天都會作到的動作，移除相較安裝困難，Windows 作業系統中只需要進控制台移除程式，而在 Linux 只能使用指令來做移除的動作，且不確定是否真的移除乾淨相關檔案，最近剛好要移除 libreoffice，因此藉此紀錄移除程式的步驟與指令相對的意義。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="解除安裝"><a href="#解除安裝" class="headerlink" title="解除安裝"></a>解除安裝</h2><p>先移除目標程式及相關檔案</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get purge libreoffice*.*    <span class="comment"># 移除程式包含配置檔 (configuration file)</span></span><br></pre></td></tr></table></figure>
+<p>移除因應用程式相依所需而自動安裝，但現在已經不再需要的套件</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get autoremove              <span class="comment"># 移除原為「自動」安裝但現在不再需要的套件</span></span><br></pre></td></tr></table></figure>
+<p>移除相關的 deb 檔案</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get clean <span class="comment"># 除了「lock」檔案，移除在 /var/cache/apt/archives/ 與</span></span><br><span class="line">                              <span class="comment"># /var/cache/apt/archives/partial/ 目錄下的檔案，</span></span><br><span class="line">                              <span class="comment"># 這兩個目錄是執行「apt-get install」或「apt-get upgrade」指令時，</span></span><br><span class="line">                              <span class="comment"># 放置下載的相關套件所在，因為已經用不到，所以這些東西也可以清理掉</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>remove</tag>
+        <tag>libreoffice</tag>
+        <tag>uninstall</tag>
+        <tag>clean</tag>
       </tags>
   </entry>
   <entry>
@@ -1678,18 +1671,22 @@
       </tags>
   </entry>
   <entry>
-    <title>[Remove] Ubuntu 解除安裝應用程式</title>
-    <url>/2021/06/17/remove_ubuntu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>安裝與移除幾乎是每天都會作到的動作，移除相較安裝困難，Windows 作業系統中只需要進控制台移除程式，而在 Linux 只能使用指令來做移除的動作，且不確定是否真的移除乾淨相關檔案，最近剛好要移除 libreoffice，因此藉此紀錄移除程式的步驟與指令相對的意義。</p>
+    <title>[RDP] xrdp 遠端 menu 不見時登出的方法</title>
+    <url>/2021/06/17/rdp_xrdp_menu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在一台電腦上開啟 xrdp 伺服器，讓大家可以各自用自己的帳號登入，且互不相干擾。但使用過程中遇到一些突發性圖形介面的問題，需要重新登入才能正常運作。</p>
+<p>然而，這個問題就是 menu 會不見，因此不能使用 GUI 的方式登出，所以查相關文獻並紀錄能夠不透過 GUI 從 Terminal 中輸入登出的指令。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Ubuntu 18.04 LTS</li>
 </ul>
-<h2 id="解除安裝"><a href="#解除安裝" class="headerlink" title="解除安裝"></a>解除安裝</h2><p>先移除目標程式及相關檔案</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get purge libreoffice*.*    <span class="comment"># 移除程式包含配置檔 (configuration file)</span></span><br></pre></td></tr></table></figure>
-<p>移除因應用程式相依所需而自動安裝，但現在已經不再需要的套件</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get autoremove              <span class="comment"># 移除原為「自動」安裝但現在不再需要的套件</span></span><br></pre></td></tr></table></figure>
-<p>移除相關的 deb 檔案</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get clean <span class="comment"># 除了「lock」檔案，移除在 /var/cache/apt/archives/ 與</span></span><br><span class="line">                              <span class="comment"># /var/cache/apt/archives/partial/ 目錄下的檔案，</span></span><br><span class="line">                              <span class="comment"># 這兩個目錄是執行「apt-get install」或「apt-get upgrade」指令時，</span></span><br><span class="line">                              <span class="comment"># 放置下載的相關套件所在，因為已經用不到，所以這些東西也可以清理掉</span></span><br></pre></td></tr></table></figure>
+<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>問題示意圖如下，menu 不見，Reset Panel 也無法起作用，只能重新登入得到健全的畫面</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_no_menu_icon.png?alt=media&amp;token=e2f6bf02-28ec-4546-a83c-dc819abdc50c" alt="消失的 menu"><span class="image-caption">消失的 menu</span></p>
+<h2 id="登出方法"><a href="#登出方法" class="headerlink" title="登出方法"></a>登出方法</h2><p>登出方法有兩種</p>
+<h3 id="快捷鍵"><a href="#快捷鍵" class="headerlink" title="快捷鍵"></a>快捷鍵</h3><p>第一種是設定快速鍵，設定好之後，可以直接按快捷鍵登出，不需要指令，適合不擅長記指令的人使用，但需要在問題 (menu 不見) 發生前先設定好，才能使用</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_setting_shortcut.png?alt=media&amp;token=9efdd681-5e07-42fe-846d-c3b41ab801dc" alt="設定快捷鍵"><span class="image-caption">設定快捷鍵</span></p>
+<h3 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h3><p>要先知道當前的 Desktop Environment (DE) 是甚麼，可依照自己的 DE 查詢相關的登出指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ env | grep _DESKTOP_SESSION | cut -d <span class="string">&quot;_&quot;</span> -f 1</span><br><span class="line">MATE  <span class="comment"># 這裡依個人環境有所不同</span></span><br></pre></td></tr></table></figure>
+<p>組合鍵 <code>Ctrl + Alt + T</code> 開啟 Terminal，這裡因為是用 mate DE，其登出指令如下。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mate-session-save --<span class="built_in">logout</span>  <span class="comment"># 若是 gnome 的話則為 gnome-session-quit</span></span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
@@ -1697,10 +1694,100 @@
       <tags>
         <tag>ubuntu</tag>
         <tag>18.04</tag>
-        <tag>remove</tag>
-        <tag>libreoffice</tag>
-        <tag>uninstall</tag>
-        <tag>clean</tag>
+        <tag>rdp</tag>
+        <tag>xrdp</tag>
+        <tag>gnome</tag>
+        <tag>logout</tag>
+        <tag>mate</tag>
+        <tag>menu</tag>
+        <tag>disappear</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
+    <url>/2021/06/15/ssl_crt_key/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>OpenSSL 1.1.1f</li>
+</ul>
+<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
+<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>ssl</tag>
+        <tag>key</tag>
+        <tag>crt</tag>
+        <tag>match</tag>
+        <tag>cert</tag>
+        <tag>csr</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[SSL] 自簽憑證過程</title>
+    <url>/2021/06/15/ssl_self_sign/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
+<h2 id="產生-CA-SSL"><a href="#產生-CA-SSL" class="headerlink" title="產生 CA SSL"></a>產生 CA SSL</h2><p>⾸先為我們的 CA 產⽣⼀把屬於 CA 的私鑰</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out root/ca.key 4096</span><br></pre></td></tr></table></figure>
+<p>⽤這把私鑰產⽣⼀份⾃我簽署的 CA 憑證，其中 <code>subj</code> 可依自己需求做更改</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -x509 -days 365 -sha256 \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=localhost&quot;</span> \ </span><br><span class="line">    -key root/ca.key \ </span><br><span class="line">    -out root/ca.crt</span><br></pre></td></tr></table></figure>
+<h2 id="產生-Server-SSL"><a href="#產生-Server-SSL" class="headerlink" title="產生 Server SSL"></a>產生 Server SSL</h2><p>為我們的 Server 產⽣不加密之 PEM 格式的私密⾦鑰</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out server/server.key 2048</span><br></pre></td></tr></table></figure>
+<p>產⽣憑證請求檔 CSR，其中 <code>subj</code> 可依自己需求做更改，要注意的是 <strong>CN 不可與 CA 的 CN 相同</strong></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -key server/server.key \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=your_service_FQDN&quot;</span> \ </span><br><span class="line">    -out server/server.csr</span><br></pre></td></tr></table></figure>
+<p>把 CSR 丟給 CA 簽署</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -req -CAcreateserial -days 30 -sha256 \ </span><br><span class="line">    -CA root/ca.crt -CAkey root/ca.key \ </span><br><span class="line">    -<span class="keyword">in</span> server/server.csr \ </span><br><span class="line">    -out server/server.crt</span><br></pre></td></tr></table></figure>
+<p>現在⽬錄應該有以下這些文件，<code>server.key</code> 是 Server 的私鑰，<code>server.crt</code> 是 Server 的憑證，也因為是用我們自創的 CA 來簽核的一個憑證，又稱為自簽憑證</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ ls -alR . </span><br><span class="line"></span><br><span class="line">./root: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1968 Oct 21 02:05 ca.crt </span><br><span class="line">-rw------- 1 user user 3243 Oct 21 02:05 ca.key </span><br><span class="line">-rw-rw-r-- 1 user user   41 Oct 21 02:05 ca.srl </span><br><span class="line"></span><br><span class="line">./server: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1501 Oct 21 02:05 server.crt </span><br><span class="line">-rw-rw-r-- 1 user user  972 Oct 21 02:05 server.csr </span><br><span class="line">-rw------- 1 user user 1679 Oct 21 02:05 server.key</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ssl</tag>
+        <tag>ca</tag>
+        <tag>key</tag>
+        <tag>crt</tag>
+        <tag>csr</tag>
+        <tag>self</tag>
+        <tag>sign</tag>
+        <tag>openssl</tag>
+        <tag>mitm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Share] VMware 裡的 CentOS 使用共享資料夾</title>
+    <url>/2021/06/19/share_vmware_centos/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>共享資料夾是使用虛擬機時常會碰到的需求，最近遇到要在 CentOS 中設定共享資料夾，沒想到挺麻煩的，因此記錄下來方便以後查閱。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>實體機 (Host) 作業系統：Windows 10</li>
+<li>虛擬機 (Guest) 作業系統：CentOS 8.2</li>
+<li>虛擬機軟體：VMware 15.5.6</li>
+</ul>
+<h2 id="設定-Host-共享資料夾"><a href="#設定-Host-共享資料夾" class="headerlink" title="設定 Host 共享資料夾"></a>設定 Host 共享資料夾</h2><p>在 Windows 上於 VMware 設定 Host 要分享的的共享資料夾，這裡的範例是 <code>D:\VMware\Shared</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Share-VMware-%E8%A3%A1%E7%9A%84-CentOS-%E4%BD%BF%E7%94%A8%E5%85%B1%E4%BA%AB%E8%B3%87%E6%96%99%E5%A4%BE%2Fshare_folder.png?alt=media&amp;token=311502b1-730c-4d26-8d29-6eea00ea2fd0" alt="Host 共享資料夾"><span class="image-caption">Host 共享資料夾</span></p>
+<h2 id="設定-Guest-共享資料夾"><a href="#設定-Guest-共享資料夾" class="headerlink" title="設定 Guest 共享資料夾"></a>設定 Guest 共享資料夾</h2><p>在 CentOS 8.2 中建立一個要當共享資料夾的目錄</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mkdir ~/shares</span><br></pre></td></tr></table></figure>
+<p>掛載共享資料夾，其中 <code>Shared</code> 是 Host 的共享資料夾名稱， <code>~/shares</code> 是 Guest 的共享目錄</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ /usr/bin/vmhgfs-fuse .host:/Shared ~/shares</span><br></pre></td></tr></table></figure>
+<p>此時 Guest 內的 <code>~/shares</code> 目錄與 Host 的 <code>D:\VMware\Shared</code> 資料夾就是互通的囉！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>10</tag>
+        <tag>vmware</tag>
       </tags>
   </entry>
   <entry>
@@ -1763,93 +1850,6 @@
         <tag>tool</tag>
         <tag>it</tag>
         <tag>displayer</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[SSL] 自簽憑證過程</title>
-    <url>/2021/06/15/ssl_self_sign/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
-<h2 id="產生-CA-SSL"><a href="#產生-CA-SSL" class="headerlink" title="產生 CA SSL"></a>產生 CA SSL</h2><p>⾸先為我們的 CA 產⽣⼀把屬於 CA 的私鑰</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out root/ca.key 4096</span><br></pre></td></tr></table></figure>
-<p>⽤這把私鑰產⽣⼀份⾃我簽署的 CA 憑證，其中 <code>subj</code> 可依自己需求做更改</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -x509 -days 365 -sha256 \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=localhost&quot;</span> \ </span><br><span class="line">    -key root/ca.key \ </span><br><span class="line">    -out root/ca.crt</span><br></pre></td></tr></table></figure>
-<h2 id="產生-Server-SSL"><a href="#產生-Server-SSL" class="headerlink" title="產生 Server SSL"></a>產生 Server SSL</h2><p>為我們的 Server 產⽣不加密之 PEM 格式的私密⾦鑰</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out server/server.key 2048</span><br></pre></td></tr></table></figure>
-<p>產⽣憑證請求檔 CSR，其中 <code>subj</code> 可依自己需求做更改，要注意的是 <strong>CN 不可與 CA 的 CN 相同</strong></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -key server/server.key \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=your_service_FQDN&quot;</span> \ </span><br><span class="line">    -out server/server.csr</span><br></pre></td></tr></table></figure>
-<p>把 CSR 丟給 CA 簽署</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -req -CAcreateserial -days 30 -sha256 \ </span><br><span class="line">    -CA root/ca.crt -CAkey root/ca.key \ </span><br><span class="line">    -<span class="keyword">in</span> server/server.csr \ </span><br><span class="line">    -out server/server.crt</span><br></pre></td></tr></table></figure>
-<p>現在⽬錄應該有以下這些文件，<code>server.key</code> 是 Server 的私鑰，<code>server.crt</code> 是 Server 的憑證，也因為是用我們自創的 CA 來簽核的一個憑證，又稱為自簽憑證</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ ls -alR . </span><br><span class="line"></span><br><span class="line">./root: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1968 Oct 21 02:05 ca.crt </span><br><span class="line">-rw------- 1 user user 3243 Oct 21 02:05 ca.key </span><br><span class="line">-rw-rw-r-- 1 user user   41 Oct 21 02:05 ca.srl </span><br><span class="line"></span><br><span class="line">./server: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1501 Oct 21 02:05 server.crt </span><br><span class="line">-rw-rw-r-- 1 user user  972 Oct 21 02:05 server.csr </span><br><span class="line">-rw------- 1 user user 1679 Oct 21 02:05 server.key</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ssl</tag>
-        <tag>ca</tag>
-        <tag>key</tag>
-        <tag>self</tag>
-        <tag>sign</tag>
-        <tag>openssl</tag>
-        <tag>mitm</tag>
-        <tag>csr</tag>
-        <tag>crt</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
-    <url>/2021/06/15/ssl_crt_key/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>OpenSSL 1.1.1f</li>
-</ul>
-<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
-<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>ssl</tag>
-        <tag>key</tag>
-        <tag>csr</tag>
-        <tag>crt</tag>
-        <tag>match</tag>
-        <tag>cert</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Share] VMware 裡的 CentOS 使用共享資料夾</title>
-    <url>/2021/06/19/share_vmware_centos/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>共享資料夾是使用虛擬機時常會碰到的需求，最近遇到要在 CentOS 中設定共享資料夾，沒想到挺麻煩的，因此記錄下來方便以後查閱。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>實體機 (Host) 作業系統：Windows 10</li>
-<li>虛擬機 (Guest) 作業系統：CentOS 8.2</li>
-<li>虛擬機軟體：VMware 15.5.6</li>
-</ul>
-<h2 id="設定-Host-共享資料夾"><a href="#設定-Host-共享資料夾" class="headerlink" title="設定 Host 共享資料夾"></a>設定 Host 共享資料夾</h2><p>在 Windows 上於 VMware 設定 Host 要分享的的共享資料夾，這裡的範例是 <code>D:\VMware\Shared</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Share-VMware-%E8%A3%A1%E7%9A%84-CentOS-%E4%BD%BF%E7%94%A8%E5%85%B1%E4%BA%AB%E8%B3%87%E6%96%99%E5%A4%BE%2Fshare_folder.png?alt=media&amp;token=311502b1-730c-4d26-8d29-6eea00ea2fd0" alt="Host 共享資料夾"><span class="image-caption">Host 共享資料夾</span></p>
-<h2 id="設定-Guest-共享資料夾"><a href="#設定-Guest-共享資料夾" class="headerlink" title="設定 Guest 共享資料夾"></a>設定 Guest 共享資料夾</h2><p>在 CentOS 8.2 中建立一個要當共享資料夾的目錄</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mkdir ~/shares</span><br></pre></td></tr></table></figure>
-<p>掛載共享資料夾，其中 <code>Shared</code> 是 Host 的共享資料夾名稱， <code>~/shares</code> 是 Guest 的共享目錄</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ /usr/bin/vmhgfs-fuse .host:/Shared ~/shares</span><br></pre></td></tr></table></figure>
-<p>此時 Guest 內的 <code>~/shares</code> 目錄與 Host 的 <code>D:\VMware\Shared</code> 資料夾就是互通的囉！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>10</tag>
-        <tag>vmware</tag>
       </tags>
   </entry>
   <entry>
@@ -2055,6 +2055,34 @@
       </tags>
   </entry>
   <entry>
+    <title>[Xilinx SDK] GPIO 常用到的參數</title>
+    <url>/2021/06/13/xilinx_sdk_gpio/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用 API 時，最重要的是正確地輸入對應參數，因此必定要先了解參數所代表的涵義，才能有正確的使用 API 姿勢。</p>
+<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
+<li>RFSoC ZCU111</li>
+</ul>
+<h2 id="參數說明"><a href="#參數說明" class="headerlink" title="參數說明"></a>參數說明</h2><ol>
+<li><p><code>channel</code>：這是在 Vivado 內使用 IP 來做設計時就決定的，打開 GPIO 的 IP 設定視窗可以看到 GPIO 與 GPIO2，這裡的例子通道 1 與通道 2 分別為 led 與 push button。</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Xilinx-SDK-GPIO-%E5%B8%B8%E7%94%A8%E5%88%B0%E7%9A%84%E5%8F%83%E6%95%B8%2Fgpio.png?alt=media&amp;token=1edff119-f05f-4e10-bc7a-fb60595872fa" alt="GPIO IP 設定畫面"><span class="image-caption">GPIO IP 設定畫面</span></p>
+</li>
+<li><p><code>DirectionMask</code>：這是決定 GPIO 為輸入或輸出 (相對於晶片來說) 的參數，需要特別點開 <code>*.h</code> 或 <code>*.c</code> 去看說明，此說明在 <code>xgpio.c</code> 的註解裡，以下為摘要</p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Bits set to 0 are output and bits set to 1 are input.</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>sdk</tag>
+        <tag>api</tag>
+        <tag>xilinx</tag>
+        <tag>gpio</tag>
+        <tag>channel</tag>
+        <tag>directionmask</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題</title>
     <url>/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
@@ -2092,34 +2120,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Xilinx SDK] GPIO 常用到的參數</title>
-    <url>/2021/06/13/xilinx_sdk_gpio/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用 API 時，最重要的是正確地輸入對應參數，因此必定要先了解參數所代表的涵義，才能有正確的使用 API 姿勢。</p>
-<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
-<li>RFSoC ZCU111</li>
-</ul>
-<h2 id="參數說明"><a href="#參數說明" class="headerlink" title="參數說明"></a>參數說明</h2><ol>
-<li><p><code>channel</code>：這是在 Vivado 內使用 IP 來做設計時就決定的，打開 GPIO 的 IP 設定視窗可以看到 GPIO 與 GPIO2，這裡的例子通道 1 與通道 2 分別為 led 與 push button。</p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Xilinx-SDK-GPIO-%E5%B8%B8%E7%94%A8%E5%88%B0%E7%9A%84%E5%8F%83%E6%95%B8%2Fgpio.png?alt=media&amp;token=1edff119-f05f-4e10-bc7a-fb60595872fa" alt="GPIO IP 設定畫面"><span class="image-caption">GPIO IP 設定畫面</span></p>
-</li>
-<li><p><code>DirectionMask</code>：這是決定 GPIO 為輸入或輸出 (相對於晶片來說) 的參數，需要特別點開 <code>*.h</code> 或 <code>*.c</code> 去看說明，此說明在 <code>xgpio.c</code> 的註解裡，以下為摘要</p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Bits set to 0 are output and bits set to 1 are input.</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>sdk</tag>
-        <tag>api</tag>
-        <tag>xilinx</tag>
-        <tag>gpio</tag>
-        <tag>channel</tag>
-        <tag>directionmask</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[apt] Unable to locate package 問題</title>
     <url>/2021/06/17/apt_unable_to_locate_package/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
@@ -2142,43 +2142,6 @@
         <tag>install</tag>
         <tag>apt</tag>
         <tag>get</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[asm] NEG 的運作與應用</title>
-    <url>/2021/06/11/asmneg/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
-<p>它的運作影響了旗標，進而用來當作實現 <code>BOOL function</code> 回傳的一個選項。就一起來看看 <code>NEG</code> 是如何運作以及對應到的高階語言是如何呈現的。</p>
-<h2 id="運作原理"><a href="#運作原理" class="headerlink" title="運作原理"></a>運作原理</h2><p>想知道一個程式碼如何運作，不外乎就是兩種方法：</p>
-<ol>
-<li>直接編譯/組譯然後執行，觀察結果(暫存器輸出、旗標設置等等)，此方式在本篇文章不強調。</li>
-<li>最基本的就是看技術文件，若參數很多或者回傳複雜無法直接觀察結果推斷的時候，相關文件最有用了。例如 Windows 的 API 可以去 MSDN 上找函數介紹，而組合語言的語法能夠找所使用 CPU 的廠商要文檔，AMD 與 Intel 的組合語言可能有差異，所以若是使用 Intel 的就請找 Intel 的指令手冊來參考。</li>
-</ol>
-<p>我的電腦為 Intel CPU，上網找到對應的指令手冊(<a href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)，內文對 <code>NEG</code> 指令的描述摘要如下</p>
-<blockquote>
-<p>NEG—Two&#39;s Complement Negation<br>Description<br>Replaces the value of operand (the destination operand) with its two&#39;s complement. (This operation is equivalent to subtracting the operand from 0.) The destination operand is located in a general-purpose register or a memory location.</p>
-</blockquote>
-<p>簡單說明一下，<code>NEG</code> 是一個 2 補數的運算，將一個數取 2 補數之後放回原本的目的地，等同於一個數被 0 減掉再放回暫存器(即 <code>eax = 0 - eax</code>)，目的地可以是暫存器也可以是記憶體位址。它原文下面還有說明，但到這就能夠來說明想要表達的程式碼了。再來看看它的流程 Pseudo code</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Operation</span><br><span class="line">IF DEST = <span class="number">0</span></span><br><span class="line">　THEN CF ← <span class="number">0</span>;</span><br><span class="line">　ELSE CF ← <span class="number">1</span>;</span><br><span class="line">FI;</span><br><span class="line">DEST ← [– (DEST)]</span><br></pre></td></tr></table></figure>
-<p>短短幾行 Pseudo code，代表了無數的文字，相信一看就懂它想說甚麼。在簡短的 <code>NEG</code> 描述與操作流程可以知道若 <code>DEST</code> 不為 0，進位旗標 (<code>CF</code>) 會被設置為 1，這是因為 0 減非 0 的數需要補位。</p>
-<h2 id="應用方式"><a href="#應用方式" class="headerlink" title="應用方式"></a>應用方式</h2><p>這時候假設你的程式中有個副程式如下</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">NEGtest</span><span class="params">(TCHAR *str1, TCHAR *str2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">lstrcmp</span>(str1, str2) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>不論是組合語言或高階語言，有很多不同編寫方式來完成相同的事情，然而這個函數內的 <code>if else</code> 所對應到的組合語言可能為</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">push ebp        <span class="comment">//str2 的位址</span></span><br><span class="line">push eax        <span class="comment">//str1 的位址</span></span><br><span class="line">call [<span class="number">00404004</span>] <span class="comment">//呼叫 lstrcmp 函數</span></span><br><span class="line">neg eax         <span class="comment">//API 函數回傳值都放在 eax 暫存器裡，因此對比較後的結果作 NEG 運算</span></span><br><span class="line">sbb eax, eax    <span class="comment">//eax = eax - eax - CY</span></span><br><span class="line">inc eax         <span class="comment">//eax = eax + 1</span></span><br></pre></td></tr></table></figure>
-<p><code>lstrcmp</code> 需要兩個參數，因此先壓參數入堆疊再調用 (call) 其函數，而它的回傳值放在 <code>eax</code> 裡面，若兩個字串相同，則 <code>eax == 0</code>；反之 <code>eax != 0</code>。此時分為兩個情況來討論：</p>
-<ol>
-<li><code>str1 == str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為 0，<code>neg eax</code> 之後 <code>eax</code> 還是 0 且 <code>CY</code> 為 0，因此到程式結束時 <code>eax</code> 為 1，即 <code>return true</code></li>
-<li><code>str1 !=  str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為非 0，<code>neg eax</code> 之後 <code>eax</code> 還是非 0 且 <code>CY</code> 為1，因此第五行的執行結果為 <code>eax = eax - eax - CY = 0xFFFFFFFF</code> (32位元的話)，最後 <code>eax = eax + 1 = 0</code> 即 <code>return false</code></li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個執行結果，與高階語言的效果是一樣的。當然，也可以用 <code>cmp</code>、<code>jmp</code>等指令來完成同一件事，但不覺得程式拐個彎寫得簡單優雅，會有更有成就感嗎？呵呵！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>neg</tag>
-        <tag>sbb</tag>
-        <tag>asm</tag>
       </tags>
   </entry>
   <entry>
@@ -2211,9 +2174,80 @@
       </tags>
   </entry>
   <entry>
+    <title>[轉檔] 將 rpm 檔轉為 deb 檔</title>
+    <url>/2021/06/17/rpm_deb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些軟體只提供 rpm 檔，但在 Ubuntu 的系統只能安裝 deb 檔，這時候就需要將 rpm 轉為 deb。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="轉檔並安裝"><a href="#轉檔並安裝" class="headerlink" title="轉檔並安裝"></a>轉檔並安裝</h2><p><a href="https://wiki.ubuntu-tw.org/index.php?title=HowtoInstallRPM">alien</a> 套件可以幫忙把 rpm 等其他安裝檔轉成 deb 安裝檔，在 Ubuntu 中預設是沒有安裝 <code>alien</code> 套件的，因此要先安裝</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install alien</span><br></pre></td></tr></table></figure>
+<p>將 <code>name.rpm</code> 轉為 <code>name.deb</code> 檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ~/somedir/name.rpm  <span class="comment"># 會轉為同檔名的 deb 檔案，但都改為小寫</span></span><br><span class="line">                                    <span class="comment"># ~/somedir 是 rpm 的檔案路徑，依情況改寫</span></span><br></pre></td></tr></table></figure>
+<p>用 dpkg 套件執行 deb 安裝檔安裝應用程式</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo dpkg -i ~/somedir/name.deb  <span class="comment">#開始安裝</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>file</tag>
+        <tag>18.04</tag>
+        <tag>rpm</tag>
+        <tag>deb</tag>
+        <tag>alien</tag>
+        <tag>dpkg</tag>
+        <tag>convert</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</title>
+    <url>/2021/06/16/win_10_ubuntu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 是一個非常輕便且好用的作業系統，在 Windows 下使用 Linux 大多是透過虛擬機器 (VM, Virtual Machine)，但對一個想要深入研究 Linux 的同好來說，灌雙系統是一個不錯的選擇。灌完雙系統之後，有機率會遇到一種情況「電腦會直接進Windows，不會出現選擇作業系統的畫面」。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="環境確認"><a href="#環境確認" class="headerlink" title="環境確認"></a>環境確認</h2><p>灌好 Ubuntu 後重新開機，若沒有出現系統選單，而直接進入 Windows 系統的話，那就要先確定一些設定：</p>
+<ol>
+<li><p>控制台 -&gt; 電源選項 -&gt; 選擇蓋上螢幕時的行為(左方) -&gt; 「取消勾選」開啟快速啟動</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-Win10-Ubuntu-%E9%96%8B%E6%A9%9F%E9%81%B8%E5%96%AE%EF%BC%8C%E8%AE%93%E4%BD%BF%E7%94%A8%E8%80%85%E9%96%8B%E6%A9%9F%E5%8F%AF%E4%BB%A5%E9%81%B8%E6%93%87%E7%B3%BB%E7%B5%B1%2Fcancel_quick_boot.png?alt=media&amp;token=0b90e051-8718-46fd-9888-2ba9c1af1fd6" alt="不要勾選開啟快速啟動"><span class="image-caption">不要勾選開啟快速啟動</span></p>
+</li>
+<li><p>重新開機進入 BIOS -&gt; Fast Boot -&gt; Disabled</p>
+</li>
+<li><p>同樣在 BIOS -&gt; Secure Boot Contorl -&gt; Disabled</p>
+</li>
+</ol>
+<p>以上三點都確認完，重開機後還是沒有出現選單的話，再接著去做下面的事情</p>
+<h2 id="grubx64-efi-確認"><a href="#grubx64-efi-確認" class="headerlink" title="grubx64.efi 確認"></a>grubx64.efi 確認</h2><p>進 EFI 系統分割磁碟區(參考：<a href="/2021/06/16/efi_windows_efi/">[EFI] 顯示 Windows 的 EFI 系統分割磁碟</a>)下的 ubuntu 資料夾，看是否有關鍵檔案 <code>grubx64.efi</code>，這是 Linux 的引導開機檔案，若沒有看到的話請 <a href="https://mega.nz/#!iIonWA4a!unTw_2I5r6pXLZaXUe-gU5D_lOqCHQJVwgcDeQyl0FU">點此下載 grubx64.efi</a> 並將其移到這個目錄下，再繼續下一步</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">P:\EFI\ubuntu&gt;dir</span><br><span class="line"></span><br><span class="line"> P:\EFI\ubuntu 的目錄</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          .</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          ..</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          fw</span><br><span class="line">2019/09/27  下午 06:16            75,992 fwupx64.efi</span><br><span class="line">2019/09/27  下午 06:20               121 grub.cfg</span><br><span class="line">2019/09/27  下午 06:20         1,334,816 shimx64.efi</span><br><span class="line">2019/09/27  下午 06:20         1,269,496 mmx64.efi</span><br><span class="line">2019/09/27  下午 06:20               108 BOOTX64.CSV</span><br><span class="line">2019/09/28  下午 01:01           956,792 grubx64.efi</span><br><span class="line">               6 個檔案       3,637,325 位元組</span><br><span class="line">               3 個目錄     236,093,440 位元組可用</span><br></pre></td></tr></table></figure>
+<p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;bcdedit /<span class="built_in">set</span> &#123;bootmgr&#125; path \EFI\ubuntu\grubx64.efi</span><br><span class="line"></span><br><span class="line">操作順利完成。</span><br></pre></td></tr></table></figure>
+<p>重新開機之後就可以看到選單啦！不過它等 10 秒沒操作的話就會自動進入預設的系統哦，所以要開機時需要注意，否則錯過進錯系統也只能再重開機。若想修改預設選項，可以參考 <a href="/2021/06/16/dual_system_change_default/">[雙系統] 更改開機系統選單的預設值</a>。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>18.04</tag>
+        <tag>10</tag>
+        <tag>menu</tag>
+        <tag>dual</tag>
+        <tag>system</tag>
+        <tag>option</tag>
+        <tag>boot</tag>
+        <tag>grub</tag>
+        <tag>grubx64.efi</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>讀 Paper 懶人器</title>
     <url>/2021/06/14/read_paper_lazier/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Paper 通常以英文流通最為廣泛，在閱讀時總是會搭配 google translation 查找不懂的語句或單字，但在複製整個語句或整段原文時，不應該存在的換行也會被複製進來。導致在輸入進 google translation 翻譯之前需要手動去掉換行。剛開始可能會覺得還好，但用到後來會發現這是非常浪費時間與惱人的事。</p>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Paper 通常以英文流通最為廣泛，在閱讀時總是會搭配 google translate 查找不懂的語句或單字，但在複製整個語句或整段原文時，不應該存在的換行也會被複製進來。導致在輸入進 google translate 翻譯之前需要手動去掉換行。剛開始可能會覺得還好，但用到後來會發現這是非常浪費時間與惱人的事。</p>
 <p>除此之外，有時候翻譯出來的中文慣用語會是中國大陸的慣用語，而不是台灣的慣用語，例如：server 在台灣會翻為「伺服器」而非「服務器」、macro 在台灣會翻為「巨集」而非「宏」。</p>
 <p>因此我開發一個應用程式，為了解決這些困擾之處，其功能為當我們複製某段文章時，可以自動去掉換行，並且進行翻譯、替換某些自訂文字，再使用 <code>Ctrl-V</code> 貼上時，已經是翻譯與替換後的結果！絕對是碩士、博士們讀 Paper 的一個利器。</p>
 <p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fdemo_cover.png?alt=media&amp;token=e650fd4d-4bd0-43e7-bc1c-e14ac3840132" alt="應用程式畫面展示"><span class="image-caption">應用程式畫面展示</span></p>
@@ -2295,34 +2329,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[轉檔] 將 rpm 檔轉為 deb 檔</title>
-    <url>/2021/06/17/rpm_deb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些軟體只提供 rpm 檔，但在 Ubuntu 的系統只能安裝 deb 檔，這時候就需要將 rpm 轉為 deb。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="轉檔並安裝"><a href="#轉檔並安裝" class="headerlink" title="轉檔並安裝"></a>轉檔並安裝</h2><p><a href="https://wiki.ubuntu-tw.org/index.php?title=HowtoInstallRPM">alien</a> 套件可以幫忙把 rpm 等其他安裝檔轉成 deb 安裝檔，在 Ubuntu 中預設是沒有安裝 <code>alien</code> 套件的，因此要先安裝</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install alien</span><br></pre></td></tr></table></figure>
-<p>將 <code>name.rpm</code> 轉為 <code>name.deb</code> 檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ~/somedir/name.rpm  <span class="comment"># 會轉為同檔名的 deb 檔案，但都改為小寫</span></span><br><span class="line">                                    <span class="comment"># ~/somedir 是 rpm 的檔案路徑，依情況改寫</span></span><br></pre></td></tr></table></figure>
-<p>用 dpkg 套件執行 deb 安裝檔安裝應用程式</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo dpkg -i ~/somedir/name.deb  <span class="comment">#開始安裝</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>file</tag>
-        <tag>18.04</tag>
-        <tag>rpm</tag>
-        <tag>deb</tag>
-        <tag>alien</tag>
-        <tag>dpkg</tag>
-        <tag>convert</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[雙系統] 同步 Ubuntu 與 Windows 的系統時間</title>
     <url>/2021/06/17/ubuntu_windows_time/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>使用 Ubuntu + Windows 雙系統的用戶，應該會發現 Ubuntu 的時間總是與 Windows 的不一樣，在 UTC+8 的地方，Ubuntu 比 Windows 快 8 小時，切換系統後總是要手動調整時間，造成一定的困擾。最佳解決之道應為將雙系統時間設為同步，因此這裡紀錄了如何將雙系統的時間設為一致。</p>
@@ -2355,52 +2361,46 @@
         <tag>18.04</tag>
         <tag>10</tag>
         <tag>time</tag>
-        <tag>synchronize</tag>
-        <tag>system</tag>
         <tag>dual</tag>
+        <tag>system</tag>
+        <tag>synchronize</tag>
       </tags>
   </entry>
   <entry>
-    <title>[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</title>
-    <url>/2021/06/16/win_10_ubuntu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 是一個非常輕便且好用的作業系統，在 Windows 下使用 Linux 大多是透過虛擬機器 (VM, Virtual Machine)，但對一個想要深入研究 Linux 的同好來說，灌雙系統是一個不錯的選擇。灌完雙系統之後，有機率會遇到一種情況「電腦會直接進Windows，不會出現選擇作業系統的畫面」。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>Windows 10</li>
-</ul>
-<h2 id="環境確認"><a href="#環境確認" class="headerlink" title="環境確認"></a>環境確認</h2><p>灌好 Ubuntu 後重新開機，若沒有出現系統選單，而直接進入 Windows 系統的話，那就要先確定一些設定：</p>
+    <title>[asm] NEG 的運作與應用</title>
+    <url>/2021/06/11/asmneg/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
+<p>它的運作影響了旗標，進而用來當作實現 <code>BOOL function</code> 回傳的一個選項。就一起來看看 <code>NEG</code> 是如何運作以及對應到的高階語言是如何呈現的。</p>
+<h2 id="運作原理"><a href="#運作原理" class="headerlink" title="運作原理"></a>運作原理</h2><p>想知道一個程式碼如何運作，不外乎就是兩種方法：</p>
 <ol>
-<li><p>控制台 -&gt; 電源選項 -&gt; 選擇蓋上螢幕時的行為(左方) -&gt; 「取消勾選」開啟快速啟動</p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-Win10-Ubuntu-%E9%96%8B%E6%A9%9F%E9%81%B8%E5%96%AE%EF%BC%8C%E8%AE%93%E4%BD%BF%E7%94%A8%E8%80%85%E9%96%8B%E6%A9%9F%E5%8F%AF%E4%BB%A5%E9%81%B8%E6%93%87%E7%B3%BB%E7%B5%B1%2Fcancel_quick_boot.png?alt=media&amp;token=0b90e051-8718-46fd-9888-2ba9c1af1fd6" alt="不要勾選開啟快速啟動"><span class="image-caption">不要勾選開啟快速啟動</span></p>
-</li>
-<li><p>重新開機進入 BIOS -&gt; Fast Boot -&gt; Disabled</p>
-</li>
-<li><p>同樣在 BIOS -&gt; Secure Boot Contorl -&gt; Disabled</p>
-</li>
+<li>直接編譯/組譯然後執行，觀察結果(暫存器輸出、旗標設置等等)，此方式在本篇文章不強調。</li>
+<li>最基本的就是看技術文件，若參數很多或者回傳複雜無法直接觀察結果推斷的時候，相關文件最有用了。例如 Windows 的 API 可以去 MSDN 上找函數介紹，而組合語言的語法能夠找所使用 CPU 的廠商要文檔，AMD 與 Intel 的組合語言可能有差異，所以若是使用 Intel 的就請找 Intel 的指令手冊來參考。</li>
 </ol>
-<p>以上三點都確認完，重開機後還是沒有出現選單的話，再接著去做下面的事情</p>
-<h2 id="grubx64-efi-確認"><a href="#grubx64-efi-確認" class="headerlink" title="grubx64.efi 確認"></a>grubx64.efi 確認</h2><p>進 EFI 系統分割磁碟區(參考：<a href="/2021/06/16/efi_windows_efi/">[EFI] 顯示 Windows 的 EFI 系統分割磁碟</a>)下的 ubuntu 資料夾，看是否有關鍵檔案 <code>grubx64.efi</code>，這是 Linux 的引導開機檔案，若沒有看到的話請 <a href="https://mega.nz/#!iIonWA4a!unTw_2I5r6pXLZaXUe-gU5D_lOqCHQJVwgcDeQyl0FU">點此下載 grubx64.efi</a> 並將其移到這個目錄下，再繼續下一步</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">P:\EFI\ubuntu&gt;dir</span><br><span class="line"></span><br><span class="line"> P:\EFI\ubuntu 的目錄</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          .</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          ..</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          fw</span><br><span class="line">2019/09/27  下午 06:16            75,992 fwupx64.efi</span><br><span class="line">2019/09/27  下午 06:20               121 grub.cfg</span><br><span class="line">2019/09/27  下午 06:20         1,334,816 shimx64.efi</span><br><span class="line">2019/09/27  下午 06:20         1,269,496 mmx64.efi</span><br><span class="line">2019/09/27  下午 06:20               108 BOOTX64.CSV</span><br><span class="line">2019/09/28  下午 01:01           956,792 grubx64.efi</span><br><span class="line">               6 個檔案       3,637,325 位元組</span><br><span class="line">               3 個目錄     236,093,440 位元組可用</span><br></pre></td></tr></table></figure>
-<p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;bcdedit /<span class="built_in">set</span> &#123;bootmgr&#125; path \EFI\ubuntu\grubx64.efi</span><br><span class="line"></span><br><span class="line">操作順利完成。</span><br></pre></td></tr></table></figure>
-<p>重新開機之後就可以看到選單啦！不過它等 10 秒沒操作的話就會自動進入預設的系統哦，所以要開機時需要注意，否則錯過進錯系統也只能再重開機。若想修改預設選項，可以參考 <a href="/2021/06/16/dual_system_change_default/">[雙系統] 更改開機系統選單的預設值</a>。</p>
+<p>我的電腦為 Intel CPU，上網找到對應的指令手冊(<a href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)，內文對 <code>NEG</code> 指令的描述摘要如下</p>
+<blockquote>
+<p>NEG—Two&#39;s Complement Negation<br>Description<br>Replaces the value of operand (the destination operand) with its two&#39;s complement. (This operation is equivalent to subtracting the operand from 0.) The destination operand is located in a general-purpose register or a memory location.</p>
+</blockquote>
+<p>簡單說明一下，<code>NEG</code> 是一個 2 補數的運算，將一個數取 2 補數之後放回原本的目的地，等同於一個數被 0 減掉再放回暫存器(即 <code>eax = 0 - eax</code>)，目的地可以是暫存器也可以是記憶體位址。它原文下面還有說明，但到這就能夠來說明想要表達的程式碼了。再來看看它的流程 Pseudo code</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Operation</span><br><span class="line">IF DEST = <span class="number">0</span></span><br><span class="line">　THEN CF ← <span class="number">0</span>;</span><br><span class="line">　ELSE CF ← <span class="number">1</span>;</span><br><span class="line">FI;</span><br><span class="line">DEST ← [– (DEST)]</span><br></pre></td></tr></table></figure>
+<p>短短幾行 Pseudo code，代表了無數的文字，相信一看就懂它想說甚麼。在簡短的 <code>NEG</code> 描述與操作流程可以知道若 <code>DEST</code> 不為 0，進位旗標 (<code>CF</code>) 會被設置為 1，這是因為 0 減非 0 的數需要補位。</p>
+<h2 id="應用方式"><a href="#應用方式" class="headerlink" title="應用方式"></a>應用方式</h2><p>這時候假設你的程式中有個副程式如下</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">NEGtest</span><span class="params">(TCHAR *str1, TCHAR *str2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">lstrcmp</span>(str1, str2) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不論是組合語言或高階語言，有很多不同編寫方式來完成相同的事情，然而這個函數內的 <code>if else</code> 所對應到的組合語言可能為</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">push ebp        <span class="comment">//str2 的位址</span></span><br><span class="line">push eax        <span class="comment">//str1 的位址</span></span><br><span class="line">call [<span class="number">00404004</span>] <span class="comment">//呼叫 lstrcmp 函數</span></span><br><span class="line">neg eax         <span class="comment">//API 函數回傳值都放在 eax 暫存器裡，因此對比較後的結果作 NEG 運算</span></span><br><span class="line">sbb eax, eax    <span class="comment">//eax = eax - eax - CY</span></span><br><span class="line">inc eax         <span class="comment">//eax = eax + 1</span></span><br></pre></td></tr></table></figure>
+<p><code>lstrcmp</code> 需要兩個參數，因此先壓參數入堆疊再調用 (call) 其函數，而它的回傳值放在 <code>eax</code> 裡面，若兩個字串相同，則 <code>eax == 0</code>；反之 <code>eax != 0</code>。此時分為兩個情況來討論：</p>
+<ol>
+<li><code>str1 == str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為 0，<code>neg eax</code> 之後 <code>eax</code> 還是 0 且 <code>CY</code> 為 0，因此到程式結束時 <code>eax</code> 為 1，即 <code>return true</code></li>
+<li><code>str1 !=  str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為非 0，<code>neg eax</code> 之後 <code>eax</code> 還是非 0 且 <code>CY</code> 為1，因此第五行的執行結果為 <code>eax = eax - eax - CY = 0xFFFFFFFF</code> (32位元的話)，最後 <code>eax = eax + 1 = 0</code> 即 <code>return false</code></li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個執行結果，與高階語言的效果是一樣的。當然，也可以用 <code>cmp</code>、<code>jmp</code>等指令來完成同一件事，但不覺得程式拐個彎寫得簡單優雅，會有更有成就感嗎？呵呵！</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>18.04</tag>
-        <tag>10</tag>
-        <tag>menu</tag>
-        <tag>system</tag>
-        <tag>dual</tag>
-        <tag>option</tag>
-        <tag>boot</tag>
-        <tag>grub</tag>
-        <tag>grubx64.efi</tag>
+        <tag>neg</tag>
+        <tag>sbb</tag>
+        <tag>asm</tag>
       </tags>
   </entry>
   <entry>
@@ -2430,8 +2430,8 @@
         <tag>18.04</tag>
         <tag>10</tag>
         <tag>menu</tag>
-        <tag>system</tag>
         <tag>dual</tag>
+        <tag>system</tag>
         <tag>option</tag>
         <tag>boot</tag>
         <tag>grub</tag>
