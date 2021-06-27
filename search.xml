@@ -143,70 +143,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[C#] 發布 ASP.NET Core 應用程式</title>
-    <url>/2021/06/15/cs_asp_net_core/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接續 <a href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core_3_1/">[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</a> 已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio Enterprise 2019 (16.7.2)</li>
-<li>.Net Core 3.1</li>
-</ul>
-<h2 id="發布"><a href="#發布" class="headerlink" title="發布"></a>發布</h2><p>開啟 cmd 進到專案的資料夾裡</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;<span class="built_in">cd</span> C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice</span><br></pre></td></tr></table></figure>
-<p>使用 <a href="https://docs.microsoft.com/zh-tw/dotnet/core/tools/dotnet-build">Release 組建組態</a>，並以指令執行 publish，訊息中的最後一行為該專案 Publish 的位置</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice&gt;dotnet publish -c Release</span><br><span class="line">Microsoft (R) Build Engine version 16.7.0+b89cb5fde <span class="keyword">for</span> .NET</span><br><span class="line">Copyright (C) Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">  Determining projects to restore...</span><br><span class="line">  All projects are up-to-date <span class="keyword">for</span> restore.</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.Views.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish\</span><br></pre></td></tr></table></figure>
-<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>啟動 Publish 位置內的應用程式，此時應用程式在 <code>http://localhost:5000</code> 運行監聽囉，開啟瀏灠器輸入網址即可連線到網頁應用程式</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish&gt;dotnet CorePractice.dll <span class="comment"># 這裡是 dll，不是 exe</span></span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: http://localhost:5000</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: https://localhost:5001</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Application started. Press Ctrl+C to shut down.</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Hosting environment: Production</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Content root path: C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>csharp</tag>
-        <tag>asp</tag>
-        <tag>.net</tag>
-        <tag>core</tag>
-        <tag>3.1</tag>
-        <tag>visual studio</tag>
-        <tag>2019</tag>
-        <tag>publish</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[CharSet] CentOS 修改 MariaDB／MySQL 預設字符集</title>
-    <url>/2021/06/19/charset_centos_mariadb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL 是瑞典人開發的，所以預設字符集是 latin1，與其每次要創建資料庫都要指定字符集，不如直接更改預設的字符集。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-<li>MariaDB 10.3.17</li>
-</ul>
-<h2 id="確認預設字符集"><a href="#確認預設字符集" class="headerlink" title="確認預設字符集"></a>確認預設字符集</h2><p>登入 MariaDB</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mysql -u user -p</span><br></pre></td></tr></table></figure>
-<p>查看預設字符集，<code>Server characterset</code>、<code>Db characterset</code>、<code>Client characterset</code> 與 <code>Conn. characterset</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          8</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    latin1</span><br><span class="line">Db     characterset:    latin1</span><br><span class="line">Client characterset:    utf8</span><br><span class="line">Conn.  characterset:    utf8</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 8 sec</span><br></pre></td></tr></table></figure>
-<h2 id="更改-cnf-設定"><a href="#更改-cnf-設定" class="headerlink" title="更改 cnf 設定"></a>更改 cnf 設定</h2><p>為了不影響到原先就在的 cnf 檔，在 <code>/etc/my.cnf.d/</code> 目錄下新增一個 cnf 檔 (檔名任意)，內容如下</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8mb4        <span class="comment">## 修改 Client characterset 與 Conn. characterset</span></span><br><span class="line">[mysqld]</span><br><span class="line">character-set-server=utf8mb4         <span class="comment">## 修改 Server characterset 與 Db characterset</span></span><br><span class="line">collation-server=utf8mb4_unicode_ci  <span class="comment">## 會修改預設的校驗比對方法</span></span><br></pre></td></tr></table></figure>
-<h2 id="載入設定"><a href="#載入設定" class="headerlink" title="載入設定"></a>載入設定</h2><p>重啟 MariaDB，確認字符集已更改為所設定的</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mariadb</span><br><span class="line">[user@localhost ~]$ mysql -u user -p</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          9</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    utf8mb4</span><br><span class="line">Db     characterset:    utf8mb4</span><br><span class="line">Client characterset:    utf8mb4</span><br><span class="line">Conn.  characterset:    utf8mb4</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 3 min 39 sec</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>server</tag>
-        <tag>characterset</tag>
-        <tag>client</tag>
-        <tag>mariadb</tag>
-        <tag>mysql</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>default</tag>
-        <tag>collation</tag>
-        <tag>utf8</tag>
-        <tag>utf8mb4</tag>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[C#] 在高 DPI 的螢幕上，有些應用程式內的字會模糊的原因以及解決方法！</title>
     <url>/2021/06/11/cs_dpi/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>開啟 Visual Studio <code>C#</code> 的 Windows Form 應用程式來設計，一定曾經注意到雖然在 VS 裡面設計 Form 時，預覽的字是清晰的，結果 Compiler 之後跑出來的字是模糊的！以下圖幫各位回憶一下。</p>
@@ -311,6 +247,36 @@
       </tags>
   </entry>
   <entry>
+    <title>[C#] 發布 ASP.NET Core 應用程式</title>
+    <url>/2021/06/15/cs_asp_net_core/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接續 <a href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core_3_1/">[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</a> 已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio Enterprise 2019 (16.7.2)</li>
+<li>.Net Core 3.1</li>
+</ul>
+<h2 id="發布"><a href="#發布" class="headerlink" title="發布"></a>發布</h2><p>開啟 cmd 進到專案的資料夾裡</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;<span class="built_in">cd</span> C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice</span><br></pre></td></tr></table></figure>
+<p>使用 <a href="https://docs.microsoft.com/zh-tw/dotnet/core/tools/dotnet-build">Release 組建組態</a>，並以指令執行 publish，訊息中的最後一行為該專案 Publish 的位置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice&gt;dotnet publish -c Release</span><br><span class="line">Microsoft (R) Build Engine version 16.7.0+b89cb5fde <span class="keyword">for</span> .NET</span><br><span class="line">Copyright (C) Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">  Determining projects to restore...</span><br><span class="line">  All projects are up-to-date <span class="keyword">for</span> restore.</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.Views.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish\</span><br></pre></td></tr></table></figure>
+<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>啟動 Publish 位置內的應用程式，此時應用程式在 <code>http://localhost:5000</code> 運行監聽囉，開啟瀏灠器輸入網址即可連線到網頁應用程式</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish&gt;dotnet CorePractice.dll <span class="comment"># 這裡是 dll，不是 exe</span></span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: http://localhost:5000</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: https://localhost:5001</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Application started. Press Ctrl+C to shut down.</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Hosting environment: Production</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Content root path: C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>csharp</tag>
+        <tag>asp</tag>
+        <tag>.net</tag>
+        <tag>core</tag>
+        <tag>3.1</tag>
+        <tag>visual studio</tag>
+        <tag>2019</tag>
+        <tag>publish</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[EFI] 顯示 Windows 的 EFI 系統分割磁碟</title>
     <url>/2021/06/16/efi_windows_efi/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>與開機有關的文件通常會存放於 EFI 系統分割磁碟，且為了不讓一般使用者誤觸造成設定錯誤進而導致系統崩潰，通常會將磁碟隱藏起來，只讓真的有需要設定且知道如何進入的使用者自行更改設定。</p>
@@ -351,6 +317,41 @@
         <tag>partition</tag>
         <tag>disk</tag>
         <tag>cmd</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[DLL] 在 C++ 中調用 dll 的函式</title>
+    <url>/2021/06/15/dll_cpp_dll/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 <code>C++</code> 中，使用 <code>LoadLibraryA</code>/<code>LoadLibraryW</code> 調用 dll。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio 2017</li>
+</ul>
+<h2 id="準備一個-DLL"><a href="#準備一個-DLL" class="headerlink" title="準備一個 DLL"></a>準備一個 DLL</h2><p>先自己寫一個 dll，詳細步驟說明請參考：<a href="/2021/06/15/dll_vs_2017_dllmain_dll/">[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</a>。</p>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fcreate_project.png?alt=media&amp;token=fbe282e9-5cb1-4090-a01e-817bc244411e" alt="新建專案"><span class="image-caption">新建專案</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_project_type.png?alt=media&amp;token=c4a871cc-40d8-49d3-ac26-2857fb355c1d" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
+<p>Application type 選 <code>Console Application(.exe)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>&#123;project_name&#125;.cpp</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_exe.png?alt=media&amp;token=a3933b05-a276-4d7a-a0a0-7129bb6912a5" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>&#123;project_name&#125;.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-load-in-cpp">GitHub</a>)</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*voidFun)</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HMODULE hDll = <span class="built_in">LoadLibraryA</span>(<span class="string">&quot;dllMainAndFun.dll&quot;</span>);</span><br><span class="line"></span><br><span class="line">    voidFun pHelloWorldFun = (<span class="built_in"><span class="keyword">void</span></span>(*)())<span class="built_in">GetProcAddress</span>(hDll, <span class="string">&quot;helloWorldFun&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">pHelloWorldFun</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>將要匯入的 dll 放到 Debug 資料夾下，否則 <code>LoadLibraryA</code> 需要給 dll 的絕對路徑，因為 Debug 模式編譯出來的執行檔都存在此處。</p>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>按下 F5，開始 Debug 模式，看到彈出視窗 (<code>MessageBoxA</code>/<code>MessageBoxW</code>)，就代表載入成功了！顯示順序應為</p>
+<ol>
+<li>程序建立時被呼叫</li>
+<li>此函式呼叫成功</li>
+<li>程序退出時被呼叫</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>cpp</tag>
+        <tag>dll</tag>
+        <tag>invoke</tag>
+        <tag>loadlibrarya</tag>
+        <tag>loadlibraryw</tag>
       </tags>
   </entry>
   <entry>
@@ -403,13 +404,80 @@
         <tag>ubuntu</tag>
         <tag>20.04</tag>
         <tag>netcat</tag>
-        <tag>linux</tag>
         <tag>CR</tag>
         <tag>carriage</tag>
         <tag>return</tag>
         <tag>echo</tag>
         <tag>file</tag>
+        <tag>linux</tag>
         <tag>cat</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[CharSet] CentOS 修改 MariaDB／MySQL 預設字符集</title>
+    <url>/2021/06/19/charset_centos_mariadb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL 是瑞典人開發的，所以預設字符集是 latin1，與其每次要創建資料庫都要指定字符集，不如直接更改預設的字符集。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+<li>MariaDB 10.3.17</li>
+</ul>
+<h2 id="確認預設字符集"><a href="#確認預設字符集" class="headerlink" title="確認預設字符集"></a>確認預設字符集</h2><p>登入 MariaDB</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mysql -u user -p</span><br></pre></td></tr></table></figure>
+<p>查看預設字符集，<code>Server characterset</code>、<code>Db characterset</code>、<code>Client characterset</code> 與 <code>Conn. characterset</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          8</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    latin1</span><br><span class="line">Db     characterset:    latin1</span><br><span class="line">Client characterset:    utf8</span><br><span class="line">Conn.  characterset:    utf8</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 8 sec</span><br></pre></td></tr></table></figure>
+<h2 id="更改-cnf-設定"><a href="#更改-cnf-設定" class="headerlink" title="更改 cnf 設定"></a>更改 cnf 設定</h2><p>為了不影響到原先就在的 cnf 檔，在 <code>/etc/my.cnf.d/</code> 目錄下新增一個 cnf 檔 (檔名任意)，內容如下</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8mb4        <span class="comment">## 修改 Client characterset 與 Conn. characterset</span></span><br><span class="line">[mysqld]</span><br><span class="line">character-set-server=utf8mb4         <span class="comment">## 修改 Server characterset 與 Db characterset</span></span><br><span class="line">collation-server=utf8mb4_unicode_ci  <span class="comment">## 會修改預設的校驗比對方法</span></span><br></pre></td></tr></table></figure>
+<h2 id="載入設定"><a href="#載入設定" class="headerlink" title="載入設定"></a>載入設定</h2><p>重啟 MariaDB，確認字符集已更改為所設定的</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mariadb</span><br><span class="line">[user@localhost ~]$ mysql -u user -p</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          9</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    utf8mb4</span><br><span class="line">Db     characterset:    utf8mb4</span><br><span class="line">Client characterset:    utf8mb4</span><br><span class="line">Conn.  characterset:    utf8mb4</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 3 min 39 sec</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>server</tag>
+        <tag>linux</tag>
+        <tag>characterset</tag>
+        <tag>client</tag>
+        <tag>mariadb</tag>
+        <tag>mysql</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>default</tag>
+        <tag>collation</tag>
+        <tag>utf8</tag>
+        <tag>utf8mb4</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[FTP] CentOS 7 安裝 vsftpd 省去實體與虛擬機之間傳輸設定</title>
+    <url>/2021/06/19/ftp_centos_vsftpd/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在開發時免不了會使用到虛擬機的可能性，而在虛擬機與主機之間做檔案轉移時總會遇到奇奇怪怪的問題，先不論是否是虛擬機的問題，但總是會再這無關緊要的問題上浪費掉許多寶貴時間，因此研究如何架設 FTP，讓主機直接上傳檔案到 FTP 伺服器，再從虛擬機中下載，避免檔案轉移遇到的麻煩！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 7.9</li>
+</ul>
+<h2 id="安裝-vsftpd"><a href="#安裝-vsftpd" class="headerlink" title="安裝 vsftpd"></a>安裝 vsftpd</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y vsftpd</span><br></pre></td></tr></table></figure>
+<p>修改設定檔 (<code>/etc/vsftpd/vsftpd.conf</code>)，因為目標只是要讓 VM 可以讀取我們 Host 想傳的檔案，因此只需要將 FTP server 掛在區域網路內，這樣匿名登入是可以接受的</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 修改以下設定值</span></span><br><span class="line">anonymous_enable=YES    <span class="comment"># 允許匿名登入</span></span><br><span class="line">local_enable=NO         <span class="comment"># 不允許實體使用者登入</span></span><br><span class="line">write_enable=YES        <span class="comment"># 可寫入</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 新增以下設定值</span></span><br><span class="line">pasv_enable=YES     <span class="comment"># 使用被動式連線，避免客戶端還需另外設定防火牆</span></span><br><span class="line">pasv_min_port=60101 <span class="comment"># 被動式連線的 FTP Data Port 設定為 60101 ~ 60110</span></span><br><span class="line">pasv_max_port=60110</span><br><span class="line"></span><br><span class="line">no_anon_password=YES        <span class="comment"># 匿名使用者不用輸入密碼</span></span><br><span class="line"></span><br><span class="line">anon_other_write_enable=YES <span class="comment"># 匿名使用者權限設定</span></span><br><span class="line">anon_mkdir_write_enable=YES</span><br><span class="line">anon_upload_enable=YES</span><br><span class="line"></span><br><span class="line">anon_umask=022      <span class="comment"># 匿名使用者上傳的檔案的預設權限</span></span><br><span class="line">                    <span class="comment"># user 與 other 需有 r 權限才可以被匿名使用者下載</span></span><br><span class="line">                    <span class="comment"># 此設定值預設為 077</span></span><br></pre></td></tr></table></figure>
+<p>啟用 vsftpd</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> vsftpd</span><br><span class="line">[user@localhost ~]$ sudo systemctl start vsftpd</span><br></pre></td></tr></table></figure>
+<h2 id="設定防火牆"><a href="#設定防火牆" class="headerlink" title="設定防火牆"></a>設定防火牆</h2><p>在 CentOS 中幾乎所有的 Port 預設對外服務都是關閉的，無法由外部連入，因此需要另外設定才能開放給其他主機連線，FTP 有兩種 Port 需要設定</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=21/tcp           <span class="comment"># Command Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=60101-60110/tcp  <span class="comment"># Data Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<h2 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_connect_all_unreserved=1 <span class="comment"># 設定這個才能使用 ls/dir 指令，否則出現 425 錯誤</span></span><br><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_full_access=1 <span class="comment"># 設定這個才能上傳、修改檔名、刪除</span></span><br></pre></td></tr></table></figure>
+<h2 id="創建資料夾"><a href="#創建資料夾" class="headerlink" title="創建資料夾"></a>創建資料夾</h2><p>以 <code>anonymous</code> 登入後是以 ftp 角色進行操作的，因此需另外創建匿名使用者可以上傳與下載檔案的資料夾</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /var/ftp/upload_anonymous</span><br><span class="line">[user@localhost ~]$ sudo chown ftp:ftp /var/ftp/upload_anonymous/</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>至此萬事俱全，可以開始使用 ftp 了，匿名使用者被限制只能在 <code>upload_anonymous</code> 目錄中上傳或下載檔案！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>file</tag>
+        <tag>centos</tag>
+        <tag>7.9</tag>
+        <tag>vsftpd</tag>
+        <tag>ftp</tag>
+        <tag>425</tag>
+        <tag>vm</tag>
+        <tag>copy</tag>
       </tags>
   </entry>
   <entry>
@@ -444,9 +512,9 @@
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>linux</tag>
         <tag>centos</tag>
         <tag>8.2</tag>
-        <tag>linux</tag>
         <tag>firewall</tag>
         <tag>firewalld</tag>
         <tag>port</tag>
@@ -484,38 +552,26 @@
       </tags>
   </entry>
   <entry>
-    <title>[DLL] 在 C++ 中調用 dll 的函式</title>
-    <url>/2021/06/15/dll_cpp_dll/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 <code>C++</code> 中，使用 <code>LoadLibraryA</code>/<code>LoadLibraryW</code> 調用 dll。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio 2017</li>
+    <title>[Git] git-cli 使用樹狀圖展示 Commit Log</title>
+    <url>/2021/06/13/git_terminal_git_log/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>習慣使用 cli 操作 Git 後，不會想裝 Git 的 GUI 擴充，但還是覺得若能以樹狀圖來看 Commit Log 會很方便。</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>同樣是使用 <code>git log</code> 指令，但需加上一些參數達到這個效果</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git log --oneline --graph --all</span><br><span class="line">* baf420b (HEAD -&gt; feat-fill-up) Text to speech</span><br><span class="line">* a06c9c8 Display the fuel prompt</span><br><span class="line">| * 5d04f92 (origin-github/feat, feat) renew API</span><br><span class="line">|/  </span><br><span class="line">* 19b0257 Rename the variables&#x27; name</span><br><span class="line">* 41992f1 renew API(communicates with golang API)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>--oneline</code>：只顯示 log 標題，若不限定為只有標題，將會顯得雜亂。</li>
+<li><code>--graph</code>：以樹狀圖顯示 log。</li>
+<li><code>--all</code>：全部的 log，包含所有分支。</li>
 </ul>
-<h2 id="準備一個-DLL"><a href="#準備一個-DLL" class="headerlink" title="準備一個 DLL"></a>準備一個 DLL</h2><p>先自己寫一個 dll，詳細步驟說明請參考：<a href="/2021/06/15/dll_vs_2017_dllmain_dll/">[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</a>。</p>
-<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fcreate_project.png?alt=media&amp;token=fbe282e9-5cb1-4090-a01e-817bc244411e" alt="新建專案"><span class="image-caption">新建專案</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_project_type.png?alt=media&amp;token=c4a871cc-40d8-49d3-ac26-2857fb355c1d" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
-<p>Application type 選 <code>Console Application(.exe)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>&#123;project_name&#125;.cpp</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_exe.png?alt=media&amp;token=a3933b05-a276-4d7a-a0a0-7129bb6912a5" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
-<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>&#123;project_name&#125;.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-load-in-cpp">GitHub</a>)</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*voidFun)</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HMODULE hDll = <span class="built_in">LoadLibraryA</span>(<span class="string">&quot;dllMainAndFun.dll&quot;</span>);</span><br><span class="line"></span><br><span class="line">    voidFun pHelloWorldFun = (<span class="built_in"><span class="keyword">void</span></span>(*)())<span class="built_in">GetProcAddress</span>(hDll, <span class="string">&quot;helloWorldFun&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">pHelloWorldFun</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>將要匯入的 dll 放到 Debug 資料夾下，否則 <code>LoadLibraryA</code> 需要給 dll 的絕對路徑，因為 Debug 模式編譯出來的執行檔都存在此處。</p>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>按下 F5，開始 Debug 模式，看到彈出視窗 (<code>MessageBoxA</code>/<code>MessageBoxW</code>)，就代表載入成功了！顯示順序應為</p>
-<ol>
-<li>程序建立時被呼叫</li>
-<li>此函式呼叫成功</li>
-<li>程序退出時被呼叫</li>
-</ol>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>cpp</tag>
-        <tag>dll</tag>
-        <tag>invoke</tag>
-        <tag>loadlibrarya</tag>
-        <tag>loadlibraryw</tag>
+        <tag>git</tag>
+        <tag>tree</tag>
+        <tag>log</tag>
+        <tag>commit</tag>
+        <tag>cli</tag>
       </tags>
   </entry>
   <entry>
@@ -552,62 +608,6 @@
         <tag>next</tag>
         <tag>firestore</tag>
         <tag>visitors</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Git] git-cli 使用樹狀圖展示 Commit Log</title>
-    <url>/2021/06/13/git_terminal_git_log/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>習慣使用 cli 操作 Git 後，不會想裝 Git 的 GUI 擴充，但還是覺得若能以樹狀圖來看 Commit Log 會很方便。</p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>同樣是使用 <code>git log</code> 指令，但需加上一些參數達到這個效果</p>
-<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git log --oneline --graph --all</span><br><span class="line">* baf420b (HEAD -&gt; feat-fill-up) Text to speech</span><br><span class="line">* a06c9c8 Display the fuel prompt</span><br><span class="line">| * 5d04f92 (origin-github/feat, feat) renew API</span><br><span class="line">|/  </span><br><span class="line">* 19b0257 Rename the variables&#x27; name</span><br><span class="line">* 41992f1 renew API(communicates with golang API)</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>--oneline</code>：只顯示 log 標題，若不限定為只有標題，將會顯得雜亂。</li>
-<li><code>--graph</code>：以樹狀圖顯示 log。</li>
-<li><code>--all</code>：全部的 log，包含所有分支。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-        <tag>tree</tag>
-        <tag>log</tag>
-        <tag>commit</tag>
-        <tag>cli</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[FTP] CentOS 7 安裝 vsftpd 省去實體與虛擬機之間傳輸設定</title>
-    <url>/2021/06/19/ftp_centos_vsftpd/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在開發時免不了會使用到虛擬機的可能性，而在虛擬機與主機之間做檔案轉移時總會遇到奇奇怪怪的問題，先不論是否是虛擬機的問題，但總是會再這無關緊要的問題上浪費掉許多寶貴時間，因此研究如何架設 FTP，讓主機直接上傳檔案到 FTP 伺服器，再從虛擬機中下載，避免檔案轉移遇到的麻煩！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 7.9</li>
-</ul>
-<h2 id="安裝-vsftpd"><a href="#安裝-vsftpd" class="headerlink" title="安裝 vsftpd"></a>安裝 vsftpd</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y vsftpd</span><br></pre></td></tr></table></figure>
-<p>修改設定檔 (<code>/etc/vsftpd/vsftpd.conf</code>)，因為目標只是要讓 VM 可以讀取我們 Host 想傳的檔案，因此只需要將 FTP server 掛在區域網路內，這樣匿名登入是可以接受的</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 修改以下設定值</span></span><br><span class="line">anonymous_enable=YES    <span class="comment"># 允許匿名登入</span></span><br><span class="line">local_enable=NO         <span class="comment"># 不允許實體使用者登入</span></span><br><span class="line">write_enable=YES        <span class="comment"># 可寫入</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 新增以下設定值</span></span><br><span class="line">pasv_enable=YES     <span class="comment"># 使用被動式連線，避免客戶端還需另外設定防火牆</span></span><br><span class="line">pasv_min_port=60101 <span class="comment"># 被動式連線的 FTP Data Port 設定為 60101 ~ 60110</span></span><br><span class="line">pasv_max_port=60110</span><br><span class="line"></span><br><span class="line">no_anon_password=YES        <span class="comment"># 匿名使用者不用輸入密碼</span></span><br><span class="line"></span><br><span class="line">anon_other_write_enable=YES <span class="comment"># 匿名使用者權限設定</span></span><br><span class="line">anon_mkdir_write_enable=YES</span><br><span class="line">anon_upload_enable=YES</span><br><span class="line"></span><br><span class="line">anon_umask=022      <span class="comment"># 匿名使用者上傳的檔案的預設權限</span></span><br><span class="line">                    <span class="comment"># user 與 other 需有 r 權限才可以被匿名使用者下載</span></span><br><span class="line">                    <span class="comment"># 此設定值預設為 077</span></span><br></pre></td></tr></table></figure>
-<p>啟用 vsftpd</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> vsftpd</span><br><span class="line">[user@localhost ~]$ sudo systemctl start vsftpd</span><br></pre></td></tr></table></figure>
-<h2 id="設定防火牆"><a href="#設定防火牆" class="headerlink" title="設定防火牆"></a>設定防火牆</h2><p>在 CentOS 中幾乎所有的 Port 預設對外服務都是關閉的，無法由外部連入，因此需要另外設定才能開放給其他主機連線，FTP 有兩種 Port 需要設定</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=21/tcp           <span class="comment"># Command Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=60101-60110/tcp  <span class="comment"># Data Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
-<h2 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_connect_all_unreserved=1 <span class="comment"># 設定這個才能使用 ls/dir 指令，否則出現 425 錯誤</span></span><br><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_full_access=1 <span class="comment"># 設定這個才能上傳、修改檔名、刪除</span></span><br></pre></td></tr></table></figure>
-<h2 id="創建資料夾"><a href="#創建資料夾" class="headerlink" title="創建資料夾"></a>創建資料夾</h2><p>以 <code>anonymous</code> 登入後是以 ftp 角色進行操作的，因此需另外創建匿名使用者可以上傳與下載檔案的資料夾</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /var/ftp/upload_anonymous</span><br><span class="line">[user@localhost ~]$ sudo chown ftp:ftp /var/ftp/upload_anonymous/</span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>至此萬事俱全，可以開始使用 ftp 了，匿名使用者被限制只能在 <code>upload_anonymous</code> 目錄中上傳或下載檔案！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>centos</tag>
-        <tag>file</tag>
-        <tag>7.9</tag>
-        <tag>vsftpd</tag>
-        <tag>ftp</tag>
-        <tag>425</tag>
-        <tag>vm</tag>
-        <tag>copy</tag>
       </tags>
   </entry>
   <entry>
@@ -695,32 +695,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[LaTeX] Texmaker 點擊跳轉失效</title>
-    <url>/2021/06/13/latex_texmaker/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>點擊 pdf 跳轉到相對應的 tex 程式碼是非常好用的工具，若少了這項功能 tex 將變得難以使用。</p>
-<h2 id="原因及解決方法"><a href="#原因及解決方法" class="headerlink" title="原因及解決方法"></a>原因及解決方法</h2><p>無法使用這個功能主要有兩個可能原因</p>
-<ol>
-<li><p>先到「選項」→「設定Texmaker」→「命令」，看看自己使用哪個編譯器，我是用的是 <code>XeLaTeX</code></p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">xelatex -synctex=1 -interaction=nonstopmode %.tex</span><br></pre></td></tr></table></figure>
-<p> 其中 <code>-synctex=1</code> 是將同步 (Synchronize) 功能打開的關鍵，若無法使用很可能是沒有這個，直接加入即可。</p>
-</li>
-<li><p>檔案路徑中不要有中文或特殊符號，若有，先將檔案移動到沒有中文或特殊符號的路徑下，並確保檔名也符合此條件。再重新開啟 Texmaker 測試點擊跳轉功能。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>latex</tag>
-        <tag>synctex</tag>
-        <tag>texmaker</tag>
-        <tag>not work</tag>
-        <tag>jump</tag>
-        <tag>click</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Hyper-V] 讓 Windows 的硬碟可以超過 16 TB</title>
     <url>/2021/06/15/hyper_v_windows_16_tb/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 檔案系統預設的 Cluster Size 為 4KB，進一步導致分割區最多只能到 16 TB，當要延伸磁區且總容量會超過 16 TB 時，就會出現「磁碟區無法延伸 因為叢集數目將超過檔案系統支援的最大叢集數目」的提示視窗。</p>
@@ -767,6 +741,65 @@
         <tag>fcitx</tag>
         <tag>18.04</tag>
         <tag>remove</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[LaTeX] Texmaker 點擊跳轉失效</title>
+    <url>/2021/06/13/latex_texmaker/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>點擊 pdf 跳轉到相對應的 tex 程式碼是非常好用的工具，若少了這項功能 tex 將變得難以使用。</p>
+<h2 id="原因及解決方法"><a href="#原因及解決方法" class="headerlink" title="原因及解決方法"></a>原因及解決方法</h2><p>無法使用這個功能主要有兩個可能原因</p>
+<ol>
+<li><p>先到「選項」→「設定Texmaker」→「命令」，看看自己使用哪個編譯器，我是用的是 <code>XeLaTeX</code></p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">xelatex -synctex=1 -interaction=nonstopmode %.tex</span><br></pre></td></tr></table></figure>
+<p> 其中 <code>-synctex=1</code> 是將同步 (Synchronize) 功能打開的關鍵，若無法使用很可能是沒有這個，直接加入即可。</p>
+</li>
+<li><p>檔案路徑中不要有中文或特殊符號，若有，先將檔案移動到沒有中文或特殊符號的路徑下，並確保檔名也符合此條件。再重新開啟 Texmaker 測試點擊跳轉功能。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>latex</tag>
+        <tag>synctex</tag>
+        <tag>texmaker</tag>
+        <tag>not work</tag>
+        <tag>jump</tag>
+        <tag>click</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[MATLAB] k-means 演算法說明與實作</title>
+    <url>/2021/06/12/matlab_k_means/</url>
+    <content><![CDATA[<h2 id="k-means-介紹"><a href="#k-means-介紹" class="headerlink" title="k-means 介紹"></a>k-means 介紹</h2><p><code>k-means</code> 又稱 <code>c-means Clustering</code>，是一種分群演算法，k 表示群集的數量，演算法如下</p>
+<ol>
+<li>給定一資料集 S，選擇 k 個點當群集中心，也稱為群心。</li>
+<li>計算每一資料與各群心距離，資料歸類在與之最短距離的群心那群。</li>
+<li>歸類好的資料再算出一個新的群心，通常是使用平均值。</li>
+<li>比較新的群心與舊的群心位置是否接近或者固定。</li>
+<li>重複 2 ~ 4 直到 4 成立，則分群完畢。</li>
+</ol>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/MATLAB-k-means-%E6%BC%94%E7%AE%97%E6%B3%95%2Fk_means_alg.png?alt=media&amp;token=954cb2ec-bdda-4a67-a154-8181dde1c09e" alt="k-means 流程圖"><span class="image-caption">k-means 流程圖</span></p>
+<h2 id="Pseudo-code"><a href="#Pseudo-code" class="headerlink" title="Pseudo code"></a>Pseudo code</h2><p>Pseudo code 如下，先定義參數</p>
+<ul>
+<li>Input : 群數 <code>k</code>, 群心 Centers of clusters(<code>kC</code>)</li>
+<li>Output：分群結果 <code>team</code></li>
+<li>Subroutine：算距離 <code>distFunc</code>, 算新的群心 <code>re_center</code>, 分群 <code>clustering</code></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">main k_means(Database, k, kC, distFunc, re_center, k_clustering)</span><br><span class="line">    While 1</span><br><span class="line">        分群結果 team = clustering(Database, kC, distFunc)</span><br><span class="line">        重新找群心 NewkC = re_center(Database, team, k)</span><br><span class="line">        If 新的群心NewkC和舊群心kC差距可接受 Then 　//差距可接受代表分類完成</span><br><span class="line">            kC = NewkC //更新群心</span><br><span class="line">            break;</span><br><span class="line">        Else //還沒找到滿意的群心就繼續找</span><br><span class="line">            kC = NewkC //更新群心</span><br><span class="line">        End If</span><br><span class="line">    End While 1</span><br><span class="line">    return team, kC //回傳資料群集編號和群心</span><br><span class="line">End k_means</span><br><span class="line">    </span><br><span class="line">sub re_center(Database, team, k)</span><br><span class="line">    For each Cluster of k</span><br><span class="line">        新群心NewkC = 屬於第team(Cluster)組的資料取算術平均數為新的群心</span><br><span class="line">    End For Cluster </span><br><span class="line">    return NewkC</span><br><span class="line">End re_center</span><br><span class="line"></span><br><span class="line">sub clustering(Database, kC)</span><br><span class="line">    tempDist = ? //距離暫存器，?要比所有可能的距離都大</span><br><span class="line">    For each P of Database</span><br><span class="line">        For each C of kC</span><br><span class="line">            距離dist = distFunc(C, P)</span><br><span class="line">            If dist &lt; tempDist Then //紀錄哪個群心最近</span><br><span class="line">                tempDist = dist</span><br><span class="line">                FLAG = C </span><br><span class="line">            End If</span><br><span class="line">        End For C</span><br><span class="line">        將tempDist 變回 ?</span><br><span class="line">        team(P) = FLAG //P點的分類完成</span><br><span class="line">    End For P</span><br><span class="line">    return team</span><br><span class="line">End clustering</span><br></pre></td></tr></table></figure>
+<h2 id="MATLAB-code"><a href="#MATLAB-code" class="headerlink" title="MATLAB code"></a>MATLAB code</h2><p><code>MATLAB</code> code</p>
+<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">function [team kx ky]<span class="built_in">=</span> k_means(x, y, kx, ky, seed_num)</span><br><span class="line">while <span class="number">1</span></span><br><span class="line">    team <span class="built_in">=</span> k_Clustering( x, y, kx, ky);<span class="comment">% 分群</span></span><br><span class="line">    [nkx, nky] <span class="built_in">=</span> k_re_center(x, y, team, seed_num); <span class="comment">%更新新的群心</span></span><br><span class="line">    <span class="built_in">if</span> ( sum(kx <span class="built_in">=</span><span class="built_in">=</span> nkx) <span class="built_in">=</span><span class="built_in">=</span> seed_num ) &amp;&amp; ( sum(ky <span class="built_in">=</span><span class="built_in">=</span> nky) <span class="built_in">=</span><span class="built_in">=</span> seed_num) <span class="comment">%新的群心是否跟舊的一樣</span></span><br><span class="line">        kx <span class="built_in">=</span> nkx;</span><br><span class="line">        ky <span class="built_in">=</span> nky;</span><br><span class="line">        break; <span class="comment">%一樣的話就跳出</span></span><br><span class="line">    <span class="built_in">else</span> <span class="comment">%不一樣就繼續</span></span><br><span class="line">        kx <span class="built_in">=</span> nkx;</span><br><span class="line">        ky <span class="built_in">=</span> nky;</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function team <span class="built_in">=</span> k_Clustering(x, y, kx, ky)</span><br><span class="line"><span class="comment">% This is for K-Clustering</span></span><br><span class="line"><span class="comment">% (x,y) are dataset and (kx, ky) are Cluster-center</span></span><br><span class="line"></span><br><span class="line">mid_dis <span class="built_in">=</span> <span class="number">9999999999</span>; <span class="comment">%距離的暫存器</span></span><br><span class="line">for i <span class="built_in">=</span> <span class="number">1</span> : length(x); <span class="comment">%總共要判斷 length(x) 個資料</span></span><br><span class="line">    for j <span class="built_in">=</span> <span class="number">1</span> : length(kx); <span class="comment">%總共有 length(kx) 個群集中心</span></span><br><span class="line">        dist <span class="built_in">=</span> k_distFunc( [x(i) y(i)], [kx(j) ky(j)]); <span class="comment">%計算第i個資料和第j個群集中心的距離</span></span><br><span class="line">        <span class="built_in">if</span> dist &lt; mid_dis <span class="comment">%判斷距離哪個群集中心較近</span></span><br><span class="line">            mid_dis <span class="built_in">=</span> dist; <span class="comment">%更新距離的暫存器</span></span><br><span class="line">            FLAG <span class="built_in">=</span> j; <span class="comment">%紀錄現在距離哪個群集中心最近</span></span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">    mid_dis <span class="built_in">=</span> <span class="number">9999999999</span>; <span class="comment">%距離的暫存器變回初始值</span></span><br><span class="line">    team(i,<span class="number">1</span>) <span class="built_in">=</span> FLAG; <span class="comment">%第 i 個資料屬於第 FLAG 個群集</span></span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function [kx, ky] <span class="built_in">=</span> k_re_center( x, y, team, seed_num)</span><br><span class="line"><span class="comment">% re-find clustered data for new cluster center</span></span><br><span class="line">for i <span class="built_in">=</span> <span class="number">1</span> : seed_num</span><br><span class="line">    kx(i) <span class="built_in">=</span> sum(x(team <span class="built_in">=</span><span class="built_in">=</span> i )) / sum(team <span class="built_in">=</span><span class="built_in">=</span> i);</span><br><span class="line">    ky(i) <span class="built_in">=</span> sum(y(team <span class="built_in">=</span><span class="built_in">=</span> i )) / sum(team <span class="built_in">=</span><span class="built_in">=</span> i);</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function D <span class="built_in">=</span> k_distFunc(P1, P2)</span><br><span class="line"><span class="comment">% This is for finding Distance Between 2D Points</span></span><br><span class="line"><span class="comment">% Input can be an vector</span></span><br><span class="line">D <span class="built_in">=</span> norm(P1 - P2);</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>k</tag>
+        <tag>means</tag>
+        <tag>matlab</tag>
+        <tag>pseudo</tag>
+        <tag>algorithm</tag>
       </tags>
   </entry>
   <entry>
@@ -836,11 +869,11 @@
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>matlab</tag>
         <tag>ip</tag>
         <tag>finder</tag>
         <tag>equipment</tag>
         <tag>wireshark</tag>
-        <tag>matlab</tag>
         <tag>ptu</tag>
         <tag>flir</tag>
       </tags>
@@ -902,8 +935,8 @@
       </categories>
       <tags>
         <tag>centos</tag>
-        <tag>firewall</tag>
         <tag>7.9</tag>
+        <tag>firewall</tag>
         <tag>mqtt</tag>
         <tag>mosquitto</tag>
         <tag>authorise</tag>
@@ -912,36 +945,98 @@
       </tags>
   </entry>
   <entry>
-    <title>[MATLAB] k-means 演算法說明與實作</title>
-    <url>/2021/06/12/matlab_k_means/</url>
-    <content><![CDATA[<h2 id="k-means-介紹"><a href="#k-means-介紹" class="headerlink" title="k-means 介紹"></a>k-means 介紹</h2><p><code>k-means</code> 又稱 <code>c-means Clustering</code>，是一種分群演算法，k 表示群集的數量，演算法如下</p>
-<ol>
-<li>給定一資料集 S，選擇 k 個點當群集中心，也稱為群心。</li>
-<li>計算每一資料與各群心距離，資料歸類在與之最短距離的群心那群。</li>
-<li>歸類好的資料再算出一個新的群心，通常是使用平均值。</li>
-<li>比較新的群心與舊的群心位置是否接近或者固定。</li>
-<li>重複 2 ~ 4 直到 4 成立，則分群完畢。</li>
+    <title>[Math] 以移位運算優化除數為 2 的冪次方的除法</title>
+    <url>/2021/06/15/math_2/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>除法指令在 CPU 中的執行周期相較於其它運算 (加/減/乘) 還要來得長，所以會盡可能的找替代方案來算出除法結果。這裡討論的是，當除以一個 2 的冪次方數時要怎麼減化過程，特別是被除數為負數時的情況。</p>
+<h2 id="問題敘述"><a href="#問題敘述" class="headerlink" title="問題敘述"></a>問題敘述</h2><p>基本上 $x\gg k$ 等同於 $\dfrac{x}{2^k}$，但這個結果只能保證在 $x \geq 0$ 時是對的，若在 $x &lt; 0$ 時，可就不一定了！舉例來說，若 $x=-12345$ 且 $k=4$</p>
+<p>以除法運算來看，取整數後即 $-771$。</p>
+<script type="math/tex; mode=display">x\gg k=-12345\gg 4=\dfrac{-12345}{2^4}=-771.5625</script><p>在以位元運算來看</p>
+<script type="math/tex; mode=display">-12345_{10}\gg 4_{10}=1100\_1111\_1100\_0111_2 \gg 4_{10} = 1111\_1100\_1111\_1100_2 = -772</script><p>這與我們想要的結果 ($-771$) 不一樣，因為移位運算後的結果都是取 <code>floor</code> 後的值，即</p>
+<script type="math/tex; mode=display">x \gg k = floor(\dfrac{x}{2^k})</script><p>當 $x \geq 0$，我們要得到整數部份就要取 <code>floor</code>，這與移位運算的特性一致；而當 $x &lt; 0$ 時，我們要得到整數部份就要取 <code>ceil</code>，但此時移位運算是取 <code>floor</code>，所以就會有誤。</p>
+<p>因此，我們需要一個函數，當 $x &lt; 0$ 時作移位運算後結果為 $ceil(\dfrac{x}{2^k})$ 的演算法</p>
+<script type="math/tex; mode=display">(x + (2^k - 1)) >> k</script><h2 id="證明"><a href="#證明" class="headerlink" title="證明"></a>證明</h2><p>目標</p>
+<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = (x + (2^k - 1)) \gg k</script><p>要證明上式，必須先證明下式成立，</p>
+<script type="math/tex; mode=display">ceil(\dfrac{x}{y})=floor(\dfrac{x+y-1}{y}), \ \textrm{if}\ x\ \in \mathbb{Z}\ \textrm{and}\ y\ \in \mathbb{Z^+}</script><p>令</p>
+<script type="math/tex; mode=display">x=qy+r,\ 0 \leq r\leq y-1</script><p>q 為除法商數且 r 為除法餘數。再將此試代入目標等式右邊</p>
+<script type="math/tex; mode=display">\dfrac{x+y-1}{y}=\dfrac{qy+r+y-1}{y}=q+\dfrac{r+y-1}{y}</script><p>討論：</p>
+<p><code>case 1</code>：如果 $x$ 可以被 $y$ 整除，則 $r=0$</p>
+<script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{y-1}{y})=q=ceil(\dfrac{x}{y})</script><p><code>case 2</code>：如果 $x$ 不能被 $y$ 整除，則 $1\leq r\leq y-1$</p>
+<script type="math/tex; mode=display">\dfrac{y}{y}\leq \dfrac{r+y-1}{y}\leq \dfrac{2y-2}{y}</script><script type="math/tex; mode=display">1\leq\dfrac{r+y-1}{y}<2</script><script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{r+y-1}{y})=q+1=ceil(\dfrac{x}{y})</script><p>最後，再利用這個等式，可以得到若 <code>x &lt; 0</code></p>
+<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = floor ( \dfrac{x + 2^k - 1}{2^k}) = (x + (2^k - 1)) \gg k</script><p>得證</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://www.itread01.com/content/1548192791.html">計算機中如何實現除數是2的冪次的除法</a></li>
 </ol>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/MATLAB-k-means-%E6%BC%94%E7%AE%97%E6%B3%95%2Fk_means_alg.png?alt=media&amp;token=954cb2ec-bdda-4a67-a154-8181dde1c09e" alt="k-means 流程圖"><span class="image-caption">k-means 流程圖</span></p>
-<h2 id="Pseudo-code"><a href="#Pseudo-code" class="headerlink" title="Pseudo code"></a>Pseudo code</h2><p>Pseudo code 如下，先定義參數</p>
-<ul>
-<li>Input : 群數 <code>k</code>, 群心 Centers of clusters(<code>kC</code>)</li>
-<li>Output：分群結果 <code>team</code></li>
-<li>Subroutine：算距離 <code>distFunc</code>, 算新的群心 <code>re_center</code>, 分群 <code>clustering</code></li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">main k_means(Database, k, kC, distFunc, re_center, k_clustering)</span><br><span class="line">    While 1</span><br><span class="line">        分群結果 team = clustering(Database, kC, distFunc)</span><br><span class="line">        重新找群心 NewkC = re_center(Database, team, k)</span><br><span class="line">        If 新的群心NewkC和舊群心kC差距可接受 Then 　//差距可接受代表分類完成</span><br><span class="line">            kC = NewkC //更新群心</span><br><span class="line">            break;</span><br><span class="line">        Else //還沒找到滿意的群心就繼續找</span><br><span class="line">            kC = NewkC //更新群心</span><br><span class="line">        End If</span><br><span class="line">    End While 1</span><br><span class="line">    return team, kC //回傳資料群集編號和群心</span><br><span class="line">End k_means</span><br><span class="line">    </span><br><span class="line">sub re_center(Database, team, k)</span><br><span class="line">    For each Cluster of k</span><br><span class="line">        新群心NewkC = 屬於第team(Cluster)組的資料取算術平均數為新的群心</span><br><span class="line">    End For Cluster </span><br><span class="line">    return NewkC</span><br><span class="line">End re_center</span><br><span class="line"></span><br><span class="line">sub clustering(Database, kC)</span><br><span class="line">    tempDist = ? //距離暫存器，?要比所有可能的距離都大</span><br><span class="line">    For each P of Database</span><br><span class="line">        For each C of kC</span><br><span class="line">            距離dist = distFunc(C, P)</span><br><span class="line">            If dist &lt; tempDist Then //紀錄哪個群心最近</span><br><span class="line">                tempDist = dist</span><br><span class="line">                FLAG = C </span><br><span class="line">            End If</span><br><span class="line">        End For C</span><br><span class="line">        將tempDist 變回 ?</span><br><span class="line">        team(P) = FLAG //P點的分類完成</span><br><span class="line">    End For P</span><br><span class="line">    return team</span><br><span class="line">End clustering</span><br></pre></td></tr></table></figure>
-<h2 id="MATLAB-code"><a href="#MATLAB-code" class="headerlink" title="MATLAB code"></a>MATLAB code</h2><p><code>MATLAB</code> code</p>
-<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">function [team kx ky]<span class="built_in">=</span> k_means(x, y, kx, ky, seed_num)</span><br><span class="line">while <span class="number">1</span></span><br><span class="line">    team <span class="built_in">=</span> k_Clustering( x, y, kx, ky);<span class="comment">% 分群</span></span><br><span class="line">    [nkx, nky] <span class="built_in">=</span> k_re_center(x, y, team, seed_num); <span class="comment">%更新新的群心</span></span><br><span class="line">    <span class="built_in">if</span> ( sum(kx <span class="built_in">=</span><span class="built_in">=</span> nkx) <span class="built_in">=</span><span class="built_in">=</span> seed_num ) &amp;&amp; ( sum(ky <span class="built_in">=</span><span class="built_in">=</span> nky) <span class="built_in">=</span><span class="built_in">=</span> seed_num) <span class="comment">%新的群心是否跟舊的一樣</span></span><br><span class="line">        kx <span class="built_in">=</span> nkx;</span><br><span class="line">        ky <span class="built_in">=</span> nky;</span><br><span class="line">        break; <span class="comment">%一樣的話就跳出</span></span><br><span class="line">    <span class="built_in">else</span> <span class="comment">%不一樣就繼續</span></span><br><span class="line">        kx <span class="built_in">=</span> nkx;</span><br><span class="line">        ky <span class="built_in">=</span> nky;</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function team <span class="built_in">=</span> k_Clustering(x, y, kx, ky)</span><br><span class="line"><span class="comment">% This is for K-Clustering</span></span><br><span class="line"><span class="comment">% (x,y) are dataset and (kx, ky) are Cluster-center</span></span><br><span class="line"></span><br><span class="line">mid_dis <span class="built_in">=</span> <span class="number">9999999999</span>; <span class="comment">%距離的暫存器</span></span><br><span class="line">for i <span class="built_in">=</span> <span class="number">1</span> : length(x); <span class="comment">%總共要判斷 length(x) 個資料</span></span><br><span class="line">    for j <span class="built_in">=</span> <span class="number">1</span> : length(kx); <span class="comment">%總共有 length(kx) 個群集中心</span></span><br><span class="line">        dist <span class="built_in">=</span> k_distFunc( [x(i) y(i)], [kx(j) ky(j)]); <span class="comment">%計算第i個資料和第j個群集中心的距離</span></span><br><span class="line">        <span class="built_in">if</span> dist &lt; mid_dis <span class="comment">%判斷距離哪個群集中心較近</span></span><br><span class="line">            mid_dis <span class="built_in">=</span> dist; <span class="comment">%更新距離的暫存器</span></span><br><span class="line">            FLAG <span class="built_in">=</span> j; <span class="comment">%紀錄現在距離哪個群集中心最近</span></span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">    mid_dis <span class="built_in">=</span> <span class="number">9999999999</span>; <span class="comment">%距離的暫存器變回初始值</span></span><br><span class="line">    team(i,<span class="number">1</span>) <span class="built_in">=</span> FLAG; <span class="comment">%第 i 個資料屬於第 FLAG 個群集</span></span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function [kx, ky] <span class="built_in">=</span> k_re_center( x, y, team, seed_num)</span><br><span class="line"><span class="comment">% re-find clustered data for new cluster center</span></span><br><span class="line">for i <span class="built_in">=</span> <span class="number">1</span> : seed_num</span><br><span class="line">    kx(i) <span class="built_in">=</span> sum(x(team <span class="built_in">=</span><span class="built_in">=</span> i )) / sum(team <span class="built_in">=</span><span class="built_in">=</span> i);</span><br><span class="line">    ky(i) <span class="built_in">=</span> sum(y(team <span class="built_in">=</span><span class="built_in">=</span> i )) / sum(team <span class="built_in">=</span><span class="built_in">=</span> i);</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">function D <span class="built_in">=</span> k_distFunc(P1, P2)</span><br><span class="line"><span class="comment">% This is for finding Distance Between 2D Points</span></span><br><span class="line"><span class="comment">% Input can be an vector</span></span><br><span class="line">D <span class="built_in">=</span> norm(P1 - P2);</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>matlab</tag>
-        <tag>k</tag>
-        <tag>means</tag>
-        <tag>pseudo</tag>
-        <tag>algorithm</tag>
+        <tag>math</tag>
+        <tag>shift</tag>
+        <tag>bit</tag>
+        <tag>division</tag>
+        <tag>power of 2</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
+    <url>/2021/06/19/mariadb_centos/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+</ul>
+<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
+<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
+<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>mariadb</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>latest</tag>
+        <tag>update</tag>
+        <tag>version</tag>
+        <tag>repository</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
+    <url>/2021/06/17/mount_iso/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
+<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-o loop</code>：使用 loop device 來掛載</li>
+</ul>
+<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
+<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>mount</tag>
+        <tag>unmount</tag>
+        <tag>iso</tag>
+        <tag>media</tag>
       </tags>
   </entry>
   <entry>
@@ -968,41 +1063,15 @@
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>linux</tag>
         <tag>mysql</tag>
         <tag>centos</tag>
         <tag>8.2</tag>
-        <tag>linux</tag>
         <tag>8</tag>
         <tag>root</tag>
         <tag>password</tag>
         <tag>change</tag>
         <tag>forget</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Nginx] CentOS 安裝網頁伺服器 Nginx</title>
-    <url>/2021/06/18/nginx_centos_nginx/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>相較於 Apache，Nginx 消耗資源少且處理速度快，又支援高併發，是大流量應用的好選擇。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>開啟 Terminal，使用 <code>dnf</code> 來安裝 Nginx</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install -y nginx</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Complete!    <span class="comment">#看到這就行代表完成</span></span><br></pre></td></tr></table></figure>
-<h2 id="啟動並確認"><a href="#啟動並確認" class="headerlink" title="啟動並確認"></a>啟動並確認</h2><p>Nginx 預設是沒有開啟的，預設當系統開機時也不會自動開啟，所以通過指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start nginx   <span class="comment"># 現在馬上開啟 nginx 服務</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx  <span class="comment"># 之後開機也要自動開啟 nginx 服務</span></span><br></pre></td></tr></table></figure>
-<p>確認 Nginx 的服務狀態，看到 <code>active (running)</code> 代表正在運行囉</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl status nginx</span><br><span class="line">● nginx.service - The nginx HTTP and reverse proxy server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Thu 2020-09-10 09:08:10 CST; 3min 51s ago</span><br><span class="line">  Process: 2892 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2890 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2888 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)</span><br><span class="line"> Main PID: 2893 (nginx)</span><br><span class="line">    Tasks: 3 (<span class="built_in">limit</span>: 49448)</span><br><span class="line">   Memory: 5.7M</span><br><span class="line">   CGroup: /system.slice/nginx.service</span><br><span class="line">           ├─2893 nginx: master process /usr/sbin/nginx</span><br><span class="line">           ├─2894 nginx: worker process</span><br><span class="line">           └─2895 nginx: worker process</span><br><span class="line"></span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Starting The nginx HTTP and reverse proxy server...</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Started The nginx HTTP and reverse proxy server.</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>server</tag>
-        <tag>web</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -1131,98 +1200,29 @@
       </tags>
   </entry>
   <entry>
-    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
-    <url>/2021/06/17/mount_iso/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
-<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-o loop</code>：使用 loop device 來掛載</li>
-</ul>
-<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
-<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>18.04</tag>
-        <tag>mount</tag>
-        <tag>unmount</tag>
-        <tag>iso</tag>
-        <tag>media</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Math] 以移位運算優化除數為 2 的冪次方的除法</title>
-    <url>/2021/06/15/math_2/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>除法指令在 CPU 中的執行周期相較於其它運算 (加/減/乘) 還要來得長，所以會盡可能的找替代方案來算出除法結果。這裡討論的是，當除以一個 2 的冪次方數時要怎麼減化過程，特別是被除數為負數時的情況。</p>
-<h2 id="問題敘述"><a href="#問題敘述" class="headerlink" title="問題敘述"></a>問題敘述</h2><p>基本上 $x\gg k$ 等同於 $\dfrac{x}{2^k}$，但這個結果只能保證在 $x \geq 0$ 時是對的，若在 $x &lt; 0$ 時，可就不一定了！舉例來說，若 $x=-12345$ 且 $k=4$</p>
-<p>以除法運算來看，取整數後即 $-771$。</p>
-<script type="math/tex; mode=display">x\gg k=-12345\gg 4=\dfrac{-12345}{2^4}=-771.5625</script><p>在以位元運算來看</p>
-<script type="math/tex; mode=display">-12345_{10}\gg 4_{10}=1100\_1111\_1100\_0111_2 \gg 4_{10} = 1111\_1100\_1111\_1100_2 = -772</script><p>這與我們想要的結果 ($-771$) 不一樣，因為移位運算後的結果都是取 <code>floor</code> 後的值，即</p>
-<script type="math/tex; mode=display">x \gg k = floor(\dfrac{x}{2^k})</script><p>當 $x \geq 0$，我們要得到整數部份就要取 <code>floor</code>，這與移位運算的特性一致；而當 $x &lt; 0$ 時，我們要得到整數部份就要取 <code>ceil</code>，但此時移位運算是取 <code>floor</code>，所以就會有誤。</p>
-<p>因此，我們需要一個函數，當 $x &lt; 0$ 時作移位運算後結果為 $ceil(\dfrac{x}{2^k})$ 的演算法</p>
-<script type="math/tex; mode=display">(x + (2^k - 1)) >> k</script><h2 id="證明"><a href="#證明" class="headerlink" title="證明"></a>證明</h2><p>目標</p>
-<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = (x + (2^k - 1)) \gg k</script><p>要證明上式，必須先證明下式成立，</p>
-<script type="math/tex; mode=display">ceil(\dfrac{x}{y})=floor(\dfrac{x+y-1}{y}), \ \textrm{if}\ x\ \in \mathbb{Z}\ \textrm{and}\ y\ \in \mathbb{Z^+}</script><p>令</p>
-<script type="math/tex; mode=display">x=qy+r,\ 0 \leq r\leq y-1</script><p>q 為除法商數且 r 為除法餘數。再將此試代入目標等式右邊</p>
-<script type="math/tex; mode=display">\dfrac{x+y-1}{y}=\dfrac{qy+r+y-1}{y}=q+\dfrac{r+y-1}{y}</script><p>討論：</p>
-<p><code>case 1</code>：如果 $x$ 可以被 $y$ 整除，則 $r=0$</p>
-<script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{y-1}{y})=q=ceil(\dfrac{x}{y})</script><p><code>case 2</code>：如果 $x$ 不能被 $y$ 整除，則 $1\leq r\leq y-1$</p>
-<script type="math/tex; mode=display">\dfrac{y}{y}\leq \dfrac{r+y-1}{y}\leq \dfrac{2y-2}{y}</script><script type="math/tex; mode=display">1\leq\dfrac{r+y-1}{y}<2</script><script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{r+y-1}{y})=q+1=ceil(\dfrac{x}{y})</script><p>最後，再利用這個等式，可以得到若 <code>x &lt; 0</code></p>
-<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = floor ( \dfrac{x + 2^k - 1}{2^k}) = (x + (2^k - 1)) \gg k</script><p>得證</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a href="https://www.itread01.com/content/1548192791.html">計算機中如何實現除數是2的冪次的除法</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>math</tag>
-        <tag>shift</tag>
-        <tag>bit</tag>
-        <tag>division</tag>
-        <tag>power of 2</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
-    <url>/2021/06/19/mariadb_centos/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
+    <title>[Nginx] CentOS 安裝網頁伺服器 Nginx</title>
+    <url>/2021/06/18/nginx_centos_nginx/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>相較於 Apache，Nginx 消耗資源少且處理速度快，又支援高併發，是大流量應用的好選擇。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>CentOS 8.2</li>
 </ul>
-<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
-<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
-<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>開啟 Terminal，使用 <code>dnf</code> 來安裝 Nginx</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install -y nginx</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Complete!    <span class="comment">#看到這就行代表完成</span></span><br></pre></td></tr></table></figure>
+<h2 id="啟動並確認"><a href="#啟動並確認" class="headerlink" title="啟動並確認"></a>啟動並確認</h2><p>Nginx 預設是沒有開啟的，預設當系統開機時也不會自動開啟，所以通過指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start nginx   <span class="comment"># 現在馬上開啟 nginx 服務</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx  <span class="comment"># 之後開機也要自動開啟 nginx 服務</span></span><br></pre></td></tr></table></figure>
+<p>確認 Nginx 的服務狀態，看到 <code>active (running)</code> 代表正在運行囉</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl status nginx</span><br><span class="line">● nginx.service - The nginx HTTP and reverse proxy server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Thu 2020-09-10 09:08:10 CST; 3min 51s ago</span><br><span class="line">  Process: 2892 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2890 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2888 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)</span><br><span class="line"> Main PID: 2893 (nginx)</span><br><span class="line">    Tasks: 3 (<span class="built_in">limit</span>: 49448)</span><br><span class="line">   Memory: 5.7M</span><br><span class="line">   CGroup: /system.slice/nginx.service</span><br><span class="line">           ├─2893 nginx: master process /usr/sbin/nginx</span><br><span class="line">           ├─2894 nginx: worker process</span><br><span class="line">           └─2895 nginx: worker process</span><br><span class="line"></span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Starting The nginx HTTP and reverse proxy server...</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Started The nginx HTTP and reverse proxy server.</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>mariadb</tag>
+        <tag>server</tag>
+        <tag>web</tag>
+        <tag>linux</tag>
         <tag>centos</tag>
         <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>latest</tag>
-        <tag>update</tag>
-        <tag>version</tag>
-        <tag>repository</tag>
+        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -1282,41 +1282,16 @@
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>linux</tag>
         <tag>mariadb</tag>
         <tag>centos</tag>
         <tag>8.2</tag>
-        <tag>linux</tag>
         <tag>php</tag>
         <tag>10</tag>
         <tag>7.2</tag>
         <tag>php-fpm</tag>
         <tag>phpmyadmin</tag>
         <tag>xampp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
-    <url>/2021/06/15/php_phalcon_namespace/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Phalcon 4.0.3</li>
-</ul>
-<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
-<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
-<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
-<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>php</tag>
-        <tag>phalcon</tag>
-        <tag>namespace</tag>
       </tags>
   </entry>
   <entry>
@@ -1359,6 +1334,31 @@
         <tag>php</tag>
         <tag>phalcon</tag>
         <tag>install</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
+    <url>/2021/06/15/php_phalcon_namespace/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Phalcon 4.0.3</li>
+</ul>
+<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
+<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
+<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
+<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>php</tag>
+        <tag>phalcon</tag>
+        <tag>namespace</tag>
       </tags>
   </entry>
   <entry>
@@ -1601,8 +1601,8 @@
       </categories>
       <tags>
         <tag>ubuntu</tag>
-        <tag>linux</tag>
         <tag>windows</tag>
+        <tag>linux</tag>
         <tag>remote</tag>
         <tag>18.04</tag>
         <tag>rdp</tag>
@@ -1639,38 +1639,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[SSL] 數位簽名與驗證的過程</title>
-    <url>/2021/06/15/ssl_digital_signed_verify/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作。但我有發現一個現象，就是當講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並整理後記錄在這。</p>
-<h2 id="產製數位憑證"><a href="#產製數位憑證" class="headerlink" title="產製數位憑證"></a>產製數位憑證</h2><p>認證機構 (CA) 會先對要簽署的數據 (Data, 例如：Public Key, Subject ... 等等憑證資訊，皆為明碼) 做雜湊 (Hash) 運算，得到雜湊值 (Hash Value)，再以 CA 的私鑰 (Private Key) 對其加密以達到防止更改效果，這個產出即為數位簽章 (Digital Signature)</p>
-<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;CA}Hash\;Value\xrightarrow{Private\;Key\;of\;CA}Digital\;Signature</script><p>得到數位簽章後，將其與原本資料合起來，就為所謂的數位憑證 (Digital Certificate)</p>
-<script type="math/tex; mode=display">Data+Digital\;Signature=Digital\;Certificate</script><p>這個數位憑證就會被稱為被某 CA 所簽發的憑證。</p>
-<h2 id="驗證數位簽章"><a href="#驗證數位簽章" class="headerlink" title="驗證數位簽章"></a>驗證數位簽章</h2><p>在進行 https 連線的過程中，Server 會給 Client 一個數位憑證，當 Client 拿到數位憑證後，會馬上驗證是否真的為憑證上說的CA所發。</p>
-<p>第一步把憑證拆回 Data 與 Digital Signature</p>
-<script type="math/tex; mode=display">Digital\;Certificate=Data+Digital\;Signature</script><p>Client 先自行對 Data 做 Hash 運算</p>
-<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;Client}Hash\;Value</script><p>再對 Digital Signature 做解密運算，取得 CA 對 Data 做 Hash 運算的結果</p>
-<script type="math/tex; mode=display">Digital\;Signature\xrightarrow{Public\;Key\;of\;CA}Hash\;Value\;via\;Signature</script><p>再比對 Client 自己算出的 Hash Value 與經由數位簽章解密所得到的 Hash Value 是否相同，若相同，表示此憑證確實是該 CA 所發！</p>
-<script type="math/tex; mode=display">Hash\;Value\overset{\underset{\mathrm{?}}{}}{=}Hash\;Value\;via\;Signature</script><h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a href="https://cheapsslsecurity.com/blog/digital-signature-vs-digital-certificate-the-difference-explained/">What is the difference between a digital signature and a digital certificate</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ssl</tag>
-        <tag>digital</tag>
-        <tag>signature</tag>
-        <tag>verify</tag>
-        <tag>process</tag>
-        <tag>ca</tag>
-        <tag>certificate</tag>
-        <tag>private</tag>
-        <tag>public</tag>
-        <tag>key</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[RDP] xrdp 遠端 menu 不見時登出的方法</title>
     <url>/2021/06/17/rdp_xrdp_menu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在一台電腦上開啟 xrdp 伺服器，讓大家可以各自用自己的帳號登入，且互不相干擾。但使用過程中遇到一些突發性圖形介面的問題，需要重新登入才能正常運作。</p>
@@ -1701,6 +1669,38 @@
         <tag>mate</tag>
         <tag>menu</tag>
         <tag>disappear</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[SSL] 數位簽名與驗證的過程</title>
+    <url>/2021/06/15/ssl_digital_signed_verify/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作。但我有發現一個現象，就是當講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並整理後記錄在這。</p>
+<h2 id="產製數位憑證"><a href="#產製數位憑證" class="headerlink" title="產製數位憑證"></a>產製數位憑證</h2><p>認證機構 (CA) 會先對要簽署的數據 (Data, 例如：Public Key, Subject ... 等等憑證資訊，皆為明碼) 做雜湊 (Hash) 運算，得到雜湊值 (Hash Value)，再以 CA 的私鑰 (Private Key) 對其加密以達到防止更改效果，這個產出即為數位簽章 (Digital Signature)</p>
+<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;CA}Hash\;Value\xrightarrow{Private\;Key\;of\;CA}Digital\;Signature</script><p>得到數位簽章後，將其與原本資料合起來，就為所謂的數位憑證 (Digital Certificate)</p>
+<script type="math/tex; mode=display">Data+Digital\;Signature=Digital\;Certificate</script><p>這個數位憑證就會被稱為被某 CA 所簽發的憑證。</p>
+<h2 id="驗證數位簽章"><a href="#驗證數位簽章" class="headerlink" title="驗證數位簽章"></a>驗證數位簽章</h2><p>在進行 https 連線的過程中，Server 會給 Client 一個數位憑證，當 Client 拿到數位憑證後，會馬上驗證是否真的為憑證上說的CA所發。</p>
+<p>第一步把憑證拆回 Data 與 Digital Signature</p>
+<script type="math/tex; mode=display">Digital\;Certificate=Data+Digital\;Signature</script><p>Client 先自行對 Data 做 Hash 運算</p>
+<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;Client}Hash\;Value</script><p>再對 Digital Signature 做解密運算，取得 CA 對 Data 做 Hash 運算的結果</p>
+<script type="math/tex; mode=display">Digital\;Signature\xrightarrow{Public\;Key\;of\;CA}Hash\;Value\;via\;Signature</script><p>再比對 Client 自己算出的 Hash Value 與經由數位簽章解密所得到的 Hash Value 是否相同，若相同，表示此憑證確實是該 CA 所發！</p>
+<script type="math/tex; mode=display">Hash\;Value\overset{\underset{\mathrm{?}}{}}{=}Hash\;Value\;via\;Signature</script><h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://cheapsslsecurity.com/blog/digital-signature-vs-digital-certificate-the-difference-explained/">What is the difference between a digital signature and a digital certificate</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ssl</tag>
+        <tag>digital</tag>
+        <tag>signature</tag>
+        <tag>verify</tag>
+        <tag>process</tag>
+        <tag>ca</tag>
+        <tag>certificate</tag>
+        <tag>private</tag>
+        <tag>public</tag>
+        <tag>key</tag>
       </tags>
   </entry>
   <entry>
@@ -1782,10 +1782,10 @@
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>windows</tag>
+        <tag>linux</tag>
         <tag>centos</tag>
         <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
         <tag>10</tag>
         <tag>vmware</tag>
       </tags>
@@ -1882,35 +1882,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
-    <url>/2021/06/17/usb_usb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>先確認目標裝置的權限，可以看到是 <code>660</code> 權限，也就是說非擁有者 (root) 且非群組 (dialout) 成員的其他人，是不能讀取的，這也是為什麼應用程式內讀不到的原因</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ ls -al /dev/ttyUSB*</span><br><span class="line">crw-rw---- 1 root dialout 188, 0 十二  4 16:53 /dev/ttyUSB0</span><br><span class="line">crw-rw---- 1 root dialout 188, 1 十二  4 16:53 /dev/ttyUSB1</span><br><span class="line">crw-rw---- 1 root dialout 188, 2 十二  4 16:53 /dev/ttyUSB2</span><br><span class="line">crw-rw---- 1 root dialout 188, 3 十二  4 16:53 /dev/ttyUSB3</span><br></pre></td></tr></table></figure>
-<h2 id="加入群組"><a href="#加入群組" class="headerlink" title="加入群組"></a>加入群組</h2><p>一般使用者預設是沒有加入 <code>dialout</code> 群組的，因此將自己加入此群組藉此繼承擁有讀取序列埠的權限</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo usermod -a -G dialout user  <span class="comment"># user 當然就是使用者帳號，依需求更改</span></span><br></pre></td></tr></table></figure>
-<p>再回到應用程式內找尋 Serial Port 應該就能看到囉！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>port</tag>
-        <tag>18.04</tag>
-        <tag>privilege</tag>
-        <tag>usb</tag>
-        <tag>serail</tag>
-        <tag>dialout</tag>
-        <tag>tty</tag>
-        <tag>usermod</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[User] Linux 新增使用者並賦予其使用 sudo 的權限</title>
     <url>/2021/06/17/user_linux_sudo/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>多人多工是 Linux 本身就具備的功能，因此新增或移除使用者帳號與更改權限是管理員必備的技能。</p>
@@ -1937,9 +1908,9 @@
       </categories>
       <tags>
         <tag>ubuntu</tag>
+        <tag>linux</tag>
         <tag>centos</tag>
         <tag>8.2</tag>
-        <tag>linux</tag>
         <tag>18.04</tag>
         <tag>user</tag>
         <tag>adduser</tag>
@@ -1982,6 +1953,53 @@
       </tags>
   </entry>
   <entry>
+    <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
+    <url>/2021/06/17/usb_usb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>先確認目標裝置的權限，可以看到是 <code>660</code> 權限，也就是說非擁有者 (root) 且非群組 (dialout) 成員的其他人，是不能讀取的，這也是為什麼應用程式內讀不到的原因</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ ls -al /dev/ttyUSB*</span><br><span class="line">crw-rw---- 1 root dialout 188, 0 十二  4 16:53 /dev/ttyUSB0</span><br><span class="line">crw-rw---- 1 root dialout 188, 1 十二  4 16:53 /dev/ttyUSB1</span><br><span class="line">crw-rw---- 1 root dialout 188, 2 十二  4 16:53 /dev/ttyUSB2</span><br><span class="line">crw-rw---- 1 root dialout 188, 3 十二  4 16:53 /dev/ttyUSB3</span><br></pre></td></tr></table></figure>
+<h2 id="加入群組"><a href="#加入群組" class="headerlink" title="加入群組"></a>加入群組</h2><p>一般使用者預設是沒有加入 <code>dialout</code> 群組的，因此將自己加入此群組藉此繼承擁有讀取序列埠的權限</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo usermod -a -G dialout user  <span class="comment"># user 當然就是使用者帳號，依需求更改</span></span><br></pre></td></tr></table></figure>
+<p>再回到應用程式內找尋 Serial Port 應該就能看到囉！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>port</tag>
+        <tag>18.04</tag>
+        <tag>privilege</tag>
+        <tag>usb</tag>
+        <tag>serail</tag>
+        <tag>dialout</tag>
+        <tag>tty</tag>
+        <tag>usermod</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
+    <url>/2021/06/15/window_modal_non_modal/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
+<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
+<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
+<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>window</tag>
+        <tag>modal</tag>
+        <tag>non modal</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[WIN32 API] 函數使用範例</title>
     <url>/2021/06/15/win32_api_function_example/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接 Build 看效果。</p>
@@ -2007,21 +2025,18 @@
       </tags>
   </entry>
   <entry>
-    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
-    <url>/2021/06/15/window_modal_non_modal/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
-<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
-<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
-<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
-<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
+    <title>[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題</title>
+    <url>/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>window</tag>
-        <tag>modal</tag>
-        <tag>non modal</tag>
+        <tag>sdk</tag>
+        <tag>xilinx</tag>
+        <tag>make</tag>
       </tags>
   </entry>
   <entry>
@@ -2055,6 +2070,28 @@
       </tags>
   </entry>
   <entry>
+    <title>[ZIP] 壓縮檔內中文檔名呈現亂碼的解決方法</title>
+    <url>/2021/06/15/zip_chinese_garbled/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想練英文從生活周遭開始是最直接的，安裝英文版版作業系統也不奇怪，但身在中文環境工作與學習，通常經手的會是中文檔名的檔案，當英文版作業系統遇見中文檔名，總是會發生一些惱人的錯誤。這次遇到的問題是，在瀏灠內含中文檔名的 zip 壓縮檔時，中文會呈現出亂碼型態。</p>
+<h2 id="狀況描述"><a href="#狀況描述" class="headerlink" title="狀況描述"></a>狀況描述</h2><p>原本資料夾為中文(示範用)，壓縮後開啟瀏覽呈現為亂碼</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fgarbled.png?alt=media&amp;token=2c282188-e3cb-4481-9f3b-24d820ed2d74" alt="亂碼的檔案名稱"><span class="image-caption">亂碼的檔案名稱</span></p>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>先開啟控制台 (Control Panel)，按照下圖所示操作，將語言更換為 <code>Chinese (Traditional, Taiwan)</code> 之後，電腦會要求重開機，就重開機吧！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Foperation.png?alt=media&amp;token=0933c050-25ae-4a77-a8c6-1f42ca9840a0" alt="操作步驟"><span class="image-caption">操作步驟</span></p>
+<h2 id="結果"><a href="#結果" class="headerlink" title="結果"></a>結果</h2><p>重開機後就能再次開啟該 zip 壓縮檔來查看正常的檔案名稱啦！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fno_grabled.png?alt=media&amp;token=174f988f-0f11-46e0-abb7-903c57691af0" alt="沒有亂碼的檔案名稱"><span class="image-caption">沒有亂碼的檔案名稱</span></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>file</tag>
+        <tag>zip</tag>
+        <tag>chinese</tag>
+        <tag>garbled</tag>
+        <tag>name</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Xilinx SDK] GPIO 常用到的參數</title>
     <url>/2021/06/13/xilinx_sdk_gpio/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用 API 時，最重要的是正確地輸入對應參數，因此必定要先了解參數所代表的涵義，才能有正確的使用 API 姿勢。</p>
@@ -2080,68 +2117,6 @@
         <tag>gpio</tag>
         <tag>channel</tag>
         <tag>directionmask</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題</title>
-    <url>/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
-<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>sdk</tag>
-        <tag>xilinx</tag>
-        <tag>make</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[ZIP] 壓縮檔內中文檔名呈現亂碼的解決方法</title>
-    <url>/2021/06/15/zip_chinese_garbled/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想練英文從生活周遭開始是最直接的，安裝英文版版作業系統也不奇怪，但身在中文環境工作與學習，通常經手的會是中文檔名的檔案，當英文版作業系統遇見中文檔名，總是會發生一些惱人的錯誤。這次遇到的問題是，在瀏灠內含中文檔名的 zip 壓縮檔時，中文會呈現出亂碼型態。</p>
-<h2 id="狀況描述"><a href="#狀況描述" class="headerlink" title="狀況描述"></a>狀況描述</h2><p>原本資料夾為中文(示範用)，壓縮後開啟瀏覽呈現為亂碼</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fgarbled.png?alt=media&amp;token=2c282188-e3cb-4481-9f3b-24d820ed2d74" alt="亂碼的檔案名稱"><span class="image-caption">亂碼的檔案名稱</span></p>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>先開啟控制台 (Control Panel)，按照下圖所示操作，將語言更換為 <code>Chinese (Traditional, Taiwan)</code> 之後，電腦會要求重開機，就重開機吧！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Foperation.png?alt=media&amp;token=0933c050-25ae-4a77-a8c6-1f42ca9840a0" alt="操作步驟"><span class="image-caption">操作步驟</span></p>
-<h2 id="結果"><a href="#結果" class="headerlink" title="結果"></a>結果</h2><p>重開機後就能再次開啟該 zip 壓縮檔來查看正常的檔案名稱啦！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fno_grabled.png?alt=media&amp;token=174f988f-0f11-46e0-abb7-903c57691af0" alt="沒有亂碼的檔案名稱"><span class="image-caption">沒有亂碼的檔案名稱</span></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>file</tag>
-        <tag>zip</tag>
-        <tag>chinese</tag>
-        <tag>garbled</tag>
-        <tag>name</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[apt] Unable to locate package 問題</title>
-    <url>/2021/06/17/apt_unable_to_locate_package/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我遇到的情況是這樣子的，要安裝 <code>ntpdate</code> 時卻發現出現錯誤訊息 <code>Unable to locate package ntpdate</code>，意思是說無法找到 <code>ntpdate</code> 套件</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree       </span><br><span class="line">Reading state information... Done</span><br><span class="line">E: Unable to locate package ntpdate</span><br></pre></td></tr></table></figure>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>很有可能是因為 <code>apt-get</code> 沒有更新，所以資料庫裡面沒有 <code>ntpdate</code> 的連結，這時只需簡單的更新 <code>apt-get</code>，並且再次嘗試安裝就發現可以找到套件了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>在使用 <code>apt-get</code> 安裝之前先執行 <code>apt-get update</code> 是一個好習慣，以確保資料庫為最新，減少一個浪費時間的可能。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>update</tag>
-        <tag>install</tag>
-        <tag>apt</tag>
-        <tag>get</tag>
       </tags>
   </entry>
   <entry>
@@ -2174,74 +2149,40 @@
       </tags>
   </entry>
   <entry>
-    <title>[轉檔] 將 rpm 檔轉為 deb 檔</title>
-    <url>/2021/06/17/rpm_deb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些軟體只提供 rpm 檔，但在 Ubuntu 的系統只能安裝 deb 檔，這時候就需要將 rpm 轉為 deb。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="轉檔並安裝"><a href="#轉檔並安裝" class="headerlink" title="轉檔並安裝"></a>轉檔並安裝</h2><p><a href="https://wiki.ubuntu-tw.org/index.php?title=HowtoInstallRPM">alien</a> 套件可以幫忙把 rpm 等其他安裝檔轉成 deb 安裝檔，在 Ubuntu 中預設是沒有安裝 <code>alien</code> 套件的，因此要先安裝</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install alien</span><br></pre></td></tr></table></figure>
-<p>將 <code>name.rpm</code> 轉為 <code>name.deb</code> 檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ~/somedir/name.rpm  <span class="comment"># 會轉為同檔名的 deb 檔案，但都改為小寫</span></span><br><span class="line">                                    <span class="comment"># ~/somedir 是 rpm 的檔案路徑，依情況改寫</span></span><br></pre></td></tr></table></figure>
-<p>用 dpkg 套件執行 deb 安裝檔安裝應用程式</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo dpkg -i ~/somedir/name.deb  <span class="comment">#開始安裝</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>file</tag>
-        <tag>18.04</tag>
-        <tag>rpm</tag>
-        <tag>deb</tag>
-        <tag>alien</tag>
-        <tag>dpkg</tag>
-        <tag>convert</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</title>
-    <url>/2021/06/16/win_10_ubuntu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 是一個非常輕便且好用的作業系統，在 Windows 下使用 Linux 大多是透過虛擬機器 (VM, Virtual Machine)，但對一個想要深入研究 Linux 的同好來說，灌雙系統是一個不錯的選擇。灌完雙系統之後，有機率會遇到一種情況「電腦會直接進Windows，不會出現選擇作業系統的畫面」。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>Windows 10</li>
-</ul>
-<h2 id="環境確認"><a href="#環境確認" class="headerlink" title="環境確認"></a>環境確認</h2><p>灌好 Ubuntu 後重新開機，若沒有出現系統選單，而直接進入 Windows 系統的話，那就要先確定一些設定：</p>
+    <title>[asm] NEG 的運作與應用</title>
+    <url>/2021/06/11/asmneg/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
+<p>它的運作影響了旗標，進而用來當作實現 <code>BOOL function</code> 回傳的一個選項。就一起來看看 <code>NEG</code> 是如何運作以及對應到的高階語言是如何呈現的。</p>
+<h2 id="運作原理"><a href="#運作原理" class="headerlink" title="運作原理"></a>運作原理</h2><p>想知道一個程式碼如何運作，不外乎就是兩種方法：</p>
 <ol>
-<li><p>控制台 -&gt; 電源選項 -&gt; 選擇蓋上螢幕時的行為(左方) -&gt; 「取消勾選」開啟快速啟動</p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-Win10-Ubuntu-%E9%96%8B%E6%A9%9F%E9%81%B8%E5%96%AE%EF%BC%8C%E8%AE%93%E4%BD%BF%E7%94%A8%E8%80%85%E9%96%8B%E6%A9%9F%E5%8F%AF%E4%BB%A5%E9%81%B8%E6%93%87%E7%B3%BB%E7%B5%B1%2Fcancel_quick_boot.png?alt=media&amp;token=0b90e051-8718-46fd-9888-2ba9c1af1fd6" alt="不要勾選開啟快速啟動"><span class="image-caption">不要勾選開啟快速啟動</span></p>
-</li>
-<li><p>重新開機進入 BIOS -&gt; Fast Boot -&gt; Disabled</p>
-</li>
-<li><p>同樣在 BIOS -&gt; Secure Boot Contorl -&gt; Disabled</p>
-</li>
+<li>直接編譯/組譯然後執行，觀察結果(暫存器輸出、旗標設置等等)，此方式在本篇文章不強調。</li>
+<li>最基本的就是看技術文件，若參數很多或者回傳複雜無法直接觀察結果推斷的時候，相關文件最有用了。例如 Windows 的 API 可以去 MSDN 上找函數介紹，而組合語言的語法能夠找所使用 CPU 的廠商要文檔，AMD 與 Intel 的組合語言可能有差異，所以若是使用 Intel 的就請找 Intel 的指令手冊來參考。</li>
 </ol>
-<p>以上三點都確認完，重開機後還是沒有出現選單的話，再接著去做下面的事情</p>
-<h2 id="grubx64-efi-確認"><a href="#grubx64-efi-確認" class="headerlink" title="grubx64.efi 確認"></a>grubx64.efi 確認</h2><p>進 EFI 系統分割磁碟區(參考：<a href="/2021/06/16/efi_windows_efi/">[EFI] 顯示 Windows 的 EFI 系統分割磁碟</a>)下的 ubuntu 資料夾，看是否有關鍵檔案 <code>grubx64.efi</code>，這是 Linux 的引導開機檔案，若沒有看到的話請 <a href="https://mega.nz/#!iIonWA4a!unTw_2I5r6pXLZaXUe-gU5D_lOqCHQJVwgcDeQyl0FU">點此下載 grubx64.efi</a> 並將其移到這個目錄下，再繼續下一步</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">P:\EFI\ubuntu&gt;dir</span><br><span class="line"></span><br><span class="line"> P:\EFI\ubuntu 的目錄</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          .</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          ..</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          fw</span><br><span class="line">2019/09/27  下午 06:16            75,992 fwupx64.efi</span><br><span class="line">2019/09/27  下午 06:20               121 grub.cfg</span><br><span class="line">2019/09/27  下午 06:20         1,334,816 shimx64.efi</span><br><span class="line">2019/09/27  下午 06:20         1,269,496 mmx64.efi</span><br><span class="line">2019/09/27  下午 06:20               108 BOOTX64.CSV</span><br><span class="line">2019/09/28  下午 01:01           956,792 grubx64.efi</span><br><span class="line">               6 個檔案       3,637,325 位元組</span><br><span class="line">               3 個目錄     236,093,440 位元組可用</span><br></pre></td></tr></table></figure>
-<p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;bcdedit /<span class="built_in">set</span> &#123;bootmgr&#125; path \EFI\ubuntu\grubx64.efi</span><br><span class="line"></span><br><span class="line">操作順利完成。</span><br></pre></td></tr></table></figure>
-<p>重新開機之後就可以看到選單啦！不過它等 10 秒沒操作的話就會自動進入預設的系統哦，所以要開機時需要注意，否則錯過進錯系統也只能再重開機。若想修改預設選項，可以參考 <a href="/2021/06/16/dual_system_change_default/">[雙系統] 更改開機系統選單的預設值</a>。</p>
+<p>我的電腦為 Intel CPU，上網找到對應的指令手冊(<a href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)，內文對 <code>NEG</code> 指令的描述摘要如下</p>
+<blockquote>
+<p>NEG—Two&#39;s Complement Negation<br>Description<br>Replaces the value of operand (the destination operand) with its two&#39;s complement. (This operation is equivalent to subtracting the operand from 0.) The destination operand is located in a general-purpose register or a memory location.</p>
+</blockquote>
+<p>簡單說明一下，<code>NEG</code> 是一個 2 補數的運算，將一個數取 2 補數之後放回原本的目的地，等同於一個數被 0 減掉再放回暫存器(即 <code>eax = 0 - eax</code>)，目的地可以是暫存器也可以是記憶體位址。它原文下面還有說明，但到這就能夠來說明想要表達的程式碼了。再來看看它的流程 Pseudo code</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Operation</span><br><span class="line">IF DEST = <span class="number">0</span></span><br><span class="line">　THEN CF ← <span class="number">0</span>;</span><br><span class="line">　ELSE CF ← <span class="number">1</span>;</span><br><span class="line">FI;</span><br><span class="line">DEST ← [– (DEST)]</span><br></pre></td></tr></table></figure>
+<p>短短幾行 Pseudo code，代表了無數的文字，相信一看就懂它想說甚麼。在簡短的 <code>NEG</code> 描述與操作流程可以知道若 <code>DEST</code> 不為 0，進位旗標 (<code>CF</code>) 會被設置為 1，這是因為 0 減非 0 的數需要補位。</p>
+<h2 id="應用方式"><a href="#應用方式" class="headerlink" title="應用方式"></a>應用方式</h2><p>這時候假設你的程式中有個副程式如下</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">NEGtest</span><span class="params">(TCHAR *str1, TCHAR *str2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">lstrcmp</span>(str1, str2) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不論是組合語言或高階語言，有很多不同編寫方式來完成相同的事情，然而這個函數內的 <code>if else</code> 所對應到的組合語言可能為</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">push ebp        <span class="comment">//str2 的位址</span></span><br><span class="line">push eax        <span class="comment">//str1 的位址</span></span><br><span class="line">call [<span class="number">00404004</span>] <span class="comment">//呼叫 lstrcmp 函數</span></span><br><span class="line">neg eax         <span class="comment">//API 函數回傳值都放在 eax 暫存器裡，因此對比較後的結果作 NEG 運算</span></span><br><span class="line">sbb eax, eax    <span class="comment">//eax = eax - eax - CY</span></span><br><span class="line">inc eax         <span class="comment">//eax = eax + 1</span></span><br></pre></td></tr></table></figure>
+<p><code>lstrcmp</code> 需要兩個參數，因此先壓參數入堆疊再調用 (call) 其函數，而它的回傳值放在 <code>eax</code> 裡面，若兩個字串相同，則 <code>eax == 0</code>；反之 <code>eax != 0</code>。此時分為兩個情況來討論：</p>
+<ol>
+<li><code>str1 == str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為 0，<code>neg eax</code> 之後 <code>eax</code> 還是 0 且 <code>CY</code> 為 0，因此到程式結束時 <code>eax</code> 為 1，即 <code>return true</code></li>
+<li><code>str1 !=  str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為非 0，<code>neg eax</code> 之後 <code>eax</code> 還是非 0 且 <code>CY</code> 為1，因此第五行的執行結果為 <code>eax = eax - eax - CY = 0xFFFFFFFF</code> (32位元的話)，最後 <code>eax = eax + 1 = 0</code> 即 <code>return false</code></li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個執行結果，與高階語言的效果是一樣的。當然，也可以用 <code>cmp</code>、<code>jmp</code>等指令來完成同一件事，但不覺得程式拐個彎寫得簡單優雅，會有更有成就感嗎？呵呵！</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>18.04</tag>
-        <tag>10</tag>
-        <tag>menu</tag>
-        <tag>dual</tag>
-        <tag>system</tag>
-        <tag>option</tag>
-        <tag>boot</tag>
-        <tag>grub</tag>
-        <tag>grubx64.efi</tag>
+        <tag>neg</tag>
+        <tag>sbb</tag>
+        <tag>asm</tag>
       </tags>
   </entry>
   <entry>
@@ -2329,6 +2270,165 @@
       </tags>
   </entry>
   <entry>
+    <title>[apt] Unable to locate package 問題</title>
+    <url>/2021/06/17/apt_unable_to_locate_package/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我遇到的情況是這樣子的，要安裝 <code>ntpdate</code> 時卻發現出現錯誤訊息 <code>Unable to locate package ntpdate</code>，意思是說無法找到 <code>ntpdate</code> 套件</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree       </span><br><span class="line">Reading state information... Done</span><br><span class="line">E: Unable to locate package ntpdate</span><br></pre></td></tr></table></figure>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>很有可能是因為 <code>apt-get</code> 沒有更新，所以資料庫裡面沒有 <code>ntpdate</code> 的連結，這時只需簡單的更新 <code>apt-get</code>，並且再次嘗試安裝就發現可以找到套件了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>在使用 <code>apt-get</code> 安裝之前先執行 <code>apt-get update</code> 是一個好習慣，以確保資料庫為最新，減少一個浪費時間的可能。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>update</tag>
+        <tag>install</tag>
+        <tag>apt</tag>
+        <tag>get</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[轉檔] Keynote 轉 PowerPoint (pptx 而不是 ppsx)</title>
+    <url>/2021/06/27/mac_keynote_powerpoint_pptx/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Mac 上使用 Keynote 來做投影片非常方便，但在有些場合必須提供 pptx 檔案，這時必定需要使用到轉檔功能了。然而在新版的 Keynote 選擇 PowerPoint 格式輸出時，竟然輸出為奇怪的格式 ppsx，找了許久才找到解決方法，正常轉為 pptx 檔案，因此在此紀錄下來。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>macOS Big Sur 11.4</li>
+<li>Keynote 11.1</li>
+</ul>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>要轉檔為 <code>pptx</code> 的方法很繞圈子，必須先將 Keynote 轉為 <code>Keynote &#39;09</code>，再開啟 <code>Keynote &#39;09</code> 檔轉為 <code>pptx</code>，若用最原始的 Keynote 檔案來轉檔只會得到 <code>ppsx</code>。</p>
+<h3 id="Keynote-39-09"><a href="#Keynote-39-09" class="headerlink" title="Keynote &#39;09"></a>Keynote &#39;09</h3><p>開啟想要轉的 Keynote，依照指示 <code>File -&gt; Export To -&gt; Keynote &#39;09... -&gt; Next</code> 轉為 Keynote &#39;09 類型檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fexport_keynote09.png?alt=media&amp;token=74d16eb4-25c9-40f4-a4d4-02af3b840eb4" alt="轉檔為 Keynote &#39;09"><span class="image-caption">轉檔為 Keynote &#39;09</span></p>
+<p>可以觀察一下有沒有 &#39;09 到底差在哪裡，我自己除了檔案大小外，看不出差異，所以要我判斷出某個檔案是 Keynote 還是 Keynote &#39;09 是不太可能的！若有知道如何分辨的朋友們，歡迎在底下討論區留言！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2FkeynoteVSkeynote09.png?alt=media&amp;token=80e7fc49-1ee5-4c7b-b07f-c2d71fdf3ad1" alt="Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較"><span class="image-caption">Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較</span></p>
+<h3 id="pptx"><a href="#pptx" class="headerlink" title="pptx"></a>pptx</h3><p>最後就是重頭戲了，開啟剛剛轉好的 Keynote &#39;09&#39; 檔案，依照指示 <code>File -&gt; Export To -&gt; PowerPoint... -&gt; Advanced Options -&gt; .pptx -&gt; Next</code>，最後得到 pptx 檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fkey09topptx.png?alt=media&amp;token=14b8ee4b-5c46-46a6-a38b-5c4847c39bb4" alt="Keynote &#39;09 轉 pptx"><span class="image-caption">Keynote &#39;09 轉 pptx</span></p>
+<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>不知道為什麼 Apple 要繞成這樣，需要先轉為 Keynote &#39;09 才能轉為 pptx，還不說明白讓人困擾。另外個人覺得根本不應該將 Keynote 轉為 pptx，有非常多格式會因此跑掉，因此強烈建議是直接將 Keynote 轉為 pdf 即可，但最終要轉檔成甚麼還是需要看應用場景。</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><p>1 <a href="https://discussions.apple.com/thread/8524312">Keynote exports to PPSX instead of PPTX</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>mac</tag>
+        <tag>keynote</tag>
+        <tag>powerpoint</tag>
+        <tag>pptx</tag>
+        <tag>ppsx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</title>
+    <url>/2021/06/16/win_10_ubuntu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 是一個非常輕便且好用的作業系統，在 Windows 下使用 Linux 大多是透過虛擬機器 (VM, Virtual Machine)，但對一個想要深入研究 Linux 的同好來說，灌雙系統是一個不錯的選擇。灌完雙系統之後，有機率會遇到一種情況「電腦會直接進Windows，不會出現選擇作業系統的畫面」。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="環境確認"><a href="#環境確認" class="headerlink" title="環境確認"></a>環境確認</h2><p>灌好 Ubuntu 後重新開機，若沒有出現系統選單，而直接進入 Windows 系統的話，那就要先確定一些設定：</p>
+<ol>
+<li><p>控制台 -&gt; 電源選項 -&gt; 選擇蓋上螢幕時的行為(左方) -&gt; 「取消勾選」開啟快速啟動</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-Win10-Ubuntu-%E9%96%8B%E6%A9%9F%E9%81%B8%E5%96%AE%EF%BC%8C%E8%AE%93%E4%BD%BF%E7%94%A8%E8%80%85%E9%96%8B%E6%A9%9F%E5%8F%AF%E4%BB%A5%E9%81%B8%E6%93%87%E7%B3%BB%E7%B5%B1%2Fcancel_quick_boot.png?alt=media&amp;token=0b90e051-8718-46fd-9888-2ba9c1af1fd6" alt="不要勾選開啟快速啟動"><span class="image-caption">不要勾選開啟快速啟動</span></p>
+</li>
+<li><p>重新開機進入 BIOS -&gt; Fast Boot -&gt; Disabled</p>
+</li>
+<li><p>同樣在 BIOS -&gt; Secure Boot Contorl -&gt; Disabled</p>
+</li>
+</ol>
+<p>以上三點都確認完，重開機後還是沒有出現選單的話，再接著去做下面的事情</p>
+<h2 id="grubx64-efi-確認"><a href="#grubx64-efi-確認" class="headerlink" title="grubx64.efi 確認"></a>grubx64.efi 確認</h2><p>進 EFI 系統分割磁碟區(參考：<a href="/2021/06/16/efi_windows_efi/">[EFI] 顯示 Windows 的 EFI 系統分割磁碟</a>)下的 ubuntu 資料夾，看是否有關鍵檔案 <code>grubx64.efi</code>，這是 Linux 的引導開機檔案，若沒有看到的話請 <a href="https://mega.nz/#!iIonWA4a!unTw_2I5r6pXLZaXUe-gU5D_lOqCHQJVwgcDeQyl0FU">點此下載 grubx64.efi</a> 並將其移到這個目錄下，再繼續下一步</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">P:\EFI\ubuntu&gt;dir</span><br><span class="line"></span><br><span class="line"> P:\EFI\ubuntu 的目錄</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          .</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          ..</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          fw</span><br><span class="line">2019/09/27  下午 06:16            75,992 fwupx64.efi</span><br><span class="line">2019/09/27  下午 06:20               121 grub.cfg</span><br><span class="line">2019/09/27  下午 06:20         1,334,816 shimx64.efi</span><br><span class="line">2019/09/27  下午 06:20         1,269,496 mmx64.efi</span><br><span class="line">2019/09/27  下午 06:20               108 BOOTX64.CSV</span><br><span class="line">2019/09/28  下午 01:01           956,792 grubx64.efi</span><br><span class="line">               6 個檔案       3,637,325 位元組</span><br><span class="line">               3 個目錄     236,093,440 位元組可用</span><br></pre></td></tr></table></figure>
+<p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;bcdedit /<span class="built_in">set</span> &#123;bootmgr&#125; path \EFI\ubuntu\grubx64.efi</span><br><span class="line"></span><br><span class="line">操作順利完成。</span><br></pre></td></tr></table></figure>
+<p>重新開機之後就可以看到選單啦！不過它等 10 秒沒操作的話就會自動進入預設的系統哦，所以要開機時需要注意，否則錯過進錯系統也只能再重開機。若想修改預設選項，可以參考 <a href="/2021/06/16/dual_system_change_default/">[雙系統] 更改開機系統選單的預設值</a>。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>windows</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>10</tag>
+        <tag>menu</tag>
+        <tag>dual</tag>
+        <tag>system</tag>
+        <tag>option</tag>
+        <tag>boot</tag>
+        <tag>grub</tag>
+        <tag>grubx64.efi</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[轉檔] 將 rpm 檔轉為 deb 檔</title>
+    <url>/2021/06/17/rpm_deb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些軟體只提供 rpm 檔，但在 Ubuntu 的系統只能安裝 deb 檔，這時候就需要將 rpm 轉為 deb。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="轉檔並安裝"><a href="#轉檔並安裝" class="headerlink" title="轉檔並安裝"></a>轉檔並安裝</h2><p><a href="https://wiki.ubuntu-tw.org/index.php?title=HowtoInstallRPM">alien</a> 套件可以幫忙把 rpm 等其他安裝檔轉成 deb 安裝檔，在 Ubuntu 中預設是沒有安裝 <code>alien</code> 套件的，因此要先安裝</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install alien</span><br></pre></td></tr></table></figure>
+<p>將 <code>name.rpm</code> 轉為 <code>name.deb</code> 檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ~/somedir/name.rpm  <span class="comment"># 會轉為同檔名的 deb 檔案，但都改為小寫</span></span><br><span class="line">                                    <span class="comment"># ~/somedir 是 rpm 的檔案路徑，依情況改寫</span></span><br></pre></td></tr></table></figure>
+<p>用 dpkg 套件執行 deb 安裝檔安裝應用程式</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo dpkg -i ~/somedir/name.deb  <span class="comment">#開始安裝</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>file</tag>
+        <tag>18.04</tag>
+        <tag>rpm</tag>
+        <tag>deb</tag>
+        <tag>alien</tag>
+        <tag>dpkg</tag>
+        <tag>convert</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[雙系統] 更改開機系統選單的預設值</title>
+    <url>/2021/06/16/dual_system_change_default/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>要切換雙系統的方法主要有兩種，一是修改 BIOS 的 Boot Option，另一個是使用 grub (參考：<a href="/2021/06/16/win_10_ubuntu/">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a>])。grub 預設是以 Ubuntu 開機，若在選單畫面超過 10 秒沒有動作，預設直接進入 Ubuntu。對於主要是用 Windows 的人來說稍嫌不便，因為每次開機都要等選單出現，以免不小心進其他系統，這篇主要紀錄如何將預設系統改為 Windows。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="修改-grub"><a href="#修改-grub" class="headerlink" title="修改 grub"></a>修改 grub</h2><p>以下動作皆在 Ubuntu 中執行，先知道 Windows 啟動檔的位置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ cat /boot/grub/grub.cfg | grep windows</span><br><span class="line">menuentry <span class="string">&#x27;Windows Boot Manager (於 /dev/sdb2)&#x27;</span> --class windows --class os <span class="variable">$menuentry_id_option</span> <span class="string">&#x27;osprober-efi-264C-BB58&#x27;</span> &#123;</span><br></pre></td></tr></table></figure>
+<p>記住檔案位置 <code>&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 後，再開啟 <code>/ect/default/grub</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo gedit /etc/default/grub</span><br></pre></td></tr></table></figure>
+<p>修改 <code>GRUB_DEFAULT=0</code> 為 <code>GRUB_DEFAULT=&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 並儲存，注意不要少了單引號</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-%E6%9B%B4%E6%94%B9%E9%96%8B%E6%A9%9F%E7%B3%BB%E7%B5%B1%E9%81%B8%E5%96%AE%E7%9A%84%E9%A0%90%E8%A8%AD%E5%80%BC%2Fchange_setting.png?alt=media&amp;token=55bafa2f-b2ff-4fb6-94a1-7a81fc3e9107" alt="修改 GRUB_DEFAULT"><span class="image-caption">修改 GRUB_DEFAULT</span></p>
+<p>更新 grub 後重新開機，就可以發現預設選項落在 Windows 上囉！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo update-grub</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>windows</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>10</tag>
+        <tag>menu</tag>
+        <tag>dual</tag>
+        <tag>system</tag>
+        <tag>option</tag>
+        <tag>boot</tag>
+        <tag>grub</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[雙系統] 同步 Ubuntu 與 Windows 的系統時間</title>
     <url>/2021/06/17/ubuntu_windows_time/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>使用 Ubuntu + Windows 雙系統的用戶，應該會發現 Ubuntu 的時間總是與 Windows 的不一樣，在 UTC+8 的地方，Ubuntu 比 Windows 快 8 小時，切換系統後總是要手動調整時間，造成一定的困擾。最佳解決之道應為將雙系統時間設為同步，因此這裡紀錄了如何將雙系統的時間設為一致。</p>
@@ -2356,85 +2456,14 @@
       </categories>
       <tags>
         <tag>ubuntu</tag>
-        <tag>linux</tag>
         <tag>windows</tag>
+        <tag>linux</tag>
         <tag>18.04</tag>
         <tag>10</tag>
         <tag>time</tag>
         <tag>dual</tag>
         <tag>system</tag>
         <tag>synchronize</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[asm] NEG 的運作與應用</title>
-    <url>/2021/06/11/asmneg/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
-<p>它的運作影響了旗標，進而用來當作實現 <code>BOOL function</code> 回傳的一個選項。就一起來看看 <code>NEG</code> 是如何運作以及對應到的高階語言是如何呈現的。</p>
-<h2 id="運作原理"><a href="#運作原理" class="headerlink" title="運作原理"></a>運作原理</h2><p>想知道一個程式碼如何運作，不外乎就是兩種方法：</p>
-<ol>
-<li>直接編譯/組譯然後執行，觀察結果(暫存器輸出、旗標設置等等)，此方式在本篇文章不強調。</li>
-<li>最基本的就是看技術文件，若參數很多或者回傳複雜無法直接觀察結果推斷的時候，相關文件最有用了。例如 Windows 的 API 可以去 MSDN 上找函數介紹，而組合語言的語法能夠找所使用 CPU 的廠商要文檔，AMD 與 Intel 的組合語言可能有差異，所以若是使用 Intel 的就請找 Intel 的指令手冊來參考。</li>
-</ol>
-<p>我的電腦為 Intel CPU，上網找到對應的指令手冊(<a href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)，內文對 <code>NEG</code> 指令的描述摘要如下</p>
-<blockquote>
-<p>NEG—Two&#39;s Complement Negation<br>Description<br>Replaces the value of operand (the destination operand) with its two&#39;s complement. (This operation is equivalent to subtracting the operand from 0.) The destination operand is located in a general-purpose register or a memory location.</p>
-</blockquote>
-<p>簡單說明一下，<code>NEG</code> 是一個 2 補數的運算，將一個數取 2 補數之後放回原本的目的地，等同於一個數被 0 減掉再放回暫存器(即 <code>eax = 0 - eax</code>)，目的地可以是暫存器也可以是記憶體位址。它原文下面還有說明，但到這就能夠來說明想要表達的程式碼了。再來看看它的流程 Pseudo code</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Operation</span><br><span class="line">IF DEST = <span class="number">0</span></span><br><span class="line">　THEN CF ← <span class="number">0</span>;</span><br><span class="line">　ELSE CF ← <span class="number">1</span>;</span><br><span class="line">FI;</span><br><span class="line">DEST ← [– (DEST)]</span><br></pre></td></tr></table></figure>
-<p>短短幾行 Pseudo code，代表了無數的文字，相信一看就懂它想說甚麼。在簡短的 <code>NEG</code> 描述與操作流程可以知道若 <code>DEST</code> 不為 0，進位旗標 (<code>CF</code>) 會被設置為 1，這是因為 0 減非 0 的數需要補位。</p>
-<h2 id="應用方式"><a href="#應用方式" class="headerlink" title="應用方式"></a>應用方式</h2><p>這時候假設你的程式中有個副程式如下</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">NEGtest</span><span class="params">(TCHAR *str1, TCHAR *str2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">lstrcmp</span>(str1, str2) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>不論是組合語言或高階語言，有很多不同編寫方式來完成相同的事情，然而這個函數內的 <code>if else</code> 所對應到的組合語言可能為</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">push ebp        <span class="comment">//str2 的位址</span></span><br><span class="line">push eax        <span class="comment">//str1 的位址</span></span><br><span class="line">call [<span class="number">00404004</span>] <span class="comment">//呼叫 lstrcmp 函數</span></span><br><span class="line">neg eax         <span class="comment">//API 函數回傳值都放在 eax 暫存器裡，因此對比較後的結果作 NEG 運算</span></span><br><span class="line">sbb eax, eax    <span class="comment">//eax = eax - eax - CY</span></span><br><span class="line">inc eax         <span class="comment">//eax = eax + 1</span></span><br></pre></td></tr></table></figure>
-<p><code>lstrcmp</code> 需要兩個參數，因此先壓參數入堆疊再調用 (call) 其函數，而它的回傳值放在 <code>eax</code> 裡面，若兩個字串相同，則 <code>eax == 0</code>；反之 <code>eax != 0</code>。此時分為兩個情況來討論：</p>
-<ol>
-<li><code>str1 == str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為 0，<code>neg eax</code> 之後 <code>eax</code> 還是 0 且 <code>CY</code> 為 0，因此到程式結束時 <code>eax</code> 為 1，即 <code>return true</code></li>
-<li><code>str1 !=  str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為非 0，<code>neg eax</code> 之後 <code>eax</code> 還是非 0 且 <code>CY</code> 為1，因此第五行的執行結果為 <code>eax = eax - eax - CY = 0xFFFFFFFF</code> (32位元的話)，最後 <code>eax = eax + 1 = 0</code> 即 <code>return false</code></li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個執行結果，與高階語言的效果是一樣的。當然，也可以用 <code>cmp</code>、<code>jmp</code>等指令來完成同一件事，但不覺得程式拐個彎寫得簡單優雅，會有更有成就感嗎？呵呵！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>neg</tag>
-        <tag>sbb</tag>
-        <tag>asm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[雙系統] 更改開機系統選單的預設值</title>
-    <url>/2021/06/16/dual_system_change_default/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>要切換雙系統的方法主要有兩種，一是修改 BIOS 的 Boot Option，另一個是使用 grub (參考：<a href="/2021/06/16/win_10_ubuntu/">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a>])。grub 預設是以 Ubuntu 開機，若在選單畫面超過 10 秒沒有動作，預設直接進入 Ubuntu。對於主要是用 Windows 的人來說稍嫌不便，因為每次開機都要等選單出現，以免不小心進其他系統，這篇主要紀錄如何將預設系統改為 Windows。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>Windows 10</li>
-</ul>
-<h2 id="修改-grub"><a href="#修改-grub" class="headerlink" title="修改 grub"></a>修改 grub</h2><p>以下動作皆在 Ubuntu 中執行，先知道 Windows 啟動檔的位置</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ cat /boot/grub/grub.cfg | grep windows</span><br><span class="line">menuentry <span class="string">&#x27;Windows Boot Manager (於 /dev/sdb2)&#x27;</span> --class windows --class os <span class="variable">$menuentry_id_option</span> <span class="string">&#x27;osprober-efi-264C-BB58&#x27;</span> &#123;</span><br></pre></td></tr></table></figure>
-<p>記住檔案位置 <code>&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 後，再開啟 <code>/ect/default/grub</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo gedit /etc/default/grub</span><br></pre></td></tr></table></figure>
-<p>修改 <code>GRUB_DEFAULT=0</code> 為 <code>GRUB_DEFAULT=&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 並儲存，注意不要少了單引號</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-%E6%9B%B4%E6%94%B9%E9%96%8B%E6%A9%9F%E7%B3%BB%E7%B5%B1%E9%81%B8%E5%96%AE%E7%9A%84%E9%A0%90%E8%A8%AD%E5%80%BC%2Fchange_setting.png?alt=media&amp;token=55bafa2f-b2ff-4fb6-94a1-7a81fc3e9107" alt="修改 GRUB_DEFAULT"><span class="image-caption">修改 GRUB_DEFAULT</span></p>
-<p>更新 grub 後重新開機，就可以發現預設選項落在 Windows 上囉！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo update-grub</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>18.04</tag>
-        <tag>10</tag>
-        <tag>menu</tag>
-        <tag>dual</tag>
-        <tag>system</tag>
-        <tag>option</tag>
-        <tag>boot</tag>
-        <tag>grub</tag>
       </tags>
   </entry>
   <entry>
