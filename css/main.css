@@ -1284,7 +1284,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #881329;
+  background: #ffff82;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2737,4 +2737,65 @@ mjx-container + br {
 }
 .post-footer .post-eof {
   width: 100%;
+}
+ul.wrxue-timeline {
+  padding: 0;
+  padding-top: 50px;
+  list-style: none;
+}
+ul.wrxue-timeline a {
+  display: block;
+  text-decoration: none;
+  border: 1px solid #000;
+  color: inherit;
+  padding: 20px;
+  border-radius: 20px;
+}
+ul.wrxue-timeline li {
+  padding: 10px 0;
+  box-sizing: border-box;
+  position: relative;
+  margin: 0;
+  padding-left: 30px;
+}
+ul.wrxue-timeline li h2::after {
+  content: "";
+  height: 1px;
+  width: 30px;
+  background-color: #000;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+ul.wrxue-timeline li::before {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background-color: #000;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+ul.wrxue-timeline li:last-child {
+  height: 100%;
+}
+ul.wrxue-timeline li::after {
+  content: "";
+  position: absolute;
+  width: 1px;
+  height: 100%;
+  background-color: #000;
+}
+ul.wrxue-timeline li::before {
+  left: -10px;
+}
+ul.wrxue-timeline li::after {
+  top: 0;
+  left: -1px;
+}
+ul.wrxue-timeline li h2::after {
+  left: 0;
 }
