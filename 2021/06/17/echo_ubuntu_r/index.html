@@ -35,11 +35,11 @@
 <meta property="article:tag" content="20.04">
 <meta property="article:tag" content="netcat">
 <meta property="article:tag" content="linux">
+<meta property="article:tag" content="file">
 <meta property="article:tag" content="CR">
 <meta property="article:tag" content="carriage">
 <meta property="article:tag" content="return">
 <meta property="article:tag" content="echo">
-<meta property="article:tag" content="file">
 <meta property="article:tag" content="cat">
 <meta name="twitter:card" content="summary">
 
@@ -336,11 +336,11 @@
               <a href="/tags/20-04/" rel="tag"># 20.04</a>
               <a href="/tags/netcat/" rel="tag"># netcat</a>
               <a href="/tags/linux/" rel="tag"># linux</a>
+              <a href="/tags/file/" rel="tag"># file</a>
               <a href="/tags/CR/" rel="tag"># CR</a>
               <a href="/tags/carriage/" rel="tag"># carriage</a>
               <a href="/tags/return/" rel="tag"># return</a>
               <a href="/tags/echo/" rel="tag"># echo</a>
-              <a href="/tags/file/" rel="tag"># file</a>
               <a href="/tags/cat/" rel="tag"># cat</a>
           </div>
 
@@ -633,6 +633,19 @@
 
 
 
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
 
 
   
