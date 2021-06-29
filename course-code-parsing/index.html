@@ -29,7 +29,7 @@
 <meta property="og:description" content="受夠盯著文件查找對應的代碼含意了嗎？還在尋找 23 碼高中課程代碼解析器嗎？那絕對不要錯過這裡，這裡就是你的天堂！動態為你解析代碼含意並同時比對兩組代碼不同之處。">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-06-29T03:06:52.000Z">
-<meta property="article:modified_time" content="2021-06-29T08:45:56.052Z">
+<meta property="article:modified_time" content="2021-06-29T10:32:48.835Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="AI hexo Linux js python c#">
 <meta name="twitter:card" content="summary">
@@ -255,7 +255,7 @@
             </div>
         </div>
     </div>
-    <small>代碼更新日期 <span id="code-fresh"></span></small>
+    <small>資料更新日期 <span id="code-fresh"></span></small>
     <div class="content-block">
         <table class="table" id="ovTable">
             <thead class="thead-dark">
@@ -270,6 +270,9 @@
         </table>
     </div>
 </div>
+<div class="note info">
+            <p>若有任何疑問、建議或問題回報，歡迎於下方討論區留言。</p>
+          </div>
 <style>
     .badge-danger {
         color: #fff;
@@ -448,7 +451,7 @@
             success : function (result) {
                 codeMap = result;
                 schoolMap = result['校代碼']
-                document.getElementById('code-fresh').innerText = result['代碼更新日期'];
+                document.getElementById('code-fresh').innerText = result['資料時戳'];
             }
         });
         $('#classCode-1, #classCode-2').on('input', function(){
@@ -547,6 +550,13 @@
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -833,6 +843,26 @@ if (document.querySelectorAll('pre.mermaid').length) {
   }
   // defer loading until the whole page loading is completed
   window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://weirenxue.github.io/course-code-parsing/index.html";
+    this.page.identifier = "course-code-parsing/index.html";
+    this.page.title = "解析 23 碼高中課程代碼";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://weirenxue.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
 </script>
 
 <script>
