@@ -73,40 +73,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[C++] (FARPROC&amp;) 的含意</title>
-    <url>/2021/06/11/cfarproc/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr; </span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...省略...)</span><br></pre></td></tr></table></figure>
-<p>平常只會看到像是 <code>(int)</code>、<code>(int*)</code> 之類的轉型，第一次看到轉型是帶著 <code>&amp;</code> 符號的，引發我的好奇心，藉此研究一番。</p>
-<h2 id="探討"><a href="#探討" class="headerlink" title="探討"></a>探討</h2><p>要探討這問題，就要先知道一般再宣告的時候，<code>&amp;</code> 運算元到底發揮甚麼功用，所以先用最簡單的整數(<code>int</code>)宣告來測試，內容分為以下三種：</p>
-<ol>
-<li><p><code>int a = b;   //這應該大家都知道，就是把b的值給a</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> a = b;</span><br><span class="line"><span class="comment">//結果：a = 2; b = 2; &amp;a = 006FF8C0; &amp;b = 006FF8CC;</span></span><br><span class="line"><span class="comment">//結論：值一樣但記憶體位址不一樣</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>int *a = &amp;b; //程度好一些的應該知道，這是把b的記憶體位址存到a裡面</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> *a = &amp;b;</span><br><span class="line"><span class="comment">//結果：a = 006FF8B4; b = 3; &amp;a = 006FF8A8; &amp;b = 006FF8B4;</span></span><br><span class="line"><span class="comment">//結論：a存著b的位址，但兩個記憶體位址還是不一樣</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>int &amp;a = b;  //但這個呢？讓我們繼續看下去</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">int</span> &amp;a = b;</span><br><span class="line"><span class="comment">//結果：a = 4; b = 4; &amp;a = 006FF89C; &amp;b = 006FF89C;</span></span><br><span class="line"><span class="comment">//結論：a的位址跟b一樣，所以a跟b一模一樣了！</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>以這些實驗可以得到結論：在宣告的時候 ，<code>int&amp;</code> 會把「等號左邊(<code>a</code>)的變數地址」改變成「等號右邊(<code>b</code>)變數的地址」，因此 <code>a</code> 與 <code>b</code> 兩個是一樣的東西（也就是記憶體位址一樣）！</p>
-<p>回到最一開始的問題：<code>(FARPROC&amp;) addr</code> 到底是甚麼呢？我還是用程式做一下實驗，先以書上的程式碼為第一個實驗，用 <code>(FARPROC&amp;)</code> 去接 <code>GetProcAddress</code> 的值，看會如何；再用 <code>addr</code> 直接去接，又會如何。以下是實驗結果：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA94; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA88; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
-<p>可以發現其實沒有像是我們在最原本例子 <code>int &amp;a=b;</code> 看到的把 <code>addr</code> 位址變為 <code>GetProcAddress</code> 的位址，反而是addr的值變化了，變為 <code>GetProcAddress</code> 回傳的地址，也就是說 <code>(FARPROC&amp;)</code> 在這個實驗中看起來是沒有作用到的。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p><code>(FARPROC&amp;) addr = GetProcAddress(...)</code> 等同於 <code>addr = GetProcAddress(...)</code>，只是不知道書上為何多此一舉。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>FARPROC</tag>
-        <tag>cpp</tag>
-        <tag>加密與解密</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[C#] 在高 DPI 的螢幕上，有些應用程式內的字會模糊的原因以及解決方法！</title>
     <url>/2021/06/11/cs_dpi/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>開啟 Visual Studio <code>C#</code> 的 Windows Form 應用程式來設計，一定曾經注意到雖然在 VS 裡面設計 Form 時，預覽的字是清晰的，結果 Compiler 之後跑出來的字是模糊的！以下圖幫各位回憶一下。</p>
@@ -178,6 +144,40 @@
       </tags>
   </entry>
   <entry>
+    <title>[C++] (FARPROC&amp;) 的含意</title>
+    <url>/2021/06/11/cfarproc/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr; </span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...省略...)</span><br></pre></td></tr></table></figure>
+<p>平常只會看到像是 <code>(int)</code>、<code>(int*)</code> 之類的轉型，第一次看到轉型是帶著 <code>&amp;</code> 符號的，引發我的好奇心，藉此研究一番。</p>
+<h2 id="探討"><a href="#探討" class="headerlink" title="探討"></a>探討</h2><p>要探討這問題，就要先知道一般再宣告的時候，<code>&amp;</code> 運算元到底發揮甚麼功用，所以先用最簡單的整數(<code>int</code>)宣告來測試，內容分為以下三種：</p>
+<ol>
+<li><p><code>int a = b;   //這應該大家都知道，就是把b的值給a</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> a = b;</span><br><span class="line"><span class="comment">//結果：a = 2; b = 2; &amp;a = 006FF8C0; &amp;b = 006FF8CC;</span></span><br><span class="line"><span class="comment">//結論：值一樣但記憶體位址不一樣</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>int *a = &amp;b; //程度好一些的應該知道，這是把b的記憶體位址存到a裡面</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> *a = &amp;b;</span><br><span class="line"><span class="comment">//結果：a = 006FF8B4; b = 3; &amp;a = 006FF8A8; &amp;b = 006FF8B4;</span></span><br><span class="line"><span class="comment">//結論：a存著b的位址，但兩個記憶體位址還是不一樣</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>int &amp;a = b;  //但這個呢？讓我們繼續看下去</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">int</span> &amp;a = b;</span><br><span class="line"><span class="comment">//結果：a = 4; b = 4; &amp;a = 006FF89C; &amp;b = 006FF89C;</span></span><br><span class="line"><span class="comment">//結論：a的位址跟b一樣，所以a跟b一模一樣了！</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>以這些實驗可以得到結論：在宣告的時候 ，<code>int&amp;</code> 會把「等號左邊(<code>a</code>)的變數地址」改變成「等號右邊(<code>b</code>)變數的地址」，因此 <code>a</code> 與 <code>b</code> 兩個是一樣的東西（也就是記憶體位址一樣）！</p>
+<p>回到最一開始的問題：<code>(FARPROC&amp;) addr</code> 到底是甚麼呢？我還是用程式做一下實驗，先以書上的程式碼為第一個實驗，用 <code>(FARPROC&amp;)</code> 去接 <code>GetProcAddress</code> 的值，看會如何；再用 <code>addr</code> 直接去接，又會如何。以下是實驗結果：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA94; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA88; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
+<p>可以發現其實沒有像是我們在最原本例子 <code>int &amp;a=b;</code> 看到的把 <code>addr</code> 位址變為 <code>GetProcAddress</code> 的位址，反而是addr的值變化了，變為 <code>GetProcAddress</code> 回傳的地址，也就是說 <code>(FARPROC&amp;)</code> 在這個實驗中看起來是沒有作用到的。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p><code>(FARPROC&amp;) addr = GetProcAddress(...)</code> 等同於 <code>addr = GetProcAddress(...)</code>，只是不知道書上為何多此一舉。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>FARPROC</tag>
+        <tag>cpp</tag>
+        <tag>加密與解密</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[C#] 發布 ASP.NET Core 應用程式</title>
     <url>/2021/06/15/cs_asp_net_core/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接續 <a href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core_3_1/">[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</a> 已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</p>
@@ -205,40 +205,6 @@
         <tag>3.1</tag>
         <tag>visual studio</tag>
         <tag>2019</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[CharSet] CentOS 修改 MariaDB／MySQL 預設字符集</title>
-    <url>/2021/06/19/charset_centos_mariadb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL 是瑞典人開發的，所以預設字符集是 latin1，與其每次要創建資料庫都要指定字符集，不如直接更改預設的字符集。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-<li>MariaDB 10.3.17</li>
-</ul>
-<h2 id="確認預設字符集"><a href="#確認預設字符集" class="headerlink" title="確認預設字符集"></a>確認預設字符集</h2><p>登入 MariaDB</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mysql -u user -p</span><br></pre></td></tr></table></figure>
-<p>查看預設字符集，<code>Server characterset</code>、<code>Db characterset</code>、<code>Client characterset</code> 與 <code>Conn. characterset</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          8</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    latin1</span><br><span class="line">Db     characterset:    latin1</span><br><span class="line">Client characterset:    utf8</span><br><span class="line">Conn.  characterset:    utf8</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 8 sec</span><br></pre></td></tr></table></figure>
-<h2 id="更改-cnf-設定"><a href="#更改-cnf-設定" class="headerlink" title="更改 cnf 設定"></a>更改 cnf 設定</h2><p>為了不影響到原先就在的 cnf 檔，在 <code>/etc/my.cnf.d/</code> 目錄下新增一個 cnf 檔 (檔名任意)，內容如下</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8mb4        <span class="comment">## 修改 Client characterset 與 Conn. characterset</span></span><br><span class="line">[mysqld]</span><br><span class="line">character-set-server=utf8mb4         <span class="comment">## 修改 Server characterset 與 Db characterset</span></span><br><span class="line">collation-server=utf8mb4_unicode_ci  <span class="comment">## 會修改預設的校驗比對方法</span></span><br></pre></td></tr></table></figure>
-<h2 id="載入設定"><a href="#載入設定" class="headerlink" title="載入設定"></a>載入設定</h2><p>重啟 MariaDB，確認字符集已更改為所設定的</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mariadb</span><br><span class="line">[user@localhost ~]$ mysql -u user -p</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          9</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    utf8mb4</span><br><span class="line">Db     characterset:    utf8mb4</span><br><span class="line">Client characterset:    utf8mb4</span><br><span class="line">Conn.  characterset:    utf8mb4</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 3 min 39 sec</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>server</tag>
-        <tag>characterset</tag>
-        <tag>client</tag>
-        <tag>mariadb</tag>
-        <tag>mysql</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>default</tag>
-        <tag>collation</tag>
-        <tag>utf8</tag>
-        <tag>utf8mb4</tag>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -275,6 +241,40 @@
         <tag>visual studio</tag>
         <tag>2019</tag>
         <tag>razor</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[CharSet] CentOS 修改 MariaDB／MySQL 預設字符集</title>
+    <url>/2021/06/19/charset_centos_mariadb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL 是瑞典人開發的，所以預設字符集是 latin1，與其每次要創建資料庫都要指定字符集，不如直接更改預設的字符集。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+<li>MariaDB 10.3.17</li>
+</ul>
+<h2 id="確認預設字符集"><a href="#確認預設字符集" class="headerlink" title="確認預設字符集"></a>確認預設字符集</h2><p>登入 MariaDB</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mysql -u user -p</span><br></pre></td></tr></table></figure>
+<p>查看預設字符集，<code>Server characterset</code>、<code>Db characterset</code>、<code>Client characterset</code> 與 <code>Conn. characterset</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          8</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    latin1</span><br><span class="line">Db     characterset:    latin1</span><br><span class="line">Client characterset:    utf8</span><br><span class="line">Conn.  characterset:    utf8</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 8 sec</span><br></pre></td></tr></table></figure>
+<h2 id="更改-cnf-設定"><a href="#更改-cnf-設定" class="headerlink" title="更改 cnf 設定"></a>更改 cnf 設定</h2><p>為了不影響到原先就在的 cnf 檔，在 <code>/etc/my.cnf.d/</code> 目錄下新增一個 cnf 檔 (檔名任意)，內容如下</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8mb4        <span class="comment">## 修改 Client characterset 與 Conn. characterset</span></span><br><span class="line">[mysqld]</span><br><span class="line">character-set-server=utf8mb4         <span class="comment">## 修改 Server characterset 與 Db characterset</span></span><br><span class="line">collation-server=utf8mb4_unicode_ci  <span class="comment">## 會修改預設的校驗比對方法</span></span><br></pre></td></tr></table></figure>
+<h2 id="載入設定"><a href="#載入設定" class="headerlink" title="載入設定"></a>載入設定</h2><p>重啟 MariaDB，確認字符集已更改為所設定的</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mariadb</span><br><span class="line">[user@localhost ~]$ mysql -u user -p</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          9</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    utf8mb4</span><br><span class="line">Db     characterset:    utf8mb4</span><br><span class="line">Client characterset:    utf8mb4</span><br><span class="line">Conn.  characterset:    utf8mb4</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 3 min 39 sec</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>server</tag>
+        <tag>characterset</tag>
+        <tag>client</tag>
+        <tag>mariadb</tag>
+        <tag>mysql</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>default</tag>
+        <tag>collation</tag>
+        <tag>utf8</tag>
+        <tag>utf8mb4</tag>
+        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -343,49 +343,6 @@
         <tag>invoke</tag>
         <tag>loadlibrarya</tag>
         <tag>loadlibraryw</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[EFI] 顯示 Windows 的 EFI 系統分割磁碟</title>
-    <url>/2021/06/16/efi_windows_efi/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>與開機有關的文件通常會存放於 EFI 系統分割磁碟，且為了不讓一般使用者誤觸造成設定錯誤進而導致系統崩潰，通常會將磁碟隱藏起來，只讓真的有需要設定且知道如何進入的使用者自行更改設定。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-</ul>
-<h2 id="操作方法"><a href="#操作方法" class="headerlink" title="操作方法"></a>操作方法</h2><p>這裡有兩種方法能夠採用</p>
-<h3 id="diskpart"><a href="#diskpart" class="headerlink" title="diskpart"></a>diskpart</h3><p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;diskpart</span><br></pre></td></tr></table></figure>
-<p>執行後會跳出驗證視窗，按下「是」之後會跳出一個與 cmd 視窗很像的視窗，但其實是 diskpart.exe，接下來的動作都在此視窗中執行。</p>
-<p>先列出磁碟清單，利用大小的資訊判斷想要的 EFI 系統磁碟分割區在哪個磁碟裡面，在這情況下我的 C 槽所在磁碟的大小為 238 GB，因此 EFI 系統磁碟分割區在磁碟 1，再用 <code>select</code> 指令選擇該磁碟</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;list disk</span><br><span class="line"></span><br><span class="line">  磁碟 <span class="comment">###  狀態           大小     可用     Dyn  Gpt</span></span><br><span class="line">  --------  -------------  -------  -------  ---  ---</span><br><span class="line">  磁碟 0    連線              931 GB      0 B        *</span><br><span class="line">  磁碟 1    連線              238 GB      0 B        *</span><br><span class="line"></span><br><span class="line">DISKPART&gt;select disk 1</span><br><span class="line"></span><br><span class="line">磁碟 1 是所選擇的磁碟。</span><br></pre></td></tr></table></figure>
-<p>顯示磁碟分割清單，選擇系統磁碟分割區 (類型為系統的那個磁碟分割區)，同樣是使用 <code>select</code> 選擇該磁碟分割區</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;list partition</span><br><span class="line"></span><br><span class="line">  磁碟分割  <span class="comment">###  類型              大小     位移</span></span><br><span class="line">  -------------  ----------------  -------  -------</span><br><span class="line">  磁碟分割  1    系統                 260 MB  1024 KB</span><br><span class="line">  磁碟分割  2    保留                  16 MB   261 MB</span><br><span class="line">  磁碟分割  3    主要                 237 GB   277 MB</span><br><span class="line">  磁碟分割  4    復原                 850 MB   237 GB</span><br><span class="line"></span><br><span class="line">DISKPART&gt;select partition 1</span><br><span class="line"></span><br><span class="line">磁碟分割 1 是所選擇的磁碟分割。</span><br></pre></td></tr></table></figure>
-<p>使用 <code>assign</code> 暫時地命名分割區(這裡把它命名為 <code>p</code> 槽)，至此已經把系統磁碟叫出來了，在檔案總管 (File Explorer) 或透過 cmd (以系統管理員身分執行) 都能存取</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;assign letter=p</span><br><span class="line"></span><br><span class="line">DiskPart 成功地指派了磁碟機代號或掛接點。</span><br></pre></td></tr></table></figure>
-<p>會說它是暫時命名的是因為關機時，系統會自動註銷這個名稱，若重新啟動後還有使用需求，需要再操做一遍它才會再次出現，若要手動註銷的話則用 <code>remove</code> 指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;remove letter=p</span><br><span class="line"></span><br><span class="line">DiskPart 成功地移除了磁碟機代號或掛接點。</span><br></pre></td></tr></table></figure>
-<h3 id="mountvol"><a href="#mountvol" class="headerlink" title="mountvol"></a>mountvol</h3><p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令，將 EFI 系統分割區暫時命名為 <code>p</code> 槽</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;mountvol p: /s</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>/s</code>：Mount the EFI System Partition on the given drive.</li>
-</ul>
-<p>以這個方式指派的磁碟分割區只能在 cmd 存取 (<code>p:\</code>)，檔案總管 (File Explorer) 是看不到的。與 diskpart 相同，關機時會註銷名稱，若要手動註銷 <code>p</code> 槽</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;mountvol p: /d</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>/d</code>：Removes the volume mount point from the specified directory.</li>
-</ul>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>efi</tag>
-        <tag>windows</tag>
-        <tag>diskpart</tag>
-        <tag>mountvol</tag>
-        <tag>partition</tag>
-        <tag>disk</tag>
-        <tag>cmd</tag>
       </tags>
   </entry>
   <entry>
@@ -524,6 +481,126 @@
       </tags>
   </entry>
   <entry>
+    <title>[EFI] 顯示 Windows 的 EFI 系統分割磁碟</title>
+    <url>/2021/06/16/efi_windows_efi/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>與開機有關的文件通常會存放於 EFI 系統分割磁碟，且為了不讓一般使用者誤觸造成設定錯誤進而導致系統崩潰，通常會將磁碟隱藏起來，只讓真的有需要設定且知道如何進入的使用者自行更改設定。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+</ul>
+<h2 id="操作方法"><a href="#操作方法" class="headerlink" title="操作方法"></a>操作方法</h2><p>這裡有兩種方法能夠採用</p>
+<h3 id="diskpart"><a href="#diskpart" class="headerlink" title="diskpart"></a>diskpart</h3><p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;diskpart</span><br></pre></td></tr></table></figure>
+<p>執行後會跳出驗證視窗，按下「是」之後會跳出一個與 cmd 視窗很像的視窗，但其實是 diskpart.exe，接下來的動作都在此視窗中執行。</p>
+<p>先列出磁碟清單，利用大小的資訊判斷想要的 EFI 系統磁碟分割區在哪個磁碟裡面，在這情況下我的 C 槽所在磁碟的大小為 238 GB，因此 EFI 系統磁碟分割區在磁碟 1，再用 <code>select</code> 指令選擇該磁碟</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;list disk</span><br><span class="line"></span><br><span class="line">  磁碟 <span class="comment">###  狀態           大小     可用     Dyn  Gpt</span></span><br><span class="line">  --------  -------------  -------  -------  ---  ---</span><br><span class="line">  磁碟 0    連線              931 GB      0 B        *</span><br><span class="line">  磁碟 1    連線              238 GB      0 B        *</span><br><span class="line"></span><br><span class="line">DISKPART&gt;select disk 1</span><br><span class="line"></span><br><span class="line">磁碟 1 是所選擇的磁碟。</span><br></pre></td></tr></table></figure>
+<p>顯示磁碟分割清單，選擇系統磁碟分割區 (類型為系統的那個磁碟分割區)，同樣是使用 <code>select</code> 選擇該磁碟分割區</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;list partition</span><br><span class="line"></span><br><span class="line">  磁碟分割  <span class="comment">###  類型              大小     位移</span></span><br><span class="line">  -------------  ----------------  -------  -------</span><br><span class="line">  磁碟分割  1    系統                 260 MB  1024 KB</span><br><span class="line">  磁碟分割  2    保留                  16 MB   261 MB</span><br><span class="line">  磁碟分割  3    主要                 237 GB   277 MB</span><br><span class="line">  磁碟分割  4    復原                 850 MB   237 GB</span><br><span class="line"></span><br><span class="line">DISKPART&gt;select partition 1</span><br><span class="line"></span><br><span class="line">磁碟分割 1 是所選擇的磁碟分割。</span><br></pre></td></tr></table></figure>
+<p>使用 <code>assign</code> 暫時地命名分割區(這裡把它命名為 <code>p</code> 槽)，至此已經把系統磁碟叫出來了，在檔案總管 (File Explorer) 或透過 cmd (以系統管理員身分執行) 都能存取</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;assign letter=p</span><br><span class="line"></span><br><span class="line">DiskPart 成功地指派了磁碟機代號或掛接點。</span><br></pre></td></tr></table></figure>
+<p>會說它是暫時命名的是因為關機時，系統會自動註銷這個名稱，若重新啟動後還有使用需求，需要再操做一遍它才會再次出現，若要手動註銷的話則用 <code>remove</code> 指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;remove letter=p</span><br><span class="line"></span><br><span class="line">DiskPart 成功地移除了磁碟機代號或掛接點。</span><br></pre></td></tr></table></figure>
+<h3 id="mountvol"><a href="#mountvol" class="headerlink" title="mountvol"></a>mountvol</h3><p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令，將 EFI 系統分割區暫時命名為 <code>p</code> 槽</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;mountvol p: /s</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>/s</code>：Mount the EFI System Partition on the given drive.</li>
+</ul>
+<p>以這個方式指派的磁碟分割區只能在 cmd 存取 (<code>p:\</code>)，檔案總管 (File Explorer) 是看不到的。與 diskpart 相同，關機時會註銷名稱，若要手動註銷 <code>p</code> 槽</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;mountvol p: /d</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>/d</code>：Removes the volume mount point from the specified directory.</li>
+</ul>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>efi</tag>
+        <tag>windows</tag>
+        <tag>diskpart</tag>
+        <tag>mountvol</tag>
+        <tag>partition</tag>
+        <tag>disk</tag>
+        <tag>cmd</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Git] git remote add origin 中 origin 的意思解析</title>
+    <url>/2021/06/13/git_git_remote_add_origin/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>Git</code> 真的是對程式開發者的一個大福音，在知道 <code>Git</code> 之前常常在實驗室用桌電開發，回宿舍前上傳雲端或隨身碟，然後回到宿再抓下來繼續開發，久了之後檔案多了，非常難管理，也很難找到之前到底修改了哪裡。使用 <code>Git</code> 之後，光是管理程式碼的部份就省很多時間。</p>
+<p>其中一個很常下的指令是 <code>git remote add origin</code>，它很基本以至於很少有文章介紹它的意思，因此在自己的好奇心之下，驅使自己理解這個指令的含意。</p>
+<h2 id="origin-意思解析"><a href="#origin-意思解析" class="headerlink" title="origin 意思解析"></a>origin 意思解析</h2><p>當想要從 Local 端 <code>push</code> 資料上 <code>Git</code> 管理網 (例如 GitHub、GitLab ，統稱為 <code>remote</code> 端) 時，會先在網頁上先建一個 Repository，然後跟著網頁的指示做。以下以個人的 <a href="https://github.com/weirenxue">GitHub</a> 為例，創建一個 Repository 名稱為 zcu111-EMIO，且「不」打勾 &quot;Initialize this repository with a README&quot;，創建好之後 GitHub 會提示以下訊息讓我們能順利上傳程式碼</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">…or push an existing repository from the command line</span><br><span class="line"></span><br><span class="line">git remote add origin https://github.com/weirenxue/zcu111-EMIO.git</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+<p>依照它的提示執行這些指令後，就能把在地端的程式碼 <code>push</code> 上去，這時再用 <code>git remote -v</code> 來看看 <code>remote</code> 資料</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
+<p>可以發現 <code>origin</code> 就只是那 <code>remote git</code> 的代名詞！為了讓使用者不必每次對 <code>remote</code> 操作都要打一長串網址。</p>
+<h2 id="應用"><a href="#應用" class="headerlink" title="應用"></a>應用</h2><p>理解意思之後，就能自己做變化！我們可以把 <code>origin</code> 改為別的名稱</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote rename origin origin-github  <span class="comment"># 改名</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
+<p>更甚者，如果有兩個 <code>Git</code> 管理網要 <code>push</code> 的話 (例如：公司專用/個人習慣用)，可以再加入一個 <code>remote</code>！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote add origin-company http://192.168.0.123/fake/zcu111-EMIO.git</span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
+<p><code>push</code> 的方法都沒變，只是將原本是 origin 的地方改為對應的代名詞</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git push origin-github master  <span class="comment"># 到 GitHub</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git push origin-company master <span class="comment"># 到公司</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>remote</tag>
+        <tag>origin</tag>
+        <tag>push</tag>
+        <tag>upstream</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Git] git-cli 使用樹狀圖展示 Commit Log</title>
+    <url>/2021/06/13/git_terminal_git_log/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>習慣使用 cli 操作 Git 後，不會想裝 Git 的 GUI 擴充，但還是覺得若能以樹狀圖來看 Commit Log 會很方便。</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>同樣是使用 <code>git log</code> 指令，但需加上一些參數達到這個效果</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git log --oneline --graph --all</span><br><span class="line">* baf420b (HEAD -&gt; feat-fill-up) Text to speech</span><br><span class="line">* a06c9c8 Display the fuel prompt</span><br><span class="line">| * 5d04f92 (origin-github/feat, feat) renew API</span><br><span class="line">|/  </span><br><span class="line">* 19b0257 Rename the variables&#x27; name</span><br><span class="line">* 41992f1 renew API(communicates with golang API)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>--oneline</code>：只顯示 log 標題，若不限定為只有標題，將會顯得雜亂。</li>
+<li><code>--graph</code>：以樹狀圖顯示 log。</li>
+<li><code>--all</code>：全部的 log，包含所有分支。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>tree</tag>
+        <tag>log</tag>
+        <tag>commit</tag>
+        <tag>cli</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Hyper-V] 讓 Windows 的硬碟可以超過 16 TB</title>
+    <url>/2021/06/15/hyper_v_windows_16_tb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 檔案系統預設的 Cluster Size 為 4KB，進一步導致分割區最多只能到 16 TB，當要延伸磁區且總容量會超過 16 TB 時，就會出現「磁碟區無法延伸 因為叢集數目將超過檔案系統支援的最大叢集數目」的提示視窗。</p>
+<p>若想要讓 C 槽可到 16 TB 以上的容量，需要在安裝 Windows 時就先設定 (若沒設定但又需要延伸大容量硬碟的話，就重灌吧 QQ)！這篇文章便是紀錄如何設定 C 槽預設能使用更大容量的硬碟！</p>
+<h2 id="查看所需-Cluster-Size"><a href="#查看所需-Cluster-Size" class="headerlink" title="查看所需 Cluster Size"></a>查看所需 Cluster Size</h2><p>請先參考 <a href="https://support.microsoft.com/zh-tw/topic/%E9%A0%90%E8%A8%AD-ntfs-fat-%E5%92%8C-exfat-%E7%9A%84%E5%8F%A2%E9%9B%86%E5%A4%A7%E5%B0%8F-9772e6f1-e31a-00d7-e18f-73169155af95">預設 NTFS、 FAT，和 exFAT 的叢集大小。</a> 中的表格，找出自己需要的 Cluster Size ，例如我是需要將 OS 灌在 Hyper-V 之中，目前 (2021/01/29) 官方所建議的最大容量為 64 TB ，因此查表得知對應的 Cluster Size 應為 16 KB！記住這個資訊下面步驟會用到。</p>
+<h2 id="修改預設-Cluster-Size"><a href="#修改預設-Cluster-Size" class="headerlink" title="修改預設 Cluster Size"></a>修改預設 Cluster Size</h2><p>參考影片設定步驟，會用到的指令及順序如下，其中的 <code>16K</code> 請改為上一步所查找出來的結果</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART</span><br><span class="line">LIST DISK</span><br><span class="line">SELECT DISK 0</span><br><span class="line">LIST PARTITION</span><br><span class="line">SELECT PARTITION 4</span><br><span class="line">FORMAT QUICK UNIT=16K</span><br><span class="line">EXIT </span><br><span class="line">SETUP</span><br></pre></td></tr></table></figure>
+<!-- markdownlint-disable MD033 -->
+<iframe width="560" height="315" src="https://www.youtube.com/embed/KmW_b57L2Ao" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<!-- markdownlint-restore MD033 -->
+<p>按照影片步驟做完後，該 VM 的 C 槽的 Cluster Size 就為 16 KB 囉！讓 C 槽可延伸最多到 64 TB 的容量！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>16 tb</tag>
+        <tag>hyperv</tag>
+        <tag>drive</tag>
+        <tag>cluster</tag>
+        <tag>size</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo × NexT × Firestore 顯示瀏覽人次</title>
     <url>/2021/06/11/hexo_next_firestore_visitors/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>擴充性高的部落格框架有許多功能或是套件需要自己手動加入，因此在研究如何顯示瀏覽人次的同時記錄整個過程。</p>
@@ -557,83 +634,6 @@
         <tag>next</tag>
         <tag>firestore</tag>
         <tag>visitors</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Git] git remote add origin 中 origin 的意思解析</title>
-    <url>/2021/06/13/git_git_remote_add_origin/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>Git</code> 真的是對程式開發者的一個大福音，在知道 <code>Git</code> 之前常常在實驗室用桌電開發，回宿舍前上傳雲端或隨身碟，然後回到宿再抓下來繼續開發，久了之後檔案多了，非常難管理，也很難找到之前到底修改了哪裡。使用 <code>Git</code> 之後，光是管理程式碼的部份就省很多時間。</p>
-<p>其中一個很常下的指令是 <code>git remote add origin</code>，它很基本以至於很少有文章介紹它的意思，因此在自己的好奇心之下，驅使自己理解這個指令的含意。</p>
-<h2 id="origin-意思解析"><a href="#origin-意思解析" class="headerlink" title="origin 意思解析"></a>origin 意思解析</h2><p>當想要從 Local 端 <code>push</code> 資料上 <code>Git</code> 管理網 (例如 GitHub、GitLab ，統稱為 <code>remote</code> 端) 時，會先在網頁上先建一個 Repository，然後跟著網頁的指示做。以下以個人的 <a href="https://github.com/weirenxue">GitHub</a> 為例，創建一個 Repository 名稱為 zcu111-EMIO，且「不」打勾 &quot;Initialize this repository with a README&quot;，創建好之後 GitHub 會提示以下訊息讓我們能順利上傳程式碼</p>
-<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">…or push an existing repository from the command line</span><br><span class="line"></span><br><span class="line">git remote add origin https://github.com/weirenxue/zcu111-EMIO.git</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
-<p>依照它的提示執行這些指令後，就能把在地端的程式碼 <code>push</code> 上去，這時再用 <code>git remote -v</code> 來看看 <code>remote</code> 資料</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
-<p>可以發現 <code>origin</code> 就只是那 <code>remote git</code> 的代名詞！為了讓使用者不必每次對 <code>remote</code> 操作都要打一長串網址。</p>
-<h2 id="應用"><a href="#應用" class="headerlink" title="應用"></a>應用</h2><p>理解意思之後，就能自己做變化！我們可以把 <code>origin</code> 改為別的名稱</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote rename origin origin-github  <span class="comment"># 改名</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
-<p>更甚者，如果有兩個 <code>Git</code> 管理網要 <code>push</code> 的話 (例如：公司專用/個人習慣用)，可以再加入一個 <code>remote</code>！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote add origin-company http://192.168.0.123/fake/zcu111-EMIO.git</span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
-<p><code>push</code> 的方法都沒變，只是將原本是 origin 的地方改為對應的代名詞</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git push origin-github master  <span class="comment"># 到 GitHub</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git push origin-company master <span class="comment"># 到公司</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-        <tag>remote</tag>
-        <tag>origin</tag>
-        <tag>push</tag>
-        <tag>upstream</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Hyper-V] 讓 Windows 的硬碟可以超過 16 TB</title>
-    <url>/2021/06/15/hyper_v_windows_16_tb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 檔案系統預設的 Cluster Size 為 4KB，進一步導致分割區最多只能到 16 TB，當要延伸磁區且總容量會超過 16 TB 時，就會出現「磁碟區無法延伸 因為叢集數目將超過檔案系統支援的最大叢集數目」的提示視窗。</p>
-<p>若想要讓 C 槽可到 16 TB 以上的容量，需要在安裝 Windows 時就先設定 (若沒設定但又需要延伸大容量硬碟的話，就重灌吧 QQ)！這篇文章便是紀錄如何設定 C 槽預設能使用更大容量的硬碟！</p>
-<h2 id="查看所需-Cluster-Size"><a href="#查看所需-Cluster-Size" class="headerlink" title="查看所需 Cluster Size"></a>查看所需 Cluster Size</h2><p>請先參考 <a href="https://support.microsoft.com/zh-tw/topic/%E9%A0%90%E8%A8%AD-ntfs-fat-%E5%92%8C-exfat-%E7%9A%84%E5%8F%A2%E9%9B%86%E5%A4%A7%E5%B0%8F-9772e6f1-e31a-00d7-e18f-73169155af95">預設 NTFS、 FAT，和 exFAT 的叢集大小。</a> 中的表格，找出自己需要的 Cluster Size ，例如我是需要將 OS 灌在 Hyper-V 之中，目前 (2021/01/29) 官方所建議的最大容量為 64 TB ，因此查表得知對應的 Cluster Size 應為 16 KB！記住這個資訊下面步驟會用到。</p>
-<h2 id="修改預設-Cluster-Size"><a href="#修改預設-Cluster-Size" class="headerlink" title="修改預設 Cluster Size"></a>修改預設 Cluster Size</h2><p>參考影片設定步驟，會用到的指令及順序如下，其中的 <code>16K</code> 請改為上一步所查找出來的結果</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART</span><br><span class="line">LIST DISK</span><br><span class="line">SELECT DISK 0</span><br><span class="line">LIST PARTITION</span><br><span class="line">SELECT PARTITION 4</span><br><span class="line">FORMAT QUICK UNIT=16K</span><br><span class="line">EXIT </span><br><span class="line">SETUP</span><br></pre></td></tr></table></figure>
-<!-- markdownlint-disable MD033 -->
-<iframe width="560" height="315" src="https://www.youtube.com/embed/KmW_b57L2Ao" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-<!-- markdownlint-restore MD033 -->
-<p>按照影片步驟做完後，該 VM 的 C 槽的 Cluster Size 就為 16 KB 囉！讓 C 槽可延伸最多到 64 TB 的容量！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>16 tb</tag>
-        <tag>hyperv</tag>
-        <tag>drive</tag>
-        <tag>cluster</tag>
-        <tag>size</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Git] git-cli 使用樹狀圖展示 Commit Log</title>
-    <url>/2021/06/13/git_terminal_git_log/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>習慣使用 cli 操作 Git 後，不會想裝 Git 的 GUI 擴充，但還是覺得若能以樹狀圖來看 Commit Log 會很方便。</p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>同樣是使用 <code>git log</code> 指令，但需加上一些參數達到這個效果</p>
-<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git log --oneline --graph --all</span><br><span class="line">* baf420b (HEAD -&gt; feat-fill-up) Text to speech</span><br><span class="line">* a06c9c8 Display the fuel prompt</span><br><span class="line">| * 5d04f92 (origin-github/feat, feat) renew API</span><br><span class="line">|/  </span><br><span class="line">* 19b0257 Rename the variables&#x27; name</span><br><span class="line">* 41992f1 renew API(communicates with golang API)</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>--oneline</code>：只顯示 log 標題，若不限定為只有標題，將會顯得雜亂。</li>
-<li><code>--graph</code>：以樹狀圖顯示 log。</li>
-<li><code>--all</code>：全部的 log，包含所有分支。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-        <tag>tree</tag>
-        <tag>log</tag>
-        <tag>commit</tag>
-        <tag>cli</tag>
       </tags>
   </entry>
   <entry>
@@ -744,6 +744,32 @@
       </tags>
   </entry>
   <entry>
+    <title>[LaTeX] Texmaker 點擊跳轉失效</title>
+    <url>/2021/06/13/latex_texmaker/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>點擊 pdf 跳轉到相對應的 tex 程式碼是非常好用的工具，若少了這項功能 tex 將變得難以使用。</p>
+<h2 id="原因及解決方法"><a href="#原因及解決方法" class="headerlink" title="原因及解決方法"></a>原因及解決方法</h2><p>無法使用這個功能主要有兩個可能原因</p>
+<ol>
+<li><p>先到「選項」→「設定Texmaker」→「命令」，看看自己使用哪個編譯器，我是用的是 <code>XeLaTeX</code></p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">xelatex -synctex=1 -interaction=nonstopmode %.tex</span><br></pre></td></tr></table></figure>
+<p> 其中 <code>-synctex=1</code> 是將同步 (Synchronize) 功能打開的關鍵，若無法使用很可能是沒有這個，直接加入即可。</p>
+</li>
+<li><p>檔案路徑中不要有中文或特殊符號，若有，先將檔案移動到沒有中文或特殊符號的路徑下，並確保檔名也符合此條件。再重新開啟 Texmaker 測試點擊跳轉功能。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>latex</tag>
+        <tag>synctex</tag>
+        <tag>texmaker</tag>
+        <tag>not work</tag>
+        <tag>jump</tag>
+        <tag>click</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[MATLAB] k-means 演算法說明與實作</title>
     <url>/2021/06/12/matlab_k_means/</url>
     <content><![CDATA[<h2 id="k-means-介紹"><a href="#k-means-介紹" class="headerlink" title="k-means 介紹"></a>k-means 介紹</h2><p><code>k-means</code> 又稱 <code>c-means Clustering</code>，是一種分群演算法，k 表示群集的數量，演算法如下</p>
@@ -774,32 +800,6 @@
         <tag>matlab</tag>
         <tag>pseudo</tag>
         <tag>algorithm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[LaTeX] Texmaker 點擊跳轉失效</title>
-    <url>/2021/06/13/latex_texmaker/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>點擊 pdf 跳轉到相對應的 tex 程式碼是非常好用的工具，若少了這項功能 tex 將變得難以使用。</p>
-<h2 id="原因及解決方法"><a href="#原因及解決方法" class="headerlink" title="原因及解決方法"></a>原因及解決方法</h2><p>無法使用這個功能主要有兩個可能原因</p>
-<ol>
-<li><p>先到「選項」→「設定Texmaker」→「命令」，看看自己使用哪個編譯器，我是用的是 <code>XeLaTeX</code></p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">xelatex -synctex=1 -interaction=nonstopmode %.tex</span><br></pre></td></tr></table></figure>
-<p> 其中 <code>-synctex=1</code> 是將同步 (Synchronize) 功能打開的關鍵，若無法使用很可能是沒有這個，直接加入即可。</p>
-</li>
-<li><p>檔案路徑中不要有中文或特殊符號，若有，先將檔案移動到沒有中文或特殊符號的路徑下，並確保檔名也符合此條件。再重新開啟 Texmaker 測試點擊跳轉功能。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>latex</tag>
-        <tag>synctex</tag>
-        <tag>texmaker</tag>
-        <tag>not work</tag>
-        <tag>jump</tag>
-        <tag>click</tag>
       </tags>
   </entry>
   <entry>
@@ -975,6 +975,41 @@
       </tags>
   </entry>
   <entry>
+    <title>[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</title>
+    <url>/2021/06/18/mysql_centos_mysql_8_0_root/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL 應該是使用 PHP 第一個會碰到的資料庫，通常會包在一起來教學。記錄一下如何在 CentOS 8 單獨安裝 MySQL 吧！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+</ul>
+<h2 id="安裝與啟動-MySQL"><a href="#安裝與啟動-MySQL" class="headerlink" title="安裝與啟動 MySQL"></a>安裝與啟動 MySQL</h2><p>在 CentOS 8 以後 <code>yum</code> 漸漸的會被 <code>dnf</code> 取代，因此都會以 <code>dnf</code> 來做套件安裝移除的動作。開啟 Terminal，安裝 MySQL</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]<span class="comment"># sudo dnf install -y mysql-server</span></span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Installed:</span><br><span class="line">  mariadb-connector-c-config-3.0.7-1.el8.noarch                         mecab-0.996-1.module_el8.0.0+41+ca30bab6.9.x86_64                     mysql-8.0.17-3.module_el8.0.0+181+899d6349.x86_64                    </span><br><span class="line">  mysql-common-8.0.17-3.module_el8.0.0+181+899d6349.x86_64              mysql-errmsg-8.0.17-3.module_el8.0.0+181+899d6349.x86_64              mysql-server-8.0.17-3.module_el8.0.0+181+899d6349.x86_64             </span><br><span class="line">  protobuf-lite-3.5.0-7.el8.x86_64                                     </span><br><span class="line"></span><br><span class="line">Complete! <span class="comment"># 看到這行就代表安裝完成囉</span></span><br></pre></td></tr></table></figure>
+<p>CentOS 中的服務安裝後預設都是不開啟的，所以要手動開啟，看到 <code>active (running)</code> 就代表 MySQL 正在運作囉！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start mysqld.service   <span class="comment"># 馬上開啟mysql daeman(MySQL服務)</span></span><br><span class="line"></span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mysqld.service  <span class="comment"># 之後開機也要自動開啟MySQL服務</span></span><br><span class="line">Created symlink /etc/systemd/system/multi-user.target.wants/mysqld.service → /usr/lib/systemd/system/mysqld.service.</span><br><span class="line"></span><br><span class="line">[user@localhost ~]$ sudo systemctl status mysqld.service  <span class="comment"># 查詢MySQL服務的狀態</span></span><br><span class="line">● mysqld.service - MySQL 8.0 database server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/mysqld.service; enabled; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Tue 2020-09-15 12:56:47 CST; 1min 37s ago</span><br><span class="line"> Main PID: 8171 (mysqld)</span><br><span class="line">   Status: <span class="string">&quot;Server is operational&quot;</span></span><br><span class="line">    Tasks: 38 (<span class="built_in">limit</span>: 49448)</span><br><span class="line">   Memory: 376.2M</span><br><span class="line">   CGroup: /system.slice/mysqld.service</span><br><span class="line">           └─8171 /usr/libexec/mysqld --basedir=/usr</span><br><span class="line"></span><br><span class="line">Sep 15 12:56:46 localhost.localdomain systemd[1]: Starting MySQL 8.0 database server...</span><br><span class="line">Sep 15 12:56:47 localhost.localdomain systemd[1]: Started MySQL 8.0 database server.</span><br></pre></td></tr></table></figure>
+<h2 id="設定-root-密碼"><a href="#設定-root-密碼" class="headerlink" title="設定 root 密碼"></a>設定 root 密碼</h2><div class="tabs" id="設定密碼"><ul class="nav-tabs"><li class="tab active"><a href="#設定密碼-1">簡易方法</a></li><li class="tab"><a href="#設定密碼-2">進階方法</a></li></ul><div class="tab-content"><div class="tab-pane active" id="設定密碼-1"><p>可以使用 <code>mysql_secure_installation</code> 來設定與安全性相關的設定，這個設定工具透過互動式問答幫助管理者設定 root 密碼、移除匿名登入帳號、禁止 root 從遠端登入、移除測試用的資料庫。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mysql_secure_installation</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="設定密碼-2"><p>root 帳號的密碼預設是無，為了安全起見，登入後一定要改密碼！先登入 ＭySQL</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mysql -u root   <span class="comment"># ← 沒有密碼所以不用參數 -p</span></span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 10</span><br><span class="line">Server version: 8.0.17 Source distribution</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2019, Oracle and/or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and/or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type <span class="string">&#x27;help;&#x27;</span> or <span class="string">&#x27;\h&#x27;</span> <span class="keyword">for</span> <span class="built_in">help</span>. Type <span class="string">&#x27;\c&#x27;</span> to clear the current input statement.</span><br></pre></td></tr></table></figure>
+<p>使用 SQL 修改密碼</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span><span class="keyword">ALTER</span> <span class="keyword">USER</span> <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span> IDENTIFIED <span class="keyword">BY</span> <span class="string">&#x27;password&#x27;</span>;  # password 改為要設定的密碼</span><br><span class="line">Query OK, <span class="number">0</span> <span class="keyword">rows</span> affected (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure></div></div></div>
+<h2 id="登入-MySQL"><a href="#登入-MySQL" class="headerlink" title="登入 MySQL"></a>登入 MySQL</h2><p>用密碼登入 MySQL ，看到 <code>Welcome to the MySQL monitor.</code> 就成功囉</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mysql -u root -p</span><br><span class="line">Enter password:        <span class="comment"># ← 這裡輸入剛設定的密碼</span></span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">...</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h2 id="忘記-root-密碼"><a href="#忘記-root-密碼" class="headerlink" title="忘記 root 密碼"></a>忘記 root 密碼</h2><p>若是之前有裝過 MySQL，現在不記得 root 的密碼，請參考 <a href="https://ckahiaku.wordpress.com/2018/03/30/how-to-remove-mysql-entirely-from-linux-system/">HOW TO REMOVE MYSQL ENTIRELY FROM LINUX SYSTEM(CENTOS)</a> 先清除舊的 MySQL 資料再安裝，預設密碼就會為空。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>8</tag>
+        <tag>root</tag>
+        <tag>password</tag>
+        <tag>change</tag>
+        <tag>forget</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Math] 以移位運算優化除數為 2 的冪次方的除法</title>
     <url>/2021/06/15/math_2/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>除法指令在 CPU 中的執行周期相較於其它運算 (加/減/乘) 還要來得長，所以會盡可能的找替代方案來算出除法結果。這裡討論的是，當除以一個 2 的冪次方數時要怎麼減化過程，特別是被除數為負數時的情況。</p>
@@ -1063,6 +1098,75 @@
         <tag>8.2</tag>
         <tag>linux</tag>
         <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[PHP] CentOS 8.2 + Nginx + MariaDB + php-fpm + phpMyAdmin</title>
+    <url>/2021/06/18/centos_phpmyadmin/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到使用 MySQL/MariaDB 就會想到 phpMyAdmin 這個使用者圖像介面，它是用 PHP 寫出來與 MySQL/MariaDB 互動的介面，所以若要使用，必須先安裝網頁伺服器與 PHP。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+</ul>
+<h2 id="安裝-EPEL"><a href="#安裝-EPEL" class="headerlink" title="安裝 EPEL"></a>安裝 EPEL</h2><p>安裝由 Fedora 社群打造的第三方源 EPEL (Extra Packages for Enterprise Linux)，其中包含比官方 repository 還要新的套件版本</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install epel-release</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-Nginx"><a href="#安裝-Nginx" class="headerlink" title="安裝 Nginx"></a>安裝 Nginx</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/nginx_centos_nginx/">[Nginx] CentOS 安裝網頁伺服器 Nginx</a>，安裝好後從瀏覽器輸入 <a href="http://localhost">http://localhost</a> 確定可看到 Nginx 預設頁面</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl start nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-MariaDB"><a href="#安裝-MariaDB" class="headerlink" title="安裝 MariaDB"></a>安裝 MariaDB</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install mariadb-server mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl start mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mariadb</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-php-fpm"><a href="#安裝-php-fpm" class="headerlink" title="安裝 php-fpm"></a>安裝 php-fpm</h2><p>這裡安裝預設版本 (目前是7.2版)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install php php-fpm php-json php-mysqlnd php-mbstring</span><br></pre></td></tr></table></figure>
+<h3 id="修改-www-conf-設定"><a href="#修改-www-conf-設定" class="headerlink" title="修改 www.conf 設定"></a>修改 www.conf 設定</h3><p>修改 <code>/etc/php-fpm.d/www.conf</code> 檔案內容</p>
+<ol>
+<li>改 <code>user = apache</code> 為 <code>user = nginx</code></li>
+<li>改 <code>group = apache</code> 為 <code>group = nginx</code></li>
+<li>改 <code>listen = /run/php-fpm/www.sock</code> 為 <code>listen = /var/run/php-fpm/php-fpm.sock</code></li>
+<li>拿掉 <code>;listen.owner = nobody</code> 的分號，並改為 <code>listen.owner = nginx</code></li>
+<li>拿掉 <code>;listen.group = nobody</code> 的分號，並改為 <code>listen.group = nginx</code></li>
+<li>拿掉 <code>;listen.mode = 0660</code> 的分號</li>
+</ol>
+<h3 id="啟動-php-fpm-服務"><a href="#啟動-php-fpm-服務" class="headerlink" title="啟動 php-fpm 服務"></a>啟動 php-fpm 服務</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start php-fpm</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> php-fpm</span><br></pre></td></tr></table></figure>
+<h3 id="修改-php-fpm-conf-設定"><a href="#修改-php-fpm-conf-設定" class="headerlink" title="修改 php-fpm.conf 設定"></a>修改 php-fpm.conf 設定</h3><p>修改 <code>/etc/nginx/conf.d/php-fpm.conf</code> 檔案內容</p>
+<ol>
+<li>改 <code>server unix:/run/php-fpm/www.sock;</code> 為 <code>server unix:/var/run/php-fpm/php-fpm.sock;</code></li>
+</ol>
+<h3 id="新增-phpmyadmin-conf-檔案"><a href="#新增-phpmyadmin-conf-檔案" class="headerlink" title="新增 phpmyadmin.conf 檔案"></a>新增 phpmyadmin.conf 檔案</h3><p>新增 <code>/etc/nginx/conf.d/phpmyadmin.conf</code> 檔案，內容如下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  server_domain_or_IP;</span><br><span class="line"></span><br><span class="line">    root   /usr/share/nginx/html;</span><br><span class="line">    index index.php index.html index.htm;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        try_files $uri $uri/ =404;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 /404.html;</span><br><span class="line">    error_page 500 502 503 504 /50x.html;</span><br><span class="line"></span><br><span class="line">    location = /50x.html &#123;</span><br><span class="line">        root /usr/share/nginx/html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ~ \.php$ &#123;</span><br><span class="line">        try_files $uri =404;</span><br><span class="line">        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;</span><br><span class="line">        fastcgi_index index.php;</span><br><span class="line">        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">        include fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="重新載入設定"><a href="#重新載入設定" class="headerlink" title="重新載入設定"></a>重新載入設定</h3><p>Nginx 重新載入設定檔，要看到 <code>ok</code> 與 <code>/etc/nginx/nginx.conf test is successful</code> 才是對的哦！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl reload nginx</span><br><span class="line">[user@localhost ~]$ sudo nginx -t</span><br><span class="line">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br></pre></td></tr></table></figure>
+<h3 id="確認-php-fpm-運作"><a href="#確認-php-fpm-運作" class="headerlink" title="確認 php-fpm 運作"></a>確認 php-fpm 運作</h3><p>創建 <code>/usr/share/nginx/html/info.php</code> 其內容如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">phpinfo();</span><br></pre></td></tr></table></figure>
+<p>這時從瀏覽器輸入 <a href="http://localhost/info.php">http://localhost/info.php</a> 確定可看到 <code>phpinfo</code> 的頁面，若看得到代表 Nginx + php-fpm 有在正常運作囉</p>
+<h2 id="安裝-phpMyAdmin"><a href="#安裝-phpMyAdmin" class="headerlink" title="安裝 phpMyAdmin"></a>安裝 phpMyAdmin</h2><p>下載 <a href="https://www.phpmyadmin.net/">phpMyAdmin</a> 並解壓縮到 <code>/usr/share/nginx/html</code> 目錄</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ unzip Downloads/phpMyAdmin-5.0.2-all-languages.zip </span><br><span class="line">[user@localhost ~]$ sudo mv phpMyAdmin-5.0.2-all-languages/ /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
+<h3 id="創建-tmp-目錄"><a href="#創建-tmp-目錄" class="headerlink" title="創建 tmp 目錄"></a>創建 tmp 目錄</h3><p>創建 <code>phpMyAdmin/tmp/</code> 目錄並更改擁有者與群組為 <code>nginx:nginx</code>，同時更改權限為 <code>755</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo chown nginx:nginx /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo chmod 755 /usr/share/nginx/html/phpMyAdmin/tmp</span><br></pre></td></tr></table></figure>
+<h3 id="設定-blowfish-secret-金鑰"><a href="#設定-blowfish-secret-金鑰" class="headerlink" title="設定 blowfish_secret 金鑰"></a>設定 blowfish_secret 金鑰</h3><p>複製一個 config 樣板，並改名為 <code>config.inc.php</code>，此樣板會被 phpMyAdmin 載入</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo cp /usr/share/nginx/html/phpMyAdmin/config.sample.inc.php  /usr/share/nginx/html/phpMyAdmin/config.inc.php</span><br></pre></td></tr></table></figure>
+<p>再從 <a href="https://phpsolved.com/phpmyadmin-blowfish-secret-generator/?g=[insert_php]echo%20$code;[/insert_php]">phpMyAdmin blowfish secret generator</a> 取得安全的金鑰，並複製到 <code>config.inc.php</code> 檔案中，例如</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$cfg</span>[<span class="string">&#x27;blowfish_secret&#x27;</span>] = <span class="string">&#x27;Jh448H=tn1sfkb3b3EKwvofq=QVuitPn&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="權限設定"><a href="#權限設定" class="headerlink" title="權限設定"></a>權限設定</h2><h3 id="開啟-php-session-權限"><a href="#開啟-php-session-權限" class="headerlink" title="開啟 php session 權限"></a>開啟 php session 權限</h3><p>設定 Nginx 對 php session 的權限，需將權限開啟，否則無法使用 phpMyAdmin 的登入功能</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo chown nginx:nginx /var/lib/php/session/</span><br></pre></td></tr></table></figure>
+<h3 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h3><p>修改 phpMyAdmin 的安全性文本，讓 Nginx 可以有權限可以讀寫，否則 SELinux 會阻檔，然後在瀏覽器出現 403 的錯誤碼</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo chcon -R -t httpd_sys_rw_content_t /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>在瀏覽器網址輸入 <a href="http://localhost/phpMyAdmin">http://localhost/phpMyAdmin</a> 就可以如同 Windows 上使用 xampp 一般，使用 phpMyAdmin 操作作資料庫啦！</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-centos-7">How To Install Linux, Nginx, MySQL, PHP (LEMP) stack On CentOS 7</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>mariadb</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>php</tag>
+        <tag>10</tag>
+        <tag>7.2</tag>
+        <tag>php-fpm</tag>
+        <tag>phpmyadmin</tag>
+        <tag>xampp</tag>
       </tags>
   </entry>
   <entry>
@@ -1191,107 +1295,58 @@
       </tags>
   </entry>
   <entry>
-    <title>[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</title>
-    <url>/2021/06/18/mysql_centos_mysql_8_0_root/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL 應該是使用 PHP 第一個會碰到的資料庫，通常會包在一起來教學。記錄一下如何在 CentOS 8 單獨安裝 MySQL 吧！</p>
+    <title>[Power] Ubuntu 筆電蓋上螢幕不休眠</title>
+    <url>/2021/06/17/power_ubuntu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>筆電闔上螢幕不一定是沒有要使用，有可能是在有外接螢幕情況下只需要一個螢幕，這時就可以選擇把螢幕關上將筆電當成桌電主機一樣，因此就需要設定讓筆電關上螢幕時不會有任何動作 (包含睡眠、休眠等等)。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
+<li>Ubuntu 18.04 LTS</li>
 </ul>
-<h2 id="安裝與啟動-MySQL"><a href="#安裝與啟動-MySQL" class="headerlink" title="安裝與啟動 MySQL"></a>安裝與啟動 MySQL</h2><p>在 CentOS 8 以後 <code>yum</code> 漸漸的會被 <code>dnf</code> 取代，因此都會以 <code>dnf</code> 來做套件安裝移除的動作。開啟 Terminal，安裝 MySQL</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]<span class="comment"># sudo dnf install -y mysql-server</span></span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Installed:</span><br><span class="line">  mariadb-connector-c-config-3.0.7-1.el8.noarch                         mecab-0.996-1.module_el8.0.0+41+ca30bab6.9.x86_64                     mysql-8.0.17-3.module_el8.0.0+181+899d6349.x86_64                    </span><br><span class="line">  mysql-common-8.0.17-3.module_el8.0.0+181+899d6349.x86_64              mysql-errmsg-8.0.17-3.module_el8.0.0+181+899d6349.x86_64              mysql-server-8.0.17-3.module_el8.0.0+181+899d6349.x86_64             </span><br><span class="line">  protobuf-lite-3.5.0-7.el8.x86_64                                     </span><br><span class="line"></span><br><span class="line">Complete! <span class="comment"># 看到這行就代表安裝完成囉</span></span><br></pre></td></tr></table></figure>
-<p>CentOS 中的服務安裝後預設都是不開啟的，所以要手動開啟，看到 <code>active (running)</code> 就代表 MySQL 正在運作囉！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start mysqld.service   <span class="comment"># 馬上開啟mysql daeman(MySQL服務)</span></span><br><span class="line"></span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mysqld.service  <span class="comment"># 之後開機也要自動開啟MySQL服務</span></span><br><span class="line">Created symlink /etc/systemd/system/multi-user.target.wants/mysqld.service → /usr/lib/systemd/system/mysqld.service.</span><br><span class="line"></span><br><span class="line">[user@localhost ~]$ sudo systemctl status mysqld.service  <span class="comment"># 查詢MySQL服務的狀態</span></span><br><span class="line">● mysqld.service - MySQL 8.0 database server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/mysqld.service; enabled; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Tue 2020-09-15 12:56:47 CST; 1min 37s ago</span><br><span class="line"> Main PID: 8171 (mysqld)</span><br><span class="line">   Status: <span class="string">&quot;Server is operational&quot;</span></span><br><span class="line">    Tasks: 38 (<span class="built_in">limit</span>: 49448)</span><br><span class="line">   Memory: 376.2M</span><br><span class="line">   CGroup: /system.slice/mysqld.service</span><br><span class="line">           └─8171 /usr/libexec/mysqld --basedir=/usr</span><br><span class="line"></span><br><span class="line">Sep 15 12:56:46 localhost.localdomain systemd[1]: Starting MySQL 8.0 database server...</span><br><span class="line">Sep 15 12:56:47 localhost.localdomain systemd[1]: Started MySQL 8.0 database server.</span><br></pre></td></tr></table></figure>
-<h2 id="設定-root-密碼"><a href="#設定-root-密碼" class="headerlink" title="設定 root 密碼"></a>設定 root 密碼</h2><div class="tabs" id="設定密碼"><ul class="nav-tabs"><li class="tab active"><a href="#設定密碼-1">簡易方法</a></li><li class="tab"><a href="#設定密碼-2">進階方法</a></li></ul><div class="tab-content"><div class="tab-pane active" id="設定密碼-1"><p>可以使用 <code>mysql_secure_installation</code> 來設定與安全性相關的設定，這個設定工具透過互動式問答幫助管理者設定 root 密碼、移除匿名登入帳號、禁止 root 從遠端登入、移除測試用的資料庫。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mysql_secure_installation</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="設定密碼-2"><p>root 帳號的密碼預設是無，為了安全起見，登入後一定要改密碼！先登入 ＭySQL</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mysql -u root   <span class="comment"># ← 沒有密碼所以不用參數 -p</span></span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 10</span><br><span class="line">Server version: 8.0.17 Source distribution</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2019, Oracle and/or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and/or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type <span class="string">&#x27;help;&#x27;</span> or <span class="string">&#x27;\h&#x27;</span> <span class="keyword">for</span> <span class="built_in">help</span>. Type <span class="string">&#x27;\c&#x27;</span> to clear the current input statement.</span><br></pre></td></tr></table></figure>
-<p>使用 SQL 修改密碼</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span><span class="keyword">ALTER</span> <span class="keyword">USER</span> <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span> IDENTIFIED <span class="keyword">BY</span> <span class="string">&#x27;password&#x27;</span>;  # password 改為要設定的密碼</span><br><span class="line">Query OK, <span class="number">0</span> <span class="keyword">rows</span> affected (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure></div></div></div>
-<h2 id="登入-MySQL"><a href="#登入-MySQL" class="headerlink" title="登入 MySQL"></a>登入 MySQL</h2><p>用密碼登入 MySQL ，看到 <code>Welcome to the MySQL monitor.</code> 就成功囉</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mysql -u root -p</span><br><span class="line">Enter password:        <span class="comment"># ← 這裡輸入剛設定的密碼</span></span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">...</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-<h2 id="忘記-root-密碼"><a href="#忘記-root-密碼" class="headerlink" title="忘記 root 密碼"></a>忘記 root 密碼</h2><p>若是之前有裝過 MySQL，現在不記得 root 的密碼，請參考 <a href="https://ckahiaku.wordpress.com/2018/03/30/how-to-remove-mysql-entirely-from-linux-system/">HOW TO REMOVE MYSQL ENTIRELY FROM LINUX SYSTEM(CENTOS)</a> 先清除舊的 MySQL 資料再安裝，預設密碼就會為空。</p>
+<h2 id="修改系統參數"><a href="#修改系統參數" class="headerlink" title="修改系統參數"></a>修改系統參數</h2><p>使用 vim 編輯器開啟電源管理的配置檔案 (gedit 無法修改系統參數檔案)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo vim /etc/systemd/logind.conf</span><br></pre></td></tr></table></figure>
+<p><code>HandleLidSwitch</code> 為管理螢幕闔上動作的參數，若要無動作，將其指定為 <code>ignore</code>，且前方不要有註解符號 <code>＃</code>，修改好後 <code>:wq</code> 存檔並重新開機使其生效。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HandleLidSwitch=ignore </span><br></pre></td></tr></table></figure>
+<ul>
+<li>其他參數的數值還有休眠 (hibernate)、睡眠 (suspend)、關機 (poweroff)</li>
+</ul>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>mysql</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>8</tag>
-        <tag>root</tag>
-        <tag>password</tag>
-        <tag>change</tag>
-        <tag>forget</tag>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>screen</tag>
+        <tag>sleep</tag>
+        <tag>action</tag>
+        <tag>cover</tag>
+        <tag>suspend</tag>
+        <tag>poweroff</tag>
+        <tag>hibernate</tag>
       </tags>
   </entry>
   <entry>
-    <title>[PHP] CentOS 8.2 + Nginx + MariaDB + php-fpm + phpMyAdmin</title>
-    <url>/2021/06/18/centos_phpmyadmin/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到使用 MySQL/MariaDB 就會想到 phpMyAdmin 這個使用者圖像介面，它是用 PHP 寫出來與 MySQL/MariaDB 互動的介面，所以若要使用，必須先安裝網頁伺服器與 PHP。</p>
+    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
+    <url>/2021/06/15/php_phalcon_namespace/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
+<li>Phalcon 4.0.3</li>
 </ul>
-<h2 id="安裝-EPEL"><a href="#安裝-EPEL" class="headerlink" title="安裝 EPEL"></a>安裝 EPEL</h2><p>安裝由 Fedora 社群打造的第三方源 EPEL (Extra Packages for Enterprise Linux)，其中包含比官方 repository 還要新的套件版本</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install epel-release</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-Nginx"><a href="#安裝-Nginx" class="headerlink" title="安裝 Nginx"></a>安裝 Nginx</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/nginx_centos_nginx/">[Nginx] CentOS 安裝網頁伺服器 Nginx</a>，安裝好後從瀏覽器輸入 <a href="http://localhost">http://localhost</a> 確定可看到 Nginx 預設頁面</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl start nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-MariaDB"><a href="#安裝-MariaDB" class="headerlink" title="安裝 MariaDB"></a>安裝 MariaDB</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install mariadb-server mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl start mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mariadb</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-php-fpm"><a href="#安裝-php-fpm" class="headerlink" title="安裝 php-fpm"></a>安裝 php-fpm</h2><p>這裡安裝預設版本 (目前是7.2版)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install php php-fpm php-json php-mysqlnd php-mbstring</span><br></pre></td></tr></table></figure>
-<h3 id="修改-www-conf-設定"><a href="#修改-www-conf-設定" class="headerlink" title="修改 www.conf 設定"></a>修改 www.conf 設定</h3><p>修改 <code>/etc/php-fpm.d/www.conf</code> 檔案內容</p>
-<ol>
-<li>改 <code>user = apache</code> 為 <code>user = nginx</code></li>
-<li>改 <code>group = apache</code> 為 <code>group = nginx</code></li>
-<li>改 <code>listen = /run/php-fpm/www.sock</code> 為 <code>listen = /var/run/php-fpm/php-fpm.sock</code></li>
-<li>拿掉 <code>;listen.owner = nobody</code> 的分號，並改為 <code>listen.owner = nginx</code></li>
-<li>拿掉 <code>;listen.group = nobody</code> 的分號，並改為 <code>listen.group = nginx</code></li>
-<li>拿掉 <code>;listen.mode = 0660</code> 的分號</li>
-</ol>
-<h3 id="啟動-php-fpm-服務"><a href="#啟動-php-fpm-服務" class="headerlink" title="啟動 php-fpm 服務"></a>啟動 php-fpm 服務</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start php-fpm</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> php-fpm</span><br></pre></td></tr></table></figure>
-<h3 id="修改-php-fpm-conf-設定"><a href="#修改-php-fpm-conf-設定" class="headerlink" title="修改 php-fpm.conf 設定"></a>修改 php-fpm.conf 設定</h3><p>修改 <code>/etc/nginx/conf.d/php-fpm.conf</code> 檔案內容</p>
-<ol>
-<li>改 <code>server unix:/run/php-fpm/www.sock;</code> 為 <code>server unix:/var/run/php-fpm/php-fpm.sock;</code></li>
-</ol>
-<h3 id="新增-phpmyadmin-conf-檔案"><a href="#新增-phpmyadmin-conf-檔案" class="headerlink" title="新增 phpmyadmin.conf 檔案"></a>新增 phpmyadmin.conf 檔案</h3><p>新增 <code>/etc/nginx/conf.d/phpmyadmin.conf</code> 檔案，內容如下</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  server_domain_or_IP;</span><br><span class="line"></span><br><span class="line">    root   /usr/share/nginx/html;</span><br><span class="line">    index index.php index.html index.htm;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        try_files $uri $uri/ =404;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 /404.html;</span><br><span class="line">    error_page 500 502 503 504 /50x.html;</span><br><span class="line"></span><br><span class="line">    location = /50x.html &#123;</span><br><span class="line">        root /usr/share/nginx/html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ~ \.php$ &#123;</span><br><span class="line">        try_files $uri =404;</span><br><span class="line">        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;</span><br><span class="line">        fastcgi_index index.php;</span><br><span class="line">        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">        include fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="重新載入設定"><a href="#重新載入設定" class="headerlink" title="重新載入設定"></a>重新載入設定</h3><p>Nginx 重新載入設定檔，要看到 <code>ok</code> 與 <code>/etc/nginx/nginx.conf test is successful</code> 才是對的哦！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl reload nginx</span><br><span class="line">[user@localhost ~]$ sudo nginx -t</span><br><span class="line">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br></pre></td></tr></table></figure>
-<h3 id="確認-php-fpm-運作"><a href="#確認-php-fpm-運作" class="headerlink" title="確認 php-fpm 運作"></a>確認 php-fpm 運作</h3><p>創建 <code>/usr/share/nginx/html/info.php</code> 其內容如下</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">phpinfo();</span><br></pre></td></tr></table></figure>
-<p>這時從瀏覽器輸入 <a href="http://localhost/info.php">http://localhost/info.php</a> 確定可看到 <code>phpinfo</code> 的頁面，若看得到代表 Nginx + php-fpm 有在正常運作囉</p>
-<h2 id="安裝-phpMyAdmin"><a href="#安裝-phpMyAdmin" class="headerlink" title="安裝 phpMyAdmin"></a>安裝 phpMyAdmin</h2><p>下載 <a href="https://www.phpmyadmin.net/">phpMyAdmin</a> 並解壓縮到 <code>/usr/share/nginx/html</code> 目錄</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ unzip Downloads/phpMyAdmin-5.0.2-all-languages.zip </span><br><span class="line">[user@localhost ~]$ sudo mv phpMyAdmin-5.0.2-all-languages/ /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
-<h3 id="創建-tmp-目錄"><a href="#創建-tmp-目錄" class="headerlink" title="創建 tmp 目錄"></a>創建 tmp 目錄</h3><p>創建 <code>phpMyAdmin/tmp/</code> 目錄並更改擁有者與群組為 <code>nginx:nginx</code>，同時更改權限為 <code>755</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo chown nginx:nginx /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo chmod 755 /usr/share/nginx/html/phpMyAdmin/tmp</span><br></pre></td></tr></table></figure>
-<h3 id="設定-blowfish-secret-金鑰"><a href="#設定-blowfish-secret-金鑰" class="headerlink" title="設定 blowfish_secret 金鑰"></a>設定 blowfish_secret 金鑰</h3><p>複製一個 config 樣板，並改名為 <code>config.inc.php</code>，此樣板會被 phpMyAdmin 載入</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo cp /usr/share/nginx/html/phpMyAdmin/config.sample.inc.php  /usr/share/nginx/html/phpMyAdmin/config.inc.php</span><br></pre></td></tr></table></figure>
-<p>再從 <a href="https://phpsolved.com/phpmyadmin-blowfish-secret-generator/?g=[insert_php]echo%20$code;[/insert_php]">phpMyAdmin blowfish secret generator</a> 取得安全的金鑰，並複製到 <code>config.inc.php</code> 檔案中，例如</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$cfg</span>[<span class="string">&#x27;blowfish_secret&#x27;</span>] = <span class="string">&#x27;Jh448H=tn1sfkb3b3EKwvofq=QVuitPn&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<h2 id="權限設定"><a href="#權限設定" class="headerlink" title="權限設定"></a>權限設定</h2><h3 id="開啟-php-session-權限"><a href="#開啟-php-session-權限" class="headerlink" title="開啟 php session 權限"></a>開啟 php session 權限</h3><p>設定 Nginx 對 php session 的權限，需將權限開啟，否則無法使用 phpMyAdmin 的登入功能</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo chown nginx:nginx /var/lib/php/session/</span><br></pre></td></tr></table></figure>
-<h3 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h3><p>修改 phpMyAdmin 的安全性文本，讓 Nginx 可以有權限可以讀寫，否則 SELinux 會阻檔，然後在瀏覽器出現 403 的錯誤碼</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo chcon -R -t httpd_sys_rw_content_t /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>在瀏覽器網址輸入 <a href="http://localhost/phpMyAdmin">http://localhost/phpMyAdmin</a> 就可以如同 Windows 上使用 xampp 一般，使用 phpMyAdmin 操作作資料庫啦！</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-centos-7">How To Install Linux, Nginx, MySQL, PHP (LEMP) stack On CentOS 7</a></li>
-</ol>
+<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
+<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
+<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
+<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>mariadb</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
         <tag>php</tag>
-        <tag>10</tag>
-        <tag>7.2</tag>
-        <tag>php-fpm</tag>
-        <tag>phpmyadmin</tag>
-        <tag>xampp</tag>
+        <tag>phalcon</tag>
+        <tag>namespace</tag>
       </tags>
   </entry>
   <entry>
@@ -1334,61 +1389,6 @@
         <tag>php</tag>
         <tag>phalcon</tag>
         <tag>install</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
-    <url>/2021/06/15/php_phalcon_namespace/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Phalcon 4.0.3</li>
-</ul>
-<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
-<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
-<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
-<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>php</tag>
-        <tag>phalcon</tag>
-        <tag>namespace</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Power] Ubuntu 筆電蓋上螢幕不休眠</title>
-    <url>/2021/06/17/power_ubuntu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>筆電闔上螢幕不一定是沒有要使用，有可能是在有外接螢幕情況下只需要一個螢幕，這時就可以選擇把螢幕關上將筆電當成桌電主機一樣，因此就需要設定讓筆電關上螢幕時不會有任何動作 (包含睡眠、休眠等等)。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="修改系統參數"><a href="#修改系統參數" class="headerlink" title="修改系統參數"></a>修改系統參數</h2><p>使用 vim 編輯器開啟電源管理的配置檔案 (gedit 無法修改系統參數檔案)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo vim /etc/systemd/logind.conf</span><br></pre></td></tr></table></figure>
-<p><code>HandleLidSwitch</code> 為管理螢幕闔上動作的參數，若要無動作，將其指定為 <code>ignore</code>，且前方不要有註解符號 <code>＃</code>，修改好後 <code>:wq</code> 存檔並重新開機使其生效。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HandleLidSwitch=ignore </span><br></pre></td></tr></table></figure>
-<ul>
-<li>其他參數的數值還有休眠 (hibernate)、睡眠 (suspend)、關機 (poweroff)</li>
-</ul>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>screen</tag>
-        <tag>sleep</tag>
-        <tag>action</tag>
-        <tag>cover</tag>
-        <tag>suspend</tag>
-        <tag>poweroff</tag>
-        <tag>hibernate</tag>
       </tags>
   </entry>
   <entry>
@@ -1435,36 +1435,6 @@
         <tag>txt</tag>
         <tag>output</tag>
         <tag>unicodeencodeerror</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Python] 爬蟲遇到 email protected 的原因與解決方法</title>
-    <url>/2021/06/12/python_email_protected/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲盛行的年代，防爬蟲的技術也隨之而起，其中一種技術是將電子郵件編碼，藉由網頁載入 <code>js</code> 後還原回正常的電子郵件格式。但是這種防禦手法效用可以說是微乎其微，甚至還要多花時間去解碼，可以說是得不償失。</p>
-<p>沒有效用的原因有很多，主要是因為這不是加密解密問題，單純只是編碼與解碼，所以非常容易破解。再者，可以使用 <code>selenium</code> 等網頁載入好再進行爬蟲的動作。</p>
-<p>雖然如此，現在遇到這項技術還是要研究一下其原理，為了以後遇到其他問題時可以有不一樣的思路。</p>
-<h2 id="問題解析"><a href="#問題解析" class="headerlink" title="問題解析"></a>問題解析</h2><p>在爬蟲時遇到電子郵件的地方有可能會顯示被加密的狀態，例如</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;__cf_email__&quot;</span> <span class="attr">data-cfemail</span>=<span class="string">&quot;f2f0ded3dcd1dad7c6c6f2&quot;</span>&gt;</span>[email<span class="symbol">&amp;#160;</span>protected]<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>真正的電子郵件被編碼變成 <code>data-cfemail</code> 屬性的數值，這長長一串都是 16 進位的表示，且分為兩個部分</p>
-<ol>
-<li>密鑰：前兩碼為密鑰的 16 進位表示法。</li>
-<li>信箱本體：除了密鑰，都為信箱本體，每兩個字元分為一組。</li>
-</ol>
-<p>採取最簡單的異或 (<code>xor</code>) 編碼方法，也就是密鑰與信箱本體依序的去做 <code>xor</code>運算，所得結果即為編碼後的結果。</p>
-<script type="math/tex; mode=display">key \oplus e\textnormal{-}mail = data\textnormal{-}cfemail</script><h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>知道規則後，接下來只要解碼就可以了。若要解碼，對編碼後的數值多 <code>xor</code> 一次，就能得到原本的信箱字串</p>
-<script type="math/tex; mode=display">data\textnormal{-}cfemail \oplus key = (key \oplus e\textnormal{-}mail) \oplus key = e\textnormal{-}mail</script><figure class="highlight py"><table><tr><td class="code"><pre><span class="line">codedMail = <span class="string">&#x27;4D08202C242108232E222924232A0d39283E39632E222063393A&#x27;</span></span><br><span class="line">key = <span class="built_in">int</span>(codedMail[:<span class="number">2</span>], <span class="number">16</span>) <span class="comment"># 前兩字元為 16 進位的密鑰</span></span><br><span class="line">codedMail = codedMail[<span class="number">2</span>:] <span class="comment"># 刪除前兩字元</span></span><br><span class="line">EMail = <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">while</span> <span class="built_in">len</span>(codedMail) != <span class="number">0</span>:</span><br><span class="line">    temp = <span class="built_in">int</span>(codedMail[:<span class="number">2</span>], <span class="number">16</span>) <span class="comment"># 每兩碼當一個 16 進位的數字</span></span><br><span class="line">    EMail += <span class="built_in">chr</span>(key ^ temp) <span class="comment"># 做 xor 運算後為正確的 ascii 碼，再轉為字元</span></span><br><span class="line">    codedMail = codedMail[<span class="number">2</span>:] <span class="comment"># 繼續刪除前兩碼</span></span><br><span class="line"><span class="built_in">print</span>(EMail)</span><br><span class="line"><span class="comment"># EmailEncoding@test.com.tw</span></span><br></pre></td></tr></table></figure>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a href="https://zhuanlan.zhihu.com/p/36912486">破解爬虫过程中遇到的网页加密Email地址</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>crawl</tag>
-        <tag>email</tag>
-        <tag>protected</tag>
       </tags>
   </entry>
   <entry>
@@ -1534,6 +1504,36 @@
       </tags>
   </entry>
   <entry>
+    <title>[Python] 爬蟲遇到 email protected 的原因與解決方法</title>
+    <url>/2021/06/12/python_email_protected/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲盛行的年代，防爬蟲的技術也隨之而起，其中一種技術是將電子郵件編碼，藉由網頁載入 <code>js</code> 後還原回正常的電子郵件格式。但是這種防禦手法效用可以說是微乎其微，甚至還要多花時間去解碼，可以說是得不償失。</p>
+<p>沒有效用的原因有很多，主要是因為這不是加密解密問題，單純只是編碼與解碼，所以非常容易破解。再者，可以使用 <code>selenium</code> 等網頁載入好再進行爬蟲的動作。</p>
+<p>雖然如此，現在遇到這項技術還是要研究一下其原理，為了以後遇到其他問題時可以有不一樣的思路。</p>
+<h2 id="問題解析"><a href="#問題解析" class="headerlink" title="問題解析"></a>問題解析</h2><p>在爬蟲時遇到電子郵件的地方有可能會顯示被加密的狀態，例如</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;__cf_email__&quot;</span> <span class="attr">data-cfemail</span>=<span class="string">&quot;f2f0ded3dcd1dad7c6c6f2&quot;</span>&gt;</span>[email<span class="symbol">&amp;#160;</span>protected]<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>真正的電子郵件被編碼變成 <code>data-cfemail</code> 屬性的數值，這長長一串都是 16 進位的表示，且分為兩個部分</p>
+<ol>
+<li>密鑰：前兩碼為密鑰的 16 進位表示法。</li>
+<li>信箱本體：除了密鑰，都為信箱本體，每兩個字元分為一組。</li>
+</ol>
+<p>採取最簡單的異或 (<code>xor</code>) 編碼方法，也就是密鑰與信箱本體依序的去做 <code>xor</code>運算，所得結果即為編碼後的結果。</p>
+<script type="math/tex; mode=display">key \oplus e\textnormal{-}mail = data\textnormal{-}cfemail</script><h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>知道規則後，接下來只要解碼就可以了。若要解碼，對編碼後的數值多 <code>xor</code> 一次，就能得到原本的信箱字串</p>
+<script type="math/tex; mode=display">data\textnormal{-}cfemail \oplus key = (key \oplus e\textnormal{-}mail) \oplus key = e\textnormal{-}mail</script><figure class="highlight py"><table><tr><td class="code"><pre><span class="line">codedMail = <span class="string">&#x27;4D08202C242108232E222924232A0d39283E39632E222063393A&#x27;</span></span><br><span class="line">key = <span class="built_in">int</span>(codedMail[:<span class="number">2</span>], <span class="number">16</span>) <span class="comment"># 前兩字元為 16 進位的密鑰</span></span><br><span class="line">codedMail = codedMail[<span class="number">2</span>:] <span class="comment"># 刪除前兩字元</span></span><br><span class="line">EMail = <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">while</span> <span class="built_in">len</span>(codedMail) != <span class="number">0</span>:</span><br><span class="line">    temp = <span class="built_in">int</span>(codedMail[:<span class="number">2</span>], <span class="number">16</span>) <span class="comment"># 每兩碼當一個 16 進位的數字</span></span><br><span class="line">    EMail += <span class="built_in">chr</span>(key ^ temp) <span class="comment"># 做 xor 運算後為正確的 ascii 碼，再轉為字元</span></span><br><span class="line">    codedMail = codedMail[<span class="number">2</span>:] <span class="comment"># 繼續刪除前兩碼</span></span><br><span class="line"><span class="built_in">print</span>(EMail)</span><br><span class="line"><span class="comment"># EmailEncoding@test.com.tw</span></span><br></pre></td></tr></table></figure>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://zhuanlan.zhihu.com/p/36912486">破解爬虫过程中遇到的网页加密Email地址</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>crawl</tag>
+        <tag>email</tag>
+        <tag>protected</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[RDP] Windows 10 設定遠端多人多工</title>
     <url>/2021/06/13/rdp_windows_10_multi/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在許多實驗室內擁有被稱作 Super 的高配備電腦，希望能藉由提高運算速度，進而使產能增加。大多數人熟悉的作業系統是 Windows，為了配合使用者，Super 也是採用 Windows 的作業系統。</p>
@@ -1581,6 +1581,38 @@
       </tags>
   </entry>
   <entry>
+    <title>[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</title>
+    <url>/2021/06/17/remote_ubuntu_xrdp/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>xrdp (X Remote Desktop Protocal) 是 Linux 系統上的遠端桌面伺服器，能夠讓透過遠端連線的使用者有 GUI 能夠使用。但在 Ubuntu 18.04 似乎沒辦法簡單的安裝，找了許多資料，終於找到可行的辦法。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="安裝-xrdp"><a href="#安裝-xrdp" class="headerlink" title="安裝 xrdp"></a>安裝 xrdp</h2><p>由於在 Ubuntu18.04 中 xrdp 會需要某些不相容的軟體包 (參考：<a href="https://c-nergy.be/blog/?p=13455">Better Fix xRDP issue on Ubuntu 18.04.2</a>)，因此要先安裝修正檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo add-apt-repository ppa:martinx/xrdp-hwe-18.04</span><br><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+<p>再行安裝 xrdp</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install xrdp xorg</span><br></pre></td></tr></table></figure>
+<p>需將 xrdp 加入 ssl-cert 群組，然後重新啟動。這步很重要，無法連線很可能是這步驟沒做到</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo adduser xrdp ssl-cert</span><br><span class="line">user@pc:~$ sudo reboot</span><br></pre></td></tr></table></figure>
+<h2 id="遠端連線"><a href="#遠端連線" class="headerlink" title="遠端連線"></a>遠端連線</h2><p>在 Windows 開啟內建 mstsc (遠端桌面連線)，輸入 server 的 IP、username 與 password，這些就是自己在 server 上的使用者帳密。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Remote-%E5%9C%A8-Ubuntu-18-04-%E4%BD%BF%E7%94%A8-xrdp-%E9%81%A0%E7%AB%AF%E5%A4%9A%E4%BA%BA%E5%A4%9A%E5%B7%A5%2Fxrdp.png?alt=media&amp;token=b9905535-0f5c-42eb-ba33-c20510d2e71f" alt="遠端畫面"><span class="image-caption">遠端畫面</span></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>remote</tag>
+        <tag>18.04</tag>
+        <tag>rdp</tag>
+        <tag>mstsc</tag>
+        <tag>多人</tag>
+        <tag>多工</tag>
+        <tag>xrdp</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[RDP] xrdp 遠端 menu 不見時登出的方法</title>
     <url>/2021/06/17/rdp_xrdp_menu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在一台電腦上開啟 xrdp 伺服器，讓大家可以各自用自己的帳號登入，且互不相干擾。但使用過程中遇到一些突發性圖形介面的問題，需要重新登入才能正常運作。</p>
@@ -1611,38 +1643,6 @@
         <tag>mate</tag>
         <tag>menu</tag>
         <tag>disappear</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</title>
-    <url>/2021/06/17/remote_ubuntu_xrdp/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>xrdp (X Remote Desktop Protocal) 是 Linux 系統上的遠端桌面伺服器，能夠讓透過遠端連線的使用者有 GUI 能夠使用。但在 Ubuntu 18.04 似乎沒辦法簡單的安裝，找了許多資料，終於找到可行的辦法。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="安裝-xrdp"><a href="#安裝-xrdp" class="headerlink" title="安裝 xrdp"></a>安裝 xrdp</h2><p>由於在 Ubuntu18.04 中 xrdp 會需要某些不相容的軟體包 (參考：<a href="https://c-nergy.be/blog/?p=13455">Better Fix xRDP issue on Ubuntu 18.04.2</a>)，因此要先安裝修正檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo add-apt-repository ppa:martinx/xrdp-hwe-18.04</span><br><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
-<p>再行安裝 xrdp</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install xrdp xorg</span><br></pre></td></tr></table></figure>
-<p>需將 xrdp 加入 ssl-cert 群組，然後重新啟動。這步很重要，無法連線很可能是這步驟沒做到</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo adduser xrdp ssl-cert</span><br><span class="line">user@pc:~$ sudo reboot</span><br></pre></td></tr></table></figure>
-<h2 id="遠端連線"><a href="#遠端連線" class="headerlink" title="遠端連線"></a>遠端連線</h2><p>在 Windows 開啟內建 mstsc (遠端桌面連線)，輸入 server 的 IP、username 與 password，這些就是自己在 server 上的使用者帳密。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Remote-%E5%9C%A8-Ubuntu-18-04-%E4%BD%BF%E7%94%A8-xrdp-%E9%81%A0%E7%AB%AF%E5%A4%9A%E4%BA%BA%E5%A4%9A%E5%B7%A5%2Fxrdp.png?alt=media&amp;token=b9905535-0f5c-42eb-ba33-c20510d2e71f" alt="遠端畫面"><span class="image-caption">遠端畫面</span></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>remote</tag>
-        <tag>18.04</tag>
-        <tag>rdp</tag>
-        <tag>mstsc</tag>
-        <tag>多人</tag>
-        <tag>多工</tag>
-        <tag>xrdp</tag>
       </tags>
   </entry>
   <entry>
@@ -1704,32 +1704,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
-    <url>/2021/06/15/ssl_crt_key/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>OpenSSL 1.1.1f</li>
-</ul>
-<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
-<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>ssl</tag>
-        <tag>key</tag>
-        <tag>crt</tag>
-        <tag>match</tag>
-        <tag>cert</tag>
-        <tag>csr</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[SSL] 自簽憑證過程</title>
     <url>/2021/06/15/ssl_self_sign/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
@@ -1753,12 +1727,67 @@
         <tag>ssl</tag>
         <tag>ca</tag>
         <tag>key</tag>
-        <tag>crt</tag>
-        <tag>csr</tag>
         <tag>self</tag>
         <tag>sign</tag>
         <tag>openssl</tag>
         <tag>mitm</tag>
+        <tag>csr</tag>
+        <tag>crt</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
+    <url>/2021/06/15/ssl_crt_key/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>OpenSSL 1.1.1f</li>
+</ul>
+<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
+<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>ssl</tag>
+        <tag>key</tag>
+        <tag>csr</tag>
+        <tag>crt</tag>
+        <tag>match</tag>
+        <tag>cert</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Share] VMware 裡的 CentOS 使用共享資料夾</title>
+    <url>/2021/06/19/share_vmware_centos/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>共享資料夾是使用虛擬機時常會碰到的需求，最近遇到要在 CentOS 中設定共享資料夾，沒想到挺麻煩的，因此記錄下來方便以後查閱。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>實體機 (Host) 作業系統：Windows 10</li>
+<li>虛擬機 (Guest) 作業系統：CentOS 8.2</li>
+<li>虛擬機軟體：VMware 15.5.6</li>
+</ul>
+<h2 id="設定-Host-共享資料夾"><a href="#設定-Host-共享資料夾" class="headerlink" title="設定 Host 共享資料夾"></a>設定 Host 共享資料夾</h2><p>在 Windows 上於 VMware 設定 Host 要分享的的共享資料夾，這裡的範例是 <code>D:\VMware\Shared</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Share-VMware-%E8%A3%A1%E7%9A%84-CentOS-%E4%BD%BF%E7%94%A8%E5%85%B1%E4%BA%AB%E8%B3%87%E6%96%99%E5%A4%BE%2Fshare_folder.png?alt=media&amp;token=311502b1-730c-4d26-8d29-6eea00ea2fd0" alt="Host 共享資料夾"><span class="image-caption">Host 共享資料夾</span></p>
+<h2 id="設定-Guest-共享資料夾"><a href="#設定-Guest-共享資料夾" class="headerlink" title="設定 Guest 共享資料夾"></a>設定 Guest 共享資料夾</h2><p>在 CentOS 8.2 中建立一個要當共享資料夾的目錄</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mkdir ~/shares</span><br></pre></td></tr></table></figure>
+<p>掛載共享資料夾，其中 <code>Shared</code> 是 Host 的共享資料夾名稱， <code>~/shares</code> 是 Guest 的共享目錄</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ /usr/bin/vmhgfs-fuse .host:/Shared ~/shares</span><br></pre></td></tr></table></figure>
+<p>此時 Guest 內的 <code>~/shares</code> 目錄與 Host 的 <code>D:\VMware\Shared</code> 資料夾就是互通的囉！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>10</tag>
+        <tag>vmware</tag>
       </tags>
   </entry>
   <entry>
@@ -1824,61 +1853,32 @@
       </tags>
   </entry>
   <entry>
-    <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</title>
-    <url>/2021/06/15/tool_sql_injection/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
-<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><p><a href="https://weirenxue.github.io/sql-injection-in-time/">SQL Injection Real Time</a> 這個工具是以 <code>javascript</code> 開發的，目的是隨時都可以用，不用額外安裝！</p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
-<li>將 SQL 語句貼至「SQL HERE」，注入之前的預覽會在「PREVIEW」區域。</li>
-<li>填寫要注入的參數名稱於「Parameter Name」。</li>
-<li>填寫要注入的參數名稱於「Value」。</li>
-<li>注入後的 SQL 語句會在「AFTER INJECTION」區域。</li>
-<li>可由「PREVIEW」比對「AFTER INJECTION」，就知道 SQL Injection的威力！</li>
-</ol>
-<h2 id="補充小常識"><a href="#補充小常識" class="headerlink" title="補充小常識"></a>補充小常識</h2><p>要預防被注入、安全的執行 SQL，必定要用 <code>Parameterized Query + Prepared Statement</code>，缺一不可。</p>
-]]></content>
-      <categories>
-        <category>自行開發工具使用教學</category>
-      </categories>
-      <tags>
-        <tag>tool</tag>
-        <tag>sql</tag>
-        <tag>injection</tag>
-        <tag>real</tag>
-        <tag>time</tag>
-        <tag>synthesis</tag>
-        <tag>tutorial</tag>
-        <tag>penetrate</tag>
-        <tag>pentest</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Share] VMware 裡的 CentOS 使用共享資料夾</title>
-    <url>/2021/06/19/share_vmware_centos/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>共享資料夾是使用虛擬機時常會碰到的需求，最近遇到要在 CentOS 中設定共享資料夾，沒想到挺麻煩的，因此記錄下來方便以後查閱。</p>
+    <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
+    <url>/2021/06/17/usb_usb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>實體機 (Host) 作業系統：Windows 10</li>
-<li>虛擬機 (Guest) 作業系統：CentOS 8.2</li>
-<li>虛擬機軟體：VMware 15.5.6</li>
+<li>Ubuntu 18.04 LTS</li>
 </ul>
-<h2 id="設定-Host-共享資料夾"><a href="#設定-Host-共享資料夾" class="headerlink" title="設定 Host 共享資料夾"></a>設定 Host 共享資料夾</h2><p>在 Windows 上於 VMware 設定 Host 要分享的的共享資料夾，這裡的範例是 <code>D:\VMware\Shared</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Share-VMware-%E8%A3%A1%E7%9A%84-CentOS-%E4%BD%BF%E7%94%A8%E5%85%B1%E4%BA%AB%E8%B3%87%E6%96%99%E5%A4%BE%2Fshare_folder.png?alt=media&amp;token=311502b1-730c-4d26-8d29-6eea00ea2fd0" alt="Host 共享資料夾"><span class="image-caption">Host 共享資料夾</span></p>
-<h2 id="設定-Guest-共享資料夾"><a href="#設定-Guest-共享資料夾" class="headerlink" title="設定 Guest 共享資料夾"></a>設定 Guest 共享資料夾</h2><p>在 CentOS 8.2 中建立一個要當共享資料夾的目錄</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mkdir ~/shares</span><br></pre></td></tr></table></figure>
-<p>掛載共享資料夾，其中 <code>Shared</code> 是 Host 的共享資料夾名稱， <code>~/shares</code> 是 Guest 的共享目錄</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ /usr/bin/vmhgfs-fuse .host:/Shared ~/shares</span><br></pre></td></tr></table></figure>
-<p>此時 Guest 內的 <code>~/shares</code> 目錄與 Host 的 <code>D:\VMware\Shared</code> 資料夾就是互通的囉！</p>
+<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>先確認目標裝置的權限，可以看到是 <code>660</code> 權限，也就是說非擁有者 (root) 且非群組 (dialout) 成員的其他人，是不能讀取的，這也是為什麼應用程式內讀不到的原因</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ ls -al /dev/ttyUSB*</span><br><span class="line">crw-rw---- 1 root dialout 188, 0 十二  4 16:53 /dev/ttyUSB0</span><br><span class="line">crw-rw---- 1 root dialout 188, 1 十二  4 16:53 /dev/ttyUSB1</span><br><span class="line">crw-rw---- 1 root dialout 188, 2 十二  4 16:53 /dev/ttyUSB2</span><br><span class="line">crw-rw---- 1 root dialout 188, 3 十二  4 16:53 /dev/ttyUSB3</span><br></pre></td></tr></table></figure>
+<h2 id="加入群組"><a href="#加入群組" class="headerlink" title="加入群組"></a>加入群組</h2><p>一般使用者預設是沒有加入 <code>dialout</code> 群組的，因此將自己加入此群組藉此繼承擁有讀取序列埠的權限</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo usermod -a -G dialout user  <span class="comment"># user 當然就是使用者帳號，依需求更改</span></span><br></pre></td></tr></table></figure>
+<p>再回到應用程式內找尋 Serial Port 應該就能看到囉！</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>centos</tag>
-        <tag>8.2</tag>
+        <tag>ubuntu</tag>
         <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>10</tag>
-        <tag>vmware</tag>
+        <tag>port</tag>
+        <tag>18.04</tag>
+        <tag>privilege</tag>
+        <tag>usb</tag>
+        <tag>serail</tag>
+        <tag>dialout</tag>
+        <tag>tty</tag>
+        <tag>usermod</tag>
       </tags>
   </entry>
   <entry>
@@ -1920,32 +1920,32 @@
       </tags>
   </entry>
   <entry>
-    <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
-    <url>/2021/06/17/usb_usb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>先確認目標裝置的權限，可以看到是 <code>660</code> 權限，也就是說非擁有者 (root) 且非群組 (dialout) 成員的其他人，是不能讀取的，這也是為什麼應用程式內讀不到的原因</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ ls -al /dev/ttyUSB*</span><br><span class="line">crw-rw---- 1 root dialout 188, 0 十二  4 16:53 /dev/ttyUSB0</span><br><span class="line">crw-rw---- 1 root dialout 188, 1 十二  4 16:53 /dev/ttyUSB1</span><br><span class="line">crw-rw---- 1 root dialout 188, 2 十二  4 16:53 /dev/ttyUSB2</span><br><span class="line">crw-rw---- 1 root dialout 188, 3 十二  4 16:53 /dev/ttyUSB3</span><br></pre></td></tr></table></figure>
-<h2 id="加入群組"><a href="#加入群組" class="headerlink" title="加入群組"></a>加入群組</h2><p>一般使用者預設是沒有加入 <code>dialout</code> 群組的，因此將自己加入此群組藉此繼承擁有讀取序列埠的權限</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo usermod -a -G dialout user  <span class="comment"># user 當然就是使用者帳號，依需求更改</span></span><br></pre></td></tr></table></figure>
-<p>再回到應用程式內找尋 Serial Port 應該就能看到囉！</p>
+    <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</title>
+    <url>/2021/06/15/tool_sql_injection/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
+<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><p><a href="https://weirenxue.github.io/sql-injection-in-time/">SQL Injection Real Time</a> 這個工具是以 <code>javascript</code> 開發的，目的是隨時都可以用，不用額外安裝！</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
+<li>將 SQL 語句貼至「SQL HERE」，注入之前的預覽會在「PREVIEW」區域。</li>
+<li>填寫要注入的參數名稱於「Parameter Name」。</li>
+<li>填寫要注入的參數名稱於「Value」。</li>
+<li>注入後的 SQL 語句會在「AFTER INJECTION」區域。</li>
+<li>可由「PREVIEW」比對「AFTER INJECTION」，就知道 SQL Injection的威力！</li>
+</ol>
+<h2 id="補充小常識"><a href="#補充小常識" class="headerlink" title="補充小常識"></a>補充小常識</h2><p>要預防被注入、安全的執行 SQL，必定要用 <code>Parameterized Query + Prepared Statement</code>，缺一不可。</p>
 ]]></content>
       <categories>
-        <category>學習筆記</category>
+        <category>自行開發工具使用教學</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>port</tag>
-        <tag>18.04</tag>
-        <tag>privilege</tag>
-        <tag>usb</tag>
-        <tag>serail</tag>
-        <tag>dialout</tag>
-        <tag>tty</tag>
-        <tag>usermod</tag>
+        <tag>tool</tag>
+        <tag>sql</tag>
+        <tag>injection</tag>
+        <tag>real</tag>
+        <tag>time</tag>
+        <tag>synthesis</tag>
+        <tag>tutorial</tag>
+        <tag>penetrate</tag>
+        <tag>pentest</tag>
       </tags>
   </entry>
   <entry>
@@ -1982,36 +1982,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Windows] 32 位元應用程式在 64 位元作業系統運作的原理</title>
-    <url>/2021/06/11/3264/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
-<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
-<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
-<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
-<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
-<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
-<ul>
-<li>system32 放的是 64 位元的 API</li>
-<li>SysWOW64 放的是 32 位元的 API</li>
-</ul>
-<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
-<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
-<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>bit</tag>
-        <tag>32</tag>
-        <tag>64</tag>
-        <tag>application</tag>
-        <tag>os</tag>
-        <tag>wow64</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[WIN32 API] 函數使用範例</title>
     <url>/2021/06/15/win32_api_function_example/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接 Build 看效果。</p>
@@ -2034,6 +2004,24 @@
         <tag>getsubmenu</tag>
         <tag>getmenuitemid</tag>
         <tag>settimer</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
+    <url>/2021/06/15/window_modal_non_modal/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
+<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
+<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
+<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>window</tag>
+        <tag>modal</tag>
+        <tag>non modal</tag>
       </tags>
   </entry>
   <entry>
@@ -2062,24 +2050,6 @@
         <tag>gpio</tag>
         <tag>channel</tag>
         <tag>directionmask</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
-    <url>/2021/06/15/window_modal_non_modal/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
-<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
-<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
-<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
-<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>window</tag>
-        <tag>modal</tag>
-        <tag>non modal</tag>
       </tags>
   </entry>
   <entry>
@@ -2120,40 +2090,33 @@
       </tags>
   </entry>
   <entry>
-    <title>[asm] NEG 的運作與應用</title>
-    <url>/2021/06/11/asmneg/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
-<p>它的運作影響了旗標，進而用來當作實現 <code>BOOL function</code> 回傳的一個選項。就一起來看看 <code>NEG</code> 是如何運作以及對應到的高階語言是如何呈現的。</p>
-<h2 id="運作原理"><a href="#運作原理" class="headerlink" title="運作原理"></a>運作原理</h2><p>想知道一個程式碼如何運作，不外乎就是兩種方法：</p>
-<ol>
-<li>直接編譯/組譯然後執行，觀察結果(暫存器輸出、旗標設置等等)，此方式在本篇文章不強調。</li>
-<li>最基本的就是看技術文件，若參數很多或者回傳複雜無法直接觀察結果推斷的時候，相關文件最有用了。例如 Windows 的 API 可以去 MSDN 上找函數介紹，而組合語言的語法能夠找所使用 CPU 的廠商要文檔，AMD 與 Intel 的組合語言可能有差異，所以若是使用 Intel 的就請找 Intel 的指令手冊來參考。</li>
-</ol>
-<p>我的電腦為 Intel CPU，上網找到對應的指令手冊(<a href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)，內文對 <code>NEG</code> 指令的描述摘要如下</p>
-<blockquote>
-<p>NEG—Two&#39;s Complement Negation<br>Description<br>Replaces the value of operand (the destination operand) with its two&#39;s complement. (This operation is equivalent to subtracting the operand from 0.) The destination operand is located in a general-purpose register or a memory location.</p>
-</blockquote>
-<p>簡單說明一下，<code>NEG</code> 是一個 2 補數的運算，將一個數取 2 補數之後放回原本的目的地，等同於一個數被 0 減掉再放回暫存器(即 <code>eax = 0 - eax</code>)，目的地可以是暫存器也可以是記憶體位址。它原文下面還有說明，但到這就能夠來說明想要表達的程式碼了。再來看看它的流程 Pseudo code</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Operation</span><br><span class="line">IF DEST = <span class="number">0</span></span><br><span class="line">　THEN CF ← <span class="number">0</span>;</span><br><span class="line">　ELSE CF ← <span class="number">1</span>;</span><br><span class="line">FI;</span><br><span class="line">DEST ← [– (DEST)]</span><br></pre></td></tr></table></figure>
-<p>短短幾行 Pseudo code，代表了無數的文字，相信一看就懂它想說甚麼。在簡短的 <code>NEG</code> 描述與操作流程可以知道若 <code>DEST</code> 不為 0，進位旗標 (<code>CF</code>) 會被設置為 1，這是因為 0 減非 0 的數需要補位。</p>
-<h2 id="應用方式"><a href="#應用方式" class="headerlink" title="應用方式"></a>應用方式</h2><p>這時候假設你的程式中有個副程式如下</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">NEGtest</span><span class="params">(TCHAR *str1, TCHAR *str2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">lstrcmp</span>(str1, str2) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>不論是組合語言或高階語言，有很多不同編寫方式來完成相同的事情，然而這個函數內的 <code>if else</code> 所對應到的組合語言可能為</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">push ebp        <span class="comment">//str2 的位址</span></span><br><span class="line">push eax        <span class="comment">//str1 的位址</span></span><br><span class="line">call [<span class="number">00404004</span>] <span class="comment">//呼叫 lstrcmp 函數</span></span><br><span class="line">neg eax         <span class="comment">//API 函數回傳值都放在 eax 暫存器裡，因此對比較後的結果作 NEG 運算</span></span><br><span class="line">sbb eax, eax    <span class="comment">//eax = eax - eax - CY</span></span><br><span class="line">inc eax         <span class="comment">//eax = eax + 1</span></span><br></pre></td></tr></table></figure>
-<p><code>lstrcmp</code> 需要兩個參數，因此先壓參數入堆疊再調用 (call) 其函數，而它的回傳值放在 <code>eax</code> 裡面，若兩個字串相同，則 <code>eax == 0</code>；反之 <code>eax != 0</code>。此時分為兩個情況來討論：</p>
-<ol>
-<li><code>str1 == str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為 0，<code>neg eax</code> 之後 <code>eax</code> 還是 0 且 <code>CY</code> 為 0，因此到程式結束時 <code>eax</code> 為 1，即 <code>return true</code></li>
-<li><code>str1 !=  str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為非 0，<code>neg eax</code> 之後 <code>eax</code> 還是非 0 且 <code>CY</code> 為1，因此第五行的執行結果為 <code>eax = eax - eax - CY = 0xFFFFFFFF</code> (32位元的話)，最後 <code>eax = eax + 1 = 0</code> 即 <code>return false</code></li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個執行結果，與高階語言的效果是一樣的。當然，也可以用 <code>cmp</code>、<code>jmp</code>等指令來完成同一件事，但不覺得程式拐個彎寫得簡單優雅，會有更有成就感嗎？呵呵！</p>
+    <title>[Windows] 32 位元應用程式在 64 位元作業系統運作的原理</title>
+    <url>/2021/06/11/3264/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
+<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
+<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
+<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
+<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
+<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
+<ul>
+<li>system32 放的是 64 位元的 API</li>
+<li>SysWOW64 放的是 32 位元的 API</li>
+</ul>
+<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
+<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
+<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>neg</tag>
-        <tag>sbb</tag>
-        <tag>asm</tag>
+        <tag>windows</tag>
+        <tag>bit</tag>
+        <tag>32</tag>
+        <tag>64</tag>
+        <tag>application</tag>
+        <tag>os</tag>
+        <tag>wow64</tag>
       </tags>
   </entry>
   <entry>
@@ -2208,6 +2171,110 @@
         <tag>i386</tag>
         <tag>cp</tag>
         <tag>ln</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[asm] NEG 的運作與應用</title>
+    <url>/2021/06/11/asmneg/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
+<p>它的運作影響了旗標，進而用來當作實現 <code>BOOL function</code> 回傳的一個選項。就一起來看看 <code>NEG</code> 是如何運作以及對應到的高階語言是如何呈現的。</p>
+<h2 id="運作原理"><a href="#運作原理" class="headerlink" title="運作原理"></a>運作原理</h2><p>想知道一個程式碼如何運作，不外乎就是兩種方法：</p>
+<ol>
+<li>直接編譯/組譯然後執行，觀察結果(暫存器輸出、旗標設置等等)，此方式在本篇文章不強調。</li>
+<li>最基本的就是看技術文件，若參數很多或者回傳複雜無法直接觀察結果推斷的時候，相關文件最有用了。例如 Windows 的 API 可以去 MSDN 上找函數介紹，而組合語言的語法能夠找所使用 CPU 的廠商要文檔，AMD 與 Intel 的組合語言可能有差異，所以若是使用 Intel 的就請找 Intel 的指令手冊來參考。</li>
+</ol>
+<p>我的電腦為 Intel CPU，上網找到對應的指令手冊(<a href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)，內文對 <code>NEG</code> 指令的描述摘要如下</p>
+<blockquote>
+<p>NEG—Two&#39;s Complement Negation<br>Description<br>Replaces the value of operand (the destination operand) with its two&#39;s complement. (This operation is equivalent to subtracting the operand from 0.) The destination operand is located in a general-purpose register or a memory location.</p>
+</blockquote>
+<p>簡單說明一下，<code>NEG</code> 是一個 2 補數的運算，將一個數取 2 補數之後放回原本的目的地，等同於一個數被 0 減掉再放回暫存器(即 <code>eax = 0 - eax</code>)，目的地可以是暫存器也可以是記憶體位址。它原文下面還有說明，但到這就能夠來說明想要表達的程式碼了。再來看看它的流程 Pseudo code</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Operation</span><br><span class="line">IF DEST = <span class="number">0</span></span><br><span class="line">　THEN CF ← <span class="number">0</span>;</span><br><span class="line">　ELSE CF ← <span class="number">1</span>;</span><br><span class="line">FI;</span><br><span class="line">DEST ← [– (DEST)]</span><br></pre></td></tr></table></figure>
+<p>短短幾行 Pseudo code，代表了無數的文字，相信一看就懂它想說甚麼。在簡短的 <code>NEG</code> 描述與操作流程可以知道若 <code>DEST</code> 不為 0，進位旗標 (<code>CF</code>) 會被設置為 1，這是因為 0 減非 0 的數需要補位。</p>
+<h2 id="應用方式"><a href="#應用方式" class="headerlink" title="應用方式"></a>應用方式</h2><p>這時候假設你的程式中有個副程式如下</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">NEGtest</span><span class="params">(TCHAR *str1, TCHAR *str2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">lstrcmp</span>(str1, str2) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不論是組合語言或高階語言，有很多不同編寫方式來完成相同的事情，然而這個函數內的 <code>if else</code> 所對應到的組合語言可能為</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">push ebp        <span class="comment">//str2 的位址</span></span><br><span class="line">push eax        <span class="comment">//str1 的位址</span></span><br><span class="line">call [<span class="number">00404004</span>] <span class="comment">//呼叫 lstrcmp 函數</span></span><br><span class="line">neg eax         <span class="comment">//API 函數回傳值都放在 eax 暫存器裡，因此對比較後的結果作 NEG 運算</span></span><br><span class="line">sbb eax, eax    <span class="comment">//eax = eax - eax - CY</span></span><br><span class="line">inc eax         <span class="comment">//eax = eax + 1</span></span><br></pre></td></tr></table></figure>
+<p><code>lstrcmp</code> 需要兩個參數，因此先壓參數入堆疊再調用 (call) 其函數，而它的回傳值放在 <code>eax</code> 裡面，若兩個字串相同，則 <code>eax == 0</code>；反之 <code>eax != 0</code>。此時分為兩個情況來討論：</p>
+<ol>
+<li><code>str1 == str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為 0，<code>neg eax</code> 之後 <code>eax</code> 還是 0 且 <code>CY</code> 為 0，因此到程式結束時 <code>eax</code> 為 1，即 <code>return true</code></li>
+<li><code>str1 !=  str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為非 0，<code>neg eax</code> 之後 <code>eax</code> 還是非 0 且 <code>CY</code> 為1，因此第五行的執行結果為 <code>eax = eax - eax - CY = 0xFFFFFFFF</code> (32位元的話)，最後 <code>eax = eax + 1 = 0</code> 即 <code>return false</code></li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個執行結果，與高階語言的效果是一樣的。當然，也可以用 <code>cmp</code>、<code>jmp</code>等指令來完成同一件事，但不覺得程式拐個彎寫得簡單優雅，會有更有成就感嗎？呵呵！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>neg</tag>
+        <tag>sbb</tag>
+        <tag>asm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>自動每日登入 iT邦幫忙 取得活動點數</title>
+    <url>/2021/06/27/ithelp_auto_login/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>許多論壇都擁有活動點數制度，「iT邦幫忙」也不意外的擁有這項功能，其中有一項是每天登入可以加 2 點活動點數，但不知道是 Bug 還是故意的，竟然需要先登出再登入，有了登入的動作才會計算當天登入的活動點數，很不符合常理。</p>
+<p>因此利用爬蟲技能寫了一個專案，每天到指定時間會自動完成登入動作，讓我就算沒有登入這個動作，也可以得到活動點數，雖說這個點數量不多，但就是想要抵抗這個 Bug。</p>
+<p>詳細登入問題也有人提請官方修正，可參考 <a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>。</p>
+<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
+<li><a href="https://github.com/weirenxue/login-script/tree/master/ithelp">GitHub</a></li>
+<li>實際成效<br>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fresult.png?alt=media&amp;token=7a24e416-b438-41ef-a0fa-df95233e5083" alt="成果圖"><span class="image-caption">成果圖</span></li>
+</ul>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>python 3.8.5</li>
+<li>beautifulsoup4 4.9.3</li>
+<li>requests 2.25.1</li>
+</ul>
+<h2 id="環節觀察"><a href="#環節觀察" class="headerlink" title="環節觀察"></a>環節觀察</h2><p>在動手爬蟲之前，必須先觀察在登入計算活動點數時，會經過哪些步驟與所需資訊，觀察時請記得使用開發人員工具 (F12) 來查看資訊流動。</p>
+<h3 id="登入"><a href="#登入" class="headerlink" title="登入"></a>登入</h3><p>第一步至 <a href="https://member.ithome.com.tw/login">iThome會員登入頁面</a> 任意輸入一組帳號，按下登入按鈕然後查看封包，會看到有三個欄位分別為 <code>_token</code>、<code>account</code> 還有 <code>password</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_token_field.png?alt=media&amp;token=8671a0cd-8f92-4cc9-8a54-44ca3ee4b6c0" alt="登入所需欄位"><span class="image-caption">登入所需欄位</span></p>
+<p><code>account</code> 與 <code>password</code> 我們理解，但是 <code>_token</code> 的值從何而來呢？到開發人員工具的 <code>Elements</code> 頁籤搜尋 <code>_token</code>，就可以找到它所在位置，原來是在登入表單內的一個隱藏欄位 (hidden input)！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2F_token_position.png?alt=media&amp;token=da926d26-662f-4bed-8272-d40b1cf5d306" alt="_token 的位置"><span class="image-caption">_token 的位置</span></p>
+<h4 id="實作登入功能"><a href="#實作登入功能" class="headerlink" title="實作登入功能"></a>實作登入功能</h4><p>知道登入需要甚麼資訊，且資訊在哪裡可以取得，就可以開始規劃要如何利用爬蟲來做登入功能。</p>
+<ol>
+<li>先取得 <code>_token</code> 欄位的值。</li>
+<li>將 <code>_token</code>、<code>account</code> 與 <code>password</code> 一起 <code>POST</code> 到 <code>https://member.ithome.com.tw/login</code></li>
+</ol>
+<p>需要注意的是，這些過程中的 <code>Cookie</code> 需要被維護，也就是每個 Request 都必須是同一個 <code>Session</code>，否則 <code>_token</code> 值無效。強大的 <code>requests</code> 套件已經幫我們準備好 <code>Session</code> 物件來處理這些事情，讓我們不用手動轉移 <code>Cookie</code> 到不同的 request 之中。</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 從 sAccount.json 檔案讀取帳密資料</span></span><br><span class="line">s_account = json.load(<span class="built_in">open</span>(<span class="string">&quot;./sAccount.json&quot;</span>, <span class="string">&quot;r&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更改 User-Agent 標頭以免被阻擋</span></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"><span class="comment"># 製作 Payload，有三個欄位分別為 _token、account 與 password</span></span><br><span class="line">loginPayload = &#123;<span class="string">&#x27;account&#x27;</span>: s_account[<span class="string">&#x27;account&#x27;</span>], <span class="string">&#x27;password&#x27;</span>: s_account[<span class="string">&#x27;password&#x27;</span>], <span class="string">&#x27;_token&#x27;</span>:<span class="string">&#x27;&#x27;</span>&#125;</span><br><span class="line"><span class="comment"># 建立一個 Session 物件幫我們維護 Coookie 的運行</span></span><br><span class="line">sess = requests.Session()</span><br><span class="line"><span class="comment"># 將 User-Agent 標頭修改為我們所給的值</span></span><br><span class="line">sess.headers.update(headers)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 先取得 _token 值</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.get(url)</span><br><span class="line">bsObj = bs(response.text, <span class="string">&quot;html.parser&quot;</span>)</span><br><span class="line">loginToken = bsObj.find(<span class="string">&#x27;input&#x27;</span>, &#123;<span class="string">&#x27;name&#x27;</span>:<span class="string">&#x27;_token&#x27;</span>&#125;).attrs[<span class="string">&#x27;value&#x27;</span>]</span><br><span class="line"><span class="comment"># 把 _token 值存到我們之前建立的 Payload 內</span></span><br><span class="line">loginPayload[<span class="string">&#x27;_token&#x27;</span>] = loginToken</span><br><span class="line"></span><br><span class="line"><span class="comment"># 對登入頁面 POST 一次，就可以順利登入囉</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.post(url, data=loginPayload)</span><br></pre></td></tr></table></figure>
+<p><code>sAccount.json</code> 內容如下，只需填入對應的帳號密碼</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;account&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;password&quot;</span>: <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到這裡，登入功能已經完成了。但假如真的去運行這個程式碼，你會發現雖然成功登入，可是並沒有取得想要的到的每日登入活動點數，這個是因為登入與取得點數的功能是分開運行的。</p>
+<h3 id="每日登入活動點數"><a href="#每日登入活動點數" class="headerlink" title="每日登入活動點數"></a>每日登入活動點數</h3><p>再讓我們觀察一下取得活動點數的關鍵在哪裡。先進入 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a>，再點擊登入按鈕，這次需要輸入正確的帳號密碼，並且觀察開發人員工具中的封包，將會看到其實在成功登入後，從 <a href="https://member.ithome.com.tw/login">會員中心</a> 跳轉回 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a> 之前還有其他封包被傳送，可以猜測這些封包就是用來激活每日登入的條件</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_point.png?alt=media&amp;token=731a5c99-9258-49ca-b4ee-69a08b4dead5" alt="每日登入關鍵封包"><span class="image-caption">每日登入關鍵封包</span></p>
+<p>也就是說當我們的爬蟲成功登入後，需要發出 <code>GET https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code</code> 請求，來取得這天的每日登入活動點數。</p>
+<h4 id="實作取得點數功能"><a href="#實作取得點數功能" class="headerlink" title="實作取得點數功能"></a>實作取得點數功能</h4><p>這是最簡單的部分，只需要在登入之後加上下面兩行程式，就可以達到效果了</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code&quot;</span></span><br><span class="line">response = sess.get(url)</span><br></pre></td></tr></table></figure>
+<p>到這裡，概念與實作講解完畢，當然除登入並取得點數外，還可以加一些功能例如確認是否真的登入或者是是否有錯誤發生的判斷。</p>
+<p>可以到我的 GitHub 上參考 <a href="https://github.com/weirenxue/login-script/blob/b693c7eb020f0498222b5bfd34be587c0338c24e/ithelp/login.py#L7-L18">完整原始碼</a>。</p>
+<h2 id="每日自動登入"><a href="#每日自動登入" class="headerlink" title="每日自動登入"></a>每日自動登入</h2><p>將腳本寫好，就可以來讓它納入我的排程內啦！我使用的作業系統是 Windows 10，使用內建的排程系統就可以完成，這裡來說說如何設定排程每天自動登入</p>
+<h3 id="啟動檔-bat"><a href="#啟動檔-bat" class="headerlink" title="啟動檔 bat"></a>啟動檔 bat</h3><p>要用排程之前，最好的習慣是將啟動腳本寫成 bat 檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /d %~dp0</span><br><span class="line">python <span class="string">&quot;%~dp0login.py&quot;</span> &gt;&gt; <span class="string">&quot;%~dp0log.log&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>%~dp0</code>：bat 檔案所在目錄的絕對路徑。</li>
+</ul>
+<h3 id="創建排程"><a href="#創建排程" class="headerlink" title="創建排程"></a>創建排程</h3><p>開啟 <code>Task Schedular</code>，並建立一個排程 <code>Action -&gt; Create Task...</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fcreate_task_scheduler.png?alt=media&amp;token=e2220412-cd15-49d8-aaa2-72e2a37de2c4" alt="建立排程"><span class="image-caption">建立排程</span></p>
+<p>設定排程的時間點 (每天下午 3:36) 與要執行的 bat 檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fschedul_schedular.png?alt=media&amp;token=d768c1c0-ba3b-4d5d-8a77-7acb7274457d" alt="設定排程"><span class="image-caption">設定排程</span></p>
+<h3 id="測試排程"><a href="#測試排程" class="headerlink" title="測試排程"></a>測試排程</h3><p>設定完之後，在排程清單中找到剛剛建立的排程，<code>點擊右鍵 -&gt; Run</code> 讓它實際運作一次來當作測試，若有正常運作可以在與 bat 檔案相同目錄下找到 <code>log.log</code> 檔，若 log 無問題並有顯示登入成功，表示排程可以正常運作囉</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Ftest_schedular.png?alt=media&amp;token=2a35d3d6-1d93-461d-8a4a-0122493326c7" alt="測試排程與 log 檔"><span class="image-caption">測試排程與 log 檔</span></p>
+<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>這個是我在 <code>2021/04/08</code> 時開發的一個小專案，早在 2020 初次加入 iT邦幫忙 這個大家庭時就發現這個 Bug，雖然當時也有看到有人反應此問題，但都沒有下文，因此在較空閒時完成這個一直未了的小心願。最一開始的初衷只是想要解決這個生活小煩惱，同時以學習的態度來開發這個專案。</p>
+<p>然而這個 Bug 在 <code>2021/05/12</code> 時小財神宣布已經根除 (<a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>)，真是皆大歡喜。得知這個訊息的第一個想法是這個專案好像沒有用了，但其實我們還是一樣可以繼續排程，若是哪天較忙忘記瀏覽論壇，可讓爬蟲代替我們每天取得點數。</p>
+]]></content>
+      <categories>
+        <category>專案開發筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>crawl</tag>
+        <tag>ithelp</tag>
+        <tag>login</tag>
+        <tag>auto</tag>
+        <tag>credit</tag>
+        <tag>task</tag>
+        <tag>schedular</tag>
       </tags>
   </entry>
   <entry>
@@ -2296,70 +2363,41 @@
       </tags>
   </entry>
   <entry>
-    <title>自動每日登入 iT邦幫忙 取得活動點數</title>
-    <url>/2021/06/27/ithelp_auto_login/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>許多論壇都擁有活動點數制度，「iT邦幫忙」也不意外的擁有這項功能，其中有一項是每天登入可以加 2 點活動點數，但不知道是 Bug 還是故意的，竟然需要先登出再登入，有了登入的動作才會計算當天登入的活動點數，很不符合常理。</p>
-<p>因此利用爬蟲技能寫了一個專案，每天到指定時間會自動完成登入動作，讓我就算沒有登入這個動作，也可以得到活動點數，雖說這個點數量不多，但就是想要抵抗這個 Bug。</p>
-<p>詳細登入問題也有人提請官方修正，可參考 <a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>。</p>
-<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
-<li><a href="https://github.com/weirenxue/login-script/tree/master/ithelp">GitHub</a></li>
-<li>實際成效<br>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fresult.png?alt=media&amp;token=7a24e416-b438-41ef-a0fa-df95233e5083" alt="成果圖"><span class="image-caption">成果圖</span></li>
-</ul>
+    <title>[雙系統] 同步 Ubuntu 與 Windows 的系統時間</title>
+    <url>/2021/06/17/ubuntu_windows_time/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>使用 Ubuntu + Windows 雙系統的用戶，應該會發現 Ubuntu 的時間總是與 Windows 的不一樣，在 UTC+8 的地方，Ubuntu 比 Windows 快 8 小時，切換系統後總是要手動調整時間，造成一定的困擾。最佳解決之道應為將雙系統時間設為同步，因此這裡紀錄了如何將雙系統的時間設為一致。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
 <li>Windows 10</li>
-<li>python 3.8.5</li>
-<li>beautifulsoup4 4.9.3</li>
-<li>requests 2.25.1</li>
 </ul>
-<h2 id="環節觀察"><a href="#環節觀察" class="headerlink" title="環節觀察"></a>環節觀察</h2><p>在動手爬蟲之前，必須先觀察在登入計算活動點數時，會經過哪些步驟與所需資訊，觀察時請記得使用開發人員工具 (F12) 來查看資訊流動。</p>
-<h3 id="登入"><a href="#登入" class="headerlink" title="登入"></a>登入</h3><p>第一步至 <a href="https://member.ithome.com.tw/login">iThome會員登入頁面</a> 任意輸入一組帳號，按下登入按鈕然後查看封包，會看到有三個欄位分別為 <code>_token</code>、<code>account</code> 還有 <code>password</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_token_field.png?alt=media&amp;token=8671a0cd-8f92-4cc9-8a54-44ca3ee4b6c0" alt="登入所需欄位"><span class="image-caption">登入所需欄位</span></p>
-<p><code>account</code> 與 <code>password</code> 我們理解，但是 <code>_token</code> 的值從何而來呢？到開發人員工具的 <code>Elements</code> 頁籤搜尋 <code>_token</code>，就可以找到它所在位置，原來是在登入表單內的一個隱藏欄位 (hidden input)！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2F_token_position.png?alt=media&amp;token=da926d26-662f-4bed-8272-d40b1cf5d306" alt="_token 的位置"><span class="image-caption">_token 的位置</span></p>
-<h4 id="實作登入功能"><a href="#實作登入功能" class="headerlink" title="實作登入功能"></a>實作登入功能</h4><p>知道登入需要甚麼資訊，且資訊在哪裡可以取得，就可以開始規劃要如何利用爬蟲來做登入功能。</p>
-<ol>
-<li>先取得 <code>_token</code> 欄位的值。</li>
-<li>將 <code>_token</code>、<code>account</code> 與 <code>password</code> 一起 <code>POST</code> 到 <code>https://member.ithome.com.tw/login</code></li>
-</ol>
-<p>需要注意的是，這些過程中的 <code>Cookie</code> 需要被維護，也就是每個 Request 都必須是同一個 <code>Session</code>，否則 <code>_token</code> 值無效。強大的 <code>requests</code> 套件已經幫我們準備好 <code>Session</code> 物件來處理這些事情，讓我們不用手動轉移 <code>Cookie</code> 到不同的 request 之中。</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 從 sAccount.json 檔案讀取帳密資料</span></span><br><span class="line">s_account = json.load(<span class="built_in">open</span>(<span class="string">&quot;./sAccount.json&quot;</span>, <span class="string">&quot;r&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更改 User-Agent 標頭以免被阻擋</span></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"><span class="comment"># 製作 Payload，有三個欄位分別為 _token、account 與 password</span></span><br><span class="line">loginPayload = &#123;<span class="string">&#x27;account&#x27;</span>: s_account[<span class="string">&#x27;account&#x27;</span>], <span class="string">&#x27;password&#x27;</span>: s_account[<span class="string">&#x27;password&#x27;</span>], <span class="string">&#x27;_token&#x27;</span>:<span class="string">&#x27;&#x27;</span>&#125;</span><br><span class="line"><span class="comment"># 建立一個 Session 物件幫我們維護 Coookie 的運行</span></span><br><span class="line">sess = requests.Session()</span><br><span class="line"><span class="comment"># 將 User-Agent 標頭修改為我們所給的值</span></span><br><span class="line">sess.headers.update(headers)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 先取得 _token 值</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.get(url)</span><br><span class="line">bsObj = bs(response.text, <span class="string">&quot;html.parser&quot;</span>)</span><br><span class="line">loginToken = bsObj.find(<span class="string">&#x27;input&#x27;</span>, &#123;<span class="string">&#x27;name&#x27;</span>:<span class="string">&#x27;_token&#x27;</span>&#125;).attrs[<span class="string">&#x27;value&#x27;</span>]</span><br><span class="line"><span class="comment"># 把 _token 值存到我們之前建立的 Payload 內</span></span><br><span class="line">loginPayload[<span class="string">&#x27;_token&#x27;</span>] = loginToken</span><br><span class="line"></span><br><span class="line"><span class="comment"># 對登入頁面 POST 一次，就可以順利登入囉</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.post(url, data=loginPayload)</span><br></pre></td></tr></table></figure>
-<p><code>sAccount.json</code> 內容如下，只需填入對應的帳號密碼</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;account&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;password&quot;</span>: <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>到這裡，登入功能已經完成了。但假如真的去運行這個程式碼，你會發現雖然成功登入，可是並沒有取得想要的到的每日登入活動點數，這個是因為登入與取得點數的功能是分開運行的。</p>
-<h3 id="每日登入活動點數"><a href="#每日登入活動點數" class="headerlink" title="每日登入活動點數"></a>每日登入活動點數</h3><p>再讓我們觀察一下取得活動點數的關鍵在哪裡。先進入 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a>，再點擊登入按鈕，這次需要輸入正確的帳號密碼，並且觀察開發人員工具中的封包，將會看到其實在成功登入後，從 <a href="https://member.ithome.com.tw/login">會員中心</a> 跳轉回 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a> 之前還有其他封包被傳送，可以猜測這些封包就是用來激活每日登入的條件</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_point.png?alt=media&amp;token=731a5c99-9258-49ca-b4ee-69a08b4dead5" alt="每日登入關鍵封包"><span class="image-caption">每日登入關鍵封包</span></p>
-<p>也就是說當我們的爬蟲成功登入後，需要發出 <code>GET https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code</code> 請求，來取得這天的每日登入活動點數。</p>
-<h4 id="實作取得點數功能"><a href="#實作取得點數功能" class="headerlink" title="實作取得點數功能"></a>實作取得點數功能</h4><p>這是最簡單的部分，只需要在登入之後加上下面兩行程式，就可以達到效果了</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code&quot;</span></span><br><span class="line">response = sess.get(url)</span><br></pre></td></tr></table></figure>
-<p>到這裡，概念與實作講解完畢，當然除登入並取得點數外，還可以加一些功能例如確認是否真的登入或者是是否有錯誤發生的判斷。</p>
-<p>可以到我的 GitHub 上參考 <a href="https://github.com/weirenxue/login-script/blob/b693c7eb020f0498222b5bfd34be587c0338c24e/ithelp/login.py#L7-L18">完整原始碼</a>。</p>
-<h2 id="每日自動登入"><a href="#每日自動登入" class="headerlink" title="每日自動登入"></a>每日自動登入</h2><p>將腳本寫好，就可以來讓它納入我的排程內啦！我使用的作業系統是 Windows 10，使用內建的排程系統就可以完成，這裡來說說如何設定排程每天自動登入</p>
-<h3 id="啟動檔-bat"><a href="#啟動檔-bat" class="headerlink" title="啟動檔 bat"></a>啟動檔 bat</h3><p>要用排程之前，最好的習慣是將啟動腳本寫成 bat 檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /d %~dp0</span><br><span class="line">python <span class="string">&quot;%~dp0login.py&quot;</span> &gt;&gt; <span class="string">&quot;%~dp0log.log&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="原因說明"><a href="#原因說明" class="headerlink" title="原因說明"></a>原因說明</h2><p>此問題是由於 Ubuntu 和 Windows 的時間設定方式不同所導致，以當地時間 UTC+8 為例</p>
 <ul>
-<li><code>%~dp0</code>：bat 檔案所在目錄的絕對路徑。</li>
+<li>Windows：取得硬體時間 (BIOS 的時間) 直接為當地時間 (Local Time)。</li>
+<li>Ubuntu：取得硬體時間 (BIOS 的時間) 並視之為 UTC+0，所以顯示出來的時間是硬體時間 +8 後的結果，也就是 Windows 的時間 +8。</li>
 </ul>
-<h3 id="創建排程"><a href="#創建排程" class="headerlink" title="創建排程"></a>創建排程</h3><p>開啟 <code>Task Schedular</code>，並建立一個排程 <code>Action -&gt; Create Task...</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fcreate_task_scheduler.png?alt=media&amp;token=e2220412-cd15-49d8-aaa2-72e2a37de2c4" alt="建立排程"><span class="image-caption">建立排程</span></p>
-<p>設定排程的時間點 (每天下午 3:36) 與要執行的 bat 檔案</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fschedul_schedular.png?alt=media&amp;token=d768c1c0-ba3b-4d5d-8a77-7acb7274457d" alt="設定排程"><span class="image-caption">設定排程</span></p>
-<h3 id="測試排程"><a href="#測試排程" class="headerlink" title="測試排程"></a>測試排程</h3><p>設定完之後，在排程清單中找到剛剛建立的排程，<code>點擊右鍵 -&gt; Run</code> 讓它實際運作一次來當作測試，若有正常運作可以在與 bat 檔案相同目錄下找到 <code>log.log</code> 檔，若 log 無問題並有顯示登入成功，表示排程可以正常運作囉</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Ftest_schedular.png?alt=media&amp;token=2a35d3d6-1d93-461d-8a4a-0122493326c7" alt="測試排程與 log 檔"><span class="image-caption">測試排程與 log 檔</span></p>
-<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>這個是我在 <code>2021/04/08</code> 時開發的一個小專案，早在 2020 初次加入 iT邦幫忙 這個大家庭時就發現這個 Bug，雖然當時也有看到有人反應此問題，但都沒有下文，因此在較空閒時完成這個一直未了的小心願。最一開始的初衷只是想要解決這個生活小煩惱，同時以學習的態度來開發這個專案。</p>
-<p>然而這個 Bug 在 <code>2021/05/12</code> 時小財神宣布已經根除 (<a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>)，真是皆大歡喜。得知這個訊息的第一個想法是這個專案好像沒有用了，但其實我們還是一樣可以繼續排程，若是哪天較忙忘記瀏覽論壇，可讓爬蟲代替我們每天取得點數。</p>
+<p>簡而言之，正是因為 Ubuntu 會把硬體時間視為 UTC+0，切到 Windows 顯示出來的時間才會比 Ubuntu 慢上 8 個小時！</p>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>以下皆是在 Ubuntu 操作，先取得正確時間，若發現找不到 <code>ntpdate</code> 套件，可以參考：<a href="/2021/06/17/apt_unable_to_locate_package/">[apt] Unable to locate package 問題</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate            <span class="comment"># network time protocol date </span></span><br><span class="line">user@pc:~$ sudo ntpdate time.windows.com           <span class="comment"># 從微軟公司的時間伺服器取得時間</span></span><br></pre></td></tr></table></figure>
+<p>把系統中的時間更新到硬體上，並請 Ubuntu 將硬體時間視為當地時間，這樣就會與 Windows 顯示時間的運作方式一樣，再重開機進入 Windows 查看是否同步</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo hwclock --systohc --localtime    <span class="comment"># hardware clock</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>--systohc</code>：將系統時間同步到硬體內</li>
+<li><code>--localtime</code>：將硬體時間當作當地時間</li>
+</ul>
 ]]></content>
       <categories>
-        <category>專案開發筆記</category>
+        <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
         <tag>windows</tag>
-        <tag>crawl</tag>
-        <tag>ithelp</tag>
-        <tag>login</tag>
-        <tag>auto</tag>
-        <tag>credit</tag>
-        <tag>task</tag>
-        <tag>schedular</tag>
+        <tag>18.04</tag>
+        <tag>10</tag>
+        <tag>time</tag>
+        <tag>synchronize</tag>
+        <tag>system</tag>
+        <tag>dual</tag>
       </tags>
   </entry>
   <entry>
@@ -2420,40 +2458,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[雙系統] 更改開機系統選單的預設值</title>
-    <url>/2021/06/16/dual_system_change_default/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>要切換雙系統的方法主要有兩種，一是修改 BIOS 的 Boot Option，另一個是使用 grub (參考：<a href="/2021/06/16/win_10_ubuntu/">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a>])。grub 預設是以 Ubuntu 開機，若在選單畫面超過 10 秒沒有動作，預設直接進入 Ubuntu。對於主要是用 Windows 的人來說稍嫌不便，因為每次開機都要等選單出現，以免不小心進其他系統，這篇主要紀錄如何將預設系統改為 Windows。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>Windows 10</li>
-</ul>
-<h2 id="修改-grub"><a href="#修改-grub" class="headerlink" title="修改 grub"></a>修改 grub</h2><p>以下動作皆在 Ubuntu 中執行，先知道 Windows 啟動檔的位置</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ cat /boot/grub/grub.cfg | grep windows</span><br><span class="line">menuentry <span class="string">&#x27;Windows Boot Manager (於 /dev/sdb2)&#x27;</span> --class windows --class os <span class="variable">$menuentry_id_option</span> <span class="string">&#x27;osprober-efi-264C-BB58&#x27;</span> &#123;</span><br></pre></td></tr></table></figure>
-<p>記住檔案位置 <code>&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 後，再開啟 <code>/ect/default/grub</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo gedit /etc/default/grub</span><br></pre></td></tr></table></figure>
-<p>修改 <code>GRUB_DEFAULT=0</code> 為 <code>GRUB_DEFAULT=&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 並儲存，注意不要少了單引號</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-%E6%9B%B4%E6%94%B9%E9%96%8B%E6%A9%9F%E7%B3%BB%E7%B5%B1%E9%81%B8%E5%96%AE%E7%9A%84%E9%A0%90%E8%A8%AD%E5%80%BC%2Fchange_setting.png?alt=media&amp;token=55bafa2f-b2ff-4fb6-94a1-7a81fc3e9107" alt="修改 GRUB_DEFAULT"><span class="image-caption">修改 GRUB_DEFAULT</span></p>
-<p>更新 grub 後重新開機，就可以發現預設選項落在 Windows 上囉！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo update-grub</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>18.04</tag>
-        <tag>10</tag>
-        <tag>menu</tag>
-        <tag>dual</tag>
-        <tag>system</tag>
-        <tag>option</tag>
-        <tag>boot</tag>
-        <tag>grub</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</title>
     <url>/2021/06/16/win_10_ubuntu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 是一個非常輕便且好用的作業系統，在 Windows 下使用 Linux 大多是透過虛擬機器 (VM, Virtual Machine)，但對一個想要深入研究 Linux 的同好來說，灌雙系統是一個不錯的選擇。灌完雙系統之後，有機率會遇到一種情況「電腦會直接進Windows，不會出現選擇作業系統的畫面」。</p>
@@ -2488,8 +2492,8 @@
         <tag>18.04</tag>
         <tag>10</tag>
         <tag>menu</tag>
-        <tag>dual</tag>
         <tag>system</tag>
+        <tag>dual</tag>
         <tag>option</tag>
         <tag>boot</tag>
         <tag>grub</tag>
@@ -2497,27 +2501,21 @@
       </tags>
   </entry>
   <entry>
-    <title>[雙系統] 同步 Ubuntu 與 Windows 的系統時間</title>
-    <url>/2021/06/17/ubuntu_windows_time/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>使用 Ubuntu + Windows 雙系統的用戶，應該會發現 Ubuntu 的時間總是與 Windows 的不一樣，在 UTC+8 的地方，Ubuntu 比 Windows 快 8 小時，切換系統後總是要手動調整時間，造成一定的困擾。最佳解決之道應為將雙系統時間設為同步，因此這裡紀錄了如何將雙系統的時間設為一致。</p>
+    <title>[雙系統] 更改開機系統選單的預設值</title>
+    <url>/2021/06/16/dual_system_change_default/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>要切換雙系統的方法主要有兩種，一是修改 BIOS 的 Boot Option，另一個是使用 grub (參考：<a href="/2021/06/16/win_10_ubuntu/">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a>])。grub 預設是以 Ubuntu 開機，若在選單畫面超過 10 秒沒有動作，預設直接進入 Ubuntu。對於主要是用 Windows 的人來說稍嫌不便，因為每次開機都要等選單出現，以免不小心進其他系統，這篇主要紀錄如何將預設系統改為 Windows。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Ubuntu 18.04 LTS</li>
 <li>Windows 10</li>
 </ul>
-<h2 id="原因說明"><a href="#原因說明" class="headerlink" title="原因說明"></a>原因說明</h2><p>此問題是由於 Ubuntu 和 Windows 的時間設定方式不同所導致，以當地時間 UTC+8 為例</p>
-<ul>
-<li>Windows：取得硬體時間 (BIOS 的時間) 直接為當地時間 (Local Time)。</li>
-<li>Ubuntu：取得硬體時間 (BIOS 的時間) 並視之為 UTC+0，所以顯示出來的時間是硬體時間 +8 後的結果，也就是 Windows 的時間 +8。</li>
-</ul>
-<p>簡而言之，正是因為 Ubuntu 會把硬體時間視為 UTC+0，切到 Windows 顯示出來的時間才會比 Ubuntu 慢上 8 個小時！</p>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>以下皆是在 Ubuntu 操作，先取得正確時間，若發現找不到 <code>ntpdate</code> 套件，可以參考：<a href="/2021/06/17/apt_unable_to_locate_package/">[apt] Unable to locate package 問題</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate            <span class="comment"># network time protocol date </span></span><br><span class="line">user@pc:~$ sudo ntpdate time.windows.com           <span class="comment"># 從微軟公司的時間伺服器取得時間</span></span><br></pre></td></tr></table></figure>
-<p>把系統中的時間更新到硬體上，並請 Ubuntu 將硬體時間視為當地時間，這樣就會與 Windows 顯示時間的運作方式一樣，再重開機進入 Windows 查看是否同步</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo hwclock --systohc --localtime    <span class="comment"># hardware clock</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>--systohc</code>：將系統時間同步到硬體內</li>
-<li><code>--localtime</code>：將硬體時間當作當地時間</li>
-</ul>
+<h2 id="修改-grub"><a href="#修改-grub" class="headerlink" title="修改 grub"></a>修改 grub</h2><p>以下動作皆在 Ubuntu 中執行，先知道 Windows 啟動檔的位置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ cat /boot/grub/grub.cfg | grep windows</span><br><span class="line">menuentry <span class="string">&#x27;Windows Boot Manager (於 /dev/sdb2)&#x27;</span> --class windows --class os <span class="variable">$menuentry_id_option</span> <span class="string">&#x27;osprober-efi-264C-BB58&#x27;</span> &#123;</span><br></pre></td></tr></table></figure>
+<p>記住檔案位置 <code>&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 後，再開啟 <code>/ect/default/grub</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo gedit /etc/default/grub</span><br></pre></td></tr></table></figure>
+<p>修改 <code>GRUB_DEFAULT=0</code> 為 <code>GRUB_DEFAULT=&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 並儲存，注意不要少了單引號</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-%E6%9B%B4%E6%94%B9%E9%96%8B%E6%A9%9F%E7%B3%BB%E7%B5%B1%E9%81%B8%E5%96%AE%E7%9A%84%E9%A0%90%E8%A8%AD%E5%80%BC%2Fchange_setting.png?alt=media&amp;token=55bafa2f-b2ff-4fb6-94a1-7a81fc3e9107" alt="修改 GRUB_DEFAULT"><span class="image-caption">修改 GRUB_DEFAULT</span></p>
+<p>更新 grub 後重新開機，就可以發現預設選項落在 Windows 上囉！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo update-grub</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
@@ -2528,10 +2526,12 @@
         <tag>windows</tag>
         <tag>18.04</tag>
         <tag>10</tag>
-        <tag>time</tag>
-        <tag>dual</tag>
+        <tag>menu</tag>
         <tag>system</tag>
-        <tag>synchronize</tag>
+        <tag>dual</tag>
+        <tag>option</tag>
+        <tag>boot</tag>
+        <tag>grub</tag>
       </tags>
   </entry>
   <entry>
