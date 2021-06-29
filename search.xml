@@ -1,40 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>[C++] (FARPROC&amp;) 的含意</title>
-    <url>/2021/06/11/cfarproc/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr; </span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...省略...)</span><br></pre></td></tr></table></figure>
-<p>平常只會看到像是 <code>(int)</code>、<code>(int*)</code> 之類的轉型，第一次看到轉型是帶著 <code>&amp;</code> 符號的，引發我的好奇心，藉此研究一番。</p>
-<h2 id="探討"><a href="#探討" class="headerlink" title="探討"></a>探討</h2><p>要探討這問題，就要先知道一般再宣告的時候，<code>&amp;</code> 運算元到底發揮甚麼功用，所以先用最簡單的整數(<code>int</code>)宣告來測試，內容分為以下三種：</p>
-<ol>
-<li><p><code>int a = b;   //這應該大家都知道，就是把b的值給a</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> a = b;</span><br><span class="line"><span class="comment">//結果：a = 2; b = 2; &amp;a = 006FF8C0; &amp;b = 006FF8CC;</span></span><br><span class="line"><span class="comment">//結論：值一樣但記憶體位址不一樣</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>int *a = &amp;b; //程度好一些的應該知道，這是把b的記憶體位址存到a裡面</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> *a = &amp;b;</span><br><span class="line"><span class="comment">//結果：a = 006FF8B4; b = 3; &amp;a = 006FF8A8; &amp;b = 006FF8B4;</span></span><br><span class="line"><span class="comment">//結論：a存著b的位址，但兩個記憶體位址還是不一樣</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>int &amp;a = b;  //但這個呢？讓我們繼續看下去</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">int</span> &amp;a = b;</span><br><span class="line"><span class="comment">//結果：a = 4; b = 4; &amp;a = 006FF89C; &amp;b = 006FF89C;</span></span><br><span class="line"><span class="comment">//結論：a的位址跟b一樣，所以a跟b一模一樣了！</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>以這些實驗可以得到結論：在宣告的時候 ，<code>int&amp;</code> 會把「等號左邊(<code>a</code>)的變數地址」改變成「等號右邊(<code>b</code>)變數的地址」，因此 <code>a</code> 與 <code>b</code> 兩個是一樣的東西（也就是記憶體位址一樣）！</p>
-<p>回到最一開始的問題：<code>(FARPROC&amp;) addr</code> 到底是甚麼呢？我還是用程式做一下實驗，先以書上的程式碼為第一個實驗，用 <code>(FARPROC&amp;)</code> 去接 <code>GetProcAddress</code> 的值，看會如何；再用 <code>addr</code> 直接去接，又會如何。以下是實驗結果：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA94; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA88; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
-<p>可以發現其實沒有像是我們在最原本例子 <code>int &amp;a=b;</code> 看到的把 <code>addr</code> 位址變為 <code>GetProcAddress</code> 的位址，反而是addr的值變化了，變為 <code>GetProcAddress</code> 回傳的地址，也就是說 <code>(FARPROC&amp;)</code> 在這個實驗中看起來是沒有作用到的。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p><code>(FARPROC&amp;) addr = GetProcAddress(...)</code> 等同於 <code>addr = GetProcAddress(...)</code>，只是不知道書上為何多此一舉。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>FARPROC</tag>
-        <tag>cpp</tag>
-        <tag>加密與解密</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
     <url>/2021/06/15/cs_asp_net_core_3_1/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
@@ -206,39 +172,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</title>
-    <url>/2021/06/15/dll_vs_2017_dllmain_dll/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 VS 2017 寫一個 dll，其包含 <code>DllMain</code> 與一個 <code>dllexport</code> 函數。若要知道如何在其它的 C++ 專案中調用在 dll 中的函數，請參考 <a href="/2021/06/15/dll_cpp_dll/">[DLL] 在 C++ 中調用 dll 的函式</a>。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio 2017</li>
-</ul>
-<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><h3 id="確認環境"><a href="#確認環境" class="headerlink" title="確認環境"></a>確認環境</h3><p>開啟 <code>Visual Studio Installer</code>，確認 <code>Desktop development with C++</code> 已安裝，才可進行下面的步驟</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fdesktop_development_with_cpp.png?alt=media&amp;token=086089aa-89c2-406b-9b88-64bd9f4023bc" alt="確認環境"><span class="image-caption">確認環境</span></p>
-<h3 id="新增專案"><a href="#新增專案" class="headerlink" title="新增專案"></a>新增專案</h3><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fnew_project.png?alt=media&amp;token=7c6566f7-e51f-4c83-9e38-ee14a3ff1840" alt="新建專案"><span class="image-caption">新建專案</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fchoose_project_type.png?alt=media&amp;token=48ce3ba4-4228-45a4-b9de-188e160dd485" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
-<p>Application type 選 <code>Dynamic Link Library(.dll)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>dllmain.cpp</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fchoose_dll.png?alt=media&amp;token=be30c3e7-94b4-4cc9-a1bd-5457d068658a" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
-<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>dllmain.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-dllmain-and-function">GitHub</a>)</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// dllmain.cpp : Defines the entry point for the DLL application.</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;framework.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DLLMAIN_API __declspec(dllexport)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="function">DLLMAIN_API <span class="keyword">void</span> <span class="title">helloWorldFun</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">MessageBoxW</span>(<span class="number">0</span>, <span class="string">L&quot;此函式呼叫成功&quot;</span>, <span class="string">L&quot;helloWorldFun&quot;</span>, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL APIENTRY <span class="title">DllMain</span><span class="params">(HMODULE hModule,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD  ul_reason_for_call,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPVOID lpReserved</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in"><span class="keyword">switch</span></span> (ul_reason_for_call)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">case</span> DLL_PROCESS_ATTACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;程序建立時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_THREAD_ATTACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;執行緒建立時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_THREAD_DETACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;執行緒退出時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_PROCESS_DETACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;程序退出時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>點擊功能選單 <code>Build → Build Solution</code>，可在 Output 視窗看到下方提示，會在專案下的 Debug 資料夾產出 dll 檔案，檔名與專案名稱相同</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fbuild_solution.png?alt=media&amp;token=55a6777b-cd77-45d8-a01d-7e168eb4f5e8" alt="Build Solution"><span class="image-caption">Build Solution</span></p>
-<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">1&gt;</span><span class="bash">------ Build started: Project: Project1, Configuration: Debug Win32 ------</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">dllmain.cpp</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">   Creating library C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.lib and object C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.exp</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">Project1.vcxproj -&gt;  C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.dll</span> </span><br><span class="line">========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========</span><br></pre></td></tr></table></figure>
-<p>此時的 <code>Project1.dll</code> 就是包含 <code>DllMain</code> 與一個匯出函式 <code>helloWorldFun</code> 的 dll 檔案囉！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>cpp</tag>
-        <tag>visual studio</tag>
-        <tag>dll</tag>
-        <tag>2017</tag>
-        <tag>dllmain</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[DLL] 在 C++ 中調用 dll 的函式</title>
     <url>/2021/06/15/dll_cpp_dll/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 <code>C++</code> 中，使用 <code>LoadLibraryA</code>/<code>LoadLibraryW</code> 調用 dll。</p>
@@ -266,11 +199,123 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>cpp</tag>
         <tag>dll</tag>
+        <tag>cpp</tag>
         <tag>invoke</tag>
         <tag>loadlibrarya</tag>
         <tag>loadlibraryw</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[EFI] 顯示 Windows 的 EFI 系統分割磁碟</title>
+    <url>/2021/06/16/efi_windows_efi/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>與開機有關的文件通常會存放於 EFI 系統分割磁碟，且為了不讓一般使用者誤觸造成設定錯誤進而導致系統崩潰，通常會將磁碟隱藏起來，只讓真的有需要設定且知道如何進入的使用者自行更改設定。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+</ul>
+<h2 id="操作方法"><a href="#操作方法" class="headerlink" title="操作方法"></a>操作方法</h2><p>這裡有兩種方法能夠採用</p>
+<h3 id="diskpart"><a href="#diskpart" class="headerlink" title="diskpart"></a>diskpart</h3><p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;diskpart</span><br></pre></td></tr></table></figure>
+<p>執行後會跳出驗證視窗，按下「是」之後會跳出一個與 cmd 視窗很像的視窗，但其實是 diskpart.exe，接下來的動作都在此視窗中執行。</p>
+<p>先列出磁碟清單，利用大小的資訊判斷想要的 EFI 系統磁碟分割區在哪個磁碟裡面，在這情況下我的 C 槽所在磁碟的大小為 238 GB，因此 EFI 系統磁碟分割區在磁碟 1，再用 <code>select</code> 指令選擇該磁碟</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;list disk</span><br><span class="line"></span><br><span class="line">  磁碟 <span class="comment">###  狀態           大小     可用     Dyn  Gpt</span></span><br><span class="line">  --------  -------------  -------  -------  ---  ---</span><br><span class="line">  磁碟 0    連線              931 GB      0 B        *</span><br><span class="line">  磁碟 1    連線              238 GB      0 B        *</span><br><span class="line"></span><br><span class="line">DISKPART&gt;select disk 1</span><br><span class="line"></span><br><span class="line">磁碟 1 是所選擇的磁碟。</span><br></pre></td></tr></table></figure>
+<p>顯示磁碟分割清單，選擇系統磁碟分割區 (類型為系統的那個磁碟分割區)，同樣是使用 <code>select</code> 選擇該磁碟分割區</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;list partition</span><br><span class="line"></span><br><span class="line">  磁碟分割  <span class="comment">###  類型              大小     位移</span></span><br><span class="line">  -------------  ----------------  -------  -------</span><br><span class="line">  磁碟分割  1    系統                 260 MB  1024 KB</span><br><span class="line">  磁碟分割  2    保留                  16 MB   261 MB</span><br><span class="line">  磁碟分割  3    主要                 237 GB   277 MB</span><br><span class="line">  磁碟分割  4    復原                 850 MB   237 GB</span><br><span class="line"></span><br><span class="line">DISKPART&gt;select partition 1</span><br><span class="line"></span><br><span class="line">磁碟分割 1 是所選擇的磁碟分割。</span><br></pre></td></tr></table></figure>
+<p>使用 <code>assign</code> 暫時地命名分割區(這裡把它命名為 <code>p</code> 槽)，至此已經把系統磁碟叫出來了，在檔案總管 (File Explorer) 或透過 cmd (以系統管理員身分執行) 都能存取</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;assign letter=p</span><br><span class="line"></span><br><span class="line">DiskPart 成功地指派了磁碟機代號或掛接點。</span><br></pre></td></tr></table></figure>
+<p>會說它是暫時命名的是因為關機時，系統會自動註銷這個名稱，若重新啟動後還有使用需求，需要再操做一遍它才會再次出現，若要手動註銷的話則用 <code>remove</code> 指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;remove letter=p</span><br><span class="line"></span><br><span class="line">DiskPart 成功地移除了磁碟機代號或掛接點。</span><br></pre></td></tr></table></figure>
+<h3 id="mountvol"><a href="#mountvol" class="headerlink" title="mountvol"></a>mountvol</h3><p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令，將 EFI 系統分割區暫時命名為 <code>p</code> 槽</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;mountvol p: /s</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>/s</code>：Mount the EFI System Partition on the given drive.</li>
+</ul>
+<p>以這個方式指派的磁碟分割區只能在 cmd 存取 (<code>p:\</code>)，檔案總管 (File Explorer) 是看不到的。與 diskpart 相同，關機時會註銷名稱，若要手動註銷 <code>p</code> 槽</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;mountvol p: /d</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>/d</code>：Removes the volume mount point from the specified directory.</li>
+</ul>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>efi</tag>
+        <tag>windows</tag>
+        <tag>diskpart</tag>
+        <tag>mountvol</tag>
+        <tag>partition</tag>
+        <tag>disk</tag>
+        <tag>cmd</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</title>
+    <url>/2021/06/15/dll_vs_2017_dllmain_dll/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 VS 2017 寫一個 dll，其包含 <code>DllMain</code> 與一個 <code>dllexport</code> 函數。若要知道如何在其它的 C++ 專案中調用在 dll 中的函數，請參考 <a href="/2021/06/15/dll_cpp_dll/">[DLL] 在 C++ 中調用 dll 的函式</a>。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio 2017</li>
+</ul>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><h3 id="確認環境"><a href="#確認環境" class="headerlink" title="確認環境"></a>確認環境</h3><p>開啟 <code>Visual Studio Installer</code>，確認 <code>Desktop development with C++</code> 已安裝，才可進行下面的步驟</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fdesktop_development_with_cpp.png?alt=media&amp;token=086089aa-89c2-406b-9b88-64bd9f4023bc" alt="確認環境"><span class="image-caption">確認環境</span></p>
+<h3 id="新增專案"><a href="#新增專案" class="headerlink" title="新增專案"></a>新增專案</h3><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fnew_project.png?alt=media&amp;token=7c6566f7-e51f-4c83-9e38-ee14a3ff1840" alt="新建專案"><span class="image-caption">新建專案</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fchoose_project_type.png?alt=media&amp;token=48ce3ba4-4228-45a4-b9de-188e160dd485" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
+<p>Application type 選 <code>Dynamic Link Library(.dll)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>dllmain.cpp</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fchoose_dll.png?alt=media&amp;token=be30c3e7-94b4-4cc9-a1bd-5457d068658a" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>dllmain.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-dllmain-and-function">GitHub</a>)</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// dllmain.cpp : Defines the entry point for the DLL application.</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;framework.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DLLMAIN_API __declspec(dllexport)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="function">DLLMAIN_API <span class="keyword">void</span> <span class="title">helloWorldFun</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">MessageBoxW</span>(<span class="number">0</span>, <span class="string">L&quot;此函式呼叫成功&quot;</span>, <span class="string">L&quot;helloWorldFun&quot;</span>, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL APIENTRY <span class="title">DllMain</span><span class="params">(HMODULE hModule,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD  ul_reason_for_call,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPVOID lpReserved</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in"><span class="keyword">switch</span></span> (ul_reason_for_call)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">case</span> DLL_PROCESS_ATTACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;程序建立時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_THREAD_ATTACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;執行緒建立時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_THREAD_DETACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;執行緒退出時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_PROCESS_DETACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;程序退出時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>點擊功能選單 <code>Build → Build Solution</code>，可在 Output 視窗看到下方提示，會在專案下的 Debug 資料夾產出 dll 檔案，檔名與專案名稱相同</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fbuild_solution.png?alt=media&amp;token=55a6777b-cd77-45d8-a01d-7e168eb4f5e8" alt="Build Solution"><span class="image-caption">Build Solution</span></p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">1&gt;</span><span class="bash">------ Build started: Project: Project1, Configuration: Debug Win32 ------</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">dllmain.cpp</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">   Creating library C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.lib and object C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.exp</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">Project1.vcxproj -&gt;  C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.dll</span> </span><br><span class="line">========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========</span><br></pre></td></tr></table></figure>
+<p>此時的 <code>Project1.dll</code> 就是包含 <code>DllMain</code> 與一個匯出函式 <code>helloWorldFun</code> 的 dll 檔案囉！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>visual studio</tag>
+        <tag>dll</tag>
+        <tag>cpp</tag>
+        <tag>2017</tag>
+        <tag>dllmain</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案</title>
+    <url>/2021/06/17/echo_ubuntu_r/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 與 Linux 使用上有一個很顯著的差異，就是兩種系統的換行字元不一樣，在 Windows 上的換行字元為 CRLF <code>\r\n</code>，而 Linux 的換行字元只有 LF <code>\n</code>。然而總會有在 Ubuntu 需要產生一個換行為 CRLF 的檔案的需求，因此紀錄一下如何使用簡單的指令 <code>echo</code> 來解決這個問題。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 20.04</li>
+</ul>
+<h2 id="檔案內容敘述"><a href="#檔案內容敘述" class="headerlink" title="檔案內容敘述"></a>檔案內容敘述</h2><p>假設現在我想製作一個 HTTP 標頭檔，因 HTTP 標頭格式的換行必須為 CRLF，若直接開啟文件並使用文字編輯器來編輯，換行一定只有 LF，因此需藉由指令的力量來完成這件事，希望的檔案內容如下，注意最後一行空白是必要的</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HEAD / HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>看文字不清楚，轉為 16 進位形式來看清楚，每個換行皆為 CLRF，最後有一個單獨的 CLRF，才會讓檔案內容看起來有一個空白行。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
+<h2 id="產製檔案"><a href="#產製檔案" class="headerlink" title="產製檔案"></a>產製檔案</h2><p>使用基本指令 <code>echo</code> 就能解決我們的困擾囉</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> -ne <span class="string">&quot;HEAD / HTTP/1.1\r\nHost: localhost\r\n\r\n&quot;</span> &gt; message</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-n</code>：不要輸出最後的換行 (<code>echo</code> 指令自己預設最後會輸出換行 LF)。</li>
+<li><code>-e</code>：會直譯跳脫字元，讓我們可以輸入 <code>\r</code>、<code>\n</code> 等跳脫字元。</li>
+</ul>
+<p>查看該檔案 16 進位形式確認完成！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ xxd message</span><br><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>CR</tag>
+        <tag>carriage</tag>
+        <tag>return</tag>
+        <tag>echo</tag>
+        <tag>ubuntu</tag>
+        <tag>20.04</tag>
+        <tag>file</tag>
+        <tag>netcat</tag>
+        <tag>cat</tag>
       </tags>
   </entry>
   <entry>
@@ -334,14 +379,14 @@
       </categories>
       <tags>
         <tag>server</tag>
-        <tag>apache</tag>
         <tag>ubuntu</tag>
         <tag>20.04</tag>
+        <tag>netcat</tag>
+        <tag>apache</tag>
         <tag>http</tag>
         <tag>header</tag>
         <tag>web</tag>
         <tag>modification</tag>
-        <tag>netcat</tag>
         <tag>nc</tag>
       </tags>
   </entry>
@@ -369,46 +414,31 @@
       </tags>
   </entry>
   <entry>
-    <title>[EFI] 顯示 Windows 的 EFI 系統分割磁碟</title>
-    <url>/2021/06/16/efi_windows_efi/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>與開機有關的文件通常會存放於 EFI 系統分割磁碟，且為了不讓一般使用者誤觸造成設定錯誤進而導致系統崩潰，通常會將磁碟隱藏起來，只讓真的有需要設定且知道如何進入的使用者自行更改設定。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-</ul>
-<h2 id="操作方法"><a href="#操作方法" class="headerlink" title="操作方法"></a>操作方法</h2><p>這裡有兩種方法能夠採用</p>
-<h3 id="diskpart"><a href="#diskpart" class="headerlink" title="diskpart"></a>diskpart</h3><p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;diskpart</span><br></pre></td></tr></table></figure>
-<p>執行後會跳出驗證視窗，按下「是」之後會跳出一個與 cmd 視窗很像的視窗，但其實是 diskpart.exe，接下來的動作都在此視窗中執行。</p>
-<p>先列出磁碟清單，利用大小的資訊判斷想要的 EFI 系統磁碟分割區在哪個磁碟裡面，在這情況下我的 C 槽所在磁碟的大小為 238 GB，因此 EFI 系統磁碟分割區在磁碟 1，再用 <code>select</code> 指令選擇該磁碟</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;list disk</span><br><span class="line"></span><br><span class="line">  磁碟 <span class="comment">###  狀態           大小     可用     Dyn  Gpt</span></span><br><span class="line">  --------  -------------  -------  -------  ---  ---</span><br><span class="line">  磁碟 0    連線              931 GB      0 B        *</span><br><span class="line">  磁碟 1    連線              238 GB      0 B        *</span><br><span class="line"></span><br><span class="line">DISKPART&gt;select disk 1</span><br><span class="line"></span><br><span class="line">磁碟 1 是所選擇的磁碟。</span><br></pre></td></tr></table></figure>
-<p>顯示磁碟分割清單，選擇系統磁碟分割區 (類型為系統的那個磁碟分割區)，同樣是使用 <code>select</code> 選擇該磁碟分割區</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;list partition</span><br><span class="line"></span><br><span class="line">  磁碟分割  <span class="comment">###  類型              大小     位移</span></span><br><span class="line">  -------------  ----------------  -------  -------</span><br><span class="line">  磁碟分割  1    系統                 260 MB  1024 KB</span><br><span class="line">  磁碟分割  2    保留                  16 MB   261 MB</span><br><span class="line">  磁碟分割  3    主要                 237 GB   277 MB</span><br><span class="line">  磁碟分割  4    復原                 850 MB   237 GB</span><br><span class="line"></span><br><span class="line">DISKPART&gt;select partition 1</span><br><span class="line"></span><br><span class="line">磁碟分割 1 是所選擇的磁碟分割。</span><br></pre></td></tr></table></figure>
-<p>使用 <code>assign</code> 暫時地命名分割區(這裡把它命名為 <code>p</code> 槽)，至此已經把系統磁碟叫出來了，在檔案總管 (File Explorer) 或透過 cmd (以系統管理員身分執行) 都能存取</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;assign letter=p</span><br><span class="line"></span><br><span class="line">DiskPart 成功地指派了磁碟機代號或掛接點。</span><br></pre></td></tr></table></figure>
-<p>會說它是暫時命名的是因為關機時，系統會自動註銷這個名稱，若重新啟動後還有使用需求，需要再操做一遍它才會再次出現，若要手動註銷的話則用 <code>remove</code> 指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART&gt;remove letter=p</span><br><span class="line"></span><br><span class="line">DiskPart 成功地移除了磁碟機代號或掛接點。</span><br></pre></td></tr></table></figure>
-<h3 id="mountvol"><a href="#mountvol" class="headerlink" title="mountvol"></a>mountvol</h3><p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令，將 EFI 系統分割區暫時命名為 <code>p</code> 槽</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;mountvol p: /s</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>/s</code>：Mount the EFI System Partition on the given drive.</li>
-</ul>
-<p>以這個方式指派的磁碟分割區只能在 cmd 存取 (<code>p:\</code>)，檔案總管 (File Explorer) 是看不到的。與 diskpart 相同，關機時會註銷名稱，若要手動註銷 <code>p</code> 槽</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;mountvol p: /d</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>/d</code>：Removes the volume mount point from the specified directory.</li>
-</ul>
+    <title>[Git] git remote add origin 中 origin 的意思解析</title>
+    <url>/2021/06/13/git_git_remote_add_origin/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>Git</code> 真的是對程式開發者的一個大福音，在知道 <code>Git</code> 之前常常在實驗室用桌電開發，回宿舍前上傳雲端或隨身碟，然後回到宿再抓下來繼續開發，久了之後檔案多了，非常難管理，也很難找到之前到底修改了哪裡。使用 <code>Git</code> 之後，光是管理程式碼的部份就省很多時間。</p>
+<p>其中一個很常下的指令是 <code>git remote add origin</code>，它很基本以至於很少有文章介紹它的意思，因此在自己的好奇心之下，驅使自己理解這個指令的含意。</p>
+<h2 id="origin-意思解析"><a href="#origin-意思解析" class="headerlink" title="origin 意思解析"></a>origin 意思解析</h2><p>當想要從 Local 端 <code>push</code> 資料上 <code>Git</code> 管理網 (例如 GitHub、GitLab ，統稱為 <code>remote</code> 端) 時，會先在網頁上先建一個 Repository，然後跟著網頁的指示做。以下以個人的 <a href="https://github.com/weirenxue">GitHub</a> 為例，創建一個 Repository 名稱為 zcu111-EMIO，且「不」打勾 &quot;Initialize this repository with a README&quot;，創建好之後 GitHub 會提示以下訊息讓我們能順利上傳程式碼</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">…or push an existing repository from the command line</span><br><span class="line"></span><br><span class="line">git remote add origin https://github.com/weirenxue/zcu111-EMIO.git</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+<p>依照它的提示執行這些指令後，就能把在地端的程式碼 <code>push</code> 上去，這時再用 <code>git remote -v</code> 來看看 <code>remote</code> 資料</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
+<p>可以發現 <code>origin</code> 就只是那 <code>remote git</code> 的代名詞！為了讓使用者不必每次對 <code>remote</code> 操作都要打一長串網址。</p>
+<h2 id="應用"><a href="#應用" class="headerlink" title="應用"></a>應用</h2><p>理解意思之後，就能自己做變化！我們可以把 <code>origin</code> 改為別的名稱</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote rename origin origin-github  <span class="comment"># 改名</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
+<p>更甚者，如果有兩個 <code>Git</code> 管理網要 <code>push</code> 的話 (例如：公司專用/個人習慣用)，可以再加入一個 <code>remote</code>！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote add origin-company http://192.168.0.123/fake/zcu111-EMIO.git</span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
+<p><code>push</code> 的方法都沒變，只是將原本是 origin 的地方改為對應的代名詞</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git push origin-github master  <span class="comment"># 到 GitHub</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git push origin-company master <span class="comment"># 到公司</span></span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>efi</tag>
-        <tag>windows</tag>
-        <tag>diskpart</tag>
-        <tag>mountvol</tag>
-        <tag>partition</tag>
-        <tag>disk</tag>
-        <tag>cmd</tag>
+        <tag>git</tag>
+        <tag>remote</tag>
+        <tag>origin</tag>
+        <tag>push</tag>
+        <tag>upstream</tag>
       </tags>
   </entry>
   <entry>
@@ -435,49 +465,13 @@
       </categories>
       <tags>
         <tag>centos</tag>
+        <tag>file</tag>
         <tag>7.9</tag>
         <tag>vsftpd</tag>
         <tag>ftp</tag>
         <tag>425</tag>
         <tag>vm</tag>
         <tag>copy</tag>
-        <tag>file</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案</title>
-    <url>/2021/06/17/echo_ubuntu_r/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 與 Linux 使用上有一個很顯著的差異，就是兩種系統的換行字元不一樣，在 Windows 上的換行字元為 CRLF <code>\r\n</code>，而 Linux 的換行字元只有 LF <code>\n</code>。然而總會有在 Ubuntu 需要產生一個換行為 CRLF 的檔案的需求，因此紀錄一下如何使用簡單的指令 <code>echo</code> 來解決這個問題。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 20.04</li>
-</ul>
-<h2 id="檔案內容敘述"><a href="#檔案內容敘述" class="headerlink" title="檔案內容敘述"></a>檔案內容敘述</h2><p>假設現在我想製作一個 HTTP 標頭檔，因 HTTP 標頭格式的換行必須為 CRLF，若直接開啟文件並使用文字編輯器來編輯，換行一定只有 LF，因此需藉由指令的力量來完成這件事，希望的檔案內容如下，注意最後一行空白是必要的</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HEAD / HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>看文字不清楚，轉為 16 進位形式來看清楚，每個換行皆為 CLRF，最後有一個單獨的 CLRF，才會讓檔案內容看起來有一個空白行。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
-<h2 id="產製檔案"><a href="#產製檔案" class="headerlink" title="產製檔案"></a>產製檔案</h2><p>使用基本指令 <code>echo</code> 就能解決我們的困擾囉</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> -ne <span class="string">&quot;HEAD / HTTP/1.1\r\nHost: localhost\r\n\r\n&quot;</span> &gt; message</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-n</code>：不要輸出最後的換行 (<code>echo</code> 指令自己預設最後會輸出換行 LF)。</li>
-<li><code>-e</code>：會直譯跳脫字元，讓我們可以輸入 <code>\r</code>、<code>\n</code> 等跳脫字元。</li>
-</ul>
-<p>查看該檔案 16 進位形式確認完成！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ xxd message</span><br><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>ubuntu</tag>
-        <tag>20.04</tag>
-        <tag>netcat</tag>
-        <tag>file</tag>
-        <tag>CR</tag>
-        <tag>carriage</tag>
-        <tag>return</tag>
-        <tag>echo</tag>
-        <tag>cat</tag>
       </tags>
   </entry>
   <entry>
@@ -521,29 +515,6 @@
         <tag>service</tag>
         <tag>iptables</tag>
         <tag>zone</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Git] git-cli 使用樹狀圖展示 Commit Log</title>
-    <url>/2021/06/13/git_terminal_git_log/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>習慣使用 cli 操作 Git 後，不會想裝 Git 的 GUI 擴充，但還是覺得若能以樹狀圖來看 Commit Log 會很方便。</p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>同樣是使用 <code>git log</code> 指令，但需加上一些參數達到這個效果</p>
-<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git log --oneline --graph --all</span><br><span class="line">* baf420b (HEAD -&gt; feat-fill-up) Text to speech</span><br><span class="line">* a06c9c8 Display the fuel prompt</span><br><span class="line">| * 5d04f92 (origin-github/feat, feat) renew API</span><br><span class="line">|/  </span><br><span class="line">* 19b0257 Rename the variables&#x27; name</span><br><span class="line">* 41992f1 renew API(communicates with golang API)</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>--oneline</code>：只顯示 log 標題，若不限定為只有標題，將會顯得雜亂。</li>
-<li><code>--graph</code>：以樹狀圖顯示 log。</li>
-<li><code>--all</code>：全部的 log，包含所有分支。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-        <tag>tree</tag>
-        <tag>log</tag>
-        <tag>commit</tag>
-        <tag>cli</tag>
       </tags>
   </entry>
   <entry>
@@ -609,31 +580,31 @@
       </tags>
   </entry>
   <entry>
-    <title>[Git] git remote add origin 中 origin 的意思解析</title>
-    <url>/2021/06/13/git_git_remote_add_origin/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>Git</code> 真的是對程式開發者的一個大福音，在知道 <code>Git</code> 之前常常在實驗室用桌電開發，回宿舍前上傳雲端或隨身碟，然後回到宿再抓下來繼續開發，久了之後檔案多了，非常難管理，也很難找到之前到底修改了哪裡。使用 <code>Git</code> 之後，光是管理程式碼的部份就省很多時間。</p>
-<p>其中一個很常下的指令是 <code>git remote add origin</code>，它很基本以至於很少有文章介紹它的意思，因此在自己的好奇心之下，驅使自己理解這個指令的含意。</p>
-<h2 id="origin-意思解析"><a href="#origin-意思解析" class="headerlink" title="origin 意思解析"></a>origin 意思解析</h2><p>當想要從 Local 端 <code>push</code> 資料上 <code>Git</code> 管理網 (例如 GitHub、GitLab ，統稱為 <code>remote</code> 端) 時，會先在網頁上先建一個 Repository，然後跟著網頁的指示做。以下以個人的 <a href="https://github.com/weirenxue">GitHub</a> 為例，創建一個 Repository 名稱為 zcu111-EMIO，且「不」打勾 &quot;Initialize this repository with a README&quot;，創建好之後 GitHub 會提示以下訊息讓我們能順利上傳程式碼</p>
-<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">…or push an existing repository from the command line</span><br><span class="line"></span><br><span class="line">git remote add origin https://github.com/weirenxue/zcu111-EMIO.git</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
-<p>依照它的提示執行這些指令後，就能把在地端的程式碼 <code>push</code> 上去，這時再用 <code>git remote -v</code> 來看看 <code>remote</code> 資料</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
-<p>可以發現 <code>origin</code> 就只是那 <code>remote git</code> 的代名詞！為了讓使用者不必每次對 <code>remote</code> 操作都要打一長串網址。</p>
-<h2 id="應用"><a href="#應用" class="headerlink" title="應用"></a>應用</h2><p>理解意思之後，就能自己做變化！我們可以把 <code>origin</code> 改為別的名稱</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote rename origin origin-github  <span class="comment"># 改名</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
-<p>更甚者，如果有兩個 <code>Git</code> 管理網要 <code>push</code> 的話 (例如：公司專用/個人習慣用)，可以再加入一個 <code>remote</code>！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git remote add origin-company http://192.168.0.123/fake/zcu111-EMIO.git</span><br><span class="line"></span><br><span class="line">user@pc:~$ git remote -v</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-github https://github.com/weirenxue/zcu111-EMIO.git (push)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (fetch)</span><br><span class="line">origin-company http://192.168.0.123/fake/zcu111-EMIO.git (push)</span><br></pre></td></tr></table></figure>
-<p><code>push</code> 的方法都沒變，只是將原本是 origin 的地方改為對應的代名詞</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git push origin-github master  <span class="comment"># 到 GitHub</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ git push origin-company master <span class="comment"># 到公司</span></span><br></pre></td></tr></table></figure>
+    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
+    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>IIS 10.0</li>
+</ul>
+<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>git</tag>
-        <tag>remote</tag>
-        <tag>origin</tag>
-        <tag>push</tag>
-        <tag>upstream</tag>
+        <tag>server</tag>
+        <tag>windows</tag>
+        <tag>header</tag>
+        <tag>iis</tag>
+        <tag>x powered by</tag>
+        <tag>x aspnet version</tag>
+        <tag>hide</tag>
       </tags>
   </entry>
   <entry>
@@ -668,26 +639,26 @@
       </tags>
   </entry>
   <entry>
-    <title>[IME] 有其他輸入法框架後移除 IBus 圖示</title>
-    <url>/2021/06/17/ime_ibus/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 在安裝完非預設的輸入法框架之後，在畫面右上角會看到新的輸入法圖示，但預設的 IBus 圖示仍然會存在，讓人看到就覺得煩躁進而想要移除掉圖示。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
+    <title>[Git] git-cli 使用樹狀圖展示 Commit Log</title>
+    <url>/2021/06/13/git_terminal_git_log/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>習慣使用 cli 操作 Git 後，不會想裝 Git 的 GUI 擴充，但還是覺得若能以樹狀圖來看 Commit Log 會很方便。</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>同樣是使用 <code>git log</code> 指令，但需加上一些參數達到這個效果</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git log --oneline --graph --all</span><br><span class="line">* baf420b (HEAD -&gt; feat-fill-up) Text to speech</span><br><span class="line">* a06c9c8 Display the fuel prompt</span><br><span class="line">| * 5d04f92 (origin-github/feat, feat) renew API</span><br><span class="line">|/  </span><br><span class="line">* 19b0257 Rename the variables&#x27; name</span><br><span class="line">* 41992f1 renew API(communicates with golang API)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>--oneline</code>：只顯示 log 標題，若不限定為只有標題，將會顯得雜亂。</li>
+<li><code>--graph</code>：以樹狀圖顯示 log。</li>
+<li><code>--all</code>：全部的 log，包含所有分支。</li>
 </ul>
-<h2 id="問題"><a href="#問題" class="headerlink" title="問題"></a>問題</h2><p>fcitx 和 IBus 同時存在，但只有 fcitx 能使用，IBus 可以不用理它沒有關係，但看著就怪怪的，所以想要把它的圖示移除。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E6%9C%89%E5%85%B6%E4%BB%96%E8%BC%B8%E5%85%A5%E6%B3%95%E6%A1%86%E6%9E%B6%E5%BE%8C%E7%A7%BB%E9%99%A4-IBus-%E5%9C%96%E7%A4%BA%2Fime_icon.png?alt=media&amp;token=508a4f4b-74af-4238-9519-fcc2fb3c5686" alt="輸入法框架圖示"><span class="image-caption">輸入法框架圖示</span></p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>移除圖示的原理就是讓 IBus 不要執行，可以將 IBus 的 daemon 檔案移除或更改名字，使系統找不到檔案無法運行 IBus 服務，這裡為了之後有可能有需要用到 IBus 的意外，因此只做改名字的動作，檔案還是存在於系統內。更改檔名後重開機，就發現 IBus 圖示消失啦！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mv /usr/bin/ibus-daemon /usr/bin/ibus-daemon.bak</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
-        <tag>ibus</tag>
-        <tag>fcitx</tag>
-        <tag>18.04</tag>
-        <tag>remove</tag>
+        <tag>git</tag>
+        <tag>tree</tag>
+        <tag>log</tag>
+        <tag>commit</tag>
+        <tag>cli</tag>
       </tags>
   </entry>
   <entry>
@@ -716,31 +687,26 @@
       </tags>
   </entry>
   <entry>
-    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
-    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
+    <title>[IME] 有其他輸入法框架後移除 IBus 圖示</title>
+    <url>/2021/06/17/ime_ibus/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 在安裝完非預設的輸入法框架之後，在畫面右上角會看到新的輸入法圖示，但預設的 IBus 圖示仍然會存在，讓人看到就覺得煩躁進而想要移除掉圖示。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>IIS 10.0</li>
+<li>Ubuntu 18.04 LTS</li>
 </ul>
-<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="問題"><a href="#問題" class="headerlink" title="問題"></a>問題</h2><p>fcitx 和 IBus 同時存在，但只有 fcitx 能使用，IBus 可以不用理它沒有關係，但看著就怪怪的，所以想要把它的圖示移除。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E6%9C%89%E5%85%B6%E4%BB%96%E8%BC%B8%E5%85%A5%E6%B3%95%E6%A1%86%E6%9E%B6%E5%BE%8C%E7%A7%BB%E9%99%A4-IBus-%E5%9C%96%E7%A4%BA%2Fime_icon.png?alt=media&amp;token=508a4f4b-74af-4238-9519-fcc2fb3c5686" alt="輸入法框架圖示"><span class="image-caption">輸入法框架圖示</span></p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>移除圖示的原理就是讓 IBus 不要執行，可以將 IBus 的 daemon 檔案移除或更改名字，使系統找不到檔案無法運行 IBus 服務，這裡為了之後有可能有需要用到 IBus 的意外，因此只做改名字的動作，檔案還是存在於系統內。更改檔名後重開機，就發現 IBus 圖示消失啦！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mv /usr/bin/ibus-daemon /usr/bin/ibus-daemon.bak</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>server</tag>
-        <tag>header</tag>
-        <tag>windows</tag>
-        <tag>iis</tag>
-        <tag>x powered by</tag>
-        <tag>x aspnet version</tag>
-        <tag>hide</tag>
+        <tag>ubuntu</tag>
+        <tag>ibus</tag>
+        <tag>fcitx</tag>
+        <tag>18.04</tag>
+        <tag>remove</tag>
       </tags>
   </entry>
   <entry>
@@ -879,70 +845,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
-    <url>/2021/06/19/mariadb_centos/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
-<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
-<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>mariadb</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>latest</tag>
-        <tag>update</tag>
-        <tag>version</tag>
-        <tag>repository</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Math] 以移位運算優化除數為 2 的冪次方的除法</title>
-    <url>/2021/06/15/math_2/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>除法指令在 CPU 中的執行周期相較於其它運算 (加/減/乘) 還要來得長，所以會盡可能的找替代方案來算出除法結果。這裡討論的是，當除以一個 2 的冪次方數時要怎麼減化過程，特別是被除數為負數時的情況。</p>
-<h2 id="問題敘述"><a href="#問題敘述" class="headerlink" title="問題敘述"></a>問題敘述</h2><p>基本上 $x\gg k$ 等同於 $\dfrac{x}{2^k}$，但這個結果只能保證在 $x \geq 0$ 時是對的，若在 $x &lt; 0$ 時，可就不一定了！舉例來說，若 $x=-12345$ 且 $k=4$</p>
-<p>以除法運算來看，取整數後即 $-771$。</p>
-<script type="math/tex; mode=display">x\gg k=-12345\gg 4=\dfrac{-12345}{2^4}=-771.5625</script><p>在以位元運算來看</p>
-<script type="math/tex; mode=display">-12345_{10}\gg 4_{10}=1100\_1111\_1100\_0111_2 \gg 4_{10} = 1111\_1100\_1111\_1100_2 = -772</script><p>這與我們想要的結果 ($-771$) 不一樣，因為移位運算後的結果都是取 <code>floor</code> 後的值，即</p>
-<script type="math/tex; mode=display">x \gg k = floor(\dfrac{x}{2^k})</script><p>當 $x \geq 0$，我們要得到整數部份就要取 <code>floor</code>，這與移位運算的特性一致；而當 $x &lt; 0$ 時，我們要得到整數部份就要取 <code>ceil</code>，但此時移位運算是取 <code>floor</code>，所以就會有誤。</p>
-<p>因此，我們需要一個函數，當 $x &lt; 0$ 時作移位運算後結果為 $ceil(\dfrac{x}{2^k})$ 的演算法</p>
-<script type="math/tex; mode=display">(x + (2^k - 1)) >> k</script><h2 id="證明"><a href="#證明" class="headerlink" title="證明"></a>證明</h2><p>目標</p>
-<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = (x + (2^k - 1)) \gg k</script><p>要證明上式，必須先證明下式成立，</p>
-<script type="math/tex; mode=display">ceil(\dfrac{x}{y})=floor(\dfrac{x+y-1}{y}), \ \textrm{if}\ x\ \in \mathbb{Z}\ \textrm{and}\ y\ \in \mathbb{Z^+}</script><p>令</p>
-<script type="math/tex; mode=display">x=qy+r,\ 0 \leq r\leq y-1</script><p>q 為除法商數且 r 為除法餘數。再將此試代入目標等式右邊</p>
-<script type="math/tex; mode=display">\dfrac{x+y-1}{y}=\dfrac{qy+r+y-1}{y}=q+\dfrac{r+y-1}{y}</script><p>討論：</p>
-<p><code>case 1</code>：如果 $x$ 可以被 $y$ 整除，則 $r=0$</p>
-<script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{y-1}{y})=q=ceil(\dfrac{x}{y})</script><p><code>case 2</code>：如果 $x$ 不能被 $y$ 整除，則 $1\leq r\leq y-1$</p>
-<script type="math/tex; mode=display">\dfrac{y}{y}\leq \dfrac{r+y-1}{y}\leq \dfrac{2y-2}{y}</script><script type="math/tex; mode=display">1\leq\dfrac{r+y-1}{y}<2</script><script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{r+y-1}{y})=q+1=ceil(\dfrac{x}{y})</script><p>最後，再利用這個等式，可以得到若 <code>x &lt; 0</code></p>
-<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = floor ( \dfrac{x + 2^k - 1}{2^k}) = (x + (2^k - 1)) \gg k</script><p>得證</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a href="https://www.itread01.com/content/1548192791.html">計算機中如何實現除數是2的冪次的除法</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>math</tag>
-        <tag>shift</tag>
-        <tag>bit</tag>
-        <tag>division</tag>
-        <tag>power of 2</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[MQTT] CentOS 7 安裝 mosquitto 並使用帳密驗證</title>
     <url>/2021/06/19/mqtt_centos_7/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 mosquitto，網路上有許多 mosquitto 的說明，這裡只紀錄如何架設與測試。</p>
@@ -1009,6 +911,70 @@
       </tags>
   </entry>
   <entry>
+    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
+    <url>/2021/06/19/mariadb_centos/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+</ul>
+<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
+<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
+<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>mariadb</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>latest</tag>
+        <tag>update</tag>
+        <tag>version</tag>
+        <tag>repository</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Math] 以移位運算優化除數為 2 的冪次方的除法</title>
+    <url>/2021/06/15/math_2/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>除法指令在 CPU 中的執行周期相較於其它運算 (加/減/乘) 還要來得長，所以會盡可能的找替代方案來算出除法結果。這裡討論的是，當除以一個 2 的冪次方數時要怎麼減化過程，特別是被除數為負數時的情況。</p>
+<h2 id="問題敘述"><a href="#問題敘述" class="headerlink" title="問題敘述"></a>問題敘述</h2><p>基本上 $x\gg k$ 等同於 $\dfrac{x}{2^k}$，但這個結果只能保證在 $x \geq 0$ 時是對的，若在 $x &lt; 0$ 時，可就不一定了！舉例來說，若 $x=-12345$ 且 $k=4$</p>
+<p>以除法運算來看，取整數後即 $-771$。</p>
+<script type="math/tex; mode=display">x\gg k=-12345\gg 4=\dfrac{-12345}{2^4}=-771.5625</script><p>在以位元運算來看</p>
+<script type="math/tex; mode=display">-12345_{10}\gg 4_{10}=1100\_1111\_1100\_0111_2 \gg 4_{10} = 1111\_1100\_1111\_1100_2 = -772</script><p>這與我們想要的結果 ($-771$) 不一樣，因為移位運算後的結果都是取 <code>floor</code> 後的值，即</p>
+<script type="math/tex; mode=display">x \gg k = floor(\dfrac{x}{2^k})</script><p>當 $x \geq 0$，我們要得到整數部份就要取 <code>floor</code>，這與移位運算的特性一致；而當 $x &lt; 0$ 時，我們要得到整數部份就要取 <code>ceil</code>，但此時移位運算是取 <code>floor</code>，所以就會有誤。</p>
+<p>因此，我們需要一個函數，當 $x &lt; 0$ 時作移位運算後結果為 $ceil(\dfrac{x}{2^k})$ 的演算法</p>
+<script type="math/tex; mode=display">(x + (2^k - 1)) >> k</script><h2 id="證明"><a href="#證明" class="headerlink" title="證明"></a>證明</h2><p>目標</p>
+<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = (x + (2^k - 1)) \gg k</script><p>要證明上式，必須先證明下式成立，</p>
+<script type="math/tex; mode=display">ceil(\dfrac{x}{y})=floor(\dfrac{x+y-1}{y}), \ \textrm{if}\ x\ \in \mathbb{Z}\ \textrm{and}\ y\ \in \mathbb{Z^+}</script><p>令</p>
+<script type="math/tex; mode=display">x=qy+r,\ 0 \leq r\leq y-1</script><p>q 為除法商數且 r 為除法餘數。再將此試代入目標等式右邊</p>
+<script type="math/tex; mode=display">\dfrac{x+y-1}{y}=\dfrac{qy+r+y-1}{y}=q+\dfrac{r+y-1}{y}</script><p>討論：</p>
+<p><code>case 1</code>：如果 $x$ 可以被 $y$ 整除，則 $r=0$</p>
+<script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{y-1}{y})=q=ceil(\dfrac{x}{y})</script><p><code>case 2</code>：如果 $x$ 不能被 $y$ 整除，則 $1\leq r\leq y-1$</p>
+<script type="math/tex; mode=display">\dfrac{y}{y}\leq \dfrac{r+y-1}{y}\leq \dfrac{2y-2}{y}</script><script type="math/tex; mode=display">1\leq\dfrac{r+y-1}{y}<2</script><script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{r+y-1}{y})=q+1=ceil(\dfrac{x}{y})</script><p>最後，再利用這個等式，可以得到若 <code>x &lt; 0</code></p>
+<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = floor ( \dfrac{x + 2^k - 1}{2^k}) = (x + (2^k - 1)) \gg k</script><p>得證</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://www.itread01.com/content/1548192791.html">計算機中如何實現除數是2的冪次的除法</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>math</tag>
+        <tag>shift</tag>
+        <tag>bit</tag>
+        <tag>division</tag>
+        <tag>power of 2</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
     <url>/2021/06/17/mount_iso/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
@@ -1037,6 +1003,32 @@
         <tag>unmount</tag>
         <tag>iso</tag>
         <tag>media</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Nginx] CentOS 安裝網頁伺服器 Nginx</title>
+    <url>/2021/06/18/nginx_centos_nginx/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>相較於 Apache，Nginx 消耗資源少且處理速度快，又支援高併發，是大流量應用的好選擇。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+</ul>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>開啟 Terminal，使用 <code>dnf</code> 來安裝 Nginx</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install -y nginx</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Complete!    <span class="comment">#看到這就行代表完成</span></span><br></pre></td></tr></table></figure>
+<h2 id="啟動並確認"><a href="#啟動並確認" class="headerlink" title="啟動並確認"></a>啟動並確認</h2><p>Nginx 預設是沒有開啟的，預設當系統開機時也不會自動開啟，所以通過指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start nginx   <span class="comment"># 現在馬上開啟 nginx 服務</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx  <span class="comment"># 之後開機也要自動開啟 nginx 服務</span></span><br></pre></td></tr></table></figure>
+<p>確認 Nginx 的服務狀態，看到 <code>active (running)</code> 代表正在運行囉</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl status nginx</span><br><span class="line">● nginx.service - The nginx HTTP and reverse proxy server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Thu 2020-09-10 09:08:10 CST; 3min 51s ago</span><br><span class="line">  Process: 2892 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2890 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2888 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)</span><br><span class="line"> Main PID: 2893 (nginx)</span><br><span class="line">    Tasks: 3 (<span class="built_in">limit</span>: 49448)</span><br><span class="line">   Memory: 5.7M</span><br><span class="line">   CGroup: /system.slice/nginx.service</span><br><span class="line">           ├─2893 nginx: master process /usr/sbin/nginx</span><br><span class="line">           ├─2894 nginx: worker process</span><br><span class="line">           └─2895 nginx: worker process</span><br><span class="line"></span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Starting The nginx HTTP and reverse proxy server...</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Started The nginx HTTP and reverse proxy server.</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>server</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>web</tag>
+        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -1072,32 +1064,6 @@
         <tag>password</tag>
         <tag>change</tag>
         <tag>forget</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Nginx] CentOS 安裝網頁伺服器 Nginx</title>
-    <url>/2021/06/18/nginx_centos_nginx/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>相較於 Apache，Nginx 消耗資源少且處理速度快，又支援高併發，是大流量應用的好選擇。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>開啟 Terminal，使用 <code>dnf</code> 來安裝 Nginx</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install -y nginx</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Complete!    <span class="comment">#看到這就行代表完成</span></span><br></pre></td></tr></table></figure>
-<h2 id="啟動並確認"><a href="#啟動並確認" class="headerlink" title="啟動並確認"></a>啟動並確認</h2><p>Nginx 預設是沒有開啟的，預設當系統開機時也不會自動開啟，所以通過指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start nginx   <span class="comment"># 現在馬上開啟 nginx 服務</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx  <span class="comment"># 之後開機也要自動開啟 nginx 服務</span></span><br></pre></td></tr></table></figure>
-<p>確認 Nginx 的服務狀態，看到 <code>active (running)</code> 代表正在運行囉</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl status nginx</span><br><span class="line">● nginx.service - The nginx HTTP and reverse proxy server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Thu 2020-09-10 09:08:10 CST; 3min 51s ago</span><br><span class="line">  Process: 2892 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2890 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2888 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)</span><br><span class="line"> Main PID: 2893 (nginx)</span><br><span class="line">    Tasks: 3 (<span class="built_in">limit</span>: 49448)</span><br><span class="line">   Memory: 5.7M</span><br><span class="line">   CGroup: /system.slice/nginx.service</span><br><span class="line">           ├─2893 nginx: master process /usr/sbin/nginx</span><br><span class="line">           ├─2894 nginx: worker process</span><br><span class="line">           └─2895 nginx: worker process</span><br><span class="line"></span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Starting The nginx HTTP and reverse proxy server...</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Started The nginx HTTP and reverse proxy server.</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>server</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>web</tag>
-        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -1295,31 +1261,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
-    <url>/2021/06/15/php_phalcon_namespace/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Phalcon 4.0.3</li>
-</ul>
-<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
-<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
-<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
-<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>php</tag>
-        <tag>phalcon</tag>
-        <tag>namespace</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[PHP] Ubuntu 安裝 Apache 2 + PHP 7.4 + Phalcon 4.0</title>
     <url>/2021/06/17/php_ubuntu_apache_php_phalcon/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Apache 是一個輕量級的網頁伺服器，搭配 <code>PHP</code> 與高效能的 MVC 框架 Phalcon 是一個不錯的選擇，這裡紀錄如何在 Ubuntu 安裝這些開發環境。</p>
@@ -1352,13 +1293,68 @@
       <tags>
         <tag>server</tag>
         <tag>linux</tag>
-        <tag>apache</tag>
         <tag>ubuntu</tag>
+        <tag>apache</tag>
         <tag>web</tag>
         <tag>18.04</tag>
         <tag>php</tag>
         <tag>phalcon</tag>
         <tag>install</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
+    <url>/2021/06/15/php_phalcon_namespace/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Phalcon 4.0.3</li>
+</ul>
+<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
+<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
+<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
+<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>php</tag>
+        <tag>phalcon</tag>
+        <tag>namespace</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Power] Ubuntu 筆電蓋上螢幕不休眠</title>
+    <url>/2021/06/17/power_ubuntu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>筆電闔上螢幕不一定是沒有要使用，有可能是在有外接螢幕情況下只需要一個螢幕，這時就可以選擇把螢幕關上將筆電當成桌電主機一樣，因此就需要設定讓筆電關上螢幕時不會有任何動作 (包含睡眠、休眠等等)。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="修改系統參數"><a href="#修改系統參數" class="headerlink" title="修改系統參數"></a>修改系統參數</h2><p>使用 vim 編輯器開啟電源管理的配置檔案 (gedit 無法修改系統參數檔案)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo vim /etc/systemd/logind.conf</span><br></pre></td></tr></table></figure>
+<p><code>HandleLidSwitch</code> 為管理螢幕闔上動作的參數，若要無動作，將其指定為 <code>ignore</code>，且前方不要有註解符號 <code>＃</code>，修改好後 <code>:wq</code> 存檔並重新開機使其生效。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HandleLidSwitch=ignore </span><br></pre></td></tr></table></figure>
+<ul>
+<li>其他參數的數值還有休眠 (hibernate)、睡眠 (suspend)、關機 (poweroff)</li>
+</ul>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>screen</tag>
+        <tag>sleep</tag>
+        <tag>action</tag>
+        <tag>cover</tag>
+        <tag>suspend</tag>
+        <tag>poweroff</tag>
+        <tag>hibernate</tag>
       </tags>
   </entry>
   <entry>
@@ -1408,36 +1404,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Power] Ubuntu 筆電蓋上螢幕不休眠</title>
-    <url>/2021/06/17/power_ubuntu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>筆電闔上螢幕不一定是沒有要使用，有可能是在有外接螢幕情況下只需要一個螢幕，這時就可以選擇把螢幕關上將筆電當成桌電主機一樣，因此就需要設定讓筆電關上螢幕時不會有任何動作 (包含睡眠、休眠等等)。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="修改系統參數"><a href="#修改系統參數" class="headerlink" title="修改系統參數"></a>修改系統參數</h2><p>使用 vim 編輯器開啟電源管理的配置檔案 (gedit 無法修改系統參數檔案)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo vim /etc/systemd/logind.conf</span><br></pre></td></tr></table></figure>
-<p><code>HandleLidSwitch</code> 為管理螢幕闔上動作的參數，若要無動作，將其指定為 <code>ignore</code>，且前方不要有註解符號 <code>＃</code>，修改好後 <code>:wq</code> 存檔並重新開機使其生效。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HandleLidSwitch=ignore </span><br></pre></td></tr></table></figure>
-<ul>
-<li>其他參數的數值還有休眠 (hibernate)、睡眠 (suspend)、關機 (poweroff)</li>
-</ul>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>screen</tag>
-        <tag>sleep</tag>
-        <tag>action</tag>
-        <tag>cover</tag>
-        <tag>suspend</tag>
-        <tag>poweroff</tag>
-        <tag>hibernate</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Python] 使用 regular expression 驗證密碼長度與安全性</title>
     <url>/2021/06/12/python_regular_expression/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在申請使用者帳號時，常常會看到要求密碼內至少要幾個大寫、小寫與數字。若是我們自己開發的系統，要如何寫才能滿足所有條件？這時候就必須請出正規表示式 (regular expression 也稱為 regex)。</p>
@@ -1480,30 +1446,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[RDP] Windows 10 新增使用者並賦予遠端桌面權限</title>
-    <url>/2021/06/13/rdp_windows_10/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在同一台電腦 Windows 上，若想要擁有自己個人桌面，就需要不與他人共用的一個使用者帳號；若想要遠端連線，則需要賦予使用者帳號遠端桌面的權限。</p>
-<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><p>組合鍵 <code>Windows + I</code> 開啟 Windows 的設定視窗。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fnew_account.png?alt=media&amp;token=7de524c5-ffa3-4354-85b8-d9bceabc340a" alt="新增其他使用者帳號"><span class="image-caption">新增其他使用者帳號</span></p>
-<p>若使用者沒有 Microsoft 帳戶或不想用 Microsoft 帳戶登入，可以在此式窗選擇「我沒有這位人員的登入資訊」→「新增沒有 Microsoft 帳戶的使用者」，填寫在地端的帳號、密碼與三個安全性問題。</p>
-<p>填寫完之後會在「家人與其他使用者」的「其他使用者」欄位看到新增的帳戶。</p>
-<h2 id="設定遠端桌面權限"><a href="#設定遠端桌面權限" class="headerlink" title="設定遠端桌面權限"></a>設定遠端桌面權限</h2><p>將設定畫面點回到「首頁」，並點選「系統」→「遠端桌面」→「啟用遠端桌面」→「選取可以從遠端存取此電腦的使用者」→「新增」，輸入使用者帳號後按兩次確定即可增加權限</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fadd_remote_privilege.png?alt=media&amp;token=e523d5c2-14ee-4afe-9931-b465b268c6cd" alt="賦予使用者遠端桌面權限"><span class="image-caption">賦予使用者遠端桌面權限</span></p>
-<p>使用者便可以遠端登入，並擁有自己的桌面與環境！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>remote</tag>
-        <tag>account</tag>
-        <tag>user</tag>
-        <tag>rdp</tag>
-        <tag>privilege</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Python] 爬蟲遇到 email protected 的原因與解決方法</title>
     <url>/2021/06/12/python_email_protected/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲盛行的年代，防爬蟲的技術也隨之而起，其中一種技術是將電子郵件編碼，藉由網頁載入 <code>js</code> 後還原回正常的電子郵件格式。但是這種防禦手法效用可以說是微乎其微，甚至還要多花時間去解碼，可以說是得不償失。</p>
@@ -1531,6 +1473,73 @@
         <tag>crawl</tag>
         <tag>email</tag>
         <tag>protected</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[C++] (FARPROC&amp;) 的含意</title>
+    <url>/2021/06/11/cfarproc/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr; </span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...省略...)</span><br></pre></td></tr></table></figure>
+<p>平常只會看到像是 <code>(int)</code>、<code>(int*)</code> 之類的轉型，第一次看到轉型是帶著 <code>&amp;</code> 符號的，引發我的好奇心，藉此研究一番。</p>
+<h2 id="探討"><a href="#探討" class="headerlink" title="探討"></a>探討</h2><p>要探討這問題，就要先知道一般再宣告的時候，<code>&amp;</code> 運算元到底發揮甚麼功用，所以先用最簡單的整數(<code>int</code>)宣告來測試，內容分為以下三種：</p>
+<ol>
+<li><p><code>int a = b;   //這應該大家都知道，就是把b的值給a</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> a = b;</span><br><span class="line"><span class="comment">//結果：a = 2; b = 2; &amp;a = 006FF8C0; &amp;b = 006FF8CC;</span></span><br><span class="line"><span class="comment">//結論：值一樣但記憶體位址不一樣</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>int *a = &amp;b; //程度好一些的應該知道，這是把b的記憶體位址存到a裡面</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> *a = &amp;b;</span><br><span class="line"><span class="comment">//結果：a = 006FF8B4; b = 3; &amp;a = 006FF8A8; &amp;b = 006FF8B4;</span></span><br><span class="line"><span class="comment">//結論：a存著b的位址，但兩個記憶體位址還是不一樣</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>int &amp;a = b;  //但這個呢？讓我們繼續看下去</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">int</span> &amp;a = b;</span><br><span class="line"><span class="comment">//結果：a = 4; b = 4; &amp;a = 006FF89C; &amp;b = 006FF89C;</span></span><br><span class="line"><span class="comment">//結論：a的位址跟b一樣，所以a跟b一模一樣了！</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>以這些實驗可以得到結論：在宣告的時候 ，<code>int&amp;</code> 會把「等號左邊(<code>a</code>)的變數地址」改變成「等號右邊(<code>b</code>)變數的地址」，因此 <code>a</code> 與 <code>b</code> 兩個是一樣的東西（也就是記憶體位址一樣）！</p>
+<p>回到最一開始的問題：<code>(FARPROC&amp;) addr</code> 到底是甚麼呢？我還是用程式做一下實驗，先以書上的程式碼為第一個實驗，用 <code>(FARPROC&amp;)</code> 去接 <code>GetProcAddress</code> 的值，看會如何；再用 <code>addr</code> 直接去接，又會如何。以下是實驗結果：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA94; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA88; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
+<p>可以發現其實沒有像是我們在最原本例子 <code>int &amp;a=b;</code> 看到的把 <code>addr</code> 位址變為 <code>GetProcAddress</code> 的位址，反而是addr的值變化了，變為 <code>GetProcAddress</code> 回傳的地址，也就是說 <code>(FARPROC&amp;)</code> 在這個實驗中看起來是沒有作用到的。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p><code>(FARPROC&amp;) addr = GetProcAddress(...)</code> 等同於 <code>addr = GetProcAddress(...)</code>，只是不知道書上為何多此一舉。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>cpp</tag>
+        <tag>FARPROC</tag>
+        <tag>加密與解密</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[RDP] xrdp 遠端 menu 不見時登出的方法</title>
+    <url>/2021/06/17/rdp_xrdp_menu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在一台電腦上開啟 xrdp 伺服器，讓大家可以各自用自己的帳號登入，且互不相干擾。但使用過程中遇到一些突發性圖形介面的問題，需要重新登入才能正常運作。</p>
+<p>然而，這個問題就是 menu 會不見，因此不能使用 GUI 的方式登出，所以查相關文獻並紀錄能夠不透過 GUI 從 Terminal 中輸入登出的指令。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>問題示意圖如下，menu 不見，Reset Panel 也無法起作用，只能重新登入得到健全的畫面</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_no_menu_icon.png?alt=media&amp;token=e2f6bf02-28ec-4546-a83c-dc819abdc50c" alt="消失的 menu"><span class="image-caption">消失的 menu</span></p>
+<h2 id="登出方法"><a href="#登出方法" class="headerlink" title="登出方法"></a>登出方法</h2><p>登出方法有兩種</p>
+<h3 id="快捷鍵"><a href="#快捷鍵" class="headerlink" title="快捷鍵"></a>快捷鍵</h3><p>第一種是設定快速鍵，設定好之後，可以直接按快捷鍵登出，不需要指令，適合不擅長記指令的人使用，但需要在問題 (menu 不見) 發生前先設定好，才能使用</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_setting_shortcut.png?alt=media&amp;token=9efdd681-5e07-42fe-846d-c3b41ab801dc" alt="設定快捷鍵"><span class="image-caption">設定快捷鍵</span></p>
+<h3 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h3><p>要先知道當前的 Desktop Environment (DE) 是甚麼，可依照自己的 DE 查詢相關的登出指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ env | grep _DESKTOP_SESSION | cut -d <span class="string">&quot;_&quot;</span> -f 1</span><br><span class="line">MATE  <span class="comment"># 這裡依個人環境有所不同</span></span><br></pre></td></tr></table></figure>
+<p>組合鍵 <code>Ctrl + Alt + T</code> 開啟 Terminal，這裡因為是用 mate DE，其登出指令如下。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mate-session-save --<span class="built_in">logout</span>  <span class="comment"># 若是 gnome 的話則為 gnome-session-quit</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>rdp</tag>
+        <tag>xrdp</tag>
+        <tag>gnome</tag>
+        <tag>logout</tag>
+        <tag>mate</tag>
+        <tag>menu</tag>
+        <tag>disappear</tag>
       </tags>
   </entry>
   <entry>
@@ -1581,36 +1590,27 @@
       </tags>
   </entry>
   <entry>
-    <title>[RDP] xrdp 遠端 menu 不見時登出的方法</title>
-    <url>/2021/06/17/rdp_xrdp_menu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在一台電腦上開啟 xrdp 伺服器，讓大家可以各自用自己的帳號登入，且互不相干擾。但使用過程中遇到一些突發性圖形介面的問題，需要重新登入才能正常運作。</p>
-<p>然而，這個問題就是 menu 會不見，因此不能使用 GUI 的方式登出，所以查相關文獻並紀錄能夠不透過 GUI 從 Terminal 中輸入登出的指令。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>問題示意圖如下，menu 不見，Reset Panel 也無法起作用，只能重新登入得到健全的畫面</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_no_menu_icon.png?alt=media&amp;token=e2f6bf02-28ec-4546-a83c-dc819abdc50c" alt="消失的 menu"><span class="image-caption">消失的 menu</span></p>
-<h2 id="登出方法"><a href="#登出方法" class="headerlink" title="登出方法"></a>登出方法</h2><p>登出方法有兩種</p>
-<h3 id="快捷鍵"><a href="#快捷鍵" class="headerlink" title="快捷鍵"></a>快捷鍵</h3><p>第一種是設定快速鍵，設定好之後，可以直接按快捷鍵登出，不需要指令，適合不擅長記指令的人使用，但需要在問題 (menu 不見) 發生前先設定好，才能使用</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_setting_shortcut.png?alt=media&amp;token=9efdd681-5e07-42fe-846d-c3b41ab801dc" alt="設定快捷鍵"><span class="image-caption">設定快捷鍵</span></p>
-<h3 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h3><p>要先知道當前的 Desktop Environment (DE) 是甚麼，可依照自己的 DE 查詢相關的登出指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ env | grep _DESKTOP_SESSION | cut -d <span class="string">&quot;_&quot;</span> -f 1</span><br><span class="line">MATE  <span class="comment"># 這裡依個人環境有所不同</span></span><br></pre></td></tr></table></figure>
-<p>組合鍵 <code>Ctrl + Alt + T</code> 開啟 Terminal，這裡因為是用 mate DE，其登出指令如下。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mate-session-save --<span class="built_in">logout</span>  <span class="comment"># 若是 gnome 的話則為 gnome-session-quit</span></span><br></pre></td></tr></table></figure>
+    <title>[RDP] Windows 10 新增使用者並賦予遠端桌面權限</title>
+    <url>/2021/06/13/rdp_windows_10/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在同一台電腦 Windows 上，若想要擁有自己個人桌面，就需要不與他人共用的一個使用者帳號；若想要遠端連線，則需要賦予使用者帳號遠端桌面的權限。</p>
+<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><p>組合鍵 <code>Windows + I</code> 開啟 Windows 的設定視窗。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fnew_account.png?alt=media&amp;token=7de524c5-ffa3-4354-85b8-d9bceabc340a" alt="新增其他使用者帳號"><span class="image-caption">新增其他使用者帳號</span></p>
+<p>若使用者沒有 Microsoft 帳戶或不想用 Microsoft 帳戶登入，可以在此式窗選擇「我沒有這位人員的登入資訊」→「新增沒有 Microsoft 帳戶的使用者」，填寫在地端的帳號、密碼與三個安全性問題。</p>
+<p>填寫完之後會在「家人與其他使用者」的「其他使用者」欄位看到新增的帳戶。</p>
+<h2 id="設定遠端桌面權限"><a href="#設定遠端桌面權限" class="headerlink" title="設定遠端桌面權限"></a>設定遠端桌面權限</h2><p>將設定畫面點回到「首頁」，並點選「系統」→「遠端桌面」→「啟用遠端桌面」→「選取可以從遠端存取此電腦的使用者」→「新增」，輸入使用者帳號後按兩次確定即可增加權限</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fadd_remote_privilege.png?alt=media&amp;token=e523d5c2-14ee-4afe-9931-b465b268c6cd" alt="賦予使用者遠端桌面權限"><span class="image-caption">賦予使用者遠端桌面權限</span></p>
+<p>使用者便可以遠端登入，並擁有自己的桌面與環境！</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
+        <tag>windows</tag>
+        <tag>remote</tag>
+        <tag>account</tag>
+        <tag>user</tag>
         <tag>rdp</tag>
-        <tag>xrdp</tag>
-        <tag>gnome</tag>
-        <tag>logout</tag>
-        <tag>mate</tag>
-        <tag>menu</tag>
-        <tag>disappear</tag>
+        <tag>privilege</tag>
       </tags>
   </entry>
   <entry>
@@ -1672,64 +1672,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</title>
-    <url>/2021/06/17/remote_ubuntu_xrdp/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>xrdp (X Remote Desktop Protocal) 是 Linux 系統上的遠端桌面伺服器，能夠讓透過遠端連線的使用者有 GUI 能夠使用。但在 Ubuntu 18.04 似乎沒辦法簡單的安裝，找了許多資料，終於找到可行的辦法。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="安裝-xrdp"><a href="#安裝-xrdp" class="headerlink" title="安裝 xrdp"></a>安裝 xrdp</h2><p>由於在 Ubuntu18.04 中 xrdp 會需要某些不相容的軟體包 (參考：<a href="https://c-nergy.be/blog/?p=13455">Better Fix xRDP issue on Ubuntu 18.04.2</a>)，因此要先安裝修正檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo add-apt-repository ppa:martinx/xrdp-hwe-18.04</span><br><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
-<p>再行安裝 xrdp</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install xrdp xorg</span><br></pre></td></tr></table></figure>
-<p>需將 xrdp 加入 ssl-cert 群組，然後重新啟動。這步很重要，無法連線很可能是這步驟沒做到</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo adduser xrdp ssl-cert</span><br><span class="line">user@pc:~$ sudo reboot</span><br></pre></td></tr></table></figure>
-<h2 id="遠端連線"><a href="#遠端連線" class="headerlink" title="遠端連線"></a>遠端連線</h2><p>在 Windows 開啟內建 mstsc (遠端桌面連線)，輸入 server 的 IP、username 與 password，這些就是自己在 server 上的使用者帳密。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Remote-%E5%9C%A8-Ubuntu-18-04-%E4%BD%BF%E7%94%A8-xrdp-%E9%81%A0%E7%AB%AF%E5%A4%9A%E4%BA%BA%E5%A4%9A%E5%B7%A5%2Fxrdp.png?alt=media&amp;token=b9905535-0f5c-42eb-ba33-c20510d2e71f" alt="遠端畫面"><span class="image-caption">遠端畫面</span></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>ubuntu</tag>
-        <tag>windows</tag>
-        <tag>remote</tag>
-        <tag>18.04</tag>
-        <tag>rdp</tag>
-        <tag>mstsc</tag>
-        <tag>多人</tag>
-        <tag>多工</tag>
-        <tag>xrdp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
-    <url>/2021/06/15/ssl_crt_key/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>OpenSSL 1.1.1f</li>
-</ul>
-<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
-<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>ssl</tag>
-        <tag>key</tag>
-        <tag>crt</tag>
-        <tag>match</tag>
-        <tag>cert</tag>
-        <tag>csr</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[SSL] 自簽憑證過程</title>
     <url>/2021/06/15/ssl_self_sign/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
@@ -1753,12 +1695,44 @@
         <tag>ssl</tag>
         <tag>ca</tag>
         <tag>key</tag>
-        <tag>crt</tag>
-        <tag>csr</tag>
         <tag>self</tag>
         <tag>sign</tag>
         <tag>openssl</tag>
         <tag>mitm</tag>
+        <tag>csr</tag>
+        <tag>crt</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</title>
+    <url>/2021/06/17/remote_ubuntu_xrdp/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>xrdp (X Remote Desktop Protocal) 是 Linux 系統上的遠端桌面伺服器，能夠讓透過遠端連線的使用者有 GUI 能夠使用。但在 Ubuntu 18.04 似乎沒辦法簡單的安裝，找了許多資料，終於找到可行的辦法。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="安裝-xrdp"><a href="#安裝-xrdp" class="headerlink" title="安裝 xrdp"></a>安裝 xrdp</h2><p>由於在 Ubuntu18.04 中 xrdp 會需要某些不相容的軟體包 (參考：<a href="https://c-nergy.be/blog/?p=13455">Better Fix xRDP issue on Ubuntu 18.04.2</a>)，因此要先安裝修正檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo add-apt-repository ppa:martinx/xrdp-hwe-18.04</span><br><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+<p>再行安裝 xrdp</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install xrdp xorg</span><br></pre></td></tr></table></figure>
+<p>需將 xrdp 加入 ssl-cert 群組，然後重新啟動。這步很重要，無法連線很可能是這步驟沒做到</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo adduser xrdp ssl-cert</span><br><span class="line">user@pc:~$ sudo reboot</span><br></pre></td></tr></table></figure>
+<h2 id="遠端連線"><a href="#遠端連線" class="headerlink" title="遠端連線"></a>遠端連線</h2><p>在 Windows 開啟內建 mstsc (遠端桌面連線)，輸入 server 的 IP、username 與 password，這些就是自己在 server 上的使用者帳密。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Remote-%E5%9C%A8-Ubuntu-18-04-%E4%BD%BF%E7%94%A8-xrdp-%E9%81%A0%E7%AB%AF%E5%A4%9A%E4%BA%BA%E5%A4%9A%E5%B7%A5%2Fxrdp.png?alt=media&amp;token=b9905535-0f5c-42eb-ba33-c20510d2e71f" alt="遠端畫面"><span class="image-caption">遠端畫面</span></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>ubuntu</tag>
+        <tag>remote</tag>
+        <tag>18.04</tag>
+        <tag>rdp</tag>
+        <tag>xrdp</tag>
+        <tag>mstsc</tag>
+        <tag>多人</tag>
+        <tag>多工</tag>
       </tags>
   </entry>
   <entry>
@@ -1791,32 +1765,29 @@
       </tags>
   </entry>
   <entry>
-    <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</title>
-    <url>/2021/06/15/tool_sql_injection/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
-<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><p><a href="https://weirenxue.github.io/sql-injection-in-time/">SQL Injection Real Time</a> 這個工具是以 <code>javascript</code> 開發的，目的是隨時都可以用，不用額外安裝！</p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
-<li>將 SQL 語句貼至「SQL HERE」，注入之前的預覽會在「PREVIEW」區域。</li>
-<li>填寫要注入的參數名稱於「Parameter Name」。</li>
-<li>填寫要注入的參數名稱於「Value」。</li>
-<li>注入後的 SQL 語句會在「AFTER INJECTION」區域。</li>
-<li>可由「PREVIEW」比對「AFTER INJECTION」，就知道 SQL Injection的威力！</li>
-</ol>
-<h2 id="補充小常識"><a href="#補充小常識" class="headerlink" title="補充小常識"></a>補充小常識</h2><p>要預防被注入、安全的執行 SQL，必定要用 <code>Parameterized Query + Prepared Statement</code>，缺一不可。</p>
+    <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
+    <url>/2021/06/15/ssl_crt_key/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>OpenSSL 1.1.1f</li>
+</ul>
+<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
+<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
 ]]></content>
       <categories>
-        <category>自行開發工具使用教學</category>
+        <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>tool</tag>
-        <tag>sql</tag>
-        <tag>injection</tag>
-        <tag>real</tag>
-        <tag>time</tag>
-        <tag>synthesis</tag>
-        <tag>tutorial</tag>
-        <tag>penetrate</tag>
-        <tag>pentest</tag>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>ssl</tag>
+        <tag>key</tag>
+        <tag>csr</tag>
+        <tag>crt</tag>
+        <tag>match</tag>
+        <tag>cert</tag>
       </tags>
   </entry>
   <entry>
@@ -1882,6 +1853,35 @@
       </tags>
   </entry>
   <entry>
+    <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</title>
+    <url>/2021/06/15/tool_sql_injection/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
+<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><p><a href="https://weirenxue.github.io/sql-injection-in-time/">SQL Injection Real Time</a> 這個工具是以 <code>javascript</code> 開發的，目的是隨時都可以用，不用額外安裝！</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
+<li>將 SQL 語句貼至「SQL HERE」，注入之前的預覽會在「PREVIEW」區域。</li>
+<li>填寫要注入的參數名稱於「Parameter Name」。</li>
+<li>填寫要注入的參數名稱於「Value」。</li>
+<li>注入後的 SQL 語句會在「AFTER INJECTION」區域。</li>
+<li>可由「PREVIEW」比對「AFTER INJECTION」，就知道 SQL Injection的威力！</li>
+</ol>
+<h2 id="補充小常識"><a href="#補充小常識" class="headerlink" title="補充小常識"></a>補充小常識</h2><p>要預防被注入、安全的執行 SQL，必定要用 <code>Parameterized Query + Prepared Statement</code>，缺一不可。</p>
+]]></content>
+      <categories>
+        <category>自行開發工具使用教學</category>
+      </categories>
+      <tags>
+        <tag>tool</tag>
+        <tag>sql</tag>
+        <tag>injection</tag>
+        <tag>real</tag>
+        <tag>time</tag>
+        <tag>synthesis</tag>
+        <tag>tutorial</tag>
+        <tag>penetrate</tag>
+        <tag>pentest</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
     <url>/2021/06/17/usb_usb/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
@@ -1908,6 +1908,129 @@
         <tag>dialout</tag>
         <tag>tty</tag>
         <tag>usermod</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
+    <url>/2021/06/15/window_modal_non_modal/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
+<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
+<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
+<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>window</tag>
+        <tag>modal</tag>
+        <tag>non modal</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Windows] 32 位元應用程式在 64 位元作業系統運作的原理</title>
+    <url>/2021/06/11/3264/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
+<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
+<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
+<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
+<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
+<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
+<ul>
+<li>system32 放的是 64 位元的 API</li>
+<li>SysWOW64 放的是 32 位元的 API</li>
+</ul>
+<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
+<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
+<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>bit</tag>
+        <tag>32</tag>
+        <tag>64</tag>
+        <tag>application</tag>
+        <tag>os</tag>
+        <tag>wow64</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[WIN32 API] 函數使用範例</title>
+    <url>/2021/06/15/win32_api_function_example/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接 Build 看效果。</p>
+<p>因此我看著文件慢慢的嘗試，寫出一個可以用的應用來。這裡收集了個人對於 <code>WIN32 API</code> 調用的範例，除了供大家參考外，自己也可以隨時複習。</p>
+<h2 id="原始碼"><a href="#原始碼" class="headerlink" title="原始碼"></a>原始碼</h2><ol>
+<li><a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam</a></li>
+<li><a href="https://github.com/weirenxue/enablemenuitem-example">EnableMenuItem, GetSubMenu, GetMenuItemID</a></li>
+<li><a href="https://github.com/weirenxue/settimer-example">SetTimer</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>win32</tag>
+        <tag>api</tag>
+        <tag>example</tag>
+        <tag>dialogboxparam</tag>
+        <tag>enablemenuitem</tag>
+        <tag>getsubmenu</tag>
+        <tag>getmenuitemid</tag>
+        <tag>settimer</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Xilinx SDK] GPIO 常用到的參數</title>
+    <url>/2021/06/13/xilinx_sdk_gpio/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用 API 時，最重要的是正確地輸入對應參數，因此必定要先了解參數所代表的涵義，才能有正確的使用 API 姿勢。</p>
+<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
+<li>RFSoC ZCU111</li>
+</ul>
+<h2 id="參數說明"><a href="#參數說明" class="headerlink" title="參數說明"></a>參數說明</h2><ol>
+<li><p><code>channel</code>：這是在 Vivado 內使用 IP 來做設計時就決定的，打開 GPIO 的 IP 設定視窗可以看到 GPIO 與 GPIO2，這裡的例子通道 1 與通道 2 分別為 led 與 push button。</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Xilinx-SDK-GPIO-%E5%B8%B8%E7%94%A8%E5%88%B0%E7%9A%84%E5%8F%83%E6%95%B8%2Fgpio.png?alt=media&amp;token=1edff119-f05f-4e10-bc7a-fb60595872fa" alt="GPIO IP 設定畫面"><span class="image-caption">GPIO IP 設定畫面</span></p>
+</li>
+<li><p><code>DirectionMask</code>：這是決定 GPIO 為輸入或輸出 (相對於晶片來說) 的參數，需要特別點開 <code>*.h</code> 或 <code>*.c</code> 去看說明，此說明在 <code>xgpio.c</code> 的註解裡，以下為摘要</p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Bits set to 0 are output and bits set to 1 are input.</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>api</tag>
+        <tag>xilinx</tag>
+        <tag>sdk</tag>
+        <tag>gpio</tag>
+        <tag>channel</tag>
+        <tag>directionmask</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[ZIP] 壓縮檔內中文檔名呈現亂碼的解決方法</title>
+    <url>/2021/06/15/zip_chinese_garbled/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想練英文從生活周遭開始是最直接的，安裝英文版版作業系統也不奇怪，但身在中文環境工作與學習，通常經手的會是中文檔名的檔案，當英文版作業系統遇見中文檔名，總是會發生一些惱人的錯誤。這次遇到的問題是，在瀏灠內含中文檔名的 zip 壓縮檔時，中文會呈現出亂碼型態。</p>
+<h2 id="狀況描述"><a href="#狀況描述" class="headerlink" title="狀況描述"></a>狀況描述</h2><p>原本資料夾為中文(示範用)，壓縮後開啟瀏覽呈現為亂碼</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fgarbled.png?alt=media&amp;token=2c282188-e3cb-4481-9f3b-24d820ed2d74" alt="亂碼的檔案名稱"><span class="image-caption">亂碼的檔案名稱</span></p>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>先開啟控制台 (Control Panel)，按照下圖所示操作，將語言更換為 <code>Chinese (Traditional, Taiwan)</code> 之後，電腦會要求重開機，就重開機吧！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Foperation.png?alt=media&amp;token=0933c050-25ae-4a77-a8c6-1f42ca9840a0" alt="操作步驟"><span class="image-caption">操作步驟</span></p>
+<h2 id="結果"><a href="#結果" class="headerlink" title="結果"></a>結果</h2><p>重開機後就能再次開啟該 zip 壓縮檔來查看正常的檔案名稱啦！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fno_grabled.png?alt=media&amp;token=174f988f-0f11-46e0-abb7-903c57691af0" alt="沒有亂碼的檔案名稱"><span class="image-caption">沒有亂碼的檔案名稱</span></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>file</tag>
+        <tag>zip</tag>
+        <tag>chinese</tag>
+        <tag>garbled</tag>
+        <tag>name</tag>
       </tags>
   </entry>
   <entry>
@@ -1949,6 +2072,31 @@
       </tags>
   </entry>
   <entry>
+    <title>[apt] Unable to locate package 問題</title>
+    <url>/2021/06/17/apt_unable_to_locate_package/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我遇到的情況是這樣子的，要安裝 <code>ntpdate</code> 時卻發現出現錯誤訊息 <code>Unable to locate package ntpdate</code>，意思是說無法找到 <code>ntpdate</code> 套件</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree       </span><br><span class="line">Reading state information... Done</span><br><span class="line">E: Unable to locate package ntpdate</span><br></pre></td></tr></table></figure>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>很有可能是因為 <code>apt-get</code> 沒有更新，所以資料庫裡面沒有 <code>ntpdate</code> 的連結，這時只需簡單的更新 <code>apt-get</code>，並且再次嘗試安裝就發現可以找到套件了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>在使用 <code>apt-get</code> 安裝之前先執行 <code>apt-get update</code> 是一個好習慣，以確保資料庫為最新，減少一個浪費時間的可能。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>update</tag>
+        <tag>install</tag>
+        <tag>apt</tag>
+        <tag>get</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Vivado Vitis] 在軟體開發環境中缺少一堆 .h 檔的解決方法</title>
     <url>/2021/06/13/vivado_vitis/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近接手一個 Zynq 的開發板 (RFSoC ZCU111)，新手上路肯定是要參考網路上豐富的文件，才會學得快。但在參考文獻的過程中碰到一個似乎教學的作者沒有提及，但自己遇到的問題，也就是 Build 時缺少一堆 <code>.h</code> 檔案的錯誤提示。</p>
@@ -1974,84 +2122,11 @@
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>sdk</tag>
         <tag>vivado</tag>
         <tag>vitis</tag>
         <tag>h</tag>
         <tag>lack</tag>
-        <tag>sdk</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
-    <url>/2021/06/15/window_modal_non_modal/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
-<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
-<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
-<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
-<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>window</tag>
-        <tag>modal</tag>
-        <tag>non modal</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[WIN32 API] 函數使用範例</title>
-    <url>/2021/06/15/win32_api_function_example/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接 Build 看效果。</p>
-<p>因此我看著文件慢慢的嘗試，寫出一個可以用的應用來。這裡收集了個人對於 <code>WIN32 API</code> 調用的範例，除了供大家參考外，自己也可以隨時複習。</p>
-<h2 id="原始碼"><a href="#原始碼" class="headerlink" title="原始碼"></a>原始碼</h2><ol>
-<li><a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam</a></li>
-<li><a href="https://github.com/weirenxue/enablemenuitem-example">EnableMenuItem, GetSubMenu, GetMenuItemID</a></li>
-<li><a href="https://github.com/weirenxue/settimer-example">SetTimer</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>win32</tag>
-        <tag>api</tag>
-        <tag>example</tag>
-        <tag>dialogboxparam</tag>
-        <tag>enablemenuitem</tag>
-        <tag>getsubmenu</tag>
-        <tag>getmenuitemid</tag>
-        <tag>settimer</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Windows] 32 位元應用程式在 64 位元作業系統運作的原理</title>
-    <url>/2021/06/11/3264/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
-<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
-<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
-<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
-<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
-<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
-<ul>
-<li>system32 放的是 64 位元的 API</li>
-<li>SysWOW64 放的是 32 位元的 API</li>
-</ul>
-<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
-<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
-<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>bit</tag>
-        <tag>32</tag>
-        <tag>64</tag>
-        <tag>application</tag>
-        <tag>os</tag>
-        <tag>wow64</tag>
       </tags>
   </entry>
   <entry>
@@ -2064,84 +2139,38 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>sdk</tag>
         <tag>xilinx</tag>
+        <tag>sdk</tag>
         <tag>make</tag>
       </tags>
   </entry>
   <entry>
-    <title>[Xilinx SDK] GPIO 常用到的參數</title>
-    <url>/2021/06/13/xilinx_sdk_gpio/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用 API 時，最重要的是正確地輸入對應參數，因此必定要先了解參數所代表的涵義，才能有正確的使用 API 姿勢。</p>
-<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
-<li>RFSoC ZCU111</li>
-</ul>
-<h2 id="參數說明"><a href="#參數說明" class="headerlink" title="參數說明"></a>參數說明</h2><ol>
-<li><p><code>channel</code>：這是在 Vivado 內使用 IP 來做設計時就決定的，打開 GPIO 的 IP 設定視窗可以看到 GPIO 與 GPIO2，這裡的例子通道 1 與通道 2 分別為 led 與 push button。</p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Xilinx-SDK-GPIO-%E5%B8%B8%E7%94%A8%E5%88%B0%E7%9A%84%E5%8F%83%E6%95%B8%2Fgpio.png?alt=media&amp;token=1edff119-f05f-4e10-bc7a-fb60595872fa" alt="GPIO IP 設定畫面"><span class="image-caption">GPIO IP 設定畫面</span></p>
-</li>
-<li><p><code>DirectionMask</code>：這是決定 GPIO 為輸入或輸出 (相對於晶片來說) 的參數，需要特別點開 <code>*.h</code> 或 <code>*.c</code> 去看說明，此說明在 <code>xgpio.c</code> 的註解裡，以下為摘要</p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Bits set to 0 are output and bits set to 1 are input.</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>sdk</tag>
-        <tag>api</tag>
-        <tag>xilinx</tag>
-        <tag>gpio</tag>
-        <tag>channel</tag>
-        <tag>directionmask</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[ZIP] 壓縮檔內中文檔名呈現亂碼的解決方法</title>
-    <url>/2021/06/15/zip_chinese_garbled/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想練英文從生活周遭開始是最直接的，安裝英文版版作業系統也不奇怪，但身在中文環境工作與學習，通常經手的會是中文檔名的檔案，當英文版作業系統遇見中文檔名，總是會發生一些惱人的錯誤。這次遇到的問題是，在瀏灠內含中文檔名的 zip 壓縮檔時，中文會呈現出亂碼型態。</p>
-<h2 id="狀況描述"><a href="#狀況描述" class="headerlink" title="狀況描述"></a>狀況描述</h2><p>原本資料夾為中文(示範用)，壓縮後開啟瀏覽呈現為亂碼</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fgarbled.png?alt=media&amp;token=2c282188-e3cb-4481-9f3b-24d820ed2d74" alt="亂碼的檔案名稱"><span class="image-caption">亂碼的檔案名稱</span></p>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>先開啟控制台 (Control Panel)，按照下圖所示操作，將語言更換為 <code>Chinese (Traditional, Taiwan)</code> 之後，電腦會要求重開機，就重開機吧！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Foperation.png?alt=media&amp;token=0933c050-25ae-4a77-a8c6-1f42ca9840a0" alt="操作步驟"><span class="image-caption">操作步驟</span></p>
-<h2 id="結果"><a href="#結果" class="headerlink" title="結果"></a>結果</h2><p>重開機後就能再次開啟該 zip 壓縮檔來查看正常的檔案名稱啦！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fno_grabled.png?alt=media&amp;token=174f988f-0f11-46e0-abb7-903c57691af0" alt="沒有亂碼的檔案名稱"><span class="image-caption">沒有亂碼的檔案名稱</span></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>file</tag>
-        <tag>zip</tag>
-        <tag>chinese</tag>
-        <tag>garbled</tag>
-        <tag>name</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[apt] Unable to locate package 問題</title>
-    <url>/2021/06/17/apt_unable_to_locate_package/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
+    <title>[link] 缺少 libudev.so.0 的解決方法</title>
+    <url>/2021/06/17/link_libdev_so_0/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在安裝德州儀器的軟體時出現缺少 <code>libudev.so.0</code> 的字樣，有些解法是直接安裝 <code>libudev0:i386</code> 的套件，不幸的是這在 Ubuntu 14.04 之後的版本就移除了，取而代之的是 <code>libudev1:i386</code>，但軟體安裝就是硬要 <code>libudev.so.0</code> 這個檔案存在。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Ubuntu 18.04 LTS</li>
 </ul>
-<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我遇到的情況是這樣子的，要安裝 <code>ntpdate</code> 時卻發現出現錯誤訊息 <code>Unable to locate package ntpdate</code>，意思是說無法找到 <code>ntpdate</code> 套件</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree       </span><br><span class="line">Reading state information... Done</span><br><span class="line">E: Unable to locate package ntpdate</span><br></pre></td></tr></table></figure>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>很有可能是因為 <code>apt-get</code> 沒有更新，所以資料庫裡面沒有 <code>ntpdate</code> 的連結，這時只需簡單的更新 <code>apt-get</code>，並且再次嘗試安裝就發現可以找到套件了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>在使用 <code>apt-get</code> 安裝之前先執行 <code>apt-get update</code> 是一個好習慣，以確保資料庫為最新，減少一個浪費時間的可能。</p>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>解決的方法就是自己創一個連結檔，連結到 <code>libudev.so.1</code>，名為 <code>libudev.so.0</code> (雖然 <code>libudev.so.1</code> 本身也是連結檔 XD)。建立連結檔有兩種方式</p>
+<h3 id="使用-cp-指令"><a href="#使用-cp-指令" class="headerlink" title="使用 cp 指令"></a>使用 cp 指令</h3><p>用 <code>cp</code> 指令建立連結檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo cp -s /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$(arch)</code>：是在指令執行之前，先執行 <code>arch</code> 命令，取得當前電腦的硬體架構 (例如：x86_64) 並填回當前位置。</li>
+</ul>
+<p>可以看到 <code>libudev.so.1 -&gt; libudev.so.1.6.9</code>，也就是說最終是連結到 <code>libudev.so.1.6.9</code> 實體檔案。</p>
+<h3 id="使用-ln-指令"><a href="#使用-ln-指令" class="headerlink" title="使用 ln 指令"></a>使用 ln 指令</h3><p>其實步驟都與上面一樣，只是用不同指令達成。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>update</tag>
-        <tag>install</tag>
-        <tag>apt</tag>
-        <tag>get</tag>
+        <tag>link</tag>
+        <tag>libudev</tag>
+        <tag>so</tag>
+        <tag>i386</tag>
+        <tag>cp</tag>
+        <tag>ln</tag>
       </tags>
   </entry>
   <entry>
@@ -2179,159 +2208,6 @@
         <tag>neg</tag>
         <tag>sbb</tag>
         <tag>asm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[link] 缺少 libudev.so.0 的解決方法</title>
-    <url>/2021/06/17/link_libdev_so_0/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在安裝德州儀器的軟體時出現缺少 <code>libudev.so.0</code> 的字樣，有些解法是直接安裝 <code>libudev0:i386</code> 的套件，不幸的是這在 Ubuntu 14.04 之後的版本就移除了，取而代之的是 <code>libudev1:i386</code>，但軟體安裝就是硬要 <code>libudev.so.0</code> 這個檔案存在。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>解決的方法就是自己創一個連結檔，連結到 <code>libudev.so.1</code>，名為 <code>libudev.so.0</code> (雖然 <code>libudev.so.1</code> 本身也是連結檔 XD)。建立連結檔有兩種方式</p>
-<h3 id="使用-cp-指令"><a href="#使用-cp-指令" class="headerlink" title="使用 cp 指令"></a>使用 cp 指令</h3><p>用 <code>cp</code> 指令建立連結檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo cp -s /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>$(arch)</code>：是在指令執行之前，先執行 <code>arch</code> 命令，取得當前電腦的硬體架構 (例如：x86_64) 並填回當前位置。</li>
-</ul>
-<p>可以看到 <code>libudev.so.1 -&gt; libudev.so.1.6.9</code>，也就是說最終是連結到 <code>libudev.so.1.6.9</code> 實體檔案。</p>
-<h3 id="使用-ln-指令"><a href="#使用-ln-指令" class="headerlink" title="使用 ln 指令"></a>使用 ln 指令</h3><p>其實步驟都與上面一樣，只是用不同指令達成。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>link</tag>
-        <tag>libudev</tag>
-        <tag>so</tag>
-        <tag>i386</tag>
-        <tag>cp</tag>
-        <tag>ln</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>自動每日登入 iT邦幫忙 取得活動點數</title>
-    <url>/2021/06/27/ithelp_auto_login/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>許多論壇都擁有活動點數制度，「iT邦幫忙」也不意外的擁有這項功能，其中有一項是每天登入可以加 2 點活動點數，但不知道是 Bug 還是故意的，竟然需要先登出再登入，有了登入的動作才會計算當天登入的活動點數，很不符合常理。</p>
-<p>因此利用爬蟲技能寫了一個專案，每天到指定時間會自動完成登入動作，讓我就算沒有登入這個動作，也可以得到活動點數，雖說這個點數量不多，但就是想要抵抗這個 Bug。</p>
-<p>詳細登入問題也有人提請官方修正，可參考 <a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>。</p>
-<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
-<li><a href="https://github.com/weirenxue/login-script/tree/master/ithelp">GitHub</a></li>
-<li>實際成效<br>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fresult.png?alt=media&amp;token=7a24e416-b438-41ef-a0fa-df95233e5083" alt="成果圖"><span class="image-caption">成果圖</span></li>
-</ul>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>python 3.8.5</li>
-<li>beautifulsoup4 4.9.3</li>
-<li>requests 2.25.1</li>
-</ul>
-<h2 id="環節觀察"><a href="#環節觀察" class="headerlink" title="環節觀察"></a>環節觀察</h2><p>在動手爬蟲之前，必須先觀察在登入計算活動點數時，會經過哪些步驟與所需資訊，觀察時請記得使用開發人員工具 (F12) 來查看資訊流動。</p>
-<h3 id="登入"><a href="#登入" class="headerlink" title="登入"></a>登入</h3><p>第一步至 <a href="https://member.ithome.com.tw/login">iThome會員登入頁面</a> 任意輸入一組帳號，按下登入按鈕然後查看封包，會看到有三個欄位分別為 <code>_token</code>、<code>account</code> 還有 <code>password</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_token_field.png?alt=media&amp;token=8671a0cd-8f92-4cc9-8a54-44ca3ee4b6c0" alt="登入所需欄位"><span class="image-caption">登入所需欄位</span></p>
-<p><code>account</code> 與 <code>password</code> 我們理解，但是 <code>_token</code> 的值從何而來呢？到開發人員工具的 <code>Elements</code> 頁籤搜尋 <code>_token</code>，就可以找到它所在位置，原來是在登入表單內的一個隱藏欄位 (hidden input)！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2F_token_position.png?alt=media&amp;token=da926d26-662f-4bed-8272-d40b1cf5d306" alt="_token 的位置"><span class="image-caption">_token 的位置</span></p>
-<h4 id="實作登入功能"><a href="#實作登入功能" class="headerlink" title="實作登入功能"></a>實作登入功能</h4><p>知道登入需要甚麼資訊，且資訊在哪裡可以取得，就可以開始規劃要如何利用爬蟲來做登入功能。</p>
-<ol>
-<li>先取得 <code>_token</code> 欄位的值。</li>
-<li>將 <code>_token</code>、<code>account</code> 與 <code>password</code> 一起 <code>POST</code> 到 <code>https://member.ithome.com.tw/login</code></li>
-</ol>
-<p>需要注意的是，這些過程中的 <code>Cookie</code> 需要被維護，也就是每個 Request 都必須是同一個 <code>Session</code>，否則 <code>_token</code> 值無效。強大的 <code>requests</code> 套件已經幫我們準備好 <code>Session</code> 物件來處理這些事情，讓我們不用手動轉移 <code>Cookie</code> 到不同的 request 之中。</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 從 sAccount.json 檔案讀取帳密資料</span></span><br><span class="line">s_account = json.load(<span class="built_in">open</span>(<span class="string">&quot;./sAccount.json&quot;</span>, <span class="string">&quot;r&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更改 User-Agent 標頭以免被阻擋</span></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"><span class="comment"># 製作 Payload，有三個欄位分別為 _token、account 與 password</span></span><br><span class="line">loginPayload = &#123;<span class="string">&#x27;account&#x27;</span>: s_account[<span class="string">&#x27;account&#x27;</span>], <span class="string">&#x27;password&#x27;</span>: s_account[<span class="string">&#x27;password&#x27;</span>], <span class="string">&#x27;_token&#x27;</span>:<span class="string">&#x27;&#x27;</span>&#125;</span><br><span class="line"><span class="comment"># 建立一個 Session 物件幫我們維護 Coookie 的運行</span></span><br><span class="line">sess = requests.Session()</span><br><span class="line"><span class="comment"># 將 User-Agent 標頭修改為我們所給的值</span></span><br><span class="line">sess.headers.update(headers)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 先取得 _token 值</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.get(url)</span><br><span class="line">bsObj = bs(response.text, <span class="string">&quot;html.parser&quot;</span>)</span><br><span class="line">loginToken = bsObj.find(<span class="string">&#x27;input&#x27;</span>, &#123;<span class="string">&#x27;name&#x27;</span>:<span class="string">&#x27;_token&#x27;</span>&#125;).attrs[<span class="string">&#x27;value&#x27;</span>]</span><br><span class="line"><span class="comment"># 把 _token 值存到我們之前建立的 Payload 內</span></span><br><span class="line">loginPayload[<span class="string">&#x27;_token&#x27;</span>] = loginToken</span><br><span class="line"></span><br><span class="line"><span class="comment"># 對登入頁面 POST 一次，就可以順利登入囉</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.post(url, data=loginPayload)</span><br></pre></td></tr></table></figure>
-<p><code>sAccount.json</code> 內容如下，只需填入對應的帳號密碼</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;account&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;password&quot;</span>: <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>到這裡，登入功能已經完成了。但假如真的去運行這個程式碼，你會發現雖然成功登入，可是並沒有取得想要的到的每日登入活動點數，這個是因為登入與取得點數的功能是分開運行的。</p>
-<h3 id="每日登入活動點數"><a href="#每日登入活動點數" class="headerlink" title="每日登入活動點數"></a>每日登入活動點數</h3><p>再讓我們觀察一下取得活動點數的關鍵在哪裡。先進入 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a>，再點擊登入按鈕，這次需要輸入正確的帳號密碼，並且觀察開發人員工具中的封包，將會看到其實在成功登入後，從 <a href="https://member.ithome.com.tw/login">會員中心</a> 跳轉回 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a> 之前還有其他封包被傳送，可以猜測這些封包就是用來激活每日登入的條件</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_point.png?alt=media&amp;token=731a5c99-9258-49ca-b4ee-69a08b4dead5" alt="每日登入關鍵封包"><span class="image-caption">每日登入關鍵封包</span></p>
-<p>也就是說當我們的爬蟲成功登入後，需要發出 <code>GET https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code</code> 請求，來取得這天的每日登入活動點數。</p>
-<h4 id="實作取得點數功能"><a href="#實作取得點數功能" class="headerlink" title="實作取得點數功能"></a>實作取得點數功能</h4><p>這是最簡單的部分，只需要在登入之後加上下面兩行程式，就可以達到效果了</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code&quot;</span></span><br><span class="line">response = sess.get(url)</span><br></pre></td></tr></table></figure>
-<p>到這裡，概念與實作講解完畢，當然除登入並取得點數外，還可以加一些功能例如確認是否真的登入或者是是否有錯誤發生的判斷。</p>
-<p>可以到我的 GitHub 上參考 <a href="https://github.com/weirenxue/login-script/blob/b693c7eb020f0498222b5bfd34be587c0338c24e/ithelp/login.py#L7-L18">完整原始碼</a>。</p>
-<h2 id="每日自動登入"><a href="#每日自動登入" class="headerlink" title="每日自動登入"></a>每日自動登入</h2><p>將腳本寫好，就可以來讓它納入我的排程內啦！我使用的作業系統是 Windows 10，使用內建的排程系統就可以完成，這裡來說說如何設定排程每天自動登入</p>
-<h3 id="啟動檔-bat"><a href="#啟動檔-bat" class="headerlink" title="啟動檔 bat"></a>啟動檔 bat</h3><p>要用排程之前，最好的習慣是將啟動腳本寫成 bat 檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /d %~dp0</span><br><span class="line">python <span class="string">&quot;%~dp0login.py&quot;</span> &gt;&gt; <span class="string">&quot;%~dp0log.log&quot;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>%~dp0</code>：bat 檔案所在目錄的絕對路徑。</li>
-</ul>
-<h3 id="創建排程"><a href="#創建排程" class="headerlink" title="創建排程"></a>創建排程</h3><p>開啟 <code>Task Schedular</code>，並建立一個排程 <code>Action -&gt; Create Task...</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fcreate_task_scheduler.png?alt=media&amp;token=e2220412-cd15-49d8-aaa2-72e2a37de2c4" alt="建立排程"><span class="image-caption">建立排程</span></p>
-<p>設定排程的時間點 (每天下午 3:36) 與要執行的 bat 檔案</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fschedul_schedular.png?alt=media&amp;token=d768c1c0-ba3b-4d5d-8a77-7acb7274457d" alt="設定排程"><span class="image-caption">設定排程</span></p>
-<h3 id="測試排程"><a href="#測試排程" class="headerlink" title="測試排程"></a>測試排程</h3><p>設定完之後，在排程清單中找到剛剛建立的排程，<code>點擊右鍵 -&gt; Run</code> 讓它實際運作一次來當作測試，若有正常運作可以在與 bat 檔案相同目錄下找到 <code>log.log</code> 檔，若 log 無問題並有顯示登入成功，表示排程可以正常運作囉</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Ftest_schedular.png?alt=media&amp;token=2a35d3d6-1d93-461d-8a4a-0122493326c7" alt="測試排程與 log 檔"><span class="image-caption">測試排程與 log 檔</span></p>
-<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>這個是我在 <code>2021/04/08</code> 時開發的一個小專案，早在 2020 初次加入 iT邦幫忙 這個大家庭時就發現這個 Bug，雖然當時也有看到有人反應此問題，但都沒有下文，因此在較空閒時完成這個一直未了的小心願。最一開始的初衷只是想要解決這個生活小煩惱，同時以學習的態度來開發這個專案。</p>
-<p>然而這個 Bug 在 <code>2021/05/12</code> 時小財神宣布已經根除 (<a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>)，真是皆大歡喜。得知這個訊息的第一個想法是這個專案好像沒有用了，但其實我們還是一樣可以繼續排程，若是哪天較忙忘記瀏覽論壇，可讓爬蟲代替我們每天取得點數。</p>
-]]></content>
-      <categories>
-        <category>專案開發筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>crawl</tag>
-        <tag>ithelp</tag>
-        <tag>login</tag>
-        <tag>auto</tag>
-        <tag>credit</tag>
-        <tag>task</tag>
-        <tag>schedular</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[轉檔] Keynote 轉 PowerPoint (pptx 而不是 ppsx)</title>
-    <url>/2021/06/27/mac_keynote_powerpoint_pptx/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Mac 上使用 Keynote 來做投影片非常方便，但在有些場合必須提供 pptx 檔案，這時必定需要使用到轉檔功能了。然而在新版的 Keynote 選擇 PowerPoint 格式輸出時，竟然輸出為奇怪的格式 ppsx，找了許久才找到解決方法，正常轉為 pptx 檔案，因此在此紀錄下來。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>macOS Big Sur 11.4</li>
-<li>Keynote 11.1</li>
-</ul>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>要轉檔為 <code>pptx</code> 的方法很繞圈子，必須先將 Keynote 轉為 <code>Keynote &#39;09</code>，再開啟 <code>Keynote &#39;09</code> 檔轉為 <code>pptx</code>，若用最原始的 Keynote 檔案來轉檔只會得到 <code>ppsx</code>。</p>
-<h3 id="Keynote-39-09"><a href="#Keynote-39-09" class="headerlink" title="Keynote &#39;09"></a>Keynote &#39;09</h3><p>開啟想要轉的 Keynote，依照指示 <code>File -&gt; Export To -&gt; Keynote &#39;09... -&gt; Next</code> 轉為 Keynote &#39;09 類型檔案</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fexport_keynote09.png?alt=media&amp;token=74d16eb4-25c9-40f4-a4d4-02af3b840eb4" alt="轉檔為 Keynote &#39;09"><span class="image-caption">轉檔為 Keynote &#39;09</span></p>
-<p>可以觀察一下有沒有 &#39;09 到底差在哪裡，我自己除了檔案大小外，看不出差異，所以要我判斷出某個檔案是 Keynote 還是 Keynote &#39;09 是不太可能的！若有知道如何分辨的朋友們，歡迎在底下討論區留言！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2FkeynoteVSkeynote09.png?alt=media&amp;token=80e7fc49-1ee5-4c7b-b07f-c2d71fdf3ad1" alt="Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較"><span class="image-caption">Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較</span></p>
-<h3 id="pptx"><a href="#pptx" class="headerlink" title="pptx"></a>pptx</h3><p>最後就是重頭戲了，開啟剛剛轉好的 Keynote &#39;09&#39; 檔案，依照指示 <code>File -&gt; Export To -&gt; PowerPoint... -&gt; Advanced Options -&gt; .pptx -&gt; Next</code>，最後得到 pptx 檔案</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fkey09topptx.png?alt=media&amp;token=14b8ee4b-5c46-46a6-a38b-5c4847c39bb4" alt="Keynote &#39;09 轉 pptx"><span class="image-caption">Keynote &#39;09 轉 pptx</span></p>
-<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>不知道為什麼 Apple 要繞成這樣，需要先轉為 Keynote &#39;09 才能轉為 pptx，還不說明白讓人困擾。另外個人覺得根本不應該將 Keynote 轉為 pptx，有非常多格式會因此跑掉，因此強烈建議是直接將 Keynote 轉為 pdf 即可，但最終要轉檔成甚麼還是需要看應用場景。</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><p>1 <a href="https://discussions.apple.com/thread/8524312">Keynote exports to PPSX instead of PPTX</a></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>mac</tag>
-        <tag>keynote</tag>
-        <tag>powerpoint</tag>
-        <tag>pptx</tag>
-        <tag>ppsx</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[轉檔] 將 rpm 檔轉為 deb 檔</title>
-    <url>/2021/06/17/rpm_deb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些軟體只提供 rpm 檔，但在 Ubuntu 的系統只能安裝 deb 檔，這時候就需要將 rpm 轉為 deb。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="轉檔並安裝"><a href="#轉檔並安裝" class="headerlink" title="轉檔並安裝"></a>轉檔並安裝</h2><p><a href="https://wiki.ubuntu-tw.org/index.php?title=HowtoInstallRPM">alien</a> 套件可以幫忙把 rpm 等其他安裝檔轉成 deb 安裝檔，在 Ubuntu 中預設是沒有安裝 <code>alien</code> 套件的，因此要先安裝</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install alien</span><br></pre></td></tr></table></figure>
-<p>將 <code>name.rpm</code> 轉為 <code>name.deb</code> 檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ~/somedir/name.rpm  <span class="comment"># 會轉為同檔名的 deb 檔案，但都改為小寫</span></span><br><span class="line">                                    <span class="comment"># ~/somedir 是 rpm 的檔案路徑，依情況改寫</span></span><br></pre></td></tr></table></figure>
-<p>用 dpkg 套件執行 deb 安裝檔安裝應用程式</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo dpkg -i ~/somedir/name.deb  <span class="comment">#開始安裝</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>file</tag>
-        <tag>18.04</tag>
-        <tag>rpm</tag>
-        <tag>deb</tag>
-        <tag>alien</tag>
-        <tag>dpkg</tag>
-        <tag>convert</tag>
       </tags>
   </entry>
   <entry>
@@ -2420,46 +2296,127 @@
       </tags>
   </entry>
   <entry>
-    <title>[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</title>
-    <url>/2021/06/16/win_10_ubuntu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 是一個非常輕便且好用的作業系統，在 Windows 下使用 Linux 大多是透過虛擬機器 (VM, Virtual Machine)，但對一個想要深入研究 Linux 的同好來說，灌雙系統是一個不錯的選擇。灌完雙系統之後，有機率會遇到一種情況「電腦會直接進Windows，不會出現選擇作業系統的畫面」。</p>
+    <title>[轉檔] Keynote 轉 PowerPoint (pptx 而不是 ppsx)</title>
+    <url>/2021/06/27/mac_keynote_powerpoint_pptx/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Mac 上使用 Keynote 來做投影片非常方便，但在有些場合必須提供 pptx 檔案，這時必定需要使用到轉檔功能了。然而在新版的 Keynote 選擇 PowerPoint 格式輸出時，竟然輸出為奇怪的格式 ppsx，找了許久才找到解決方法，正常轉為 pptx 檔案，因此在此紀錄下來。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>Windows 10</li>
+<li>macOS Big Sur 11.4</li>
+<li>Keynote 11.1</li>
 </ul>
-<h2 id="環境確認"><a href="#環境確認" class="headerlink" title="環境確認"></a>環境確認</h2><p>灌好 Ubuntu 後重新開機，若沒有出現系統選單，而直接進入 Windows 系統的話，那就要先確定一些設定：</p>
-<ol>
-<li><p>控制台 -&gt; 電源選項 -&gt; 選擇蓋上螢幕時的行為(左方) -&gt; 「取消勾選」開啟快速啟動</p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-Win10-Ubuntu-%E9%96%8B%E6%A9%9F%E9%81%B8%E5%96%AE%EF%BC%8C%E8%AE%93%E4%BD%BF%E7%94%A8%E8%80%85%E9%96%8B%E6%A9%9F%E5%8F%AF%E4%BB%A5%E9%81%B8%E6%93%87%E7%B3%BB%E7%B5%B1%2Fcancel_quick_boot.png?alt=media&amp;token=0b90e051-8718-46fd-9888-2ba9c1af1fd6" alt="不要勾選開啟快速啟動"><span class="image-caption">不要勾選開啟快速啟動</span></p>
-</li>
-<li><p>重新開機進入 BIOS -&gt; Fast Boot -&gt; Disabled</p>
-</li>
-<li><p>同樣在 BIOS -&gt; Secure Boot Contorl -&gt; Disabled</p>
-</li>
-</ol>
-<p>以上三點都確認完，重開機後還是沒有出現選單的話，再接著去做下面的事情</p>
-<h2 id="grubx64-efi-確認"><a href="#grubx64-efi-確認" class="headerlink" title="grubx64.efi 確認"></a>grubx64.efi 確認</h2><p>進 EFI 系統分割磁碟區(參考：<a href="/2021/06/16/efi_windows_efi/">[EFI] 顯示 Windows 的 EFI 系統分割磁碟</a>)下的 ubuntu 資料夾，看是否有關鍵檔案 <code>grubx64.efi</code>，這是 Linux 的引導開機檔案，若沒有看到的話請 <a href="https://mega.nz/#!iIonWA4a!unTw_2I5r6pXLZaXUe-gU5D_lOqCHQJVwgcDeQyl0FU">點此下載 grubx64.efi</a> 並將其移到這個目錄下，再繼續下一步</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">P:\EFI\ubuntu&gt;dir</span><br><span class="line"></span><br><span class="line"> P:\EFI\ubuntu 的目錄</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          .</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          ..</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          fw</span><br><span class="line">2019/09/27  下午 06:16            75,992 fwupx64.efi</span><br><span class="line">2019/09/27  下午 06:20               121 grub.cfg</span><br><span class="line">2019/09/27  下午 06:20         1,334,816 shimx64.efi</span><br><span class="line">2019/09/27  下午 06:20         1,269,496 mmx64.efi</span><br><span class="line">2019/09/27  下午 06:20               108 BOOTX64.CSV</span><br><span class="line">2019/09/28  下午 01:01           956,792 grubx64.efi</span><br><span class="line">               6 個檔案       3,637,325 位元組</span><br><span class="line">               3 個目錄     236,093,440 位元組可用</span><br></pre></td></tr></table></figure>
-<p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;bcdedit /<span class="built_in">set</span> &#123;bootmgr&#125; path \EFI\ubuntu\grubx64.efi</span><br><span class="line"></span><br><span class="line">操作順利完成。</span><br></pre></td></tr></table></figure>
-<p>重新開機之後就可以看到選單啦！不過它等 10 秒沒操作的話就會自動進入預設的系統哦，所以要開機時需要注意，否則錯過進錯系統也只能再重開機。若想修改預設選項，可以參考 <a href="/2021/06/16/dual_system_change_default/">[雙系統] 更改開機系統選單的預設值</a>。</p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>要轉檔為 <code>pptx</code> 的方法很繞圈子，必須先將 Keynote 轉為 <code>Keynote &#39;09</code>，再開啟 <code>Keynote &#39;09</code> 檔轉為 <code>pptx</code>，若用最原始的 Keynote 檔案來轉檔只會得到 <code>ppsx</code>。</p>
+<h3 id="Keynote-39-09"><a href="#Keynote-39-09" class="headerlink" title="Keynote &#39;09"></a>Keynote &#39;09</h3><p>開啟想要轉的 Keynote，依照指示 <code>File -&gt; Export To -&gt; Keynote &#39;09... -&gt; Next</code> 轉為 Keynote &#39;09 類型檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fexport_keynote09.png?alt=media&amp;token=74d16eb4-25c9-40f4-a4d4-02af3b840eb4" alt="轉檔為 Keynote &#39;09"><span class="image-caption">轉檔為 Keynote &#39;09</span></p>
+<p>可以觀察一下有沒有 &#39;09 到底差在哪裡，我自己除了檔案大小外，看不出差異，所以要我判斷出某個檔案是 Keynote 還是 Keynote &#39;09 是不太可能的！若有知道如何分辨的朋友們，歡迎在底下討論區留言！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2FkeynoteVSkeynote09.png?alt=media&amp;token=80e7fc49-1ee5-4c7b-b07f-c2d71fdf3ad1" alt="Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較"><span class="image-caption">Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較</span></p>
+<h3 id="pptx"><a href="#pptx" class="headerlink" title="pptx"></a>pptx</h3><p>最後就是重頭戲了，開啟剛剛轉好的 Keynote &#39;09&#39; 檔案，依照指示 <code>File -&gt; Export To -&gt; PowerPoint... -&gt; Advanced Options -&gt; .pptx -&gt; Next</code>，最後得到 pptx 檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fkey09topptx.png?alt=media&amp;token=14b8ee4b-5c46-46a6-a38b-5c4847c39bb4" alt="Keynote &#39;09 轉 pptx"><span class="image-caption">Keynote &#39;09 轉 pptx</span></p>
+<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>不知道為什麼 Apple 要繞成這樣，需要先轉為 Keynote &#39;09 才能轉為 pptx，還不說明白讓人困擾。另外個人覺得根本不應該將 Keynote 轉為 pptx，有非常多格式會因此跑掉，因此強烈建議是直接將 Keynote 轉為 pdf 即可，但最終要轉檔成甚麼還是需要看應用場景。</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><p>1 <a href="https://discussions.apple.com/thread/8524312">Keynote exports to PPSX instead of PPTX</a></p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>linux</tag>
-        <tag>ubuntu</tag>
+        <tag>mac</tag>
+        <tag>keynote</tag>
+        <tag>powerpoint</tag>
+        <tag>pptx</tag>
+        <tag>ppsx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>自動每日登入 iT邦幫忙 取得活動點數</title>
+    <url>/2021/06/27/ithelp_auto_login/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>許多論壇都擁有活動點數制度，「iT邦幫忙」也不意外的擁有這項功能，其中有一項是每天登入可以加 2 點活動點數，但不知道是 Bug 還是故意的，竟然需要先登出再登入，有了登入的動作才會計算當天登入的活動點數，很不符合常理。</p>
+<p>因此利用爬蟲技能寫了一個專案，每天到指定時間會自動完成登入動作，讓我就算沒有登入這個動作，也可以得到活動點數，雖說這個點數量不多，但就是想要抵抗這個 Bug。</p>
+<p>詳細登入問題也有人提請官方修正，可參考 <a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>。</p>
+<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
+<li><a href="https://github.com/weirenxue/login-script/tree/master/ithelp">GitHub</a></li>
+<li>實際成效<br>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fresult.png?alt=media&amp;token=7a24e416-b438-41ef-a0fa-df95233e5083" alt="成果圖"><span class="image-caption">成果圖</span></li>
+</ul>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>python 3.8.5</li>
+<li>beautifulsoup4 4.9.3</li>
+<li>requests 2.25.1</li>
+</ul>
+<h2 id="環節觀察"><a href="#環節觀察" class="headerlink" title="環節觀察"></a>環節觀察</h2><p>在動手爬蟲之前，必須先觀察在登入計算活動點數時，會經過哪些步驟與所需資訊，觀察時請記得使用開發人員工具 (F12) 來查看資訊流動。</p>
+<h3 id="登入"><a href="#登入" class="headerlink" title="登入"></a>登入</h3><p>第一步至 <a href="https://member.ithome.com.tw/login">iThome會員登入頁面</a> 任意輸入一組帳號，按下登入按鈕然後查看封包，會看到有三個欄位分別為 <code>_token</code>、<code>account</code> 還有 <code>password</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_token_field.png?alt=media&amp;token=8671a0cd-8f92-4cc9-8a54-44ca3ee4b6c0" alt="登入所需欄位"><span class="image-caption">登入所需欄位</span></p>
+<p><code>account</code> 與 <code>password</code> 我們理解，但是 <code>_token</code> 的值從何而來呢？到開發人員工具的 <code>Elements</code> 頁籤搜尋 <code>_token</code>，就可以找到它所在位置，原來是在登入表單內的一個隱藏欄位 (hidden input)！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2F_token_position.png?alt=media&amp;token=da926d26-662f-4bed-8272-d40b1cf5d306" alt="_token 的位置"><span class="image-caption">_token 的位置</span></p>
+<h4 id="實作登入功能"><a href="#實作登入功能" class="headerlink" title="實作登入功能"></a>實作登入功能</h4><p>知道登入需要甚麼資訊，且資訊在哪裡可以取得，就可以開始規劃要如何利用爬蟲來做登入功能。</p>
+<ol>
+<li>先取得 <code>_token</code> 欄位的值。</li>
+<li>將 <code>_token</code>、<code>account</code> 與 <code>password</code> 一起 <code>POST</code> 到 <code>https://member.ithome.com.tw/login</code></li>
+</ol>
+<p>需要注意的是，這些過程中的 <code>Cookie</code> 需要被維護，也就是每個 Request 都必須是同一個 <code>Session</code>，否則 <code>_token</code> 值無效。強大的 <code>requests</code> 套件已經幫我們準備好 <code>Session</code> 物件來處理這些事情，讓我們不用手動轉移 <code>Cookie</code> 到不同的 request 之中。</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 從 sAccount.json 檔案讀取帳密資料</span></span><br><span class="line">s_account = json.load(<span class="built_in">open</span>(<span class="string">&quot;./sAccount.json&quot;</span>, <span class="string">&quot;r&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更改 User-Agent 標頭以免被阻擋</span></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"><span class="comment"># 製作 Payload，有三個欄位分別為 _token、account 與 password</span></span><br><span class="line">loginPayload = &#123;<span class="string">&#x27;account&#x27;</span>: s_account[<span class="string">&#x27;account&#x27;</span>], <span class="string">&#x27;password&#x27;</span>: s_account[<span class="string">&#x27;password&#x27;</span>], <span class="string">&#x27;_token&#x27;</span>:<span class="string">&#x27;&#x27;</span>&#125;</span><br><span class="line"><span class="comment"># 建立一個 Session 物件幫我們維護 Coookie 的運行</span></span><br><span class="line">sess = requests.Session()</span><br><span class="line"><span class="comment"># 將 User-Agent 標頭修改為我們所給的值</span></span><br><span class="line">sess.headers.update(headers)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 先取得 _token 值</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.get(url)</span><br><span class="line">bsObj = bs(response.text, <span class="string">&quot;html.parser&quot;</span>)</span><br><span class="line">loginToken = bsObj.find(<span class="string">&#x27;input&#x27;</span>, &#123;<span class="string">&#x27;name&#x27;</span>:<span class="string">&#x27;_token&#x27;</span>&#125;).attrs[<span class="string">&#x27;value&#x27;</span>]</span><br><span class="line"><span class="comment"># 把 _token 值存到我們之前建立的 Payload 內</span></span><br><span class="line">loginPayload[<span class="string">&#x27;_token&#x27;</span>] = loginToken</span><br><span class="line"></span><br><span class="line"><span class="comment"># 對登入頁面 POST 一次，就可以順利登入囉</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.post(url, data=loginPayload)</span><br></pre></td></tr></table></figure>
+<p><code>sAccount.json</code> 內容如下，只需填入對應的帳號密碼</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;account&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;password&quot;</span>: <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到這裡，登入功能已經完成了。但假如真的去運行這個程式碼，你會發現雖然成功登入，可是並沒有取得想要的到的每日登入活動點數，這個是因為登入與取得點數的功能是分開運行的。</p>
+<h3 id="每日登入活動點數"><a href="#每日登入活動點數" class="headerlink" title="每日登入活動點數"></a>每日登入活動點數</h3><p>再讓我們觀察一下取得活動點數的關鍵在哪裡。先進入 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a>，再點擊登入按鈕，這次需要輸入正確的帳號密碼，並且觀察開發人員工具中的封包，將會看到其實在成功登入後，從 <a href="https://member.ithome.com.tw/login">會員中心</a> 跳轉回 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a> 之前還有其他封包被傳送，可以猜測這些封包就是用來激活每日登入的條件</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_point.png?alt=media&amp;token=731a5c99-9258-49ca-b4ee-69a08b4dead5" alt="每日登入關鍵封包"><span class="image-caption">每日登入關鍵封包</span></p>
+<p>也就是說當我們的爬蟲成功登入後，需要發出 <code>GET https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code</code> 請求，來取得這天的每日登入活動點數。</p>
+<h4 id="實作取得點數功能"><a href="#實作取得點數功能" class="headerlink" title="實作取得點數功能"></a>實作取得點數功能</h4><p>這是最簡單的部分，只需要在登入之後加上下面兩行程式，就可以達到效果了</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code&quot;</span></span><br><span class="line">response = sess.get(url)</span><br></pre></td></tr></table></figure>
+<p>到這裡，概念與實作講解完畢，當然除登入並取得點數外，還可以加一些功能例如確認是否真的登入或者是是否有錯誤發生的判斷。</p>
+<p>可以到我的 GitHub 上參考 <a href="https://github.com/weirenxue/login-script/blob/b693c7eb020f0498222b5bfd34be587c0338c24e/ithelp/login.py#L7-L18">完整原始碼</a>。</p>
+<h2 id="每日自動登入"><a href="#每日自動登入" class="headerlink" title="每日自動登入"></a>每日自動登入</h2><p>將腳本寫好，就可以來讓它納入我的排程內啦！我使用的作業系統是 Windows 10，使用內建的排程系統就可以完成，這裡來說說如何設定排程每天自動登入</p>
+<h3 id="啟動檔-bat"><a href="#啟動檔-bat" class="headerlink" title="啟動檔 bat"></a>啟動檔 bat</h3><p>要用排程之前，最好的習慣是將啟動腳本寫成 bat 檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /d %~dp0</span><br><span class="line">python <span class="string">&quot;%~dp0login.py&quot;</span> &gt;&gt; <span class="string">&quot;%~dp0log.log&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>%~dp0</code>：bat 檔案所在目錄的絕對路徑。</li>
+</ul>
+<h3 id="創建排程"><a href="#創建排程" class="headerlink" title="創建排程"></a>創建排程</h3><p>開啟 <code>Task Schedular</code>，並建立一個排程 <code>Action -&gt; Create Task...</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fcreate_task_scheduler.png?alt=media&amp;token=e2220412-cd15-49d8-aaa2-72e2a37de2c4" alt="建立排程"><span class="image-caption">建立排程</span></p>
+<p>設定排程的時間點 (每天下午 3:36) 與要執行的 bat 檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fschedul_schedular.png?alt=media&amp;token=d768c1c0-ba3b-4d5d-8a77-7acb7274457d" alt="設定排程"><span class="image-caption">設定排程</span></p>
+<h3 id="測試排程"><a href="#測試排程" class="headerlink" title="測試排程"></a>測試排程</h3><p>設定完之後，在排程清單中找到剛剛建立的排程，<code>點擊右鍵 -&gt; Run</code> 讓它實際運作一次來當作測試，若有正常運作可以在與 bat 檔案相同目錄下找到 <code>log.log</code> 檔，若 log 無問題並有顯示登入成功，表示排程可以正常運作囉</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Ftest_schedular.png?alt=media&amp;token=2a35d3d6-1d93-461d-8a4a-0122493326c7" alt="測試排程與 log 檔"><span class="image-caption">測試排程與 log 檔</span></p>
+<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>這個是我在 <code>2021/04/08</code> 時開發的一個小專案，早在 2020 初次加入 iT邦幫忙 這個大家庭時就發現這個 Bug，雖然當時也有看到有人反應此問題，但都沒有下文，因此在較空閒時完成這個一直未了的小心願。最一開始的初衷只是想要解決這個生活小煩惱，同時以學習的態度來開發這個專案。</p>
+<p>然而這個 Bug 在 <code>2021/05/12</code> 時小財神宣布已經根除 (<a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>)，真是皆大歡喜。得知這個訊息的第一個想法是這個專案好像沒有用了，但其實我們還是一樣可以繼續排程，若是哪天較忙忘記瀏覽論壇，可讓爬蟲代替我們每天取得點數。</p>
+]]></content>
+      <categories>
+        <category>專案開發筆記</category>
+      </categories>
+      <tags>
         <tag>windows</tag>
+        <tag>crawl</tag>
+        <tag>ithelp</tag>
+        <tag>login</tag>
+        <tag>auto</tag>
+        <tag>credit</tag>
+        <tag>task</tag>
+        <tag>schedular</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[轉檔] 將 rpm 檔轉為 deb 檔</title>
+    <url>/2021/06/17/rpm_deb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些軟體只提供 rpm 檔，但在 Ubuntu 的系統只能安裝 deb 檔，這時候就需要將 rpm 轉為 deb。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="轉檔並安裝"><a href="#轉檔並安裝" class="headerlink" title="轉檔並安裝"></a>轉檔並安裝</h2><p><a href="https://wiki.ubuntu-tw.org/index.php?title=HowtoInstallRPM">alien</a> 套件可以幫忙把 rpm 等其他安裝檔轉成 deb 安裝檔，在 Ubuntu 中預設是沒有安裝 <code>alien</code> 套件的，因此要先安裝</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install alien</span><br></pre></td></tr></table></figure>
+<p>將 <code>name.rpm</code> 轉為 <code>name.deb</code> 檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ~/somedir/name.rpm  <span class="comment"># 會轉為同檔名的 deb 檔案，但都改為小寫</span></span><br><span class="line">                                    <span class="comment"># ~/somedir 是 rpm 的檔案路徑，依情況改寫</span></span><br></pre></td></tr></table></figure>
+<p>用 dpkg 套件執行 deb 安裝檔安裝應用程式</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo dpkg -i ~/somedir/name.deb  <span class="comment">#開始安裝</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>file</tag>
         <tag>18.04</tag>
-        <tag>10</tag>
-        <tag>menu</tag>
-        <tag>dual</tag>
-        <tag>system</tag>
-        <tag>option</tag>
-        <tag>boot</tag>
-        <tag>grub</tag>
-        <tag>grubx64.efi</tag>
+        <tag>rpm</tag>
+        <tag>deb</tag>
+        <tag>alien</tag>
+        <tag>dpkg</tag>
+        <tag>convert</tag>
       </tags>
   </entry>
   <entry>
@@ -2490,14 +2447,14 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>ubuntu</tag>
         <tag>windows</tag>
+        <tag>ubuntu</tag>
         <tag>18.04</tag>
         <tag>10</tag>
         <tag>time</tag>
-        <tag>dual</tag>
-        <tag>system</tag>
         <tag>synchronize</tag>
+        <tag>system</tag>
+        <tag>dual</tag>
       </tags>
   </entry>
   <entry>
@@ -2522,16 +2479,59 @@
       </categories>
       <tags>
         <tag>linux</tag>
-        <tag>ubuntu</tag>
         <tag>windows</tag>
+        <tag>ubuntu</tag>
         <tag>18.04</tag>
         <tag>10</tag>
         <tag>menu</tag>
-        <tag>dual</tag>
         <tag>system</tag>
+        <tag>dual</tag>
         <tag>option</tag>
         <tag>boot</tag>
         <tag>grub</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</title>
+    <url>/2021/06/16/win_10_ubuntu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Linux 是一個非常輕便且好用的作業系統，在 Windows 下使用 Linux 大多是透過虛擬機器 (VM, Virtual Machine)，但對一個想要深入研究 Linux 的同好來說，灌雙系統是一個不錯的選擇。灌完雙系統之後，有機率會遇到一種情況「電腦會直接進Windows，不會出現選擇作業系統的畫面」。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="環境確認"><a href="#環境確認" class="headerlink" title="環境確認"></a>環境確認</h2><p>灌好 Ubuntu 後重新開機，若沒有出現系統選單，而直接進入 Windows 系統的話，那就要先確定一些設定：</p>
+<ol>
+<li><p>控制台 -&gt; 電源選項 -&gt; 選擇蓋上螢幕時的行為(左方) -&gt; 「取消勾選」開啟快速啟動</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-Win10-Ubuntu-%E9%96%8B%E6%A9%9F%E9%81%B8%E5%96%AE%EF%BC%8C%E8%AE%93%E4%BD%BF%E7%94%A8%E8%80%85%E9%96%8B%E6%A9%9F%E5%8F%AF%E4%BB%A5%E9%81%B8%E6%93%87%E7%B3%BB%E7%B5%B1%2Fcancel_quick_boot.png?alt=media&amp;token=0b90e051-8718-46fd-9888-2ba9c1af1fd6" alt="不要勾選開啟快速啟動"><span class="image-caption">不要勾選開啟快速啟動</span></p>
+</li>
+<li><p>重新開機進入 BIOS -&gt; Fast Boot -&gt; Disabled</p>
+</li>
+<li><p>同樣在 BIOS -&gt; Secure Boot Contorl -&gt; Disabled</p>
+</li>
+</ol>
+<p>以上三點都確認完，重開機後還是沒有出現選單的話，再接著去做下面的事情</p>
+<h2 id="grubx64-efi-確認"><a href="#grubx64-efi-確認" class="headerlink" title="grubx64.efi 確認"></a>grubx64.efi 確認</h2><p>進 EFI 系統分割磁碟區(參考：<a href="/2021/06/16/efi_windows_efi/">[EFI] 顯示 Windows 的 EFI 系統分割磁碟</a>)下的 ubuntu 資料夾，看是否有關鍵檔案 <code>grubx64.efi</code>，這是 Linux 的引導開機檔案，若沒有看到的話請 <a href="https://mega.nz/#!iIonWA4a!unTw_2I5r6pXLZaXUe-gU5D_lOqCHQJVwgcDeQyl0FU">點此下載 grubx64.efi</a> 並將其移到這個目錄下，再繼續下一步</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">P:\EFI\ubuntu&gt;dir</span><br><span class="line"></span><br><span class="line"> P:\EFI\ubuntu 的目錄</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          .</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          ..</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          fw</span><br><span class="line">2019/09/27  下午 06:16            75,992 fwupx64.efi</span><br><span class="line">2019/09/27  下午 06:20               121 grub.cfg</span><br><span class="line">2019/09/27  下午 06:20         1,334,816 shimx64.efi</span><br><span class="line">2019/09/27  下午 06:20         1,269,496 mmx64.efi</span><br><span class="line">2019/09/27  下午 06:20               108 BOOTX64.CSV</span><br><span class="line">2019/09/28  下午 01:01           956,792 grubx64.efi</span><br><span class="line">               6 個檔案       3,637,325 位元組</span><br><span class="line">               3 個目錄     236,093,440 位元組可用</span><br></pre></td></tr></table></figure>
+<p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;bcdedit /<span class="built_in">set</span> &#123;bootmgr&#125; path \EFI\ubuntu\grubx64.efi</span><br><span class="line"></span><br><span class="line">操作順利完成。</span><br></pre></td></tr></table></figure>
+<p>重新開機之後就可以看到選單啦！不過它等 10 秒沒操作的話就會自動進入預設的系統哦，所以要開機時需要注意，否則錯過進錯系統也只能再重開機。若想修改預設選項，可以參考 <a href="/2021/06/16/dual_system_change_default/">[雙系統] 更改開機系統選單的預設值</a>。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>10</tag>
+        <tag>menu</tag>
+        <tag>system</tag>
+        <tag>dual</tag>
+        <tag>option</tag>
+        <tag>boot</tag>
+        <tag>grub</tag>
+        <tag>grubx64.efi</tag>
       </tags>
   </entry>
   <entry>
