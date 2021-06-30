@@ -275,20 +275,6 @@
               <span class="post-meta-item-text">閱讀次數：</span>
               <span id="busuanzi_value_page_pv"></span>
             </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2021/06/15/ssl_digital_signed_verify/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/15/ssl_digital_signed_verify/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
             <div class="post-description">SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作。但我有發現一個現象，就是當講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並整理後記錄在這。</div>
 
         </div>
@@ -318,6 +304,17 @@
     
     
     
+      
+  <div class="popular-posts-header">相關文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\15\ssl_self_sign\" rel="bookmark">[SSL] 自簽憑證過程</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\15\ssl_crt_key\" rel="bookmark">[SSL] 確認申請回來的憑證與手中的私鑰匹配</a></div>
+    </li>
+  </ul>
+
         <div class="reward-container">
   <div>以最優質的內容回應您的鼓勵</div>
   <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
@@ -728,16 +725,6 @@ if (document.querySelectorAll('pre.mermaid').length) {
 
   
 
-<script>
-  function loadCount() {
-    var d = document, s = d.createElement('script');
-    s.src = 'https://weirenxue.disqus.com/count.js';
-    s.id = 'dsq-count-scr';
-    (d.head || d.body).appendChild(s);
-  }
-  // defer loading until the whole page loading is completed
-  window.addEventListener('load', loadCount, false);
-</script>
 <script>
   var disqus_config = function() {
     this.page.url = "https://weirenxue.github.io/2021/06/15/ssl_digital_signed_verify/";

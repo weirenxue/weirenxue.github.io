@@ -280,20 +280,6 @@
               <span class="post-meta-item-text">閱讀次數：</span>
               <span id="busuanzi_value_page_pv"></span>
             </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2021/06/15/ssl_self_sign/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/15/ssl_self_sign/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
             <div class="post-description">SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</div>
 
         </div>
@@ -324,6 +310,17 @@
     
     
     
+      
+  <div class="popular-posts-header">相關文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\15\ssl_crt_key\" rel="bookmark">[SSL] 確認申請回來的憑證與手中的私鑰匹配</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\15\ssl_digital_signed_verify\" rel="bookmark">[SSL] 數位簽名與驗證的過程</a></div>
+    </li>
+  </ul>
+
         <div class="reward-container">
   <div>以最優質的內容回應您的鼓勵</div>
   <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
@@ -680,16 +677,6 @@ if (document.querySelectorAll('pre.mermaid').length) {
 
   
 
-<script>
-  function loadCount() {
-    var d = document, s = d.createElement('script');
-    s.src = 'https://weirenxue.disqus.com/count.js';
-    s.id = 'dsq-count-scr';
-    (d.head || d.body).appendChild(s);
-  }
-  // defer loading until the whole page loading is completed
-  window.addEventListener('load', loadCount, false);
-</script>
 <script>
   var disqus_config = function() {
     this.page.url = "https://weirenxue.github.io/2021/06/15/ssl_self_sign/";

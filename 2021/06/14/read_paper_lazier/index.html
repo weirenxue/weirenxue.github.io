@@ -289,20 +289,6 @@
               <span class="post-meta-item-text">閱讀次數：</span>
               <span id="busuanzi_value_page_pv"></span>
             </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2021/06/14/read_paper_lazier/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/14/read_paper_lazier/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
             <div class="post-description">Paper 通常以英文流通最為廣泛，在閱讀時總是會搭配 google translate 查找不懂的語句或單字，但在複製整個語句或整段原文時，不應該存在的換行也會被複製進來。導致在輸入進 google translate 翻譯之前需要手動去掉換行。剛開始可能會覺得還好，但用到後來會發現這是非常浪費時間與惱人的事。除此之外，有時候翻譯出來的中文慣用語會是中國大陸的慣用語，而不是台灣的慣用語，例如：server 在台灣會翻為「伺服器」而非「服務器」、macro 在台灣會翻為「巨集」而非「宏」。因此我開發一個應用程式，為了解決這些困擾之處，其功能為當我們複製某段文章時，可以自動去掉換行，並且進行翻譯、替換某些自訂文字，再使用 Ctrl-V 貼上時，已經是翻譯與替換後的結果！絕對是碩士、博士們讀 Paper 的一個利器。</div>
 
         </div>
@@ -385,6 +371,26 @@
     
     
     
+      
+  <div class="popular-posts-header">相關文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\19\ftp_centos_vsftpd\" rel="bookmark">[FTP] CentOS 7 安裝 vsftpd 省去實體與虛擬機之間傳輸設定</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\15\python_user_agent\" rel="bookmark">[Python] 爬蟲修改 User-Agent 標頭</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\12\python_email_protected\" rel="bookmark">[Python] 爬蟲遇到 email protected 的原因與解決方法</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\12\python_cp950_codec_cant_encode\" rel="bookmark">[Python] 爬蟲遇到 'cp950' codec can't encode ?</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\12\python_jupyter\" rel="bookmark">[Jupyter] 改變 Jupyter notebook 預設路徑與瀏覽器</a></div>
+    </li>
+  </ul>
+
         <div class="reward-container">
   <div>以最優質的內容回應您的鼓勵</div>
   <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
@@ -742,16 +748,6 @@ if (document.querySelectorAll('pre.mermaid').length) {
 
   
 
-<script>
-  function loadCount() {
-    var d = document, s = d.createElement('script');
-    s.src = 'https://weirenxue.disqus.com/count.js';
-    s.id = 'dsq-count-scr';
-    (d.head || d.body).appendChild(s);
-  }
-  // defer loading until the whole page loading is completed
-  window.addEventListener('load', loadCount, false);
-</script>
 <script>
   var disqus_config = function() {
     this.page.url = "https://weirenxue.github.io/2021/06/14/read_paper_lazier/";

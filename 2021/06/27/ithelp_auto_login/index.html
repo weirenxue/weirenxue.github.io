@@ -281,20 +281,6 @@
               <span class="post-meta-item-text">閱讀次數：</span>
               <span id="busuanzi_value_page_pv"></span>
             </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2021/06/27/ithelp_auto_login/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/27/ithelp_auto_login/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
             <div class="post-description">許多論壇都擁有活動點數制度，「iT邦幫忙」也不意外的擁有這項功能，其中有一項是每天登入可以加 2 點活動點數，但不知道是 Bug 還是故意的，竟然需要先登出再登入，有了登入的動作才會計算當天登入的活動點數，很不符合常理。因此利用爬蟲技能寫了一個專案，每天到指定時間會自動完成登入動作，讓我就算沒有登入這個動作，也可以得到活動點數，雖說這個點數量不多，但就是想要抵抗這個 Bug。</div>
 
         </div>
@@ -361,6 +347,26 @@
     
     
     
+      
+  <div class="popular-posts-header">相關文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\19\share_vmware_centos\" rel="bookmark">[Share] VMware 裡的 CentOS 使用共享資料夾</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\17\remote_ubuntu_xrdp\" rel="bookmark">[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\17\ubuntu_windows_time\" rel="bookmark">[雙系統] 同步 Ubuntu 與 Windows 的系統時間</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\16\dual_system_change_default\" rel="bookmark">[雙系統] 更改開機系統選單的預設值</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\16\win_10_ubuntu\" rel="bookmark">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a></div>
+    </li>
+  </ul>
+
         <div class="reward-container">
   <div>以最優質的內容回應您的鼓勵</div>
   <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
@@ -713,16 +719,6 @@ if (document.querySelectorAll('pre.mermaid').length) {
 
   
 
-<script>
-  function loadCount() {
-    var d = document, s = d.createElement('script');
-    s.src = 'https://weirenxue.disqus.com/count.js';
-    s.id = 'dsq-count-scr';
-    (d.head || d.body).appendChild(s);
-  }
-  // defer loading until the whole page loading is completed
-  window.addEventListener('load', loadCount, false);
-</script>
 <script>
   var disqus_config = function() {
     this.page.url = "https://weirenxue.github.io/2021/06/27/ithelp_auto_login/";

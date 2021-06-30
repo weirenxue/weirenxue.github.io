@@ -544,16 +544,6 @@ if (document.querySelectorAll('pre.mermaid').length) {
   
 
 <script>
-  function loadCount() {
-    var d = document, s = d.createElement('script');
-    s.src = 'https://weirenxue.disqus.com/count.js';
-    s.id = 'dsq-count-scr';
-    (d.head || d.body).appendChild(s);
-  }
-  // defer loading until the whole page loading is completed
-  window.addEventListener('load', loadCount, false);
-</script>
-<script>
   var disqus_config = function() {
     this.page.url = "https://weirenxue.github.io/tools/index.html";
     this.page.identifier = "tools/index.html";

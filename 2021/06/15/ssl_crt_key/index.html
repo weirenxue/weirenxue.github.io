@@ -279,20 +279,6 @@
               <span class="post-meta-item-text">閱讀次數：</span>
               <span id="busuanzi_value_page_pv"></span>
             </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2021/06/15/ssl_crt_key/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/15/ssl_crt_key/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
             <div class="post-description">最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</div>
 
         </div>
@@ -318,6 +304,26 @@
     
     
     
+      
+  <div class="popular-posts-header">相關文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\15\ssl_self_sign\" rel="bookmark">[SSL] 自簽憑證過程</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\17\php_ubuntu_apache_php_phalcon\" rel="bookmark">[PHP] Ubuntu 安裝 Apache 2 + PHP 7.4 + Phalcon 4.0</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\17\user_linux_sudo\" rel="bookmark">[User] Linux 新增使用者並賦予其使用 sudo 的權限</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\17\rdp_xrdp_menu\" rel="bookmark">[RDP] xrdp 遠端 menu 不見時登出的方法</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\17\remote_ubuntu_xrdp\" rel="bookmark">[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</a></div>
+    </li>
+  </ul>
+
         <div class="reward-container">
   <div>以最優質的內容回應您的鼓勵</div>
   <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
@@ -673,16 +679,6 @@ if (document.querySelectorAll('pre.mermaid').length) {
 
   
 
-<script>
-  function loadCount() {
-    var d = document, s = d.createElement('script');
-    s.src = 'https://weirenxue.disqus.com/count.js';
-    s.id = 'dsq-count-scr';
-    (d.head || d.body).appendChild(s);
-  }
-  // defer loading until the whole page loading is completed
-  window.addEventListener('load', loadCount, false);
-</script>
 <script>
   var disqus_config = function() {
     this.page.url = "https://weirenxue.github.io/2021/06/15/ssl_crt_key/";
