@@ -348,19 +348,19 @@
   <div class="popular-posts-header">相關文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\19\mqtt_centos_7\" rel="bookmark">[MQTT] CentOS 7 安裝 mosquitto 並使用帳密驗證</a></div>
+      <div class="popular-posts-title"><a href="\2021\06\19\mqtt_centos_7\" rel="bookmark">[MQTT] CentOS 7 安裝 Mosquitto 並使用帳密驗證</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\2021\06\13\rdp_windows_10\" rel="bookmark">[RDP] Windows 10 新增使用者並賦予遠端桌面權限</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\30\mqtt_mosquitto_docker\" rel="bookmark">[MQTT] Mosquitto Docker 架設與設定詳細教學</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\2021\06\18\mysql_centos_mysql_8_0_root\" rel="bookmark">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\2021\06\12\python_regular_expression\" rel="bookmark">[Python] 使用 regular expression 驗證密碼長度與安全性</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\15\tool_sql_injection\" rel="bookmark">[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</a></div>
     </li>
   </ul>
 
@@ -407,6 +407,11 @@
           </div>
 
         
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
 
 
         
@@ -499,7 +504,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">70</span>
+          <span class="site-state-item-count">71</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -512,7 +517,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">313</span>
+        <span class="site-state-item-count">319</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
@@ -553,6 +558,9 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Wei-Ren Xue 若要轉載，請標註出處與原網址。</span>
 </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60dc346c8505aa6a" async="async"></script>
+  </div>
 
         
 <div class="busuanzi-count">
@@ -681,6 +689,26 @@
 
 
 
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 31165,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
 
   
 <script src="/js/local-search.js"></script>

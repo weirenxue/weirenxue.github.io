@@ -21,15 +21,15 @@
     var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <meta name="description" content="在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 mosquitto，網路上有許多 mosquitto 的說明，這裡只紀錄如何架設與測試。">
+  <meta name="description" content="在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 Mosquitto，網路上有許多 Mosquitto 的說明，這裡只紀錄如何架設與測試。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[MQTT] CentOS 7 安裝 mosquitto 並使用帳密驗證">
+<meta property="og:title" content="[MQTT] CentOS 7 安裝 Mosquitto 並使用帳密驗證">
 <meta property="og:url" content="https://weirenxue.github.io/2021/06/19/mqtt_centos_7/index.html">
 <meta property="og:site_name" content="薛惟仁 筆記本">
-<meta property="og:description" content="在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 mosquitto，網路上有許多 mosquitto 的說明，這裡只紀錄如何架設與測試。">
+<meta property="og:description" content="在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 Mosquitto，網路上有許多 Mosquitto 的說明，這裡只紀錄如何架設與測試。">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-06-19T01:48:20.000Z">
-<meta property="article:modified_time" content="2021-06-19T02:13:59.622Z">
+<meta property="article:modified_time" content="2021-06-30T10:14:30.639Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="centos">
 <meta property="article:tag" content="7.9">
@@ -54,7 +54,7 @@
   };
 </script>
 
-  <title>[MQTT] CentOS 7 安裝 mosquitto 並使用帳密驗證 | 薛惟仁 筆記本</title>
+  <title>[MQTT] CentOS 7 安裝 Mosquitto 並使用帳密驗證 | 薛惟仁 筆記本</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
     <script>
@@ -235,7 +235,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          [MQTT] CentOS 7 安裝 mosquitto 並使用帳密驗證
+          [MQTT] CentOS 7 安裝 Mosquitto 並使用帳密驗證
         </h1>
 
         <div class="post-meta">
@@ -244,10 +244,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">發表於</span>
-              
 
-              <time title="創建時間：2021-06-19 09:48:20 / 修改時間：10:13:59" itemprop="dateCreated datePublished" datetime="2021-06-19T09:48:20+08:00">2021-06-19</time>
+              <time title="創建時間：2021-06-19 09:48:20" itemprop="dateCreated datePublished" datetime="2021-06-19T09:48:20+08:00">2021-06-19</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2021-06-30 18:14:30" itemprop="dateModified" datetime="2021-06-30T18:14:30+08:00">2021-06-30</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -273,7 +279,7 @@
               <span class="post-meta-item-text">閱讀次數：</span>
               <span id="busuanzi_value_page_pv"></span>
             </span>
-            <div class="post-description">在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 mosquitto，網路上有許多 mosquitto 的說明，這裡只紀錄如何架設與測試。</div>
+            <div class="post-description">在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 Mosquitto，網路上有許多 Mosquitto 的說明，這裡只紀錄如何架設與測試。</div>
 
         </div>
       </header>
@@ -284,14 +290,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 mosquitto，網路上有許多 mosquitto 的說明，這裡只紀錄如何架設與測試。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 Mosquitto，網路上有許多 Mosquitto 的說明，這裡只紀錄如何架設與測試。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>CentOS 7.9</li>
 </ul>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>mosquitto 預設是不在安裝套件內的，因此需要先安裝 Extra Packages for Enterprise Linux (EPEL)</p>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>Mosquitto 預設是不在安裝套件內的，因此需要先安裝 Extra Packages for Enterprise Linux (EPEL)</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y epel-release</span><br></pre></td></tr></table></figure>
-<p>安裝 mosquitto 並啟動服務</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y mosquitto</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mosquitto   <span class="comment"># 讓 mosquitto 重開機會自動啟動</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl start mosquitto    <span class="comment"># 現在馬上啟動 mosquitto</span></span><br></pre></td></tr></table></figure>
+<p>安裝 Mosquitto 並啟動服務</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y mosquitto</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mosquitto   <span class="comment"># 讓 Mosquitto 重開機會自動啟動</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl start mosquitto    <span class="comment"># 現在馬上啟動 Mosquitto</span></span><br></pre></td></tr></table></figure>
 <h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>開啟一個新的 Terminal (在此稱 tty1)，輸入指令來訂閱主題</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7</span><br></pre></td></tr></table></figure>
 <ul>
@@ -307,7 +313,7 @@
 <li><code>-t</code>：指定發布的主題。</li>
 <li><code>-m</code>：發布的訊息。</li>
 </ul>
-<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表 mosquitto 安裝完成且可以正常運行！測試完畢後，可以關閉 tty1 與 tty2。</p>
+<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表 Mosquitto 安裝完成且可以正常運行！測試完畢後，可以關閉 tty1 與 tty2。</p>
 <h2 id="建立使用者帳號"><a href="#建立使用者帳號" class="headerlink" title="建立使用者帳號"></a>建立使用者帳號</h2><p>創建帳號</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mosquitto_passwd -c /etc/mosquitto/passwd test_account</span><br><span class="line">Password:           <span class="comment"># 輸入 test_account 的密碼</span></span><br><span class="line">Reenter password:   <span class="comment"># 再次輸入 test_account 的密碼</span></span><br></pre></td></tr></table></figure>
 <ul>
@@ -315,9 +321,9 @@
 <li><code>/etc/mosquitto/passwd</code>：為帳密檔位置。</li>
 <li><code>test_account</code>：為所要新增的帳號，可以自行更改。</li>
 </ul>
-<p>修改 mosquitto 設定檔 (<code>/etc/mosquitto/mosquitto.conf</code>)，加入以下兩行</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allow_anonymous <span class="literal">false</span>               <span class="comment"># 不可匿名登入，一定要輸入帳密</span></span><br><span class="line">password_file /etc/mosquitto/passwd <span class="comment"># 讓 mosquitto 知道帳密檔在哪裡</span></span><br></pre></td></tr></table></figure>
-<p>重啟 mosquitto 服務</p>
+<p>修改 Mosquitto 設定檔 (<code>/etc/mosquitto/mosquitto.conf</code>)，加入以下兩行</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allow_anonymous <span class="literal">false</span>               <span class="comment"># 不可匿名登入，一定要輸入帳密</span></span><br><span class="line">password_file /etc/mosquitto/passwd <span class="comment"># 讓 Mosquitto 知道帳密檔在哪裡</span></span><br></pre></td></tr></table></figure>
+<p>重啟 Mosquitto 服務</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mosquitto</span><br></pre></td></tr></table></figure>
 <h3 id="使用者帳號測試"><a href="#使用者帳號測試" class="headerlink" title="使用者帳號測試"></a>使用者帳號測試</h3><p>開啟一個新的 Terminal (在此稱 tty1)，使用指令來訂閱主題。但由於我們已經設定為不可匿名登入，可以預想到的是會無法正常運作，因為沒有授權 (也就是沒有輸入帳號)</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7</span><br><span class="line">Connection error: Connection Refused: not authorised.</span><br></pre></td></tr></table></figure>
@@ -351,10 +357,10 @@
       <div class="popular-posts-title"><a href="\2021\06\17\user_linux_sudo\" rel="bookmark">[User] Linux 新增使用者並賦予其使用 sudo 的權限</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\13\rdp_windows_10\" rel="bookmark">[RDP] Windows 10 新增使用者並賦予遠端桌面權限</a></div>
+      <div class="popular-posts-title"><a href="\2021\06\30\mqtt_mosquitto_docker\" rel="bookmark">[MQTT] Mosquitto Docker 架設與設定詳細教學</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\19\share_vmware_centos\" rel="bookmark">[Share] VMware 裡的 CentOS 使用共享資料夾</a></div>
+      <div class="popular-posts-title"><a href="\2021\06\13\rdp_windows_10\" rel="bookmark">[RDP] Windows 10 新增使用者並賦予遠端桌面權限</a></div>
     </li>
   </ul>
 
@@ -382,7 +388,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>文章連結：</strong>
-    <a href="https://weirenxue.github.io/2021/06/19/mqtt_centos_7/" title="[MQTT] CentOS 7 安裝 mosquitto 並使用帳密驗證">https://weirenxue.github.io/2021/06/19/mqtt_centos_7/</a>
+    <a href="https://weirenxue.github.io/2021/06/19/mqtt_centos_7/" title="[MQTT] CentOS 7 安裝 Mosquitto 並使用帳密驗證">https://weirenxue.github.io/2021/06/19/mqtt_centos_7/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版權聲明： </strong>本網誌所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noopener noreferrer" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 許可協議。轉載請註明出處！
@@ -404,6 +410,11 @@
           </div>
 
         
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
 
 
         
@@ -496,7 +507,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">70</span>
+          <span class="site-state-item-count">71</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -509,7 +520,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">313</span>
+        <span class="site-state-item-count">319</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
@@ -550,6 +561,9 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Wei-Ren Xue 若要轉載，請標註出處與原網址。</span>
 </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60dc346c8505aa6a" async="async"></script>
+  </div>
 
         
 <div class="busuanzi-count">
@@ -678,6 +692,26 @@
 
 
 
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 31165,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
 
   
 <script src="/js/local-search.js"></script>
@@ -717,7 +751,7 @@ if (document.querySelectorAll('pre.mermaid').length) {
   var disqus_config = function() {
     this.page.url = "https://weirenxue.github.io/2021/06/19/mqtt_centos_7/";
     this.page.identifier = "2021/06/19/mqtt_centos_7/";
-    this.page.title = "[MQTT] CentOS 7 安裝 mosquitto 並使用帳密驗證";
+    this.page.title = "[MQTT] CentOS 7 安裝 Mosquitto 並使用帳密驗證";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {

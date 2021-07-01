@@ -31,15 +31,15 @@
 <meta property="article:published_time" content="2021-06-17T12:36:59.000Z">
 <meta property="article:modified_time" content="2021-06-17T13:45:18.568Z">
 <meta property="article:author" content="Wei-Ren Xue">
+<meta property="article:tag" content="linux">
 <meta property="article:tag" content="ubuntu">
 <meta property="article:tag" content="20.04">
 <meta property="article:tag" content="netcat">
-<meta property="article:tag" content="linux">
+<meta property="article:tag" content="file">
 <meta property="article:tag" content="CR">
 <meta property="article:tag" content="carriage">
 <meta property="article:tag" content="return">
 <meta property="article:tag" content="echo">
-<meta property="article:tag" content="file">
 <meta property="article:tag" content="cat">
 <meta name="twitter:card" content="summary">
 
@@ -312,6 +312,9 @@
   <div class="popular-posts-header">相關文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\06\30\mqtt_mosquitto_docker\" rel="bookmark">[MQTT] Mosquitto Docker 架設與設定詳細教學</a></div>
+    </li>
+    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\2021\06\17\apache_http_server\" rel="bookmark">[Apache] 修改 HTTP 標頭中的 Server 欄位</a></div>
     </li>
     <li class="popular-posts-item">
@@ -322,9 +325,6 @@
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\2021\06\17\remote_ubuntu_xrdp\" rel="bookmark">[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\17\usb_usb\" rel="bookmark">[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</a></div>
     </li>
   </ul>
 
@@ -363,19 +363,24 @@
 
       <footer class="post-footer">
           <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
               <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
               <a href="/tags/20-04/" rel="tag"># 20.04</a>
               <a href="/tags/netcat/" rel="tag"># netcat</a>
-              <a href="/tags/linux/" rel="tag"># linux</a>
+              <a href="/tags/file/" rel="tag"># file</a>
               <a href="/tags/CR/" rel="tag"># CR</a>
               <a href="/tags/carriage/" rel="tag"># carriage</a>
               <a href="/tags/return/" rel="tag"># return</a>
               <a href="/tags/echo/" rel="tag"># echo</a>
-              <a href="/tags/file/" rel="tag"># file</a>
               <a href="/tags/cat/" rel="tag"># cat</a>
           </div>
 
         
+  <div class="post-widgets">
+    <div class="wp_rating">
+      <div id="wpac-rating"></div>
+    </div>
+  </div>
 
 
         
@@ -468,7 +473,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">70</span>
+          <span class="site-state-item-count">71</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -481,7 +486,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">313</span>
+        <span class="site-state-item-count">319</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
@@ -522,6 +527,9 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Wei-Ren Xue 若要轉載，請標註出處與原網址。</span>
 </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60dc346c8505aa6a" async="async"></script>
+  </div>
 
         
 <div class="busuanzi-count">
@@ -650,6 +658,26 @@
 
 
 
+  <script>
+  if (CONFIG.page.isPost) {
+    wpac_init = window.wpac_init || [];
+    wpac_init.push({
+      widget: 'Rating',
+      id    : 31165,
+      el    : 'wpac-rating',
+      color : 'fc6423'
+    });
+    (function() {
+      if ('WIDGETPACK_LOADED' in window) return;
+      WIDGETPACK_LOADED = true;
+      var mc = document.createElement('script');
+      mc.type = 'text/javascript';
+      mc.async = true;
+      mc.src = '//embed.widgetpack.com/widget.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+    })();
+  }
+  </script>
 
   
 <script src="/js/local-search.js"></script>
