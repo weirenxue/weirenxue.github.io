@@ -24,12 +24,12 @@
   <meta name="description" content="這篇文章記錄了如何使用 Docker 輕鬆架設 MQTT Broker (Mosquitto)，並且使用身分驗證、ACL 權限控管，啟動 MQTT&#x2F;MQTTS&#x2F;WS&#x2F;WSS 四個協定。架設伺服器的第一步，就是先將基本設定完善，並確認能夠運行，才能繼續下一步的調教。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[MQTT] Mosquitto Docker 架設與設定詳細過程">
-<meta property="og:url" content="https://weirenxue.github.io/2021/06/30/mqtt_mosquitto_docker/index.html">
+<meta property="og:url" content="https://weirenxue.github.io/2021/07/01/mqtt_mosquitto_docker/index.html">
 <meta property="og:site_name" content="薛惟仁 筆記本">
 <meta property="og:description" content="這篇文章記錄了如何使用 Docker 輕鬆架設 MQTT Broker (Mosquitto)，並且使用身分驗證、ACL 權限控管，啟動 MQTT&#x2F;MQTTS&#x2F;WS&#x2F;WSS 四個協定。架設伺服器的第一步，就是先將基本設定完善，並確認能夠運行，才能繼續下一步的調教。">
 <meta property="og:locale" content="zh_TW">
-<meta property="article:published_time" content="2021-06-30T08:27:05.000Z">
-<meta property="article:modified_time" content="2021-07-01T11:08:42.163Z">
+<meta property="article:published_time" content="2021-06-30T23:07:05.000Z">
+<meta property="article:modified_time" content="2021-07-01T11:17:39.025Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="ubuntu">
 <meta property="article:tag" content="20.04">
@@ -46,7 +46,7 @@
 <meta property="article:tag" content="container">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://weirenxue.github.io/2021/06/30/mqtt_mosquitto_docker/">
+<link rel="canonical" href="https://weirenxue.github.io/2021/07/01/mqtt_mosquitto_docker/">
 
 
 <script id="page-configurations">
@@ -227,7 +227,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2021/06/30/mqtt_mosquitto_docker/">
+    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2021/07/01/mqtt_mosquitto_docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -249,16 +249,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">發表於</span>
+              
 
-              <time title="創建時間：2021-06-30 16:27:05" itemprop="dateCreated datePublished" datetime="2021-06-30T16:27:05+08:00">2021-06-30</time>
+              <time title="創建時間：2021-07-01 07:07:05 / 修改時間：19:17:39" itemprop="dateCreated datePublished" datetime="2021-07-01T07:07:05+08:00">2021-07-01</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-07-01 19:08:42" itemprop="dateModified" datetime="2021-07-01T19:08:42+08:00">2021-07-01</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -449,7 +443,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>文章連結：</strong>
-    <a href="https://weirenxue.github.io/2021/06/30/mqtt_mosquitto_docker/" title="[MQTT] Mosquitto Docker 架設與設定詳細過程">https://weirenxue.github.io/2021/06/30/mqtt_mosquitto_docker/</a>
+    <a href="https://weirenxue.github.io/2021/07/01/mqtt_mosquitto_docker/" title="[MQTT] Mosquitto Docker 架設與設定詳細過程">https://weirenxue.github.io/2021/07/01/mqtt_mosquitto_docker/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版權聲明： </strong>本網誌所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noopener noreferrer" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 許可協議。轉載請註明出處！
@@ -812,8 +806,8 @@ if (document.querySelectorAll('pre.mermaid').length) {
 
 <script>
   var disqus_config = function() {
-    this.page.url = "https://weirenxue.github.io/2021/06/30/mqtt_mosquitto_docker/";
-    this.page.identifier = "2021/06/30/mqtt_mosquitto_docker/";
+    this.page.url = "https://weirenxue.github.io/2021/07/01/mqtt_mosquitto_docker/";
+    this.page.identifier = "2021/07/01/mqtt_mosquitto_docker/";
     this.page.title = "[MQTT] Mosquitto Docker 架設與設定詳細過程";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {

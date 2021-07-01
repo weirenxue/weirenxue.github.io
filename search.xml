@@ -1,40 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>[C++] (FARPROC&amp;) 的含意</title>
-    <url>/2021/06/11/cfarproc/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr; </span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...省略...)</span><br></pre></td></tr></table></figure>
-<p>平常只會看到像是 <code>(int)</code>、<code>(int*)</code> 之類的轉型，第一次看到轉型是帶著 <code>&amp;</code> 符號的，引發我的好奇心，藉此研究一番。</p>
-<h2 id="探討"><a href="#探討" class="headerlink" title="探討"></a>探討</h2><p>要探討這問題，就要先知道一般再宣告的時候，<code>&amp;</code> 運算元到底發揮甚麼功用，所以先用最簡單的整數(<code>int</code>)宣告來測試，內容分為以下三種：</p>
-<ol>
-<li><p><code>int a = b;   //這應該大家都知道，就是把b的值給a</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> a = b;</span><br><span class="line"><span class="comment">//結果：a = 2; b = 2; &amp;a = 006FF8C0; &amp;b = 006FF8CC;</span></span><br><span class="line"><span class="comment">//結論：值一樣但記憶體位址不一樣</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>int *a = &amp;b; //程度好一些的應該知道，這是把b的記憶體位址存到a裡面</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> *a = &amp;b;</span><br><span class="line"><span class="comment">//結果：a = 006FF8B4; b = 3; &amp;a = 006FF8A8; &amp;b = 006FF8B4;</span></span><br><span class="line"><span class="comment">//結論：a存著b的位址，但兩個記憶體位址還是不一樣</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>int &amp;a = b;  //但這個呢？讓我們繼續看下去</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">int</span> &amp;a = b;</span><br><span class="line"><span class="comment">//結果：a = 4; b = 4; &amp;a = 006FF89C; &amp;b = 006FF89C;</span></span><br><span class="line"><span class="comment">//結論：a的位址跟b一樣，所以a跟b一模一樣了！</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>以這些實驗可以得到結論：在宣告的時候 ，<code>int&amp;</code> 會把「等號左邊(<code>a</code>)的變數地址」改變成「等號右邊(<code>b</code>)變數的地址」，因此 <code>a</code> 與 <code>b</code> 兩個是一樣的東西（也就是記憶體位址一樣）！</p>
-<p>回到最一開始的問題：<code>(FARPROC&amp;) addr</code> 到底是甚麼呢？我還是用程式做一下實驗，先以書上的程式碼為第一個實驗，用 <code>(FARPROC&amp;)</code> 去接 <code>GetProcAddress</code> 的值，看會如何；再用 <code>addr</code> 直接去接，又會如何。以下是實驗結果：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA94; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA88; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
-<p>可以發現其實沒有像是我們在最原本例子 <code>int &amp;a=b;</code> 看到的把 <code>addr</code> 位址變為 <code>GetProcAddress</code> 的位址，反而是addr的值變化了，變為 <code>GetProcAddress</code> 回傳的地址，也就是說 <code>(FARPROC&amp;)</code> 在這個實驗中看起來是沒有作用到的。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p><code>(FARPROC&amp;) addr = GetProcAddress(...)</code> 等同於 <code>addr = GetProcAddress(...)</code>，只是不知道書上為何多此一舉。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>FARPROC</tag>
-        <tag>cpp</tag>
-        <tag>加密與解密</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Apache] 修改 HTTP 標頭中的 Server 欄位</title>
     <url>/2021/06/17/apache_http_server/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>伺服器資訊包含類型 (IIS、Apache 或 Nginx) 與版本是一個很重要的資訊，當駭客想針對一個網頁應用程式下手時，必定先蒐集這些情報，下一步再看有沒有尚未修復的漏洞可以利用。</p>
@@ -107,6 +73,70 @@
       </tags>
   </entry>
   <entry>
+    <title>[C++] (FARPROC&amp;) 的含意</title>
+    <url>/2021/06/11/cfarproc/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr; </span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...省略...)</span><br></pre></td></tr></table></figure>
+<p>平常只會看到像是 <code>(int)</code>、<code>(int*)</code> 之類的轉型，第一次看到轉型是帶著 <code>&amp;</code> 符號的，引發我的好奇心，藉此研究一番。</p>
+<h2 id="探討"><a href="#探討" class="headerlink" title="探討"></a>探討</h2><p>要探討這問題，就要先知道一般再宣告的時候，<code>&amp;</code> 運算元到底發揮甚麼功用，所以先用最簡單的整數(<code>int</code>)宣告來測試，內容分為以下三種：</p>
+<ol>
+<li><p><code>int a = b;   //這應該大家都知道，就是把b的值給a</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> a = b;</span><br><span class="line"><span class="comment">//結果：a = 2; b = 2; &amp;a = 006FF8C0; &amp;b = 006FF8CC;</span></span><br><span class="line"><span class="comment">//結論：值一樣但記憶體位址不一樣</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>int *a = &amp;b; //程度好一些的應該知道，這是把b的記憶體位址存到a裡面</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> *a = &amp;b;</span><br><span class="line"><span class="comment">//結果：a = 006FF8B4; b = 3; &amp;a = 006FF8A8; &amp;b = 006FF8B4;</span></span><br><span class="line"><span class="comment">//結論：a存著b的位址，但兩個記憶體位址還是不一樣</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>int &amp;a = b;  //但這個呢？讓我們繼續看下去</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> b = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">int</span> &amp;a = b;</span><br><span class="line"><span class="comment">//結果：a = 4; b = 4; &amp;a = 006FF89C; &amp;b = 006FF89C;</span></span><br><span class="line"><span class="comment">//結論：a的位址跟b一樣，所以a跟b一模一樣了！</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>以這些實驗可以得到結論：在宣告的時候 ，<code>int&amp;</code> 會把「等號左邊(<code>a</code>)的變數地址」改變成「等號右邊(<code>b</code>)變數的地址」，因此 <code>a</code> 與 <code>b</code> 兩個是一樣的東西（也就是記憶體位址一樣）！</p>
+<p>回到最一開始的問題：<code>(FARPROC&amp;) addr</code> 到底是甚麼呢？我還是用程式做一下實驗，先以書上的程式碼為第一個實驗，用 <code>(FARPROC&amp;)</code> 去接 <code>GetProcAddress</code> 的值，看會如何；再用 <code>addr</code> 直接去接，又會如何。以下是實驗結果：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA94; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA88; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
+<p>可以發現其實沒有像是我們在最原本例子 <code>int &amp;a=b;</code> 看到的把 <code>addr</code> 位址變為 <code>GetProcAddress</code> 的位址，反而是addr的值變化了，變為 <code>GetProcAddress</code> 回傳的地址，也就是說 <code>(FARPROC&amp;)</code> 在這個實驗中看起來是沒有作用到的。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p><code>(FARPROC&amp;) addr = GetProcAddress(...)</code> 等同於 <code>addr = GetProcAddress(...)</code>，只是不知道書上為何多此一舉。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>FARPROC</tag>
+        <tag>cpp</tag>
+        <tag>加密與解密</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[C#] 發布 ASP.NET Core 應用程式</title>
+    <url>/2021/06/15/cs_asp_net_core/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接續 <a href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core_3_1/">[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</a> 已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio Enterprise 2019 (16.7.2)</li>
+<li>.Net Core 3.1</li>
+</ul>
+<h2 id="發布"><a href="#發布" class="headerlink" title="發布"></a>發布</h2><p>開啟 cmd 進到專案的資料夾裡</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;<span class="built_in">cd</span> C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice</span><br></pre></td></tr></table></figure>
+<p>使用 <a href="https://docs.microsoft.com/zh-tw/dotnet/core/tools/dotnet-build">Release 組建組態</a>，並以指令執行 publish，訊息中的最後一行為該專案 Publish 的位置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice&gt;dotnet publish -c Release</span><br><span class="line">Microsoft (R) Build Engine version 16.7.0+b89cb5fde <span class="keyword">for</span> .NET</span><br><span class="line">Copyright (C) Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">  Determining projects to restore...</span><br><span class="line">  All projects are up-to-date <span class="keyword">for</span> restore.</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.Views.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish\</span><br></pre></td></tr></table></figure>
+<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>啟動 Publish 位置內的應用程式，此時應用程式在 <code>http://localhost:5000</code> 運行監聽囉，開啟瀏灠器輸入網址即可連線到網頁應用程式</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish&gt;dotnet CorePractice.dll <span class="comment"># 這裡是 dll，不是 exe</span></span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: http://localhost:5000</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: https://localhost:5001</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Application started. Press Ctrl+C to shut down.</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Hosting environment: Production</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Content root path: C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>csharp</tag>
+        <tag>asp</tag>
+        <tag>.net</tag>
+        <tag>core</tag>
+        <tag>publish</tag>
+        <tag>3.1</tag>
+        <tag>visual studio</tag>
+        <tag>2019</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
     <url>/2021/06/15/cs_asp_net_core_3_1/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
@@ -138,72 +168,8 @@
         <tag>core</tag>
         <tag>3.1</tag>
         <tag>visual studio</tag>
+        <tag>2019</tag>
         <tag>razor</tag>
-        <tag>2019</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[C#] 發布 ASP.NET Core 應用程式</title>
-    <url>/2021/06/15/cs_asp_net_core/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接續 <a href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core_3_1/">[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</a> 已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio Enterprise 2019 (16.7.2)</li>
-<li>.Net Core 3.1</li>
-</ul>
-<h2 id="發布"><a href="#發布" class="headerlink" title="發布"></a>發布</h2><p>開啟 cmd 進到專案的資料夾裡</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;<span class="built_in">cd</span> C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice</span><br></pre></td></tr></table></figure>
-<p>使用 <a href="https://docs.microsoft.com/zh-tw/dotnet/core/tools/dotnet-build">Release 組建組態</a>，並以指令執行 publish，訊息中的最後一行為該專案 Publish 的位置</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice&gt;dotnet publish -c Release</span><br><span class="line">Microsoft (R) Build Engine version 16.7.0+b89cb5fde <span class="keyword">for</span> .NET</span><br><span class="line">Copyright (C) Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">  Determining projects to restore...</span><br><span class="line">  All projects are up-to-date <span class="keyword">for</span> restore.</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.Views.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish\</span><br></pre></td></tr></table></figure>
-<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>啟動 Publish 位置內的應用程式，此時應用程式在 <code>http://localhost:5000</code> 運行監聽囉，開啟瀏灠器輸入網址即可連線到網頁應用程式</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish&gt;dotnet CorePractice.dll <span class="comment"># 這裡是 dll，不是 exe</span></span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: http://localhost:5000</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: https://localhost:5001</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Application started. Press Ctrl+C to shut down.</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Hosting environment: Production</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Content root path: C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>csharp</tag>
-        <tag>asp</tag>
-        <tag>.net</tag>
-        <tag>core</tag>
-        <tag>3.1</tag>
-        <tag>visual studio</tag>
-        <tag>2019</tag>
-        <tag>publish</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[CharSet] CentOS 修改 MariaDB／MySQL 預設字符集</title>
-    <url>/2021/06/19/charset_centos_mariadb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL 是瑞典人開發的，所以預設字符集是 latin1，與其每次要創建資料庫都要指定字符集，不如直接更改預設的字符集。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-<li>MariaDB 10.3.17</li>
-</ul>
-<h2 id="確認預設字符集"><a href="#確認預設字符集" class="headerlink" title="確認預設字符集"></a>確認預設字符集</h2><p>登入 MariaDB</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mysql -u user -p</span><br></pre></td></tr></table></figure>
-<p>查看預設字符集，<code>Server characterset</code>、<code>Db characterset</code>、<code>Client characterset</code> 與 <code>Conn. characterset</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          8</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    latin1</span><br><span class="line">Db     characterset:    latin1</span><br><span class="line">Client characterset:    utf8</span><br><span class="line">Conn.  characterset:    utf8</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 8 sec</span><br></pre></td></tr></table></figure>
-<h2 id="更改-cnf-設定"><a href="#更改-cnf-設定" class="headerlink" title="更改 cnf 設定"></a>更改 cnf 設定</h2><p>為了不影響到原先就在的 cnf 檔，在 <code>/etc/my.cnf.d/</code> 目錄下新增一個 cnf 檔 (檔名任意)，內容如下</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8mb4        <span class="comment">## 修改 Client characterset 與 Conn. characterset</span></span><br><span class="line">[mysqld]</span><br><span class="line">character-set-server=utf8mb4         <span class="comment">## 修改 Server characterset 與 Db characterset</span></span><br><span class="line">collation-server=utf8mb4_unicode_ci  <span class="comment">## 會修改預設的校驗比對方法</span></span><br></pre></td></tr></table></figure>
-<h2 id="載入設定"><a href="#載入設定" class="headerlink" title="載入設定"></a>載入設定</h2><p>重啟 MariaDB，確認字符集已更改為所設定的</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mariadb</span><br><span class="line">[user@localhost ~]$ mysql -u user -p</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          9</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    utf8mb4</span><br><span class="line">Db     characterset:    utf8mb4</span><br><span class="line">Client characterset:    utf8mb4</span><br><span class="line">Conn.  characterset:    utf8mb4</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 3 min 39 sec</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>server</tag>
-        <tag>characterset</tag>
-        <tag>client</tag>
-        <tag>mariadb</tag>
-        <tag>mysql</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>default</tag>
-        <tag>collation</tag>
-        <tag>utf8</tag>
-        <tag>utf8mb4</tag>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -278,36 +244,37 @@
       </tags>
   </entry>
   <entry>
-    <title>[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</title>
-    <url>/2021/06/15/dll_vs_2017_dllmain_dll/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 VS 2017 寫一個 dll，其包含 <code>DllMain</code> 與一個 <code>dllexport</code> 函數。若要知道如何在其它的 C++ 專案中調用在 dll 中的函數，請參考 <a href="/2021/06/15/dll_cpp_dll/">[DLL] 在 C++ 中調用 dll 的函式</a>。</p>
+    <title>[CharSet] CentOS 修改 MariaDB／MySQL 預設字符集</title>
+    <url>/2021/06/19/charset_centos_mariadb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL 是瑞典人開發的，所以預設字符集是 latin1，與其每次要創建資料庫都要指定字符集，不如直接更改預設的字符集。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio 2017</li>
+<li>CentOS 8.2</li>
+<li>MariaDB 10.3.17</li>
 </ul>
-<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><h3 id="確認環境"><a href="#確認環境" class="headerlink" title="確認環境"></a>確認環境</h3><p>開啟 <code>Visual Studio Installer</code>，確認 <code>Desktop development with C++</code> 已安裝，才可進行下面的步驟</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fdesktop_development_with_cpp.png?alt=media&amp;token=086089aa-89c2-406b-9b88-64bd9f4023bc" alt="確認環境"><span class="image-caption">確認環境</span></p>
-<h3 id="新增專案"><a href="#新增專案" class="headerlink" title="新增專案"></a>新增專案</h3><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fnew_project.png?alt=media&amp;token=7c6566f7-e51f-4c83-9e38-ee14a3ff1840" alt="新建專案"><span class="image-caption">新建專案</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fchoose_project_type.png?alt=media&amp;token=48ce3ba4-4228-45a4-b9de-188e160dd485" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
-<p>Application type 選 <code>Dynamic Link Library(.dll)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>dllmain.cpp</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fchoose_dll.png?alt=media&amp;token=be30c3e7-94b4-4cc9-a1bd-5457d068658a" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
-<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>dllmain.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-dllmain-and-function">GitHub</a>)</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// dllmain.cpp : Defines the entry point for the DLL application.</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;framework.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DLLMAIN_API __declspec(dllexport)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="function">DLLMAIN_API <span class="keyword">void</span> <span class="title">helloWorldFun</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">MessageBoxW</span>(<span class="number">0</span>, <span class="string">L&quot;此函式呼叫成功&quot;</span>, <span class="string">L&quot;helloWorldFun&quot;</span>, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL APIENTRY <span class="title">DllMain</span><span class="params">(HMODULE hModule,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD  ul_reason_for_call,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPVOID lpReserved</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in"><span class="keyword">switch</span></span> (ul_reason_for_call)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">case</span> DLL_PROCESS_ATTACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;程序建立時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_THREAD_ATTACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;執行緒建立時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_THREAD_DETACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;執行緒退出時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_PROCESS_DETACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;程序退出時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>點擊功能選單 <code>Build → Build Solution</code>，可在 Output 視窗看到下方提示，會在專案下的 Debug 資料夾產出 dll 檔案，檔名與專案名稱相同</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fbuild_solution.png?alt=media&amp;token=55a6777b-cd77-45d8-a01d-7e168eb4f5e8" alt="Build Solution"><span class="image-caption">Build Solution</span></p>
-<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">1&gt;</span><span class="bash">------ Build started: Project: Project1, Configuration: Debug Win32 ------</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">dllmain.cpp</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">   Creating library C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.lib and object C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.exp</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">Project1.vcxproj -&gt;  C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.dll</span> </span><br><span class="line">========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========</span><br></pre></td></tr></table></figure>
-<p>此時的 <code>Project1.dll</code> 就是包含 <code>DllMain</code> 與一個匯出函式 <code>helloWorldFun</code> 的 dll 檔案囉！</p>
-]]></content>
+<h2 id="確認預設字符集"><a href="#確認預設字符集" class="headerlink" title="確認預設字符集"></a>確認預設字符集</h2><p>登入 MariaDB</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mysql -u user -p</span><br></pre></td></tr></table></figure>
+<p>查看預設字符集，<code>Server characterset</code>、<code>Db characterset</code>、<code>Client characterset</code> 與 <code>Conn. characterset</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          8</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    latin1</span><br><span class="line">Db     characterset:    latin1</span><br><span class="line">Client characterset:    utf8</span><br><span class="line">Conn.  characterset:    utf8</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 8 sec</span><br></pre></td></tr></table></figure>
+<h2 id="更改-cnf-設定"><a href="#更改-cnf-設定" class="headerlink" title="更改 cnf 設定"></a>更改 cnf 設定</h2><p>為了不影響到原先就在的 cnf 檔，在 <code>/etc/my.cnf.d/</code> 目錄下新增一個 cnf 檔 (檔名任意)，內容如下</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8mb4        <span class="comment">## 修改 Client characterset 與 Conn. characterset</span></span><br><span class="line">[mysqld]</span><br><span class="line">character-set-server=utf8mb4         <span class="comment">## 修改 Server characterset 與 Db characterset</span></span><br><span class="line">collation-server=utf8mb4_unicode_ci  <span class="comment">## 會修改預設的校驗比對方法</span></span><br></pre></td></tr></table></figure>
+<h2 id="載入設定"><a href="#載入設定" class="headerlink" title="載入設定"></a>載入設定</h2><p>重啟 MariaDB，確認字符集已更改為所設定的</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mariadb</span><br><span class="line">[user@localhost ~]$ mysql -u user -p</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          9</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    utf8mb4</span><br><span class="line">Db     characterset:    utf8mb4</span><br><span class="line">Client characterset:    utf8mb4</span><br><span class="line">Conn.  characterset:    utf8mb4</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 3 min 39 sec</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>cpp</tag>
-        <tag>visual studio</tag>
-        <tag>dll</tag>
-        <tag>2017</tag>
-        <tag>dllmain</tag>
+        <tag>server</tag>
+        <tag>characterset</tag>
+        <tag>client</tag>
+        <tag>mariadb</tag>
+        <tag>mysql</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>default</tag>
+        <tag>collation</tag>
+        <tag>utf8</tag>
+        <tag>utf8mb4</tag>
+        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -343,6 +310,62 @@
         <tag>invoke</tag>
         <tag>loadlibrarya</tag>
         <tag>loadlibraryw</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</title>
+    <url>/2021/06/15/dll_vs_2017_dllmain_dll/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 VS 2017 寫一個 dll，其包含 <code>DllMain</code> 與一個 <code>dllexport</code> 函數。若要知道如何在其它的 C++ 專案中調用在 dll 中的函數，請參考 <a href="/2021/06/15/dll_cpp_dll/">[DLL] 在 C++ 中調用 dll 的函式</a>。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio 2017</li>
+</ul>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><h3 id="確認環境"><a href="#確認環境" class="headerlink" title="確認環境"></a>確認環境</h3><p>開啟 <code>Visual Studio Installer</code>，確認 <code>Desktop development with C++</code> 已安裝，才可進行下面的步驟</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fdesktop_development_with_cpp.png?alt=media&amp;token=086089aa-89c2-406b-9b88-64bd9f4023bc" alt="確認環境"><span class="image-caption">確認環境</span></p>
+<h3 id="新增專案"><a href="#新增專案" class="headerlink" title="新增專案"></a>新增專案</h3><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fnew_project.png?alt=media&amp;token=7c6566f7-e51f-4c83-9e38-ee14a3ff1840" alt="新建專案"><span class="image-caption">新建專案</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fchoose_project_type.png?alt=media&amp;token=48ce3ba4-4228-45a4-b9de-188e160dd485" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
+<p>Application type 選 <code>Dynamic Link Library(.dll)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>dllmain.cpp</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fchoose_dll.png?alt=media&amp;token=be30c3e7-94b4-4cc9-a1bd-5457d068658a" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>dllmain.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-dllmain-and-function">GitHub</a>)</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// dllmain.cpp : Defines the entry point for the DLL application.</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;framework.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DLLMAIN_API __declspec(dllexport)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="function">DLLMAIN_API <span class="keyword">void</span> <span class="title">helloWorldFun</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">MessageBoxW</span>(<span class="number">0</span>, <span class="string">L&quot;此函式呼叫成功&quot;</span>, <span class="string">L&quot;helloWorldFun&quot;</span>, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL APIENTRY <span class="title">DllMain</span><span class="params">(HMODULE hModule,</span></span></span><br><span class="line"><span class="params"><span class="function">    DWORD  ul_reason_for_call,</span></span></span><br><span class="line"><span class="params"><span class="function">    LPVOID lpReserved</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in"><span class="keyword">switch</span></span> (ul_reason_for_call)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">case</span> DLL_PROCESS_ATTACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;程序建立時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_THREAD_ATTACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;執行緒建立時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_THREAD_DETACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;執行緒退出時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_PROCESS_DETACH:</span><br><span class="line">        <span class="built_in">MessageBox</span>(<span class="number">0</span>, <span class="string">L&quot;程序退出時被呼叫&quot;</span>, <span class="string">L&quot;DllMain&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>點擊功能選單 <code>Build → Build Solution</code>，可在 Output 視窗看到下方提示，會在專案下的 Debug 資料夾產出 dll 檔案，檔名與專案名稱相同</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E4%BD%BF%E7%94%A8-VS-2017-%E5%AF%AB%E5%8C%85%E5%90%AB-DllMain-%E7%9A%84-dll%2Fbuild_solution.png?alt=media&amp;token=55a6777b-cd77-45d8-a01d-7e168eb4f5e8" alt="Build Solution"><span class="image-caption">Build Solution</span></p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">1&gt;</span><span class="bash">------ Build started: Project: Project1, Configuration: Debug Win32 ------</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">dllmain.cpp</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">   Creating library C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.lib and object C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.exp</span></span><br><span class="line"><span class="meta">1&gt;</span><span class="bash">Project1.vcxproj -&gt;  C:\Users\wrxue\<span class="built_in">source</span>\repos\Project1\Debug\Project1.dll</span> </span><br><span class="line">========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========</span><br></pre></td></tr></table></figure>
+<p>此時的 <code>Project1.dll</code> 就是包含 <code>DllMain</code> 與一個匯出函式 <code>helloWorldFun</code> 的 dll 檔案囉！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>cpp</tag>
+        <tag>visual studio</tag>
+        <tag>dll</tag>
+        <tag>2017</tag>
+        <tag>dllmain</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[EJS] 單獨使用 EJS 渲染前端畫面</title>
+    <url>/2021/06/15/ejs_ejs/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>網路上有許多 <code>EJS</code> 使用範例，通常是以 <code>Node.js</code> 與 <code>Express</code> 搭配的教學，而這裡紀錄如何單獨使用 <code>EJS</code> 來渲染前端畫面。</p>
+<h2 id="使用步驟"><a href="#使用步驟" class="headerlink" title="使用步驟"></a>使用步驟</h2><p>建立一個資料夾用來放置相關檔案，並下載 <a href="https://github.com/mde/ejs/releases/tag/v3.0.2">EJS</a> 內的 <code>ejs.min.js</code> 放至此資料夾中。再新增 <code>index.html</code> 且程式碼如下</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&#x27;./ejs.min.js&#x27;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> html = ejs.render(<span class="string">&#x27;fieldA:&lt;%= fieldA %&gt;&lt;br /&gt;fieldB:&lt;%= fieldB %&gt;&#x27;</span>,</span></span><br><span class="line"><span class="javascript">                &#123;<span class="attr">fieldA</span> : <span class="string">&#x27;Hello world!&#x27;</span>, <span class="attr">fieldB</span> : <span class="string">&#x27;Hellow Taiwan!&#x27;</span>&#125;);</span></span><br><span class="line"><span class="javascript">            <span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                <span class="built_in">document</span>.getElementById(<span class="string">&#x27;divContent&#x27;</span>).innerHTML = html;</span></span><br><span class="line"><span class="javascript">            &#125;</span></span><br><span class="line"><span class="javascript">        </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;divContent&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>此時的目錄檔案結構為</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── ejs.min.js</span><br><span class="line">└── index.html</span><br></pre></td></tr></table></figure>
+<p>直接雙擊 <code>index.html</code>，用瀏灠器就可以看到結果囉！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">fieldA:Hello world!</span><br><span class="line">fieldB:Hellow Taiwan!</span><br></pre></td></tr></table></figure>
+<p>參考原始碼：<a href="https://github.com/weirenxue/ejs-first-step">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ejs</tag>
+        <tag>render</tag>
+        <tag>front end</tag>
+        <tag>alone</tag>
+        <tag>node</tag>
       </tags>
   </entry>
   <entry>
@@ -458,29 +481,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[EJS] 單獨使用 EJS 渲染前端畫面</title>
-    <url>/2021/06/15/ejs_ejs/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>網路上有許多 <code>EJS</code> 使用範例，通常是以 <code>Node.js</code> 與 <code>Express</code> 搭配的教學，而這裡紀錄如何單獨使用 <code>EJS</code> 來渲染前端畫面。</p>
-<h2 id="使用步驟"><a href="#使用步驟" class="headerlink" title="使用步驟"></a>使用步驟</h2><p>建立一個資料夾用來放置相關檔案，並下載 <a href="https://github.com/mde/ejs/releases/tag/v3.0.2">EJS</a> 內的 <code>ejs.min.js</code> 放至此資料夾中。再新增 <code>index.html</code> 且程式碼如下</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&#x27;./ejs.min.js&#x27;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> html = ejs.render(<span class="string">&#x27;fieldA:&lt;%= fieldA %&gt;&lt;br /&gt;fieldB:&lt;%= fieldB %&gt;&#x27;</span>,</span></span><br><span class="line"><span class="javascript">                &#123;<span class="attr">fieldA</span> : <span class="string">&#x27;Hello world!&#x27;</span>, <span class="attr">fieldB</span> : <span class="string">&#x27;Hellow Taiwan!&#x27;</span>&#125;);</span></span><br><span class="line"><span class="javascript">            <span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                <span class="built_in">document</span>.getElementById(<span class="string">&#x27;divContent&#x27;</span>).innerHTML = html;</span></span><br><span class="line"><span class="javascript">            &#125;</span></span><br><span class="line"><span class="javascript">        </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;divContent&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>此時的目錄檔案結構為</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── ejs.min.js</span><br><span class="line">└── index.html</span><br></pre></td></tr></table></figure>
-<p>直接雙擊 <code>index.html</code>，用瀏灠器就可以看到結果囉！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">fieldA:Hello world!</span><br><span class="line">fieldB:Hellow Taiwan!</span><br></pre></td></tr></table></figure>
-<p>參考原始碼：<a href="https://github.com/weirenxue/ejs-first-step">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ejs</tag>
-        <tag>render</tag>
-        <tag>front end</tag>
-        <tag>alone</tag>
-        <tag>node</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Firewall] CentOS 開啟指定的 Port 或服務</title>
     <url>/2021/06/18/firewall_centos_port/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 CentOS 中有多種防火牆 (iptables、firewalld 等)，其中 iptables 是為黑名單規則 (原則允許、例外禁止)，而 firewalld 為白名單規則 (原則禁止、例外允許)。</p>
@@ -575,34 +575,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
-    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>IIS 10.0</li>
-</ul>
-<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>server</tag>
-        <tag>header</tag>
-        <tag>windows</tag>
-        <tag>iis</tag>
-        <tag>x powered by</tag>
-        <tag>x aspnet version</tag>
-        <tag>hide</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Hexo × NexT × Firestore 顯示瀏覽人次</title>
     <url>/2021/06/11/hexo_next_firestore_visitors/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>擴充性高的部落格框架有許多功能或是套件需要自己手動加入，因此在研究如何顯示瀏覽人次的同時記錄整個過程。</p>
@@ -636,6 +608,60 @@
         <tag>next</tag>
         <tag>firestore</tag>
         <tag>visitors</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Hyper-V] 讓 Windows 的硬碟可以超過 16 TB</title>
+    <url>/2021/06/15/hyper_v_windows_16_tb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 檔案系統預設的 Cluster Size 為 4KB，進一步導致分割區最多只能到 16 TB，當要延伸磁區且總容量會超過 16 TB 時，就會出現「磁碟區無法延伸 因為叢集數目將超過檔案系統支援的最大叢集數目」的提示視窗。</p>
+<p>若想要讓 C 槽可到 16 TB 以上的容量，需要在安裝 Windows 時就先設定 (若沒設定但又需要延伸大容量硬碟的話，就重灌吧 QQ)！這篇文章便是紀錄如何設定 C 槽預設能使用更大容量的硬碟！</p>
+<h2 id="查看所需-Cluster-Size"><a href="#查看所需-Cluster-Size" class="headerlink" title="查看所需 Cluster Size"></a>查看所需 Cluster Size</h2><p>請先參考 <a href="https://support.microsoft.com/zh-tw/topic/%E9%A0%90%E8%A8%AD-ntfs-fat-%E5%92%8C-exfat-%E7%9A%84%E5%8F%A2%E9%9B%86%E5%A4%A7%E5%B0%8F-9772e6f1-e31a-00d7-e18f-73169155af95">預設 NTFS、 FAT，和 exFAT 的叢集大小。</a> 中的表格，找出自己需要的 Cluster Size ，例如我是需要將 OS 灌在 Hyper-V 之中，目前 (2021/01/29) 官方所建議的最大容量為 64 TB ，因此查表得知對應的 Cluster Size 應為 16 KB！記住這個資訊下面步驟會用到。</p>
+<h2 id="修改預設-Cluster-Size"><a href="#修改預設-Cluster-Size" class="headerlink" title="修改預設 Cluster Size"></a>修改預設 Cluster Size</h2><p>參考影片設定步驟，會用到的指令及順序如下，其中的 <code>16K</code> 請改為上一步所查找出來的結果</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART</span><br><span class="line">LIST DISK</span><br><span class="line">SELECT DISK 0</span><br><span class="line">LIST PARTITION</span><br><span class="line">SELECT PARTITION 4</span><br><span class="line">FORMAT QUICK UNIT=16K</span><br><span class="line">EXIT </span><br><span class="line">SETUP</span><br></pre></td></tr></table></figure>
+<!-- markdownlint-disable MD033 -->
+<iframe width="560" height="315" src="https://www.youtube.com/embed/KmW_b57L2Ao" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<!-- markdownlint-restore MD033 -->
+<p>按照影片步驟做完後，該 VM 的 C 槽的 Cluster Size 就為 16 KB 囉！讓 C 槽可延伸最多到 64 TB 的容量！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>16 tb</tag>
+        <tag>hyperv</tag>
+        <tag>drive</tag>
+        <tag>cluster</tag>
+        <tag>size</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
+    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>IIS 10.0</li>
+</ul>
+<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>server</tag>
+        <tag>header</tag>
+        <tag>windows</tag>
+        <tag>iis</tag>
+        <tag>x powered by</tag>
+        <tag>x aspnet version</tag>
+        <tag>hide</tag>
       </tags>
   </entry>
   <entry>
@@ -693,32 +719,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Hyper-V] 讓 Windows 的硬碟可以超過 16 TB</title>
-    <url>/2021/06/15/hyper_v_windows_16_tb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 檔案系統預設的 Cluster Size 為 4KB，進一步導致分割區最多只能到 16 TB，當要延伸磁區且總容量會超過 16 TB 時，就會出現「磁碟區無法延伸 因為叢集數目將超過檔案系統支援的最大叢集數目」的提示視窗。</p>
-<p>若想要讓 C 槽可到 16 TB 以上的容量，需要在安裝 Windows 時就先設定 (若沒設定但又需要延伸大容量硬碟的話，就重灌吧 QQ)！這篇文章便是紀錄如何設定 C 槽預設能使用更大容量的硬碟！</p>
-<h2 id="查看所需-Cluster-Size"><a href="#查看所需-Cluster-Size" class="headerlink" title="查看所需 Cluster Size"></a>查看所需 Cluster Size</h2><p>請先參考 <a href="https://support.microsoft.com/zh-tw/topic/%E9%A0%90%E8%A8%AD-ntfs-fat-%E5%92%8C-exfat-%E7%9A%84%E5%8F%A2%E9%9B%86%E5%A4%A7%E5%B0%8F-9772e6f1-e31a-00d7-e18f-73169155af95">預設 NTFS、 FAT，和 exFAT 的叢集大小。</a> 中的表格，找出自己需要的 Cluster Size ，例如我是需要將 OS 灌在 Hyper-V 之中，目前 (2021/01/29) 官方所建議的最大容量為 64 TB ，因此查表得知對應的 Cluster Size 應為 16 KB！記住這個資訊下面步驟會用到。</p>
-<h2 id="修改預設-Cluster-Size"><a href="#修改預設-Cluster-Size" class="headerlink" title="修改預設 Cluster Size"></a>修改預設 Cluster Size</h2><p>參考影片設定步驟，會用到的指令及順序如下，其中的 <code>16K</code> 請改為上一步所查找出來的結果</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART</span><br><span class="line">LIST DISK</span><br><span class="line">SELECT DISK 0</span><br><span class="line">LIST PARTITION</span><br><span class="line">SELECT PARTITION 4</span><br><span class="line">FORMAT QUICK UNIT=16K</span><br><span class="line">EXIT </span><br><span class="line">SETUP</span><br></pre></td></tr></table></figure>
-<!-- markdownlint-disable MD033 -->
-<iframe width="560" height="315" src="https://www.youtube.com/embed/KmW_b57L2Ao" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-<!-- markdownlint-restore MD033 -->
-<p>按照影片步驟做完後，該 VM 的 C 槽的 Cluster Size 就為 16 KB 囉！讓 C 槽可延伸最多到 64 TB 的容量！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>16 tb</tag>
-        <tag>hyperv</tag>
-        <tag>drive</tag>
-        <tag>cluster</tag>
-        <tag>size</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Jupyter] 改變 Jupyter notebook 預設路徑與瀏覽器</title>
     <url>/2021/06/12/python_jupyter/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Jupyter notebook 是一種很方便開發 <code>Python</code> 程式的軟體，可以一步一步地來執行 Python，近年使用率也逐步提高。而我也是使用 Jupyter notebook 的愛用者，最一開始會遇到幾個問題，就是預設的瀏覽器為什麼是 Edge！要怎麼改？再來是預設路徑要怎麼改到我想放 <code>Python</code> 檔案的地方？</p>
@@ -770,6 +770,82 @@
       </tags>
   </entry>
   <entry>
+    <title>[MATLAB] 模仿儀器商附的 IP Finder 並整合進自己的系統裡</title>
+    <url>/2021/06/12/ip_finder/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近拿到一台要價不菲的轉檯 (<code>FLIR PTU-E46</code> 以下稱為 PTU)，預計要用在無線通道量測的自動化量測系統中，必須能控制其轉向，並且要能夠知道當前角度。</p>
+<p>仔細研究一下 PTU 的<a href="https://www.flir.com/support/products/ptu-e46/#Documents">說明書</a>，發現除了 RS-485/232 外，還可以用網際網路來通訊。之後整個系統中預計會有兩個 PTU，為了能讓電腦少一點連接線甚至少到只需要一條網路線，用網路介面來做通訊媒介當然是首選。</p>
+<p>廠商有附一個軟體，可以尋找 PTU 在區網內的 IP，但我發現這個軟體使用上非常碰運氣，怎麼說呢？我執行這找 IP 的程式 10 次，可能只有 1 次找得到 IP，重點是每次 PTU 重機開 IP 就會跑掉，這樣對開發人員或使用者來說都是麻煩。</p>
+<p>可能看到這裡，就會有人建議可以指定一個 IP 給儀器，這樣不用每次重新開機都要搜尋。這樣可行是沒有錯的，但是指定 IP 並非人人都會，在未來系統的操作手冊中可能就要大篇幅說明這樣的設定流程。</p>
+<p>當要控制一個儀器之前，若要先開一個軟體找到它 IP，然後再記下 IP 輸入進另外一個程式裡，連我自己操作都覺得很麻煩！</p>
+<p>因此，我就思考，若能自己寫一個能順利找 IP 的程式，再把此功能鑲嵌在未來控制 PTU 的程式裡，豈不美哉？將找 IP 與控制的程式整合在一起，只需要點點滑鼠就能與 PTU 連線，使用者不需花時間在連線上面，大家都開心。</p>
+<p>我的一個原則：自動化系統越少人工輸入的地方越好。</p>
+<h2 id="想法"><a href="#想法" class="headerlink" title="想法"></a>想法</h2><p>這的確是個問題，通常儀器商不會給原始碼，加上可以想像程式整合後，使用流程上會有多方便，此問題便成立。首先想想這問題該如何切入？</p>
+<p>(開始自言自語) 當然是寫一個跟附的軟體一樣的功能阿！但我沒原始程式碼怎麼辦呢？網路上也找不到其他人有說廠商的尋找 IP 程式怎麼寫。啊！這軟體是用來找 IP 的，那肯定跟網路有關，要能使用網路通訊，必定要發封包，對！關鍵應該就是封包！只是不知道封包的內容是甚麼？印象中我好像有學過用 Wireshark 截取封包來看內容，趕緊去載！</p>
+<h2 id="一步步破解"><a href="#一步步破解" class="headerlink" title="一步步破解"></a>一步步破解</h2><h3 id="觀察原軟體所發送封包"><a href="#觀察原軟體所發送封包" class="headerlink" title="觀察原軟體所發送封包"></a>觀察原軟體所發送封包</h3><p>載好就來看看這個軟體到底發甚麼封包才能找到儀器，先開啟 Wireshark 預備好，再執行廠商附的尋找 PTU IP 的程式</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Matlab%20%E6%A8%A1%E4%BB%BF%E5%84%80%E5%99%A8%E5%95%86%E9%99%84%E7%9A%84-IP-finder-%E6%89%BE%E5%87%BA%E5%84%80%E5%99%A8-IP%2Finit_package.png?alt=media&amp;token=d1992f48-ff15-45da-b168-891f581b0381" alt="廠商附的 IP Finder 所發送的封包"><span class="image-caption">廠商附的 IP Finder 所發送的封包</span></p>
+<p>登愣～抓到！答案呼之欲出，看起來很神秘的程式，說穿不值一文錢。</p>
+<p>原來是直接利用 UDP 廣播 (255.255.255.255) 的方式，來找出儀器的 IP 是多少。第一個廣播封包是由我的電腦 (192.168.0.101) 發出，訊息長度是 10 Bytes，這訊息內容就如同「嗨，我想要找的 PTU 們，你們在哪呀？我的通關密語是 &quot;xxxx&quot;(封包內文)」。</p>
+<p>當 PTU 判斷廣播封包的通關密語正確，第二個廣播封包便是由 PTU (192.168.0.100) 這端發出，訊息長度是 17 Bytes，想當然就是回應「你好，我在這！我的通關密語是 &quot;yyyy&quot;(封包內文)」。</p>
+<p>這時，當軟體判斷接收到包含通關密語 &quot;yyyy&quot; 的封包之時，該封包的 Source IP 即為儀器的 IP！嘿嘿，短短兩個封包，說明一切！</p>
+<p>現在知道這程式是如何運作的，基本上也不需要它的原始碼，只要做出一樣的功能即可。也就是說，若能寫出一個程式，發送廣播封包，讓儀器有反應並且回應一個廣播封包，再去抓此封包的 Source IP 就可以解決這個看似困難的問題。</p>
+<p>那現在就來看看他們之間的通關密語是甚麼吧</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Matlab%20%E6%A8%A1%E4%BB%BF%E5%84%80%E5%99%A8%E5%95%86%E9%99%84%E7%9A%84-IP-finder-%E6%89%BE%E5%87%BA%E5%84%80%E5%99%A8-IP%2Fpackage_from_computer.png?alt=media&amp;token=ba4efde9-cdcb-44cf-999e-eb8111b92a10" alt="電腦端發送的通關密語"><span class="image-caption">電腦端發送的通關密語</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Matlab%20%E6%A8%A1%E4%BB%BF%E5%84%80%E5%99%A8%E5%95%86%E9%99%84%E7%9A%84-IP-finder-%E6%89%BE%E5%87%BA%E5%84%80%E5%99%A8-IP%2Fpackage_from_ptu.png?alt=media&amp;token=45d11ed0-06d6-4d1e-8e10-5c31f34385c0" alt="PTU 端回應的通關密語"><span class="image-caption">PTU 端回應的通關密語</span></p>
+<p>這下可更清楚了，電腦端先說 <code>DCUD_PING\0</code>，儀器端再回覆 <code>DCUD_PONG\0KERNEL\0</code>。雖然個人覺得儀器端的回覆訊息應該有打錯字，PONG 應該為 PING，但是不管這麼多了，說不定儀器商有發現，只是礙於已經賣出產品，目的能溝通正常運行達到就好，沒想到會被別人在這種情況下看到錯字XD。 (但我後來又想想，應該是兵乓球的 PING PONG，賦予這兩個封包有個來回對答的感覺)</p>
+<h3 id="實作"><a href="#實作" class="headerlink" title="實作"></a>實作</h3><p>到目前為止，分析的步驟已經結束，完全清楚主機和儀器們在聊什麼，可藉此抓封包來源 IP 得知儀器所在位置。</p>
+<p>現在就要開始實做，因為之後控制的軟體的開發都是以 <code>MATLAB</code> 為主，因此採用 <code>MATLAB</code> 來傳送與接收封包，目前知道此封包是</p>
+<ul>
+<li>廣播</li>
+<li>連接埠是 4930</li>
+<li>採用 UDP</li>
+<li>包含通關密語 <code>DCUD_PING\0</code></li>
+</ul>
+<p><code>MATLAB</code> 是一個很強大的軟體，工程上的需求應該都有內建函式能用。找到他關於封包發送接收的物件有 <code>tcpip</code>、<code>udp</code> 等等，但在此只會用到 <code>udp</code> 物件。</p>
+<p>先看看在 <code>MATLAB</code> 裡面 <code>help udp</code> 的介紹</p>
+<blockquote>
+<p>OBJ = udp(&#39;RHOST&#39;, RPORT) constructs an udp object associated with remote host, RHOST, and remote port value, RPORT.</p>
+</blockquote>
+<p>非常簡單！只要給目的地端 IP (RHOST = 255.255.255.255) 和目的端的連接埠 (RPORT = 4930)，就能建立一個udp物件</p>
+<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">&gt;&gt; u <span class="built_in">=</span> udp(<span class="string">&#x27;255.255.255.255&#x27;</span>, <span class="number">4930</span>); <span class="comment">%創建一個 udp 物件叫 u。</span></span><br><span class="line">&gt;&gt; u.Status</span><br><span class="line"></span><br><span class="line">ans <span class="built_in">=</span></span><br><span class="line"></span><br><span class="line">    <span class="string">&#x27;closed&#x27;</span></span><br></pre></td></tr></table></figure>
+<p><code>u.Status</code> 是這個 <code>udp</code> 物件現在的狀態，<code>closed</code> 為還沒連線，<code>open</code> 才為連線成功，物件建立好之後要讓其狀態為 <code>open</code> 才能通訊喔！</p>
+<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">&gt;&gt; fopen(u); <span class="comment">%用來打開通訊協定物件的連線狀態</span></span><br><span class="line">&gt;&gt; u.Status</span><br><span class="line"></span><br><span class="line">ans <span class="built_in">=</span></span><br><span class="line"></span><br><span class="line">    <span class="string">&#x27;open&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>這樣代表連線是可以的。來吧，接下來就是傳一個包含通關密語的封包出去看看。</p>
+<p>傳送是用 <code>fwrite</code>、<code>fprintf</code> 與 <code>query</code></p>
+<ul>
+<li><code>fwrite(udp, A)</code>：將資料 <code>A</code> 用連線好的 <code>udp</code> 物件發送出去。</li>
+<li><code>fprintf(udp, A)</code>：與 <code>fwrite</code> 功能一樣，但不同的是會「自動」在 <code>A</code> 最後加上一個換行 (<code>LF</code>) 碼，再傳送出去。</li>
+<li><code>query(udp, A)</code>：包含 <code>fprintf</code> 的功能，除此之外，還會抓一個在緩存區的封包進來，若一定時間內都沒有封包能抓，<code>query</code> 會回覆逾時的結果。</li>
+</ul>
+<p>為了跟廠商軟體所發送的封包一樣，因此選擇不會有添加物的 <code>fwrite</code> 來控制封包內容，實現發送封包。</p>
+<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">&gt;&gt; A <span class="built_in">=</span> [<span class="string">&#x27;DCUD_PING&#x27;</span> char(<span class="number">0</span>)]; <span class="comment">%通關密語 &#x27;DCUD_PING\0&#x27;</span></span><br><span class="line">&gt;&gt; fwrite(u, A);</span><br></pre></td></tr></table></figure>
+<p>發送封包後，查看 Wireshark 竟然還是空的，難道哪裡做錯或想錯了嗎？目標 IP 為 255.255.255.255 沒錯呀，摁？這個 IP 是廣播 IP，所以每個區網都有，我的電腦好像有兩三張網卡，但我目前沒有設定要廣播在哪個區網，該不會廣播錯網域了吧？來看看其他網域的封包</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Matlab%20%E6%A8%A1%E4%BB%BF%E5%84%80%E5%99%A8%E5%95%86%E9%99%84%E7%9A%84-IP-finder-%E6%89%BE%E5%87%BA%E5%84%80%E5%99%A8-IP%2Fwrong_broadcast.png?alt=media&amp;token=0ef803a6-d0aa-451c-b542-6f8301e055b7" alt="其他網域的封包攔截"><span class="image-caption">其他網域的封包攔截</span></p>
+<p>我猜得果然沒錯，儀器是在 192.168.0.0/24 網域內，而這個廣播封包被送去 169.254.0.0/16，儀器當然不會回應。若我想廣播在 192.168.0.0/24，那我必定要以 192.168.0.100 的身分去做廣播，否則會像上面的情況廣播去別地方。那就看看如何設定 <code>udp</code> 物件吧！在 <code>MATLAB</code> 有一個很好用的函式叫做 <code>get(obj)</code>，他能列出物件obj的所有屬性</p>
+<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">&gt;&gt; get(u)</span><br><span class="line">   ByteOrder <span class="built_in">=</span> bigEndian</span><br><span class="line">   ...</span><br><span class="line">   ...</span><br><span class="line">   LocalHost <span class="built_in">=</span> </span><br><span class="line">   LocalPort <span class="built_in">=</span> <span class="number">62910</span></span><br><span class="line">   ...</span><br><span class="line">   ...</span><br></pre></td></tr></table></figure>
+<p>又抓到了！在此就可以設定自己的 IP (LocalHost) 與連接埠 (LocalPort)。由於儀器廣播的目標連接埠是 4930，因此 LocalPort 需要設定為 4930，否則就算儀器廣播封包送出，連接埠沒對上也接收不到。</p>
+<p>再驗證一遍自己的想法</p>
+<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">&gt;&gt; u <span class="built_in">=</span> udp(<span class="string">&#x27;255.255.255.255&#x27;</span>, <span class="number">4930</span>, <span class="string">&#x27;LocalHost&#x27;</span>, <span class="string">&#x27;192.168.0.101&#x27;</span>, <span class="string">&#x27;LocalPort&#x27;</span>, <span class="number">4930</span>);</span><br><span class="line">&gt;&gt; fopen(u);</span><br><span class="line">&gt;&gt; A <span class="built_in">=</span> [<span class="string">&#x27;DCUD_PING&#x27;</span> char(<span class="number">0</span>)];</span><br><span class="line">&gt;&gt; fwrite(u, A);</span><br></pre></td></tr></table></figure>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Matlab%20%E6%A8%A1%E4%BB%BF%E5%84%80%E5%99%A8%E5%95%86%E9%99%84%E7%9A%84-IP-finder-%E6%89%BE%E5%87%BA%E5%84%80%E5%99%A8-IP%2Ffinal_result.png?alt=media&amp;token=9a34d32c-3f81-46ef-9d40-c577441261e3" alt="自製封包被攔截後的樣子"><span class="image-caption">自製封包被攔截後的樣子</span></p>
+<p>有沒有！看起來跟廠商附的軟體發的封包一模一樣！但其實我的目標就是模仿到一樣啦。</p>
+<h3 id="收成"><a href="#收成" class="headerlink" title="收成"></a>收成</h3><p>到現在這步，已經可以坐收儀器發出來的封包，在 <code>MATLAB</code> 裡用 <code>fgetl</code>、<code>fgets</code>、<code>fscanf</code> 或 <code>fread</code> 來收封包，這些指令都能回傳封包的來源 IP，所以都可以使用，我選擇使用　<code>fscanf</code></p>
+<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">&gt;&gt; [A, count, MSG, DatagramAddress] <span class="built_in">=</span> fscanf(u); <span class="comment">%抓封包</span></span><br><span class="line">&gt;&gt; DatagramAddress</span><br><span class="line"></span><br><span class="line">DatagramAddress <span class="built_in">=</span></span><br><span class="line"></span><br><span class="line">    <span class="string">&#x27;192.168.0.100&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>喔耶，終於拿到儀器的 IP 了。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>遇到工程問題要解決時，必須先弄清其原理，才有創造的可能。這篇是我個人認為將在課堂上所學到的知識與實際問題應用結合的一個典型範例，在此勉勵自己若將來遇到其它問題，也能夠先弄懂原理再舉一反三。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ip</tag>
+        <tag>finder</tag>
+        <tag>equipment</tag>
+        <tag>wireshark</tag>
+        <tag>matlab</tag>
+        <tag>ptu</tag>
+        <tag>flir</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[MATLAB] k-means 演算法說明與實作</title>
     <url>/2021/06/12/matlab_k_means/</url>
     <content><![CDATA[<h2 id="k-means-介紹"><a href="#k-means-介紹" class="headerlink" title="k-means 介紹"></a>k-means 介紹</h2><p><code>k-means</code> 又稱 <code>c-means Clustering</code>，是一種分群演算法，k 表示群集的數量，演算法如下</p>
@@ -795,11 +871,138 @@
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>matlab</tag>
         <tag>k</tag>
         <tag>means</tag>
-        <tag>matlab</tag>
         <tag>pseudo</tag>
         <tag>algorithm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[MQTT] Mosquitto Docker 架設與設定詳細過程</title>
+    <url>/2021/07/01/mqtt_mosquitto_docker/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="/2021/06/19/mqtt_centos_7/">[MQTT] CentOS 7 安裝 Mosquitto 並使用帳密驗證</a> 一文已經介紹如何從 yum 開始一步步地架設 MQTT Broker。這次，我想使用 Docker 來架設 Mosquitto，同時運行 MQTT/MQTTS/WS/WSS 四種通訊協定，順便練習 Docker 的使用方法。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 20.04 LTS</li>
+<li>Docker 20.10.2</li>
+</ul>
+<h2 id="下載官方映像檔"><a href="#下載官方映像檔" class="headerlink" title="下載官方映像檔"></a>下載官方映像檔</h2><p>搜尋官方建立的 mqtt Images 並下載</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo docker search mqtt -f is-official=<span class="literal">true</span>  <span class="comment"># 搜尋 Image</span></span><br><span class="line">NAME                DESCRIPTION                                     STARS               OFFICIAL         AUTOMATED</span><br><span class="line">eclipse-mosquitto   Eclipse Mosquitto is an open <span class="built_in">source</span> message …   767                 [OK]</span><br><span class="line"></span><br><span class="line">user@pc:~$ sudo docker pull eclipse-mosquitto   <span class="comment"># 下載指定 Image</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ sudo docker images   <span class="comment"># 列出所有已下載的 Images</span></span><br><span class="line">REPOSITORY          TAG       IMAGE ID       CREATED       SIZE</span><br><span class="line">eclipse-mosquitto   latest    7593d452cd8c   2 weeks ago   9.95MB</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-f is-official=true</code>：指定過濾出官方提供的 Image。</li>
+</ul>
+<h2 id="建立所需目錄與檔案"><a href="#建立所需目錄與檔案" class="headerlink" title="建立所需目錄與檔案"></a>建立所需目錄與檔案</h2><p>Docker 關閉之後不會把關閉之前的數據與狀態存下來，恢復到與剛下載好的 Image 一樣乾淨 (其實根本就是一樣的東西啦)，因此在使用 Docker 之前，需要先創立一些目錄與檔案，來存放我們想永久儲存的資料與設定</p>
+<h3 id="建立目錄"><a href="#建立目錄" class="headerlink" title="建立目錄"></a>建立目錄</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir -p /mosquitto/config  <span class="comment"># 存放設定檔的目錄</span></span><br><span class="line">user@pc:~$ sudo mkdir -p /mosquitto/data    <span class="comment"># 存放數據檔的目錄</span></span><br><span class="line">user@pc:~$ sudo mkdir -p /mosquitto/<span class="built_in">log</span>     <span class="comment"># 存放日誌檔的目錄</span></span><br></pre></td></tr></table></figure>
+<h3 id="建立檔案"><a href="#建立檔案" class="headerlink" title="建立檔案"></a>建立檔案</h3><p><code>/mosquitto/config/mosquitto.conf</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">persistence <span class="literal">true</span></span><br><span class="line">persistence_location /mosquitto/data/</span><br><span class="line">log_dest file /mosquitto/<span class="built_in">log</span>/mosquitto.log</span><br><span class="line"></span><br><span class="line">allow_anonymous <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">listener 1883</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>persistence</code>：<code>true</code> 為開啟資料存放在地端，讓通訊更穩定。可參考詳細說明 <a href="https://pagefault.blog/2020/02/05/how-to-set-up-persistent-storage-for-mosquitto-mqtt-broker/">How to set up persistent storage for Mosquitto MQTT broker</a> 。</li>
+<li><code>persistence_location</code>：指定資料存放於 <code>/mosquitto/data/</code> 目錄下。</li>
+<li><code>log_dest file</code>：Log 會被寫到 <code>/mosquitto/log/mosquitto.log</code> 檔案內。</li>
+<li><code>allow_anonymous</code>：在 <a href="https://mosquitto.org/documentation/migrating-to-2-0/">Mosquitto 2.0</a> 之後預設不允許匿名使用者登入，因此要設定此選項為 <code>true</code> 才可匿名登入。</li>
+<li><code>listener</code>：掛載服務於 1883 port。</li>
+</ul>
+<h2 id="啟動並測試"><a href="#啟動並測試" class="headerlink" title="啟動並測試"></a>啟動並測試</h2><h3 id="啟動"><a href="#啟動" class="headerlink" title="啟動"></a>啟動</h3><p>啟動 eclipse-mosquitto 的 Image，並查看運行中的 Container 確定有正常運作</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo docker run -d --name mqtt -p 1883:1883 \</span><br><span class="line">                        -v /mosquitto:/mosquitto -v /mosquitto/data:/mosquitto/data \</span><br><span class="line">                        -v /mosquitto/<span class="built_in">log</span>:/mosquitto/<span class="built_in">log</span> eclipse-mosquitto</span><br><span class="line"></span><br><span class="line">user@pc:~$ sudo docker ps -a</span><br><span class="line">CONTAINER ID   IMAGE               COMMAND                  CREATED         STATUS         PORTS                    NAMES</span><br><span class="line">76612c251fa2   eclipse-mosquitto   <span class="string">&quot;/docker-entrypoint.…&quot;</span>   5 minutes ago   Up 2 minutes   0.0.0.0:1883-&gt;1883/tcp   mqtt</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-d</code>：啟動後於後台工作。</li>
+<li><code>--name</code>：幫此 Container 取名為 <code>mqtt</code></li>
+<li><code>p</code>：Port 映射 <code>host port:container port</code>。</li>
+<li><code>v</code>：Volumn 映射 <code>host directory:contrainer directory</code>。</li>
+</ul>
+<p>到目前為止，初步的設定已經完成，並已讓 Mosquitto Container 運行起來，且沒有出現錯誤訊息。</p>
+<h3 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h3><p>若要測試 Broker 功能是否正常，需要使用到 <code>mosquitto_sub</code> 與 <code>mosquitto_pub</code> 兩個指令，因此需先安裝 <code>mosquitto-clients</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install mosquitto-clients</span><br></pre></td></tr></table></figure>
+<p>開啟一個新的 Terminal (在此稱 tty1)，輸入指令來訂閱主題</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mosquitto_sub -h localhost -t Try/MQTT/Docker</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mosquitto_sub</code>：訂閱主題。</li>
+<li><code>-h</code>：指定 MQTT Broker 的 IP 或 FQDN。</li>
+<li><code>-t</code>：指定訂閱的主題名稱。</li>
+</ul>
+<p>開啟另一個新的 Terminal (在此稱 tty2)，輸入指令來發布主題</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mosquitto_pub -h localhost -t Try/MQTT/Docker -m <span class="string">&quot;Test Message&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mosquitto_pub</code>：發布主題。</li>
+<li><code>-h</code>：指定 MQTT Broker 的 IP 或 FQDN。</li>
+<li><code>-t</code>：指定發布的主題。</li>
+<li><code>-m</code>：發布的訊息。</li>
+</ul>
+<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表 Mosquitto 安裝完成且可以正常運行！測試完畢後，可以關閉 tty1 與 tty2。</p>
+<h2 id="使用帳密檔"><a href="#使用帳密檔" class="headerlink" title="使用帳密檔"></a>使用帳密檔</h2><p>建立帳密檔需使用到 <a href="https://mosquitto.org/man/mosquitto_passwd-1.html">mosquitto_passwd</a> 指令，因此需先安裝 <code>mosquitto</code>，安裝結束時可能會看到錯誤訊息，這錯誤是因為當 <code>mosquitto</code> 安裝好後預設會自動啟動服務且 Port 為 1883，與我們的 Docker 相衝突，因此不需理會。除此之外，需要將 Mosquitto 的服務關閉，避免占用我們 Docker 要使用的 Port</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install mosquitto</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Job <span class="keyword">for</span> mosquitto.service failed because the control process exited with error code.</span><br><span class="line">See <span class="string">&quot;systemctl status mosquitto.service&quot;</span> and <span class="string">&quot;journalctl -xe&quot;</span> <span class="keyword">for</span> details. <span class="comment"># 此錯誤可忽略</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ sudo systemctl stop mosquitto.service</span><br><span class="line">user@pc:~$ sudo systemctl <span class="built_in">disable</span> mosquitto.service</span><br></pre></td></tr></table></figure>
+<p>安裝好就可以創建帳密檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mosquitto_passwd -c /mosquitto/config/passwd_file joker <span class="comment"># 要創建的使用者名稱為 joker</span></span><br><span class="line">Password:          <span class="comment"># 1234</span></span><br><span class="line">Reenter password:  <span class="comment"># 1234</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ cat /mosquitto/config/passwd_file <span class="comment"># 查看內容</span></span><br><span class="line">joker:$6$9XBw6q7Iq1alMR6w<span class="variable">$576QauwU5YTieVS</span>+PPjrDD3a5UDolccQ0JwArFvcohYQe1XeEIxJlw0vXQCV0sN30+EoipWi1ng39GNHXl/PtQ==</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-c</code>：將會新建一個帳密檔，會覆蓋現有的檔案。若只是想新增使用者到已經存在的帳密檔，不加此選項即可。</li>
+<li><code>/mosquitto/config/passwd_file</code>：帳密檔的絕對路徑。</li>
+<li><code>joker</code>：要創建的使用者名稱。</li>
+</ul>
+<p>建立好之後，需修改 <code>/mosquitto/config/mosquitto.config</code>，讓 Mosquitto 知道要去讀取帳密檔，並且取消匿名使用者的登入權限 (匿名登入權限依應用情境而定)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">persistence <span class="literal">true</span></span><br><span class="line">persistence_location /mosquitto/data/</span><br><span class="line">log_dest file /mosquitto/<span class="built_in">log</span>/mosquitto.log</span><br><span class="line"></span><br><span class="line">allow_anonymous <span class="literal">false</span>   <span class="comment"># 這裡要改，取消匿名使用者的登入權限</span></span><br><span class="line">password_file /mosquitto/config/passwd_file  <span class="comment"># 這裡要加，讓 Mosquitto 知道要去讀取帳密檔</span></span><br><span class="line"></span><br><span class="line">listener 1883</span><br></pre></td></tr></table></figure>
+<p>重新運行 Container，使 Mosquitto 讀取的設定檔為最新的內容，使用帳號才能發布 (<code>mosquitto_pub</code>) 或訂閱 (<code>mosquitto_sub</code>)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo docker restart mqtt</span><br></pre></td></tr></table></figure>
+<h3 id="測試帳密訂閱與發布"><a href="#測試帳密訂閱與發布" class="headerlink" title="測試帳密訂閱與發布"></a>測試帳密訂閱與發布</h3><p>開啟一個新的 Terminal (在此稱 tty1)，使用指令來訂閱主題。但由於我們已經設定為不可匿名登入，可以預想到的是會無法正常運作，因為沒有授權 (也就是沒有指定帳號)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mosquitto_sub -h localhost -t Try/MQTT/Docker</span><br><span class="line">Connection error: Connection Refused: not authorised.</span><br></pre></td></tr></table></figure>
+<p>tty1 中的指令更改如下</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mosquitto_sub -h localhost -t Try/MQTT/Docker -u joker -P 1234</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-u</code>：指定使用者帳號。</li>
+<li><code>-P</code>：指定密碼，注意是大寫 P。</li>
+</ul>
+<p>開啟另一個新的 Terminal (在此稱 tty2)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mosquitto_pub -h localhost -t Try/MQTT/Docker -m <span class="string">&quot;Test Message&quot;</span> -u joker -P 1234 </span><br></pre></td></tr></table></figure>
+<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表帳號密碼機制設定完成並且有正常運作！</p>
+<h2 id="使用-ACL-檔"><a href="#使用-ACL-檔" class="headerlink" title="使用 ACL 檔"></a>使用 ACL 檔</h2><p>ACL (Access Control List) 存取控制表是用來描述一個物件對一串列的存取權限，Mosquitto 也提供這個功能。第一步與帳密檔同樣，創建一個檔案 <code>/mosquitto/config/acl</code>，內容如下</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user joker</span><br><span class="line">topic readwrite joker/<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用者 joker 只可以讀寫符合 pattern 為 <code>joker/#</code> 的 topic，其中 <code>#</code> 為多層級 WildCard 字元 (<code>+</code> 為單一層級)，因此 <code>joker</code>、<code>joker/Try</code> 與 <code>joker/Try/MQTT</code> 都是符合的 topic。</li>
+</ul>
+<p>修改 <code>/mosquitto/config/mosquitto.config</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">persistence <span class="literal">true</span></span><br><span class="line">persistence_location /mosquitto/data/</span><br><span class="line">log_dest file /mosquitto/<span class="built_in">log</span>/mosquitto.log</span><br><span class="line"></span><br><span class="line">allow_anonymous <span class="literal">false</span></span><br><span class="line">password_file /mosquitto/config/passwd_file</span><br><span class="line">acl_file /mosquitto/config/acl  <span class="comment"># 加上這行</span></span><br><span class="line"></span><br><span class="line">listener 1883</span><br></pre></td></tr></table></figure>
+<p>重新運行 Container，使 Mosquitto 讀取的設定檔為最新的內容，知道 ACL 檔案的存在，此時 ACL 功能就正在運行囉。若嘗試以無權限的 topic 進行發布與訂閱，會發現雖然沒有出現錯誤訊息 (例如：權限不足)，但是真的發送不出去，也接收不到的哦！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo docker restart mqtt</span><br></pre></td></tr></table></figure>
+<h2 id="啟用-WebSocket"><a href="#啟用-WebSocket" class="headerlink" title="啟用 WebSocket"></a>啟用 WebSocket</h2><p>WebSocket 是一種可在單個 TCP 連線上全雙工的通訊協定，只需要交握一次，便能建立永久的連線，進行雙向資料傳輸。對於需要低功耗的 IoT 應用來說，透過 WebSocket 使用 MQTT 的訂閱與發佈可以比傳統單純只使用 MQTT 來的節能，因此知道如何開啟 Mosquitto 的 WebSocket 通訊是必要的。</p>
+<p>修改 <code>/mosquitto/config/mosquitto.config</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">persistence <span class="literal">true</span></span><br><span class="line">persistence_location /mosquitto/data/</span><br><span class="line">log_dest file /mosquitto/<span class="built_in">log</span>/mosquitto.log</span><br><span class="line"></span><br><span class="line">allow_anonymous <span class="literal">false</span></span><br><span class="line">password_file /mosquitto/config/passwd_file</span><br><span class="line">acl_file /mosquitto/config/acl</span><br><span class="line"></span><br><span class="line">listener 1883</span><br><span class="line">protocol mqtt       <span class="comment"># 加上這三行</span></span><br><span class="line"></span><br><span class="line">listener 9001       <span class="comment"># 在 Port 9001</span></span><br><span class="line">protocol websockets <span class="comment"># 提供 WebSocket 服務</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>一般 MQTT 協定在 1883 Port 服務</li>
+<li>WebSocket MQTT 在 9001 Port 服務</li>
+</ul>
+<p>刪除現在正在運行的 MQTT Container，並建立一個比原先多綁定 Port 9001 的 Container</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo docker rm -f mqtt</span><br><span class="line"></span><br><span class="line">user@pc:~$ sudo docker run -d --name mqtt -p 1883:1883 -p 9001:9001 \</span><br><span class="line">                        -v /mosquitto:/mosquitto -v /mosquitto/data:/mosquitto/data \</span><br><span class="line">                        -v /mosquitto/<span class="built_in">log</span>:/mosquitto/<span class="built_in">log</span> eclipse-mosquitto</span><br><span class="line"></span><br><span class="line">user@pc:~$ sudo docker ps -a</span><br><span class="line">CONTAINER ID   IMAGE               COMMAND                  CREATED         STATUS         PORTS                                            NAMES</span><br><span class="line">f955f94c7f6e   eclipse-mosquitto   <span class="string">&quot;/docker-entrypoint.…&quot;</span>   4 minutes ago   Up 2 minutes   0.0.0.0:1883-&gt;1883/tcp, 0.0.0.0:9001-&gt;9001/tcp   mqtt</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>此時便可以透過 <code>ws://Broker_IP:9001</code> 與 Broker 進行通訊囉。</p>
+<h2 id="自簽憑證"><a href="#自簽憑證" class="headerlink" title="自簽憑證"></a>自簽憑證</h2><p>Mosquitto 有提供 MQTTS 與 WSS 通訊協定，其中最後一個 S 皆代表 SSL，SSL 能使我們的通訊透過加密防止中間人或竊聽攻擊，要使用 SSL 必須先擁有憑證，然而申請一個正式憑證需要較多手續與耗費許多時日。因此在測試環境中我們可以先自簽憑證，測試加上 SSL 後系統是否能正常運作，若之後系統要上線，再改為正式的憑證即可。詳細步驟與說明可以參考 <a href="/2021/06/15/ssl_self_sign/">[SSL] 自簽憑證過程</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 創建目錄</span></span><br><span class="line">user@pc:~$ mkdir root</span><br><span class="line">user@pc:~$ mkdir server</span><br><span class="line"></span><br><span class="line"><span class="comment"># CA 產 CA 的自簽憑證</span></span><br><span class="line">user@pc:~$ openssl genrsa -out root/ca.key 4096</span><br><span class="line">user@pc:~$ openssl req -new -x509 -days 365 -subj <span class="string">&quot;/C=TW/CN=&#123;這裡任意&#125;&quot;</span> \</span><br><span class="line">                        -key root/ca.key -out root/ca.crt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 簽 Server 憑證</span></span><br><span class="line">user@pc:~$ openssl genrsa -out server/server.key 2048</span><br><span class="line">user@pc:~$ openssl req -new -key server/server.key -subj <span class="string">&quot;/C=TW/CN=&#123;Server IP 或 FQDN&#125;&quot;</span> \</span><br><span class="line">                        -out server/server.csr</span><br><span class="line">user@pc:~$ openssl x509 -req -CAcreateserial -days 30 -sha256 -CA root/ca.crt \</span><br><span class="line">                        -CAkey root/ca.key -<span class="keyword">in</span> server/server.csr -out server/server.crt</span><br></pre></td></tr></table></figure>
+<ul>
+<li>最最最需要注意的是 CA 的 CN 與 Server 的 CN 不能一樣，否則會出現意想不到的錯誤。</li>
+</ul>
+<p>將 <code>ca.crt</code>、<code>server.key</code>、<code>server.crt</code> 移至 <code>/mosquitto/config/certs/</code> 目錄下。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 創建目錄</span></span><br><span class="line">user@pc:~$ sudo mkdir /mosquitto/config/certs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 移動憑證</span></span><br><span class="line">user@pc:~$ sudo cp root/ca.crt /mosquitto/config/certs/</span><br><span class="line">user@pc:~$ sudo cp server/server.key /mosquitto/config/certs/</span><br><span class="line">user@pc:~$ sudo cp server/server.crt /mosquitto/config/certs/</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="開啟-MQTTS-與-WSS"><a href="#開啟-MQTTS-與-WSS" class="headerlink" title="開啟 MQTTS 與 WSS"></a>開啟 MQTTS 與 WSS</h2><p>修改 <code>/mosquitto/config/mosquitto.config</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">persistence <span class="literal">true</span></span><br><span class="line">persistence_location /mosquitto/data/</span><br><span class="line">log_dest file /mosquitto/<span class="built_in">log</span>/mosquitto.log</span><br><span class="line"></span><br><span class="line">allow_anonymous <span class="literal">false</span></span><br><span class="line">password_file /mosquitto/config/passwd_file</span><br><span class="line">acl_file /mosquitto/config/acl</span><br><span class="line"></span><br><span class="line">listener 1883</span><br><span class="line">protocol mqtt</span><br><span class="line"></span><br><span class="line">listener 9001</span><br><span class="line">protocol websockets</span><br><span class="line"></span><br><span class="line">listener 8883                                <span class="comment"># 在 Port 8883</span></span><br><span class="line">protocol mqtt                                <span class="comment"># 服務 MQTTS</span></span><br><span class="line">keyfile /mosquitto/config/certs/server.key   <span class="comment"># Server 的私鑰</span></span><br><span class="line">certfile /mosquitto/config/certs/server.crt  <span class="comment"># Server 的憑證</span></span><br><span class="line">cafile /mosquitto/config/certs/ca.crt        <span class="comment"># CA 的憑證，若不驗證 client 可以不指定 cafile</span></span><br><span class="line"></span><br><span class="line">listener 8884                                <span class="comment"># 在 Port 8884</span></span><br><span class="line">protocol websockets                          <span class="comment"># 服務 WSS</span></span><br><span class="line">keyfile /mosquitto/config/certs/server.key   <span class="comment"># Server 的私鑰</span></span><br><span class="line">certfile /mosquitto/config/certs/server.crt  <span class="comment"># Server 的憑證</span></span><br><span class="line">cafile /mosquitto/config/certs/ca.crt        <span class="comment"># CA 的憑證，若不驗證 client 可以不指定 cafile</span></span><br><span class="line"></span><br><span class="line">require_certificate <span class="literal">false</span>                    <span class="comment"># 這行是不驗證 client 端的憑證</span></span><br></pre></td></tr></table></figure>
+<p>刪除現在正在運行的 MQTT Container，並建立一個比原先多綁定 Port 8883 與 8884 的 Container</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo docker rm -f mqtt</span><br><span class="line">user@pc:~$ sudo docker run -d --name mqtt -p 1883:1883 -p 9001:9001 -p 8883:8883 -p 8884:8884 \</span><br><span class="line">                        -v /mosquitto:/mosquitto -v /mosquitto/data:/mosquitto/data \</span><br><span class="line">                        -v /mosquitto/<span class="built_in">log</span>:/mosquitto/<span class="built_in">log</span> eclipse-mosquitto</span><br></pre></td></tr></table></figure>
+<p>至此， MQTT/MQTTS/WS/WSS 四個通訊協定都已經正常運作，最終選擇所要使用的通訊協定還是要回歸到應用情境，若沒用到的 Port 可以選擇關閉。</p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>這篇文章記錄了如何使用 Docker 輕鬆架設 MQTT Broker (Mosquitto)，並且使用身分驗證、ACL 權限控管，啟動 MQTT/MQTTS/WS/WSS 四個協定。當然，還有更多的進階設定沒有在此篇文章中紀載，但架設伺服器的第一步，就是先將基本設定完善，並確認能夠運行，才能繼續下一步的調教。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>20.04</tag>
+        <tag>linux</tag>
+        <tag>mqtt</tag>
+        <tag>mosquitto</tag>
+        <tag>docker</tag>
+        <tag>websock</tag>
+        <tag>tcp</tag>
+        <tag>ssl</tag>
+        <tag>acl</tag>
+        <tag>password</tag>
+        <tag>image</tag>
+        <tag>container</tag>
       </tags>
   </entry>
   <entry>
@@ -930,209 +1133,6 @@
         <tag>bit</tag>
         <tag>division</tag>
         <tag>power of 2</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[MATLAB] 模仿儀器商附的 IP Finder 並整合進自己的系統裡</title>
-    <url>/2021/06/12/ip_finder/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近拿到一台要價不菲的轉檯 (<code>FLIR PTU-E46</code> 以下稱為 PTU)，預計要用在無線通道量測的自動化量測系統中，必須能控制其轉向，並且要能夠知道當前角度。</p>
-<p>仔細研究一下 PTU 的<a href="https://www.flir.com/support/products/ptu-e46/#Documents">說明書</a>，發現除了 RS-485/232 外，還可以用網際網路來通訊。之後整個系統中預計會有兩個 PTU，為了能讓電腦少一點連接線甚至少到只需要一條網路線，用網路介面來做通訊媒介當然是首選。</p>
-<p>廠商有附一個軟體，可以尋找 PTU 在區網內的 IP，但我發現這個軟體使用上非常碰運氣，怎麼說呢？我執行這找 IP 的程式 10 次，可能只有 1 次找得到 IP，重點是每次 PTU 重機開 IP 就會跑掉，這樣對開發人員或使用者來說都是麻煩。</p>
-<p>可能看到這裡，就會有人建議可以指定一個 IP 給儀器，這樣不用每次重新開機都要搜尋。這樣可行是沒有錯的，但是指定 IP 並非人人都會，在未來系統的操作手冊中可能就要大篇幅說明這樣的設定流程。</p>
-<p>當要控制一個儀器之前，若要先開一個軟體找到它 IP，然後再記下 IP 輸入進另外一個程式裡，連我自己操作都覺得很麻煩！</p>
-<p>因此，我就思考，若能自己寫一個能順利找 IP 的程式，再把此功能鑲嵌在未來控制 PTU 的程式裡，豈不美哉？將找 IP 與控制的程式整合在一起，只需要點點滑鼠就能與 PTU 連線，使用者不需花時間在連線上面，大家都開心。</p>
-<p>我的一個原則：自動化系統越少人工輸入的地方越好。</p>
-<h2 id="想法"><a href="#想法" class="headerlink" title="想法"></a>想法</h2><p>這的確是個問題，通常儀器商不會給原始碼，加上可以想像程式整合後，使用流程上會有多方便，此問題便成立。首先想想這問題該如何切入？</p>
-<p>(開始自言自語) 當然是寫一個跟附的軟體一樣的功能阿！但我沒原始程式碼怎麼辦呢？網路上也找不到其他人有說廠商的尋找 IP 程式怎麼寫。啊！這軟體是用來找 IP 的，那肯定跟網路有關，要能使用網路通訊，必定要發封包，對！關鍵應該就是封包！只是不知道封包的內容是甚麼？印象中我好像有學過用 Wireshark 截取封包來看內容，趕緊去載！</p>
-<h2 id="一步步破解"><a href="#一步步破解" class="headerlink" title="一步步破解"></a>一步步破解</h2><h3 id="觀察原軟體所發送封包"><a href="#觀察原軟體所發送封包" class="headerlink" title="觀察原軟體所發送封包"></a>觀察原軟體所發送封包</h3><p>載好就來看看這個軟體到底發甚麼封包才能找到儀器，先開啟 Wireshark 預備好，再執行廠商附的尋找 PTU IP 的程式</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Matlab%20%E6%A8%A1%E4%BB%BF%E5%84%80%E5%99%A8%E5%95%86%E9%99%84%E7%9A%84-IP-finder-%E6%89%BE%E5%87%BA%E5%84%80%E5%99%A8-IP%2Finit_package.png?alt=media&amp;token=d1992f48-ff15-45da-b168-891f581b0381" alt="廠商附的 IP Finder 所發送的封包"><span class="image-caption">廠商附的 IP Finder 所發送的封包</span></p>
-<p>登愣～抓到！答案呼之欲出，看起來很神秘的程式，說穿不值一文錢。</p>
-<p>原來是直接利用 UDP 廣播 (255.255.255.255) 的方式，來找出儀器的 IP 是多少。第一個廣播封包是由我的電腦 (192.168.0.101) 發出，訊息長度是 10 Bytes，這訊息內容就如同「嗨，我想要找的 PTU 們，你們在哪呀？我的通關密語是 &quot;xxxx&quot;(封包內文)」。</p>
-<p>當 PTU 判斷廣播封包的通關密語正確，第二個廣播封包便是由 PTU (192.168.0.100) 這端發出，訊息長度是 17 Bytes，想當然就是回應「你好，我在這！我的通關密語是 &quot;yyyy&quot;(封包內文)」。</p>
-<p>這時，當軟體判斷接收到包含通關密語 &quot;yyyy&quot; 的封包之時，該封包的 Source IP 即為儀器的 IP！嘿嘿，短短兩個封包，說明一切！</p>
-<p>現在知道這程式是如何運作的，基本上也不需要它的原始碼，只要做出一樣的功能即可。也就是說，若能寫出一個程式，發送廣播封包，讓儀器有反應並且回應一個廣播封包，再去抓此封包的 Source IP 就可以解決這個看似困難的問題。</p>
-<p>那現在就來看看他們之間的通關密語是甚麼吧</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Matlab%20%E6%A8%A1%E4%BB%BF%E5%84%80%E5%99%A8%E5%95%86%E9%99%84%E7%9A%84-IP-finder-%E6%89%BE%E5%87%BA%E5%84%80%E5%99%A8-IP%2Fpackage_from_computer.png?alt=media&amp;token=ba4efde9-cdcb-44cf-999e-eb8111b92a10" alt="電腦端發送的通關密語"><span class="image-caption">電腦端發送的通關密語</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Matlab%20%E6%A8%A1%E4%BB%BF%E5%84%80%E5%99%A8%E5%95%86%E9%99%84%E7%9A%84-IP-finder-%E6%89%BE%E5%87%BA%E5%84%80%E5%99%A8-IP%2Fpackage_from_ptu.png?alt=media&amp;token=45d11ed0-06d6-4d1e-8e10-5c31f34385c0" alt="PTU 端回應的通關密語"><span class="image-caption">PTU 端回應的通關密語</span></p>
-<p>這下可更清楚了，電腦端先說 <code>DCUD_PING\0</code>，儀器端再回覆 <code>DCUD_PONG\0KERNEL\0</code>。雖然個人覺得儀器端的回覆訊息應該有打錯字，PONG 應該為 PING，但是不管這麼多了，說不定儀器商有發現，只是礙於已經賣出產品，目的能溝通正常運行達到就好，沒想到會被別人在這種情況下看到錯字XD。 (但我後來又想想，應該是兵乓球的 PING PONG，賦予這兩個封包有個來回對答的感覺)</p>
-<h3 id="實作"><a href="#實作" class="headerlink" title="實作"></a>實作</h3><p>到目前為止，分析的步驟已經結束，完全清楚主機和儀器們在聊什麼，可藉此抓封包來源 IP 得知儀器所在位置。</p>
-<p>現在就要開始實做，因為之後控制的軟體的開發都是以 <code>MATLAB</code> 為主，因此採用 <code>MATLAB</code> 來傳送與接收封包，目前知道此封包是</p>
-<ul>
-<li>廣播</li>
-<li>連接埠是 4930</li>
-<li>採用 UDP</li>
-<li>包含通關密語 <code>DCUD_PING\0</code></li>
-</ul>
-<p><code>MATLAB</code> 是一個很強大的軟體，工程上的需求應該都有內建函式能用。找到他關於封包發送接收的物件有 <code>tcpip</code>、<code>udp</code> 等等，但在此只會用到 <code>udp</code> 物件。</p>
-<p>先看看在 <code>MATLAB</code> 裡面 <code>help udp</code> 的介紹</p>
-<blockquote>
-<p>OBJ = udp(&#39;RHOST&#39;, RPORT) constructs an udp object associated with remote host, RHOST, and remote port value, RPORT.</p>
-</blockquote>
-<p>非常簡單！只要給目的地端 IP (RHOST = 255.255.255.255) 和目的端的連接埠 (RPORT = 4930)，就能建立一個udp物件</p>
-<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">&gt;&gt; u <span class="built_in">=</span> udp(<span class="string">&#x27;255.255.255.255&#x27;</span>, <span class="number">4930</span>); <span class="comment">%創建一個 udp 物件叫 u。</span></span><br><span class="line">&gt;&gt; u.Status</span><br><span class="line"></span><br><span class="line">ans <span class="built_in">=</span></span><br><span class="line"></span><br><span class="line">    <span class="string">&#x27;closed&#x27;</span></span><br></pre></td></tr></table></figure>
-<p><code>u.Status</code> 是這個 <code>udp</code> 物件現在的狀態，<code>closed</code> 為還沒連線，<code>open</code> 才為連線成功，物件建立好之後要讓其狀態為 <code>open</code> 才能通訊喔！</p>
-<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">&gt;&gt; fopen(u); <span class="comment">%用來打開通訊協定物件的連線狀態</span></span><br><span class="line">&gt;&gt; u.Status</span><br><span class="line"></span><br><span class="line">ans <span class="built_in">=</span></span><br><span class="line"></span><br><span class="line">    <span class="string">&#x27;open&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>這樣代表連線是可以的。來吧，接下來就是傳一個包含通關密語的封包出去看看。</p>
-<p>傳送是用 <code>fwrite</code>、<code>fprintf</code> 與 <code>query</code></p>
-<ul>
-<li><code>fwrite(udp, A)</code>：將資料 <code>A</code> 用連線好的 <code>udp</code> 物件發送出去。</li>
-<li><code>fprintf(udp, A)</code>：與 <code>fwrite</code> 功能一樣，但不同的是會「自動」在 <code>A</code> 最後加上一個換行 (<code>LF</code>) 碼，再傳送出去。</li>
-<li><code>query(udp, A)</code>：包含 <code>fprintf</code> 的功能，除此之外，還會抓一個在緩存區的封包進來，若一定時間內都沒有封包能抓，<code>query</code> 會回覆逾時的結果。</li>
-</ul>
-<p>為了跟廠商軟體所發送的封包一樣，因此選擇不會有添加物的 <code>fwrite</code> 來控制封包內容，實現發送封包。</p>
-<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">&gt;&gt; A <span class="built_in">=</span> [<span class="string">&#x27;DCUD_PING&#x27;</span> char(<span class="number">0</span>)]; <span class="comment">%通關密語 &#x27;DCUD_PING\0&#x27;</span></span><br><span class="line">&gt;&gt; fwrite(u, A);</span><br></pre></td></tr></table></figure>
-<p>發送封包後，查看 Wireshark 竟然還是空的，難道哪裡做錯或想錯了嗎？目標 IP 為 255.255.255.255 沒錯呀，摁？這個 IP 是廣播 IP，所以每個區網都有，我的電腦好像有兩三張網卡，但我目前沒有設定要廣播在哪個區網，該不會廣播錯網域了吧？來看看其他網域的封包</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Matlab%20%E6%A8%A1%E4%BB%BF%E5%84%80%E5%99%A8%E5%95%86%E9%99%84%E7%9A%84-IP-finder-%E6%89%BE%E5%87%BA%E5%84%80%E5%99%A8-IP%2Fwrong_broadcast.png?alt=media&amp;token=0ef803a6-d0aa-451c-b542-6f8301e055b7" alt="其他網域的封包攔截"><span class="image-caption">其他網域的封包攔截</span></p>
-<p>我猜得果然沒錯，儀器是在 192.168.0.0/24 網域內，而這個廣播封包被送去 169.254.0.0/16，儀器當然不會回應。若我想廣播在 192.168.0.0/24，那我必定要以 192.168.0.100 的身分去做廣播，否則會像上面的情況廣播去別地方。那就看看如何設定 <code>udp</code> 物件吧！在 <code>MATLAB</code> 有一個很好用的函式叫做 <code>get(obj)</code>，他能列出物件obj的所有屬性</p>
-<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">&gt;&gt; get(u)</span><br><span class="line">   ByteOrder <span class="built_in">=</span> bigEndian</span><br><span class="line">   ...</span><br><span class="line">   ...</span><br><span class="line">   LocalHost <span class="built_in">=</span> </span><br><span class="line">   LocalPort <span class="built_in">=</span> <span class="number">62910</span></span><br><span class="line">   ...</span><br><span class="line">   ...</span><br></pre></td></tr></table></figure>
-<p>又抓到了！在此就可以設定自己的 IP (LocalHost) 與連接埠 (LocalPort)。由於儀器廣播的目標連接埠是 4930，因此 LocalPort 需要設定為 4930，否則就算儀器廣播封包送出，連接埠沒對上也接收不到。</p>
-<p>再驗證一遍自己的想法</p>
-<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">&gt;&gt; u <span class="built_in">=</span> udp(<span class="string">&#x27;255.255.255.255&#x27;</span>, <span class="number">4930</span>, <span class="string">&#x27;LocalHost&#x27;</span>, <span class="string">&#x27;192.168.0.101&#x27;</span>, <span class="string">&#x27;LocalPort&#x27;</span>, <span class="number">4930</span>);</span><br><span class="line">&gt;&gt; fopen(u);</span><br><span class="line">&gt;&gt; A <span class="built_in">=</span> [<span class="string">&#x27;DCUD_PING&#x27;</span> char(<span class="number">0</span>)];</span><br><span class="line">&gt;&gt; fwrite(u, A);</span><br></pre></td></tr></table></figure>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Matlab%20%E6%A8%A1%E4%BB%BF%E5%84%80%E5%99%A8%E5%95%86%E9%99%84%E7%9A%84-IP-finder-%E6%89%BE%E5%87%BA%E5%84%80%E5%99%A8-IP%2Ffinal_result.png?alt=media&amp;token=9a34d32c-3f81-46ef-9d40-c577441261e3" alt="自製封包被攔截後的樣子"><span class="image-caption">自製封包被攔截後的樣子</span></p>
-<p>有沒有！看起來跟廠商附的軟體發的封包一模一樣！但其實我的目標就是模仿到一樣啦。</p>
-<h3 id="收成"><a href="#收成" class="headerlink" title="收成"></a>收成</h3><p>到現在這步，已經可以坐收儀器發出來的封包，在 <code>MATLAB</code> 裡用 <code>fgetl</code>、<code>fgets</code>、<code>fscanf</code> 或 <code>fread</code> 來收封包，這些指令都能回傳封包的來源 IP，所以都可以使用，我選擇使用　<code>fscanf</code></p>
-<figure class="highlight m"><table><tr><td class="code"><pre><span class="line">&gt;&gt; [A, count, MSG, DatagramAddress] <span class="built_in">=</span> fscanf(u); <span class="comment">%抓封包</span></span><br><span class="line">&gt;&gt; DatagramAddress</span><br><span class="line"></span><br><span class="line">DatagramAddress <span class="built_in">=</span></span><br><span class="line"></span><br><span class="line">    <span class="string">&#x27;192.168.0.100&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>喔耶，終於拿到儀器的 IP 了。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>遇到工程問題要解決時，必須先弄清其原理，才有創造的可能。這篇是我個人認為將在課堂上所學到的知識與實際問題應用結合的一個典型範例，在此勉勵自己若將來遇到其它問題，也能夠先弄懂原理再舉一反三。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>matlab</tag>
-        <tag>ip</tag>
-        <tag>finder</tag>
-        <tag>equipment</tag>
-        <tag>wireshark</tag>
-        <tag>ptu</tag>
-        <tag>flir</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[MQTT] Mosquitto Docker 架設與設定詳細過程</title>
-    <url>/2021/06/30/mqtt_mosquitto_docker/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="/2021/06/19/mqtt_centos_7/">[MQTT] CentOS 7 安裝 Mosquitto 並使用帳密驗證</a> 一文已經介紹如何從 yum 開始一步步地架設 MQTT Broker。這次，我想使用 Docker 來架設 Mosquitto，同時運行 MQTT/MQTTS/WS/WSS 四種通訊協定，順便練習 Docker 的使用方法。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 20.04 LTS</li>
-<li>Docker 20.10.2</li>
-</ul>
-<h2 id="下載官方映像檔"><a href="#下載官方映像檔" class="headerlink" title="下載官方映像檔"></a>下載官方映像檔</h2><p>搜尋官方建立的 mqtt Images 並下載</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo docker search mqtt -f is-official=<span class="literal">true</span>  <span class="comment"># 搜尋 Image</span></span><br><span class="line">NAME                DESCRIPTION                                     STARS               OFFICIAL         AUTOMATED</span><br><span class="line">eclipse-mosquitto   Eclipse Mosquitto is an open <span class="built_in">source</span> message …   767                 [OK]</span><br><span class="line"></span><br><span class="line">user@pc:~$ sudo docker pull eclipse-mosquitto   <span class="comment"># 下載指定 Image</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ sudo docker images   <span class="comment"># 列出所有已下載的 Images</span></span><br><span class="line">REPOSITORY          TAG       IMAGE ID       CREATED       SIZE</span><br><span class="line">eclipse-mosquitto   latest    7593d452cd8c   2 weeks ago   9.95MB</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-f is-official=true</code>：指定過濾出官方提供的 Image。</li>
-</ul>
-<h2 id="建立所需目錄與檔案"><a href="#建立所需目錄與檔案" class="headerlink" title="建立所需目錄與檔案"></a>建立所需目錄與檔案</h2><p>Docker 關閉之後不會把關閉之前的數據與狀態存下來，恢復到與剛下載好的 Image 一樣乾淨 (其實根本就是一樣的東西啦)，因此在使用 Docker 之前，需要先創立一些目錄與檔案，來存放我們想永久儲存的資料與設定</p>
-<h3 id="建立目錄"><a href="#建立目錄" class="headerlink" title="建立目錄"></a>建立目錄</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir -p /mosquitto/config  <span class="comment"># 存放設定檔的目錄</span></span><br><span class="line">user@pc:~$ sudo mkdir -p /mosquitto/data    <span class="comment"># 存放數據檔的目錄</span></span><br><span class="line">user@pc:~$ sudo mkdir -p /mosquitto/<span class="built_in">log</span>     <span class="comment"># 存放日誌檔的目錄</span></span><br></pre></td></tr></table></figure>
-<h3 id="建立檔案"><a href="#建立檔案" class="headerlink" title="建立檔案"></a>建立檔案</h3><p><code>/mosquitto/config/mosquitto.conf</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">persistence <span class="literal">true</span></span><br><span class="line">persistence_location /mosquitto/data/</span><br><span class="line">log_dest file /mosquitto/<span class="built_in">log</span>/mosquitto.log</span><br><span class="line"></span><br><span class="line">allow_anonymous <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">listener 1883</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>persistence</code>：<code>true</code> 為開啟資料存放在地端，讓通訊更穩定。可參考詳細說明 <a href="https://pagefault.blog/2020/02/05/how-to-set-up-persistent-storage-for-mosquitto-mqtt-broker/">How to set up persistent storage for Mosquitto MQTT broker</a> 。</li>
-<li><code>persistence_location</code>：指定資料存放於 <code>/mosquitto/data/</code> 目錄下。</li>
-<li><code>log_dest file</code>：Log 會被寫到 <code>/mosquitto/log/mosquitto.log</code> 檔案內。</li>
-<li><code>allow_anonymous</code>：在 <a href="https://mosquitto.org/documentation/migrating-to-2-0/">Mosquitto 2.0</a> 之後預設不允許匿名使用者登入，因此要設定此選項為 <code>true</code> 才可匿名登入。</li>
-<li><code>listener</code>：掛載服務於 1883 port。</li>
-</ul>
-<h2 id="啟動並測試"><a href="#啟動並測試" class="headerlink" title="啟動並測試"></a>啟動並測試</h2><h3 id="啟動"><a href="#啟動" class="headerlink" title="啟動"></a>啟動</h3><p>啟動 eclipse-mosquitto 的 Image，並查看運行中的 Container 確定有正常運作</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo docker run -d --name mqtt -p 1883:1883 \</span><br><span class="line">                        -v /mosquitto:/mosquitto -v /mosquitto/data:/mosquitto/data \</span><br><span class="line">                        -v /mosquitto/<span class="built_in">log</span>:/mosquitto/<span class="built_in">log</span> eclipse-mosquitto</span><br><span class="line"></span><br><span class="line">user@pc:~$ sudo docker ps -a</span><br><span class="line">CONTAINER ID   IMAGE               COMMAND                  CREATED         STATUS         PORTS                    NAMES</span><br><span class="line">76612c251fa2   eclipse-mosquitto   <span class="string">&quot;/docker-entrypoint.…&quot;</span>   5 minutes ago   Up 2 minutes   0.0.0.0:1883-&gt;1883/tcp   mqtt</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-d</code>：啟動後於後台工作。</li>
-<li><code>--name</code>：幫此 Container 取名為 <code>mqtt</code></li>
-<li><code>p</code>：Port 映射 <code>host port:container port</code>。</li>
-<li><code>v</code>：Volumn 映射 <code>host directory:contrainer directory</code>。</li>
-</ul>
-<p>到目前為止，初步的設定已經完成，並已讓 Mosquitto Container 運行起來，且沒有出現錯誤訊息。</p>
-<h3 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h3><p>若要測試 Broker 功能是否正常，需要使用到 <code>mosquitto_sub</code> 與 <code>mosquitto_pub</code> 兩個指令，因此需先安裝 <code>mosquitto-clients</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install mosquitto-clients</span><br></pre></td></tr></table></figure>
-<p>開啟一個新的 Terminal (在此稱 tty1)，輸入指令來訂閱主題</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mosquitto_sub -h localhost -t Try/MQTT/Docker</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>mosquitto_sub</code>：訂閱主題。</li>
-<li><code>-h</code>：指定 MQTT Broker 的 IP 或 FQDN。</li>
-<li><code>-t</code>：指定訂閱的主題名稱。</li>
-</ul>
-<p>開啟另一個新的 Terminal (在此稱 tty2)，輸入指令來發布主題</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mosquitto_pub -h localhost -t Try/MQTT/Docker -m <span class="string">&quot;Test Message&quot;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>mosquitto_pub</code>：發布主題。</li>
-<li><code>-h</code>：指定 MQTT Broker 的 IP 或 FQDN。</li>
-<li><code>-t</code>：指定發布的主題。</li>
-<li><code>-m</code>：發布的訊息。</li>
-</ul>
-<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表 Mosquitto 安裝完成且可以正常運行！測試完畢後，可以關閉 tty1 與 tty2。</p>
-<h2 id="使用帳密檔"><a href="#使用帳密檔" class="headerlink" title="使用帳密檔"></a>使用帳密檔</h2><p>建立帳密檔需使用到 <a href="https://mosquitto.org/man/mosquitto_passwd-1.html">mosquitto_passwd</a> 指令，因此需先安裝 <code>mosquitto</code>，安裝結束時可能會看到錯誤訊息，這錯誤是因為當 <code>mosquitto</code> 安裝好後預設會自動啟動服務且 Port 為 1883，與我們的 Docker 相衝突，因此不需理會。除此之外，需要將 Mosquitto 的服務關閉，避免占用我們 Docker 要使用的 Port</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install mosquitto</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Job <span class="keyword">for</span> mosquitto.service failed because the control process exited with error code.</span><br><span class="line">See <span class="string">&quot;systemctl status mosquitto.service&quot;</span> and <span class="string">&quot;journalctl -xe&quot;</span> <span class="keyword">for</span> details. <span class="comment"># 此錯誤可忽略</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ sudo systemctl stop mosquitto.service</span><br><span class="line">user@pc:~$ sudo systemctl <span class="built_in">disable</span> mosquitto.service</span><br></pre></td></tr></table></figure>
-<p>安裝好就可以創建帳密檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mosquitto_passwd -c /mosquitto/config/passwd_file joker <span class="comment"># 要創建的使用者名稱為 joker</span></span><br><span class="line">Password:          <span class="comment"># 1234</span></span><br><span class="line">Reenter password:  <span class="comment"># 1234</span></span><br><span class="line"></span><br><span class="line">user@pc:~$ cat /mosquitto/config/passwd_file <span class="comment"># 查看內容</span></span><br><span class="line">joker:$6$9XBw6q7Iq1alMR6w<span class="variable">$576QauwU5YTieVS</span>+PPjrDD3a5UDolccQ0JwArFvcohYQe1XeEIxJlw0vXQCV0sN30+EoipWi1ng39GNHXl/PtQ==</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-c</code>：將會新建一個帳密檔，會覆蓋現有的檔案。若只是想新增使用者到已經存在的帳密檔，不加此選項即可。</li>
-<li><code>/mosquitto/config/passwd_file</code>：帳密檔的絕對路徑。</li>
-<li><code>joker</code>：要創建的使用者名稱。</li>
-</ul>
-<p>建立好之後，需修改 <code>/mosquitto/config/mosquitto.config</code>，讓 Mosquitto 知道要去讀取帳密檔，並且取消匿名使用者的登入權限 (匿名登入權限依應用情境而定)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">persistence <span class="literal">true</span></span><br><span class="line">persistence_location /mosquitto/data/</span><br><span class="line">log_dest file /mosquitto/<span class="built_in">log</span>/mosquitto.log</span><br><span class="line"></span><br><span class="line">allow_anonymous <span class="literal">false</span>   <span class="comment"># 這裡要改，取消匿名使用者的登入權限</span></span><br><span class="line">password_file /mosquitto/config/passwd_file  <span class="comment"># 這裡要加，讓 Mosquitto 知道要去讀取帳密檔</span></span><br><span class="line"></span><br><span class="line">listener 1883</span><br></pre></td></tr></table></figure>
-<p>重新運行 Container，使 Mosquitto 讀取的設定檔為最新的內容，使用帳號才能發布 (<code>mosquitto_pub</code>) 或訂閱 (<code>mosquitto_sub</code>)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo docker restart mqtt</span><br></pre></td></tr></table></figure>
-<h3 id="測試帳密訂閱與發布"><a href="#測試帳密訂閱與發布" class="headerlink" title="測試帳密訂閱與發布"></a>測試帳密訂閱與發布</h3><p>開啟一個新的 Terminal (在此稱 tty1)，使用指令來訂閱主題。但由於我們已經設定為不可匿名登入，可以預想到的是會無法正常運作，因為沒有授權 (也就是沒有指定帳號)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mosquitto_sub -h localhost -t Try/MQTT/Docker</span><br><span class="line">Connection error: Connection Refused: not authorised.</span><br></pre></td></tr></table></figure>
-<p>tty1 中的指令更改如下</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mosquitto_sub -h localhost -t Try/MQTT/Docker -u joker -P 1234</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-u</code>：指定使用者帳號。</li>
-<li><code>-P</code>：指定密碼，注意是大寫 P。</li>
-</ul>
-<p>開啟另一個新的 Terminal (在此稱 tty2)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mosquitto_pub -h localhost -t Try/MQTT/Docker -m <span class="string">&quot;Test Message&quot;</span> -u joker -P 1234 </span><br></pre></td></tr></table></figure>
-<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表帳號密碼機制設定完成並且有正常運作！</p>
-<h2 id="使用-ACL-檔"><a href="#使用-ACL-檔" class="headerlink" title="使用 ACL 檔"></a>使用 ACL 檔</h2><p>ACL (Access Control List) 存取控制表是用來描述一個物件對一串列的存取權限，Mosquitto 也提供這個功能。第一步與帳密檔同樣，創建一個檔案 <code>/mosquitto/config/acl</code>，內容如下</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user joker</span><br><span class="line">topic readwrite joker/<span class="comment">#</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>使用者 joker 只可以讀寫符合 pattern 為 <code>joker/#</code> 的 topic，其中 <code>#</code> 為多層級 WildCard 字元 (<code>+</code> 為單一層級)，因此 <code>joker</code>、<code>joker/Try</code> 與 <code>joker/Try/MQTT</code> 都是符合的 topic。</li>
-</ul>
-<p>修改 <code>/mosquitto/config/mosquitto.config</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">persistence <span class="literal">true</span></span><br><span class="line">persistence_location /mosquitto/data/</span><br><span class="line">log_dest file /mosquitto/<span class="built_in">log</span>/mosquitto.log</span><br><span class="line"></span><br><span class="line">allow_anonymous <span class="literal">false</span></span><br><span class="line">password_file /mosquitto/config/passwd_file</span><br><span class="line">acl_file /mosquitto/config/acl  <span class="comment"># 加上這行</span></span><br><span class="line"></span><br><span class="line">listener 1883</span><br></pre></td></tr></table></figure>
-<p>重新運行 Container，使 Mosquitto 讀取的設定檔為最新的內容，知道 ACL 檔案的存在，此時 ACL 功能就正在運行囉。若嘗試以無權限的 topic 進行發布與訂閱，會發現雖然沒有出現錯誤訊息 (例如：權限不足)，但是真的發送不出去，也接收不到的哦！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo docker restart mqtt</span><br></pre></td></tr></table></figure>
-<h2 id="啟用-WebSocket"><a href="#啟用-WebSocket" class="headerlink" title="啟用 WebSocket"></a>啟用 WebSocket</h2><p>WebSocket 是一種可在單個 TCP 連線上全雙工的通訊協定，只需要交握一次，便能建立永久的連線，進行雙向資料傳輸。對於需要低功耗的 IoT 應用來說，透過 WebSocket 使用 MQTT 的訂閱與發佈可以比傳統單純只使用 MQTT 來的節能，因此知道如何開啟 Mosquitto 的 WebSocket 通訊是必要的。</p>
-<p>修改 <code>/mosquitto/config/mosquitto.config</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">persistence <span class="literal">true</span></span><br><span class="line">persistence_location /mosquitto/data/</span><br><span class="line">log_dest file /mosquitto/<span class="built_in">log</span>/mosquitto.log</span><br><span class="line"></span><br><span class="line">allow_anonymous <span class="literal">false</span></span><br><span class="line">password_file /mosquitto/config/passwd_file</span><br><span class="line">acl_file /mosquitto/config/acl</span><br><span class="line"></span><br><span class="line">listener 1883</span><br><span class="line">protocol mqtt       <span class="comment"># 加上這三行</span></span><br><span class="line"></span><br><span class="line">listener 9001       <span class="comment"># 在 Port 9001</span></span><br><span class="line">protocol websockets <span class="comment"># 提供 WebSocket 服務</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>一般 MQTT 協定在 1883 Port 服務</li>
-<li>WebSocket MQTT 在 9001 Port 服務</li>
-</ul>
-<p>刪除現在正在運行的 MQTT Container，並建立一個比原先多綁定 Port 9001 的 Container</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo docker rm -f mqtt</span><br><span class="line"></span><br><span class="line">user@pc:~$ sudo docker run -d --name mqtt -p 1883:1883 -p 9001:9001 \</span><br><span class="line">                        -v /mosquitto:/mosquitto -v /mosquitto/data:/mosquitto/data \</span><br><span class="line">                        -v /mosquitto/<span class="built_in">log</span>:/mosquitto/<span class="built_in">log</span> eclipse-mosquitto</span><br><span class="line"></span><br><span class="line">user@pc:~$ sudo docker ps -a</span><br><span class="line">CONTAINER ID   IMAGE               COMMAND                  CREATED         STATUS         PORTS                                            NAMES</span><br><span class="line">f955f94c7f6e   eclipse-mosquitto   <span class="string">&quot;/docker-entrypoint.…&quot;</span>   4 minutes ago   Up 2 minutes   0.0.0.0:1883-&gt;1883/tcp, 0.0.0.0:9001-&gt;9001/tcp   mqtt</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>此時便可以透過 <code>ws://Broker_IP:9001</code> 與 Broker 進行通訊囉。</p>
-<h2 id="自簽憑證"><a href="#自簽憑證" class="headerlink" title="自簽憑證"></a>自簽憑證</h2><p>Mosquitto 有提供 MQTTS 與 WSS 通訊協定，其中最後一個 S 皆代表 SSL，SSL 能使我們的通訊透過加密防止中間人或竊聽攻擊，要使用 SSL 必須先擁有憑證，然而申請一個正式憑證需要較多手續與耗費許多時日。因此在測試環境中我們可以先自簽憑證，測試加上 SSL 後系統是否能正常運作，若之後系統要上線，再改為正式的憑證即可。詳細步驟與說明可以參考 <a href="/2021/06/15/ssl_self_sign/">[SSL] 自簽憑證過程</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 創建目錄</span></span><br><span class="line">user@pc:~$ mkdir root</span><br><span class="line">user@pc:~$ mkdir server</span><br><span class="line"></span><br><span class="line"><span class="comment"># CA 產 CA 的自簽憑證</span></span><br><span class="line">user@pc:~$ openssl genrsa -out root/ca.key 4096</span><br><span class="line">user@pc:~$ openssl req -new -x509 -days 365 -subj <span class="string">&quot;/C=TW/CN=&#123;這裡任意&#125;&quot;</span> \</span><br><span class="line">                        -key root/ca.key -out root/ca.crt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 簽 Server 憑證</span></span><br><span class="line">user@pc:~$ openssl genrsa -out server/server.key 2048</span><br><span class="line">user@pc:~$ openssl req -new -key server/server.key -subj <span class="string">&quot;/C=TW/CN=&#123;Server IP 或 FQDN&#125;&quot;</span> \</span><br><span class="line">                        -out server/server.csr</span><br><span class="line">user@pc:~$ openssl x509 -req -CAcreateserial -days 30 -sha256 -CA root/ca.crt \</span><br><span class="line">                        -CAkey root/ca.key -<span class="keyword">in</span> server/server.csr -out server/server.crt</span><br></pre></td></tr></table></figure>
-<ul>
-<li>最最最需要注意的是 CA 的 CN 與 Server 的 CN 不能一樣，否則會出現意想不到的錯誤。</li>
-</ul>
-<p>將 <code>ca.crt</code>、<code>server.key</code>、<code>server.crt</code> 移至 <code>/mosquitto/config/certs/</code> 目錄下。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 創建目錄</span></span><br><span class="line">user@pc:~$ sudo mkdir /mosquitto/config/certs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 移動憑證</span></span><br><span class="line">user@pc:~$ sudo cp root/ca.crt /mosquitto/config/certs/</span><br><span class="line">user@pc:~$ sudo cp server/server.key /mosquitto/config/certs/</span><br><span class="line">user@pc:~$ sudo cp server/server.crt /mosquitto/config/certs/</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="開啟-MQTTS-與-WSS"><a href="#開啟-MQTTS-與-WSS" class="headerlink" title="開啟 MQTTS 與 WSS"></a>開啟 MQTTS 與 WSS</h2><p>修改 <code>/mosquitto/config/mosquitto.config</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">persistence <span class="literal">true</span></span><br><span class="line">persistence_location /mosquitto/data/</span><br><span class="line">log_dest file /mosquitto/<span class="built_in">log</span>/mosquitto.log</span><br><span class="line"></span><br><span class="line">allow_anonymous <span class="literal">false</span></span><br><span class="line">password_file /mosquitto/config/passwd_file</span><br><span class="line">acl_file /mosquitto/config/acl</span><br><span class="line"></span><br><span class="line">listener 1883</span><br><span class="line">protocol mqtt</span><br><span class="line"></span><br><span class="line">listener 9001</span><br><span class="line">protocol websockets</span><br><span class="line"></span><br><span class="line">listener 8883                                <span class="comment"># 在 Port 8883</span></span><br><span class="line">protocol mqtt                                <span class="comment"># 服務 MQTTS</span></span><br><span class="line">keyfile /mosquitto/config/certs/server.key   <span class="comment"># Server 的私鑰</span></span><br><span class="line">certfile /mosquitto/config/certs/server.crt  <span class="comment"># Server 的憑證</span></span><br><span class="line">cafile /mosquitto/config/certs/ca.crt        <span class="comment"># CA 的憑證，若不驗證 client 可以不指定 cafile</span></span><br><span class="line"></span><br><span class="line">listener 8884                                <span class="comment"># 在 Port 8884</span></span><br><span class="line">protocol websockets                          <span class="comment"># 服務 WSS</span></span><br><span class="line">keyfile /mosquitto/config/certs/server.key   <span class="comment"># Server 的私鑰</span></span><br><span class="line">certfile /mosquitto/config/certs/server.crt  <span class="comment"># Server 的憑證</span></span><br><span class="line">cafile /mosquitto/config/certs/ca.crt        <span class="comment"># CA 的憑證，若不驗證 client 可以不指定 cafile</span></span><br><span class="line"></span><br><span class="line">require_certificate <span class="literal">false</span>                    <span class="comment"># 這行是不驗證 client 端的憑證</span></span><br></pre></td></tr></table></figure>
-<p>刪除現在正在運行的 MQTT Container，並建立一個比原先多綁定 Port 8883 與 8884 的 Container</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo docker rm -f mqtt</span><br><span class="line">user@pc:~$ sudo docker run -d --name mqtt -p 1883:1883 -p 9001:9001 -p 8883:8883 -p 8884:8884 \</span><br><span class="line">                        -v /mosquitto:/mosquitto -v /mosquitto/data:/mosquitto/data \</span><br><span class="line">                        -v /mosquitto/<span class="built_in">log</span>:/mosquitto/<span class="built_in">log</span> eclipse-mosquitto</span><br></pre></td></tr></table></figure>
-<p>至此， MQTT/MQTTS/WS/WSS 四個通訊協定都已經正常運作，最終選擇所要使用的通訊協定還是要回歸到應用情境，若沒用到的 Port 可以選擇關閉。</p>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>這篇文章記錄了如何使用 Docker 輕鬆架設 MQTT Broker (Mosquitto)，並且使用身分驗證、ACL 權限控管，啟動 MQTT/MQTTS/WS/WSS 四個協定。當然，還有更多的進階設定沒有在此篇文章中紀載，但架設伺服器的第一步，就是先將基本設定完善，並確認能夠運行，才能繼續下一步的調教。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>20.04</tag>
-        <tag>linux</tag>
-        <tag>mqtt</tag>
-        <tag>mosquitto</tag>
-        <tag>docker</tag>
-        <tag>websock</tag>
-        <tag>tcp</tag>
-        <tag>ssl</tag>
-        <tag>acl</tag>
-        <tag>password</tag>
-        <tag>image</tag>
-        <tag>container</tag>
       </tags>
   </entry>
   <entry>
@@ -1353,48 +1353,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[PHP] Ubuntu 安裝 Apache 2 + PHP 7.4 + Phalcon 4.0</title>
-    <url>/2021/06/17/php_ubuntu_apache_php_phalcon/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Apache 是一個輕量級的網頁伺服器，搭配 <code>PHP</code> 與高效能的 MVC 框架 Phalcon 是一個不錯的選擇，這裡紀錄如何在 Ubuntu 安裝這些開發環境。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="安裝-Apache"><a href="#安裝-Apache" class="headerlink" title="安裝 Apache"></a>安裝 Apache</h2><p>首先安裝 Apache 2，較簡單</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install apache2</span><br></pre></td></tr></table></figure>
-<p>安裝完後，可以用瀏覽器，在網址處輸入 <a href="http://localhost">http://localhost</a>，確認是否有顯示正常的網頁；或者可以用命令來查詢 Apache 2 是否有正常運作，看到 <code>active (running)</code> 代表正在運行服務囉！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo systemctl status apache2</span><br><span class="line">● apache2.service - The Apache HTTP Server</span><br><span class="line">   Loaded: loaded (/lib/systemd/system/apache2.service; enabled; vendor preset:</span><br><span class="line">  Drop-In: /lib/systemd/system/apache2.service.d</span><br><span class="line">           └─apache2-systemd.conf</span><br><span class="line">   Active: active (running) since Mon 2020-03-30 22:26:50 CST; 2min 44s ago</span><br><span class="line"> Main PID: 2185 (apache2)</span><br><span class="line">    Tasks: 55 (<span class="built_in">limit</span>: 4915)</span><br><span class="line">   CGroup: /system.slice/apache2.service</span><br><span class="line">           ├─2185 /usr/sbin/apache2 -k start</span><br><span class="line">           ├─2187 /usr/sbin/apache2 -k start</span><br><span class="line">           └─2188 /usr/sbin/apache2 -k start</span><br><span class="line"></span><br><span class="line"> 三  30 22:26:50 user-VirtualBox systemd[1]: Starting The Apache HTTP Server..</span><br><span class="line"> 三  30 22:26:50 user-VirtualBox apachectl[2174]: AH00558: apache2: Could not </span><br><span class="line"> 三  30 22:26:50 user-VirtualBox systemd[1]: Started The Apache HTTP Server.</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-PHP"><a href="#安裝-PHP" class="headerlink" title="安裝 PHP"></a>安裝 PHP</h2><p>接著安裝 PHP 7.4，要先引入 ppa 並更新，才能安裝</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-add-repository ppa:ondrej/php</span><br><span class="line">user@pc:~$ sudo apt-get update         <span class="comment">#一定要，不然封包庫還是沒有php</span></span><br><span class="line">user@pc:~$ sudo apt-get install php7.4 <span class="comment">#php+版本號，依照自己需求更改</span></span><br></pre></td></tr></table></figure>
-<p>查看 <code>PHP</code> 版本，確認為 7.4 版</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ php -v</span><br><span class="line">PHP 7.4.4 (cli) (built: Mar 20 2020 13:47:45) ( NTS )</span><br><span class="line">Copyright (c) The PHP Group</span><br><span class="line">Zend Engine v3.4.0, Copyright (c) Zend Technologies</span><br><span class="line">    with Zend OPcache v7.4.4, Copyright (c), by Zend Technologies</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-Phalcon"><a href="#安裝-Phalcon" class="headerlink" title="安裝 Phalcon"></a>安裝 Phalcon</h2><p>直接指令安裝 Phalcon</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install php7.4-phalcon <span class="comment"># 7.4 為版本號，可依照自己需求更改</span></span><br></pre></td></tr></table></figure>
-<p>查看 <code>PHP</code> 的模組，初步確定 Phalcon 有安裝完成</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ php -m</span><br><span class="line">⋮</span><br><span class="line">⋮</span><br><span class="line">PDO</span><br><span class="line">phalcon</span><br><span class="line">Phar</span><br><span class="line">⋮</span><br><span class="line">⋮</span><br></pre></td></tr></table></figure>
-<p>Apache 2 服務需要重新啟動，才會載入 Phalcon 的套件</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo systemctl stop  apache2 <span class="comment"># 關閉</span></span><br><span class="line">user@pc:~$ sudo systemctl start apache2 <span class="comment"># 開啟</span></span><br></pre></td></tr></table></figure>
-<p>將 <code>/var/www/html/</code> 目錄下的 <code>index.html</code> 刪除，並新增 <code>index.php</code>，其內容如下</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> phpinfo()<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>這時在瀏覽器輸入 <a href="http://localhost">http://localhost</a>，應該要能夠看到如下方的資訊，並確認版本正確 (Phalcon 4.0)</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/PHP-Ubuntu-%E5%AE%89%E8%A3%9D-Apache-2-PHP-7-4-Phalcon-4-0%2Fphalcon_version.png?alt=media&amp;token=856a2b20-00d4-46c0-8a83-e0bb5c101e97" alt="phpinfo"><span class="image-caption">phpinfo</span></p>
-<p>這時在 Ubuntu 上運作的就是 Apache 2 + PHP 7.4 + Phalcon4.0 囉！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>apache</tag>
-        <tag>ubuntu</tag>
-        <tag>server</tag>
-        <tag>web</tag>
-        <tag>linux</tag>
-        <tag>18.04</tag>
-        <tag>php</tag>
-        <tag>phalcon</tag>
-        <tag>install</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[PHP] CentOS 8.2 + Nginx + MariaDB + php-fpm + phpMyAdmin</title>
     <url>/2021/06/18/centos_phpmyadmin/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到使用 MySQL/MariaDB 就會想到 phpMyAdmin 這個使用者圖像介面，它是用 PHP 寫出來與 MySQL/MariaDB 互動的介面，所以若要使用，必須先安裝網頁伺服器與 PHP。</p>
@@ -1461,6 +1419,48 @@
         <tag>php-fpm</tag>
         <tag>phpmyadmin</tag>
         <tag>xampp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[PHP] Ubuntu 安裝 Apache 2 + PHP 7.4 + Phalcon 4.0</title>
+    <url>/2021/06/17/php_ubuntu_apache_php_phalcon/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Apache 是一個輕量級的網頁伺服器，搭配 <code>PHP</code> 與高效能的 MVC 框架 Phalcon 是一個不錯的選擇，這裡紀錄如何在 Ubuntu 安裝這些開發環境。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="安裝-Apache"><a href="#安裝-Apache" class="headerlink" title="安裝 Apache"></a>安裝 Apache</h2><p>首先安裝 Apache 2，較簡單</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install apache2</span><br></pre></td></tr></table></figure>
+<p>安裝完後，可以用瀏覽器，在網址處輸入 <a href="http://localhost">http://localhost</a>，確認是否有顯示正常的網頁；或者可以用命令來查詢 Apache 2 是否有正常運作，看到 <code>active (running)</code> 代表正在運行服務囉！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo systemctl status apache2</span><br><span class="line">● apache2.service - The Apache HTTP Server</span><br><span class="line">   Loaded: loaded (/lib/systemd/system/apache2.service; enabled; vendor preset:</span><br><span class="line">  Drop-In: /lib/systemd/system/apache2.service.d</span><br><span class="line">           └─apache2-systemd.conf</span><br><span class="line">   Active: active (running) since Mon 2020-03-30 22:26:50 CST; 2min 44s ago</span><br><span class="line"> Main PID: 2185 (apache2)</span><br><span class="line">    Tasks: 55 (<span class="built_in">limit</span>: 4915)</span><br><span class="line">   CGroup: /system.slice/apache2.service</span><br><span class="line">           ├─2185 /usr/sbin/apache2 -k start</span><br><span class="line">           ├─2187 /usr/sbin/apache2 -k start</span><br><span class="line">           └─2188 /usr/sbin/apache2 -k start</span><br><span class="line"></span><br><span class="line"> 三  30 22:26:50 user-VirtualBox systemd[1]: Starting The Apache HTTP Server..</span><br><span class="line"> 三  30 22:26:50 user-VirtualBox apachectl[2174]: AH00558: apache2: Could not </span><br><span class="line"> 三  30 22:26:50 user-VirtualBox systemd[1]: Started The Apache HTTP Server.</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-PHP"><a href="#安裝-PHP" class="headerlink" title="安裝 PHP"></a>安裝 PHP</h2><p>接著安裝 PHP 7.4，要先引入 ppa 並更新，才能安裝</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-add-repository ppa:ondrej/php</span><br><span class="line">user@pc:~$ sudo apt-get update         <span class="comment">#一定要，不然封包庫還是沒有php</span></span><br><span class="line">user@pc:~$ sudo apt-get install php7.4 <span class="comment">#php+版本號，依照自己需求更改</span></span><br></pre></td></tr></table></figure>
+<p>查看 <code>PHP</code> 版本，確認為 7.4 版</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ php -v</span><br><span class="line">PHP 7.4.4 (cli) (built: Mar 20 2020 13:47:45) ( NTS )</span><br><span class="line">Copyright (c) The PHP Group</span><br><span class="line">Zend Engine v3.4.0, Copyright (c) Zend Technologies</span><br><span class="line">    with Zend OPcache v7.4.4, Copyright (c), by Zend Technologies</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-Phalcon"><a href="#安裝-Phalcon" class="headerlink" title="安裝 Phalcon"></a>安裝 Phalcon</h2><p>直接指令安裝 Phalcon</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install php7.4-phalcon <span class="comment"># 7.4 為版本號，可依照自己需求更改</span></span><br></pre></td></tr></table></figure>
+<p>查看 <code>PHP</code> 的模組，初步確定 Phalcon 有安裝完成</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ php -m</span><br><span class="line">⋮</span><br><span class="line">⋮</span><br><span class="line">PDO</span><br><span class="line">phalcon</span><br><span class="line">Phar</span><br><span class="line">⋮</span><br><span class="line">⋮</span><br></pre></td></tr></table></figure>
+<p>Apache 2 服務需要重新啟動，才會載入 Phalcon 的套件</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo systemctl stop  apache2 <span class="comment"># 關閉</span></span><br><span class="line">user@pc:~$ sudo systemctl start apache2 <span class="comment"># 開啟</span></span><br></pre></td></tr></table></figure>
+<p>將 <code>/var/www/html/</code> 目錄下的 <code>index.html</code> 刪除，並新增 <code>index.php</code>，其內容如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> phpinfo()<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>這時在瀏覽器輸入 <a href="http://localhost">http://localhost</a>，應該要能夠看到如下方的資訊，並確認版本正確 (Phalcon 4.0)</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/PHP-Ubuntu-%E5%AE%89%E8%A3%9D-Apache-2-PHP-7-4-Phalcon-4-0%2Fphalcon_version.png?alt=media&amp;token=856a2b20-00d4-46c0-8a83-e0bb5c101e97" alt="phpinfo"><span class="image-caption">phpinfo</span></p>
+<p>這時在 Ubuntu 上運作的就是 Apache 2 + PHP 7.4 + Phalcon4.0 囉！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>apache</tag>
+        <tag>ubuntu</tag>
+        <tag>server</tag>
+        <tag>web</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>php</tag>
+        <tag>phalcon</tag>
+        <tag>install</tag>
       </tags>
   </entry>
   <entry>
@@ -1799,29 +1799,35 @@
       </tags>
   </entry>
   <entry>
-    <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
-    <url>/2021/06/15/ssl_crt_key/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>OpenSSL 1.1.1f</li>
-</ul>
-<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
-<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
+    <title>[SSL] 數位簽名與驗證的過程</title>
+    <url>/2021/06/15/ssl_digital_signed_verify/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作。但我有發現一個現象，就是當講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並整理後記錄在這。</p>
+<h2 id="產製數位憑證"><a href="#產製數位憑證" class="headerlink" title="產製數位憑證"></a>產製數位憑證</h2><p>認證機構 (CA) 會先對要簽署的數據 (Data, 例如：Public Key, Subject ... 等等憑證資訊，皆為明碼) 做雜湊 (Hash) 運算，得到雜湊值 (Hash Value)，再以 CA 的私鑰 (Private Key) 對其加密以達到防止更改效果，這個產出即為數位簽章 (Digital Signature)</p>
+<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;CA}Hash\;Value\xrightarrow{Private\;Key\;of\;CA}Digital\;Signature</script><p>得到數位簽章後，將其與原本資料合起來，就為所謂的數位憑證 (Digital Certificate)</p>
+<script type="math/tex; mode=display">Data+Digital\;Signature=Digital\;Certificate</script><p>這個數位憑證就會被稱為被某 CA 所簽發的憑證。</p>
+<h2 id="驗證數位簽章"><a href="#驗證數位簽章" class="headerlink" title="驗證數位簽章"></a>驗證數位簽章</h2><p>在進行 https 連線的過程中，Server 會給 Client 一個數位憑證，當 Client 拿到數位憑證後，會馬上驗證是否真的為憑證上說的CA所發。</p>
+<p>第一步把憑證拆回 Data 與 Digital Signature</p>
+<script type="math/tex; mode=display">Digital\;Certificate=Data+Digital\;Signature</script><p>Client 先自行對 Data 做 Hash 運算</p>
+<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;Client}Hash\;Value</script><p>再對 Digital Signature 做解密運算，取得 CA 對 Data 做 Hash 運算的結果</p>
+<script type="math/tex; mode=display">Digital\;Signature\xrightarrow{Public\;Key\;of\;CA}Hash\;Value\;via\;Signature</script><p>再比對 Client 自己算出的 Hash Value 與經由數位簽章解密所得到的 Hash Value 是否相同，若相同，表示此憑證確實是該 CA 所發！</p>
+<script type="math/tex; mode=display">Hash\;Value\overset{\underset{\mathrm{?}}{}}{=}Hash\;Value\;via\;Signature</script><h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://cheapsslsecurity.com/blog/digital-signature-vs-digital-certificate-the-difference-explained/">What is the difference between a digital signature and a digital certificate</a></li>
+</ol>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
         <tag>ssl</tag>
-        <tag>crt</tag>
+        <tag>digital</tag>
+        <tag>signature</tag>
+        <tag>verify</tag>
+        <tag>process</tag>
+        <tag>ca</tag>
+        <tag>certificate</tag>
+        <tag>private</tag>
+        <tag>public</tag>
         <tag>key</tag>
-        <tag>match</tag>
-        <tag>cert</tag>
-        <tag>csr</tag>
       </tags>
   </entry>
   <entry>
@@ -1846,75 +1852,40 @@
       </categories>
       <tags>
         <tag>ssl</tag>
-        <tag>crt</tag>
+        <tag>ca</tag>
         <tag>key</tag>
-        <tag>csr</tag>
         <tag>self</tag>
         <tag>sign</tag>
         <tag>openssl</tag>
         <tag>mitm</tag>
-        <tag>ca</tag>
+        <tag>csr</tag>
+        <tag>crt</tag>
       </tags>
   </entry>
   <entry>
-    <title>[SSL] 數位簽名與驗證的過程</title>
-    <url>/2021/06/15/ssl_digital_signed_verify/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作。但我有發現一個現象，就是當講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並整理後記錄在這。</p>
-<h2 id="產製數位憑證"><a href="#產製數位憑證" class="headerlink" title="產製數位憑證"></a>產製數位憑證</h2><p>認證機構 (CA) 會先對要簽署的數據 (Data, 例如：Public Key, Subject ... 等等憑證資訊，皆為明碼) 做雜湊 (Hash) 運算，得到雜湊值 (Hash Value)，再以 CA 的私鑰 (Private Key) 對其加密以達到防止更改效果，這個產出即為數位簽章 (Digital Signature)</p>
-<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;CA}Hash\;Value\xrightarrow{Private\;Key\;of\;CA}Digital\;Signature</script><p>得到數位簽章後，將其與原本資料合起來，就為所謂的數位憑證 (Digital Certificate)</p>
-<script type="math/tex; mode=display">Data+Digital\;Signature=Digital\;Certificate</script><p>這個數位憑證就會被稱為被某 CA 所簽發的憑證。</p>
-<h2 id="驗證數位簽章"><a href="#驗證數位簽章" class="headerlink" title="驗證數位簽章"></a>驗證數位簽章</h2><p>在進行 https 連線的過程中，Server 會給 Client 一個數位憑證，當 Client 拿到數位憑證後，會馬上驗證是否真的為憑證上說的CA所發。</p>
-<p>第一步把憑證拆回 Data 與 Digital Signature</p>
-<script type="math/tex; mode=display">Digital\;Certificate=Data+Digital\;Signature</script><p>Client 先自行對 Data 做 Hash 運算</p>
-<script type="math/tex; mode=display">Data\xrightarrow{HASH\;By\;Client}Hash\;Value</script><p>再對 Digital Signature 做解密運算，取得 CA 對 Data 做 Hash 運算的結果</p>
-<script type="math/tex; mode=display">Digital\;Signature\xrightarrow{Public\;Key\;of\;CA}Hash\;Value\;via\;Signature</script><p>再比對 Client 自己算出的 Hash Value 與經由數位簽章解密所得到的 Hash Value 是否相同，若相同，表示此憑證確實是該 CA 所發！</p>
-<script type="math/tex; mode=display">Hash\;Value\overset{\underset{\mathrm{?}}{}}{=}Hash\;Value\;via\;Signature</script><h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a href="https://cheapsslsecurity.com/blog/digital-signature-vs-digital-certificate-the-difference-explained/">What is the difference between a digital signature and a digital certificate</a></li>
-</ol>
+    <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
+    <url>/2021/06/15/ssl_crt_key/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>OpenSSL 1.1.1f</li>
+</ul>
+<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
+<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
         <tag>ssl</tag>
         <tag>key</tag>
-        <tag>ca</tag>
-        <tag>digital</tag>
-        <tag>signature</tag>
-        <tag>verify</tag>
-        <tag>process</tag>
-        <tag>certificate</tag>
-        <tag>private</tag>
-        <tag>public</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</title>
-    <url>/2021/06/15/tool_sql_injection/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
-<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><p><a href="https://weirenxue.github.io/sql-injection-in-time/">SQL Injection Real Time</a> 這個工具是以 <code>javascript</code> 開發的，目的是隨時都可以用，不用額外安裝！</p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
-<li>將 SQL 語句貼至「SQL HERE」，注入之前的預覽會在「PREVIEW」區域。</li>
-<li>填寫要注入的參數名稱於「Parameter Name」。</li>
-<li>填寫要注入的參數名稱於「Value」。</li>
-<li>注入後的 SQL 語句會在「AFTER INJECTION」區域。</li>
-<li>可由「PREVIEW」比對「AFTER INJECTION」，就知道 SQL Injection的威力！</li>
-</ol>
-<h2 id="補充小常識"><a href="#補充小常識" class="headerlink" title="補充小常識"></a>補充小常識</h2><p>要預防被注入、安全的執行 SQL，必定要用 <code>Parameterized Query + Prepared Statement</code>，缺一不可。</p>
-]]></content>
-      <categories>
-        <category>自行開發工具使用教學</category>
-      </categories>
-      <tags>
-        <tag>tool</tag>
-        <tag>sql</tag>
-        <tag>injection</tag>
-        <tag>real</tag>
-        <tag>time</tag>
-        <tag>synthesis</tag>
-        <tag>tutorial</tag>
-        <tag>penetrate</tag>
-        <tag>pentest</tag>
+        <tag>csr</tag>
+        <tag>crt</tag>
+        <tag>match</tag>
+        <tag>cert</tag>
       </tags>
   </entry>
   <entry>
@@ -1947,32 +1918,32 @@
       </tags>
   </entry>
   <entry>
-    <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
-    <url>/2021/06/17/usb_usb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>先確認目標裝置的權限，可以看到是 <code>660</code> 權限，也就是說非擁有者 (root) 且非群組 (dialout) 成員的其他人，是不能讀取的，這也是為什麼應用程式內讀不到的原因</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ ls -al /dev/ttyUSB*</span><br><span class="line">crw-rw---- 1 root dialout 188, 0 十二  4 16:53 /dev/ttyUSB0</span><br><span class="line">crw-rw---- 1 root dialout 188, 1 十二  4 16:53 /dev/ttyUSB1</span><br><span class="line">crw-rw---- 1 root dialout 188, 2 十二  4 16:53 /dev/ttyUSB2</span><br><span class="line">crw-rw---- 1 root dialout 188, 3 十二  4 16:53 /dev/ttyUSB3</span><br></pre></td></tr></table></figure>
-<h2 id="加入群組"><a href="#加入群組" class="headerlink" title="加入群組"></a>加入群組</h2><p>一般使用者預設是沒有加入 <code>dialout</code> 群組的，因此將自己加入此群組藉此繼承擁有讀取序列埠的權限</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo usermod -a -G dialout user  <span class="comment"># user 當然就是使用者帳號，依需求更改</span></span><br></pre></td></tr></table></figure>
-<p>再回到應用程式內找尋 Serial Port 應該就能看到囉！</p>
+    <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</title>
+    <url>/2021/06/15/tool_sql_injection/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
+<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><p><a href="https://weirenxue.github.io/sql-injection-in-time/">SQL Injection Real Time</a> 這個工具是以 <code>javascript</code> 開發的，目的是隨時都可以用，不用額外安裝！</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
+<li>將 SQL 語句貼至「SQL HERE」，注入之前的預覽會在「PREVIEW」區域。</li>
+<li>填寫要注入的參數名稱於「Parameter Name」。</li>
+<li>填寫要注入的參數名稱於「Value」。</li>
+<li>注入後的 SQL 語句會在「AFTER INJECTION」區域。</li>
+<li>可由「PREVIEW」比對「AFTER INJECTION」，就知道 SQL Injection的威力！</li>
+</ol>
+<h2 id="補充小常識"><a href="#補充小常識" class="headerlink" title="補充小常識"></a>補充小常識</h2><p>要預防被注入、安全的執行 SQL，必定要用 <code>Parameterized Query + Prepared Statement</code>，缺一不可。</p>
 ]]></content>
       <categories>
-        <category>學習筆記</category>
+        <category>自行開發工具使用教學</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>port</tag>
-        <tag>18.04</tag>
-        <tag>privilege</tag>
-        <tag>usb</tag>
-        <tag>serail</tag>
-        <tag>dialout</tag>
-        <tag>tty</tag>
-        <tag>usermod</tag>
+        <tag>tool</tag>
+        <tag>sql</tag>
+        <tag>injection</tag>
+        <tag>real</tag>
+        <tag>time</tag>
+        <tag>synthesis</tag>
+        <tag>tutorial</tag>
+        <tag>penetrate</tag>
+        <tag>pentest</tag>
       </tags>
   </entry>
   <entry>
@@ -2030,11 +2001,40 @@
         <category>自行開發工具使用教學</category>
       </categories>
       <tags>
-        <tag>account</tag>
         <tag>password</tag>
+        <tag>account</tag>
         <tag>tool</tag>
         <tag>it</tag>
         <tag>displayer</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
+    <url>/2021/06/17/usb_usb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>先確認目標裝置的權限，可以看到是 <code>660</code> 權限，也就是說非擁有者 (root) 且非群組 (dialout) 成員的其他人，是不能讀取的，這也是為什麼應用程式內讀不到的原因</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ ls -al /dev/ttyUSB*</span><br><span class="line">crw-rw---- 1 root dialout 188, 0 十二  4 16:53 /dev/ttyUSB0</span><br><span class="line">crw-rw---- 1 root dialout 188, 1 十二  4 16:53 /dev/ttyUSB1</span><br><span class="line">crw-rw---- 1 root dialout 188, 2 十二  4 16:53 /dev/ttyUSB2</span><br><span class="line">crw-rw---- 1 root dialout 188, 3 十二  4 16:53 /dev/ttyUSB3</span><br></pre></td></tr></table></figure>
+<h2 id="加入群組"><a href="#加入群組" class="headerlink" title="加入群組"></a>加入群組</h2><p>一般使用者預設是沒有加入 <code>dialout</code> 群組的，因此將自己加入此群組藉此繼承擁有讀取序列埠的權限</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo usermod -a -G dialout user  <span class="comment"># user 當然就是使用者帳號，依需求更改</span></span><br></pre></td></tr></table></figure>
+<p>再回到應用程式內找尋 Serial Port 應該就能看到囉！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>port</tag>
+        <tag>18.04</tag>
+        <tag>privilege</tag>
+        <tag>usb</tag>
+        <tag>serail</tag>
+        <tag>dialout</tag>
+        <tag>tty</tag>
+        <tag>usermod</tag>
       </tags>
   </entry>
   <entry>
@@ -2109,24 +2109,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
-    <url>/2021/06/15/window_modal_non_modal/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
-<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
-<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
-<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
-<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>window</tag>
-        <tag>modal</tag>
-        <tag>non modal</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[WIN32 API] 函數使用範例</title>
     <url>/2021/06/15/win32_api_function_example/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接 Build 看效果。</p>
@@ -2152,46 +2134,21 @@
       </tags>
   </entry>
   <entry>
-    <title>[Xilinx SDK] GPIO 常用到的參數</title>
-    <url>/2021/06/13/xilinx_sdk_gpio/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用 API 時，最重要的是正確地輸入對應參數，因此必定要先了解參數所代表的涵義，才能有正確的使用 API 姿勢。</p>
-<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
-<li>RFSoC ZCU111</li>
-</ul>
-<h2 id="參數說明"><a href="#參數說明" class="headerlink" title="參數說明"></a>參數說明</h2><ol>
-<li><p><code>channel</code>：這是在 Vivado 內使用 IP 來做設計時就決定的，打開 GPIO 的 IP 設定視窗可以看到 GPIO 與 GPIO2，這裡的例子通道 1 與通道 2 分別為 led 與 push button。</p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Xilinx-SDK-GPIO-%E5%B8%B8%E7%94%A8%E5%88%B0%E7%9A%84%E5%8F%83%E6%95%B8%2Fgpio.png?alt=media&amp;token=1edff119-f05f-4e10-bc7a-fb60595872fa" alt="GPIO IP 設定畫面"><span class="image-caption">GPIO IP 設定畫面</span></p>
-</li>
-<li><p><code>DirectionMask</code>：這是決定 GPIO 為輸入或輸出 (相對於晶片來說) 的參數，需要特別點開 <code>*.h</code> 或 <code>*.c</code> 去看說明，此說明在 <code>xgpio.c</code> 的註解裡，以下為摘要</p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Bits set to 0 are output and bits set to 1 are input.</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
+    <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
+    <url>/2021/06/15/window_modal_non_modal/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
+<h2 id="Modal-視窗的運作機制"><a href="#Modal-視窗的運作機制" class="headerlink" title="Modal 視窗的運作機制"></a>Modal 視窗的運作機制</h2><p>由 <code>DialogBox</code> 家族 (例如 <code>DialogBox</code>、<code>DialogBoxIndirect</code>、<code>DialogBoxParam</code> 和 <code>DialogBoxIndirectParam</code>) 創建的對話框是 Modal 視窗。</p>
+<p>在創建之前，系統將禁用其父視窗，並在這些 API 函數中為其創建一個新的消息循環 (Message loop)，這些函數還需要回調函數 (例如 <code>DialogProc</code>) 來處理消息。換句話說，Modal 對話框視窗具有其自己的消息循環和不同於主線程的視窗過程，在用戶單擊 <code>確定</code>、<code>取消</code> 或 <code>關閉</code> 之類的按鈕之前，它們始終處於 Modal 視窗消息循環中。單擊按鈕後，使用 <code>EndDialog</code> 返回至主線程中的主消息循環，父視窗可以再次響應。</p>
+<h2 id="non-Modal-視窗的運作機制"><a href="#non-Modal-視窗的運作機制" class="headerlink" title="non-Modal 視窗的運作機制"></a>non-Modal 視窗的運作機制</h2><p>由 <code>CreateDialog</code> 家族 (例如 <code>CreateDialog</code>、<code>CreateDialogIndirect</code>、<code>CreateDialogParam</code> 和 <code>CreateDialogIndirectParam</code>) 創建的對話框是 non-Modal 視窗。它們將在創建後返回，而不是創建新的消息循環，該對話框使用在主線程中的消息循環。因此，父視窗也可以響應。</p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam 使用範例</a></p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>sdk</tag>
-        <tag>api</tag>
-        <tag>xilinx</tag>
-        <tag>gpio</tag>
-        <tag>channel</tag>
-        <tag>directionmask</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題</title>
-    <url>/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
-<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>sdk</tag>
-        <tag>xilinx</tag>
-        <tag>make</tag>
+        <tag>window</tag>
+        <tag>modal</tag>
+        <tag>non modal</tag>
       </tags>
   </entry>
   <entry>
@@ -2225,28 +2182,46 @@
       </tags>
   </entry>
   <entry>
-    <title>[apt] Unable to locate package 問題</title>
-    <url>/2021/06/17/apt_unable_to_locate_package/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我遇到的情況是這樣子的，要安裝 <code>ntpdate</code> 時卻發現出現錯誤訊息 <code>Unable to locate package ntpdate</code>，意思是說無法找到 <code>ntpdate</code> 套件</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree       </span><br><span class="line">Reading state information... Done</span><br><span class="line">E: Unable to locate package ntpdate</span><br></pre></td></tr></table></figure>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>很有可能是因為 <code>apt-get</code> 沒有更新，所以資料庫裡面沒有 <code>ntpdate</code> 的連結，這時只需簡單的更新 <code>apt-get</code>，並且再次嘗試安裝就發現可以找到套件了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>在使用 <code>apt-get</code> 安裝之前先執行 <code>apt-get update</code> 是一個好習慣，以確保資料庫為最新，減少一個浪費時間的可能。</p>
+    <title>[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題</title>
+    <url>/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>update</tag>
-        <tag>install</tag>
-        <tag>apt</tag>
-        <tag>get</tag>
+        <tag>sdk</tag>
+        <tag>xilinx</tag>
+        <tag>make</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Xilinx SDK] GPIO 常用到的參數</title>
+    <url>/2021/06/13/xilinx_sdk_gpio/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用 API 時，最重要的是正確地輸入對應參數，因此必定要先了解參數所代表的涵義，才能有正確的使用 API 姿勢。</p>
+<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
+<li>RFSoC ZCU111</li>
+</ul>
+<h2 id="參數說明"><a href="#參數說明" class="headerlink" title="參數說明"></a>參數說明</h2><ol>
+<li><p><code>channel</code>：這是在 Vivado 內使用 IP 來做設計時就決定的，打開 GPIO 的 IP 設定視窗可以看到 GPIO 與 GPIO2，這裡的例子通道 1 與通道 2 分別為 led 與 push button。</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Xilinx-SDK-GPIO-%E5%B8%B8%E7%94%A8%E5%88%B0%E7%9A%84%E5%8F%83%E6%95%B8%2Fgpio.png?alt=media&amp;token=1edff119-f05f-4e10-bc7a-fb60595872fa" alt="GPIO IP 設定畫面"><span class="image-caption">GPIO IP 設定畫面</span></p>
+</li>
+<li><p><code>DirectionMask</code>：這是決定 GPIO 為輸入或輸出 (相對於晶片來說) 的參數，需要特別點開 <code>*.h</code> 或 <code>*.c</code> 去看說明，此說明在 <code>xgpio.c</code> 的註解裡，以下為摘要</p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Bits set to 0 are output and bits set to 1 are input.</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>sdk</tag>
+        <tag>api</tag>
+        <tag>xilinx</tag>
+        <tag>gpio</tag>
+        <tag>channel</tag>
+        <tag>directionmask</tag>
       </tags>
   </entry>
   <entry>
@@ -2269,6 +2244,31 @@
         <tag>chinese</tag>
         <tag>garbled</tag>
         <tag>name</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[apt] Unable to locate package 問題</title>
+    <url>/2021/06/17/apt_unable_to_locate_package/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我遇到的情況是這樣子的，要安裝 <code>ntpdate</code> 時卻發現出現錯誤訊息 <code>Unable to locate package ntpdate</code>，意思是說無法找到 <code>ntpdate</code> 套件</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree       </span><br><span class="line">Reading state information... Done</span><br><span class="line">E: Unable to locate package ntpdate</span><br></pre></td></tr></table></figure>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>很有可能是因為 <code>apt-get</code> 沒有更新，所以資料庫裡面沒有 <code>ntpdate</code> 的連結，這時只需簡單的更新 <code>apt-get</code>，並且再次嘗試安裝就發現可以找到套件了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>在使用 <code>apt-get</code> 安裝之前先執行 <code>apt-get update</code> 是一個好習慣，以確保資料庫為最新，減少一個浪費時間的可能。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>update</tag>
+        <tag>install</tag>
+        <tag>apt</tag>
+        <tag>get</tag>
       </tags>
   </entry>
   <entry>
@@ -2335,6 +2335,73 @@
         <tag>i386</tag>
         <tag>cp</tag>
         <tag>ln</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>自動每日登入 iT邦幫忙 取得活動點數</title>
+    <url>/2021/06/27/ithelp_auto_login/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>許多論壇都擁有活動點數制度，「iT邦幫忙」也不意外的擁有這項功能，其中有一項是每天登入可以加 2 點活動點數，但不知道是 Bug 還是故意的，竟然需要先登出再登入，有了登入的動作才會計算當天登入的活動點數，很不符合常理。</p>
+<p>因此利用爬蟲技能寫了一個專案，每天到指定時間會自動完成登入動作，讓我就算沒有登入這個動作，也可以得到活動點數，雖說這個點數量不多，但就是想要抵抗這個 Bug。</p>
+<p>詳細登入問題也有人提請官方修正，可參考 <a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>。</p>
+<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
+<li><a href="https://github.com/weirenxue/login-script/tree/master/ithelp">GitHub</a></li>
+<li>實際成效<br>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fresult.png?alt=media&amp;token=7a24e416-b438-41ef-a0fa-df95233e5083" alt="成果圖"><span class="image-caption">成果圖</span></li>
+</ul>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>python 3.8.5</li>
+<li>beautifulsoup4 4.9.3</li>
+<li>requests 2.25.1</li>
+</ul>
+<h2 id="環節觀察"><a href="#環節觀察" class="headerlink" title="環節觀察"></a>環節觀察</h2><p>在動手爬蟲之前，必須先觀察在登入計算活動點數時，會經過哪些步驟與所需資訊，觀察時請記得使用開發人員工具 (F12) 來查看資訊流動。</p>
+<h3 id="登入"><a href="#登入" class="headerlink" title="登入"></a>登入</h3><p>第一步至 <a href="https://member.ithome.com.tw/login">iThome會員登入頁面</a> 任意輸入一組帳號，按下登入按鈕然後查看封包，會看到有三個欄位分別為 <code>_token</code>、<code>account</code> 還有 <code>password</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_token_field.png?alt=media&amp;token=8671a0cd-8f92-4cc9-8a54-44ca3ee4b6c0" alt="登入所需欄位"><span class="image-caption">登入所需欄位</span></p>
+<p><code>account</code> 與 <code>password</code> 我們理解，但是 <code>_token</code> 的值從何而來呢？到開發人員工具的 <code>Elements</code> 頁籤搜尋 <code>_token</code>，就可以找到它所在位置，原來是在登入表單內的一個隱藏欄位 (hidden input)！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2F_token_position.png?alt=media&amp;token=da926d26-662f-4bed-8272-d40b1cf5d306" alt="_token 的位置"><span class="image-caption">_token 的位置</span></p>
+<h4 id="實作登入功能"><a href="#實作登入功能" class="headerlink" title="實作登入功能"></a>實作登入功能</h4><p>知道登入需要甚麼資訊，且資訊在哪裡可以取得，就可以開始規劃要如何利用爬蟲來做登入功能。</p>
+<ol>
+<li>先取得 <code>_token</code> 欄位的值。</li>
+<li>將 <code>_token</code>、<code>account</code> 與 <code>password</code> 一起 <code>POST</code> 到 <code>https://member.ithome.com.tw/login</code></li>
+</ol>
+<p>需要注意的是，這些過程中的 <code>Cookie</code> 需要被維護，也就是每個 Request 都必須是同一個 <code>Session</code>，否則 <code>_token</code> 值無效。強大的 <code>requests</code> 套件已經幫我們準備好 <code>Session</code> 物件來處理這些事情，讓我們不用手動轉移 <code>Cookie</code> 到不同的 request 之中。</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 從 sAccount.json 檔案讀取帳密資料</span></span><br><span class="line">s_account = json.load(<span class="built_in">open</span>(<span class="string">&quot;./sAccount.json&quot;</span>, <span class="string">&quot;r&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更改 User-Agent 標頭以免被阻擋</span></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"><span class="comment"># 製作 Payload，有三個欄位分別為 _token、account 與 password</span></span><br><span class="line">loginPayload = &#123;<span class="string">&#x27;account&#x27;</span>: s_account[<span class="string">&#x27;account&#x27;</span>], <span class="string">&#x27;password&#x27;</span>: s_account[<span class="string">&#x27;password&#x27;</span>], <span class="string">&#x27;_token&#x27;</span>:<span class="string">&#x27;&#x27;</span>&#125;</span><br><span class="line"><span class="comment"># 建立一個 Session 物件幫我們維護 Coookie 的運行</span></span><br><span class="line">sess = requests.Session()</span><br><span class="line"><span class="comment"># 將 User-Agent 標頭修改為我們所給的值</span></span><br><span class="line">sess.headers.update(headers)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 先取得 _token 值</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.get(url)</span><br><span class="line">bsObj = bs(response.text, <span class="string">&quot;html.parser&quot;</span>)</span><br><span class="line">loginToken = bsObj.find(<span class="string">&#x27;input&#x27;</span>, &#123;<span class="string">&#x27;name&#x27;</span>:<span class="string">&#x27;_token&#x27;</span>&#125;).attrs[<span class="string">&#x27;value&#x27;</span>]</span><br><span class="line"><span class="comment"># 把 _token 值存到我們之前建立的 Payload 內</span></span><br><span class="line">loginPayload[<span class="string">&#x27;_token&#x27;</span>] = loginToken</span><br><span class="line"></span><br><span class="line"><span class="comment"># 對登入頁面 POST 一次，就可以順利登入囉</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.post(url, data=loginPayload)</span><br></pre></td></tr></table></figure>
+<p><code>sAccount.json</code> 內容如下，只需填入對應的帳號密碼</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;account&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;password&quot;</span>: <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到這裡，登入功能已經完成了。但假如真的去運行這個程式碼，你會發現雖然成功登入，可是並沒有取得想要的到的每日登入活動點數，這個是因為登入與取得點數的功能是分開運行的。</p>
+<h3 id="每日登入活動點數"><a href="#每日登入活動點數" class="headerlink" title="每日登入活動點數"></a>每日登入活動點數</h3><p>再讓我們觀察一下取得活動點數的關鍵在哪裡。先進入 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a>，再點擊登入按鈕，這次需要輸入正確的帳號密碼，並且觀察開發人員工具中的封包，將會看到其實在成功登入後，從 <a href="https://member.ithome.com.tw/login">會員中心</a> 跳轉回 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a> 之前還有其他封包被傳送，可以猜測這些封包就是用來激活每日登入的條件</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_point.png?alt=media&amp;token=731a5c99-9258-49ca-b4ee-69a08b4dead5" alt="每日登入關鍵封包"><span class="image-caption">每日登入關鍵封包</span></p>
+<p>也就是說當我們的爬蟲成功登入後，需要發出 <code>GET https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code</code> 請求，來取得這天的每日登入活動點數。</p>
+<h4 id="實作取得點數功能"><a href="#實作取得點數功能" class="headerlink" title="實作取得點數功能"></a>實作取得點數功能</h4><p>這是最簡單的部分，只需要在登入之後加上下面兩行程式，就可以達到效果了</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code&quot;</span></span><br><span class="line">response = sess.get(url)</span><br></pre></td></tr></table></figure>
+<p>到這裡，概念與實作講解完畢，當然除登入並取得點數外，還可以加一些功能例如確認是否真的登入或者是是否有錯誤發生的判斷。</p>
+<p>可以到我的 GitHub 上參考 <a href="https://github.com/weirenxue/login-script/blob/b693c7eb020f0498222b5bfd34be587c0338c24e/ithelp/login.py#L7-L18">完整原始碼</a>。</p>
+<h2 id="每日自動登入"><a href="#每日自動登入" class="headerlink" title="每日自動登入"></a>每日自動登入</h2><p>將腳本寫好，就可以來讓它納入我的排程內啦！我使用的作業系統是 Windows 10，使用內建的排程系統就可以完成，這裡來說說如何設定排程每天自動登入</p>
+<h3 id="啟動檔-bat"><a href="#啟動檔-bat" class="headerlink" title="啟動檔 bat"></a>啟動檔 bat</h3><p>要用排程之前，最好的習慣是將啟動腳本寫成 bat 檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /d %~dp0</span><br><span class="line">python <span class="string">&quot;%~dp0login.py&quot;</span> &gt;&gt; <span class="string">&quot;%~dp0log.log&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>%~dp0</code>：bat 檔案所在目錄的絕對路徑。</li>
+</ul>
+<h3 id="創建排程"><a href="#創建排程" class="headerlink" title="創建排程"></a>創建排程</h3><p>開啟 <code>Task Schedular</code>，並建立一個排程 <code>Action -&gt; Create Task...</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fcreate_task_scheduler.png?alt=media&amp;token=e2220412-cd15-49d8-aaa2-72e2a37de2c4" alt="建立排程"><span class="image-caption">建立排程</span></p>
+<p>設定排程的時間點 (每天下午 3:36) 與要執行的 bat 檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fschedul_schedular.png?alt=media&amp;token=d768c1c0-ba3b-4d5d-8a77-7acb7274457d" alt="設定排程"><span class="image-caption">設定排程</span></p>
+<h3 id="測試排程"><a href="#測試排程" class="headerlink" title="測試排程"></a>測試排程</h3><p>設定完之後，在排程清單中找到剛剛建立的排程，<code>點擊右鍵 -&gt; Run</code> 讓它實際運作一次來當作測試，若有正常運作可以在與 bat 檔案相同目錄下找到 <code>log.log</code> 檔，若 log 無問題並有顯示登入成功，表示排程可以正常運作囉</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Ftest_schedular.png?alt=media&amp;token=2a35d3d6-1d93-461d-8a4a-0122493326c7" alt="測試排程與 log 檔"><span class="image-caption">測試排程與 log 檔</span></p>
+<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>這個是我在 <code>2021/04/08</code> 時開發的一個小專案，早在 2020 初次加入 iT邦幫忙 這個大家庭時就發現這個 Bug，雖然當時也有看到有人反應此問題，但都沒有下文，因此在較空閒時完成這個一直未了的小心願。最一開始的初衷只是想要解決這個生活小煩惱，同時以學習的態度來開發這個專案。</p>
+<p>然而這個 Bug 在 <code>2021/05/12</code> 時小財神宣布已經根除 (<a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>)，真是皆大歡喜。得知這個訊息的第一個想法是這個專案好像沒有用了，但其實我們還是一樣可以繼續排程，若是哪天較忙忘記瀏覽論壇，可讓爬蟲代替我們每天取得點數。</p>
+]]></content>
+      <categories>
+        <category>專案開發筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>crawl</tag>
+        <tag>ithelp</tag>
+        <tag>login</tag>
+        <tag>auto</tag>
+        <tag>credit</tag>
+        <tag>task</tag>
+        <tag>schedular</tag>
       </tags>
   </entry>
   <entry>
@@ -2449,73 +2516,6 @@
         <tag>powerpoint</tag>
         <tag>pptx</tag>
         <tag>ppsx</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>自動每日登入 iT邦幫忙 取得活動點數</title>
-    <url>/2021/06/27/ithelp_auto_login/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>許多論壇都擁有活動點數制度，「iT邦幫忙」也不意外的擁有這項功能，其中有一項是每天登入可以加 2 點活動點數，但不知道是 Bug 還是故意的，竟然需要先登出再登入，有了登入的動作才會計算當天登入的活動點數，很不符合常理。</p>
-<p>因此利用爬蟲技能寫了一個專案，每天到指定時間會自動完成登入動作，讓我就算沒有登入這個動作，也可以得到活動點數，雖說這個點數量不多，但就是想要抵抗這個 Bug。</p>
-<p>詳細登入問題也有人提請官方修正，可參考 <a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>。</p>
-<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
-<li><a href="https://github.com/weirenxue/login-script/tree/master/ithelp">GitHub</a></li>
-<li>實際成效<br>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fresult.png?alt=media&amp;token=7a24e416-b438-41ef-a0fa-df95233e5083" alt="成果圖"><span class="image-caption">成果圖</span></li>
-</ul>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>python 3.8.5</li>
-<li>beautifulsoup4 4.9.3</li>
-<li>requests 2.25.1</li>
-</ul>
-<h2 id="環節觀察"><a href="#環節觀察" class="headerlink" title="環節觀察"></a>環節觀察</h2><p>在動手爬蟲之前，必須先觀察在登入計算活動點數時，會經過哪些步驟與所需資訊，觀察時請記得使用開發人員工具 (F12) 來查看資訊流動。</p>
-<h3 id="登入"><a href="#登入" class="headerlink" title="登入"></a>登入</h3><p>第一步至 <a href="https://member.ithome.com.tw/login">iThome會員登入頁面</a> 任意輸入一組帳號，按下登入按鈕然後查看封包，會看到有三個欄位分別為 <code>_token</code>、<code>account</code> 還有 <code>password</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_token_field.png?alt=media&amp;token=8671a0cd-8f92-4cc9-8a54-44ca3ee4b6c0" alt="登入所需欄位"><span class="image-caption">登入所需欄位</span></p>
-<p><code>account</code> 與 <code>password</code> 我們理解，但是 <code>_token</code> 的值從何而來呢？到開發人員工具的 <code>Elements</code> 頁籤搜尋 <code>_token</code>，就可以找到它所在位置，原來是在登入表單內的一個隱藏欄位 (hidden input)！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2F_token_position.png?alt=media&amp;token=da926d26-662f-4bed-8272-d40b1cf5d306" alt="_token 的位置"><span class="image-caption">_token 的位置</span></p>
-<h4 id="實作登入功能"><a href="#實作登入功能" class="headerlink" title="實作登入功能"></a>實作登入功能</h4><p>知道登入需要甚麼資訊，且資訊在哪裡可以取得，就可以開始規劃要如何利用爬蟲來做登入功能。</p>
-<ol>
-<li>先取得 <code>_token</code> 欄位的值。</li>
-<li>將 <code>_token</code>、<code>account</code> 與 <code>password</code> 一起 <code>POST</code> 到 <code>https://member.ithome.com.tw/login</code></li>
-</ol>
-<p>需要注意的是，這些過程中的 <code>Cookie</code> 需要被維護，也就是每個 Request 都必須是同一個 <code>Session</code>，否則 <code>_token</code> 值無效。強大的 <code>requests</code> 套件已經幫我們準備好 <code>Session</code> 物件來處理這些事情，讓我們不用手動轉移 <code>Cookie</code> 到不同的 request 之中。</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 從 sAccount.json 檔案讀取帳密資料</span></span><br><span class="line">s_account = json.load(<span class="built_in">open</span>(<span class="string">&quot;./sAccount.json&quot;</span>, <span class="string">&quot;r&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更改 User-Agent 標頭以免被阻擋</span></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"><span class="comment"># 製作 Payload，有三個欄位分別為 _token、account 與 password</span></span><br><span class="line">loginPayload = &#123;<span class="string">&#x27;account&#x27;</span>: s_account[<span class="string">&#x27;account&#x27;</span>], <span class="string">&#x27;password&#x27;</span>: s_account[<span class="string">&#x27;password&#x27;</span>], <span class="string">&#x27;_token&#x27;</span>:<span class="string">&#x27;&#x27;</span>&#125;</span><br><span class="line"><span class="comment"># 建立一個 Session 物件幫我們維護 Coookie 的運行</span></span><br><span class="line">sess = requests.Session()</span><br><span class="line"><span class="comment"># 將 User-Agent 標頭修改為我們所給的值</span></span><br><span class="line">sess.headers.update(headers)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 先取得 _token 值</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.get(url)</span><br><span class="line">bsObj = bs(response.text, <span class="string">&quot;html.parser&quot;</span>)</span><br><span class="line">loginToken = bsObj.find(<span class="string">&#x27;input&#x27;</span>, &#123;<span class="string">&#x27;name&#x27;</span>:<span class="string">&#x27;_token&#x27;</span>&#125;).attrs[<span class="string">&#x27;value&#x27;</span>]</span><br><span class="line"><span class="comment"># 把 _token 值存到我們之前建立的 Payload 內</span></span><br><span class="line">loginPayload[<span class="string">&#x27;_token&#x27;</span>] = loginToken</span><br><span class="line"></span><br><span class="line"><span class="comment"># 對登入頁面 POST 一次，就可以順利登入囉</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.post(url, data=loginPayload)</span><br></pre></td></tr></table></figure>
-<p><code>sAccount.json</code> 內容如下，只需填入對應的帳號密碼</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;account&quot;</span>: <span class="string">&quot;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;password&quot;</span>: <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>到這裡，登入功能已經完成了。但假如真的去運行這個程式碼，你會發現雖然成功登入，可是並沒有取得想要的到的每日登入活動點數，這個是因為登入與取得點數的功能是分開運行的。</p>
-<h3 id="每日登入活動點數"><a href="#每日登入活動點數" class="headerlink" title="每日登入活動點數"></a>每日登入活動點數</h3><p>再讓我們觀察一下取得活動點數的關鍵在哪裡。先進入 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a>，再點擊登入按鈕，這次需要輸入正確的帳號密碼，並且觀察開發人員工具中的封包，將會看到其實在成功登入後，從 <a href="https://member.ithome.com.tw/login">會員中心</a> 跳轉回 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a> 之前還有其他封包被傳送，可以猜測這些封包就是用來激活每日登入的條件</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_point.png?alt=media&amp;token=731a5c99-9258-49ca-b4ee-69a08b4dead5" alt="每日登入關鍵封包"><span class="image-caption">每日登入關鍵封包</span></p>
-<p>也就是說當我們的爬蟲成功登入後，需要發出 <code>GET https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code</code> 請求，來取得這天的每日登入活動點數。</p>
-<h4 id="實作取得點數功能"><a href="#實作取得點數功能" class="headerlink" title="實作取得點數功能"></a>實作取得點數功能</h4><p>這是最簡單的部分，只需要在登入之後加上下面兩行程式，就可以達到效果了</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code&quot;</span></span><br><span class="line">response = sess.get(url)</span><br></pre></td></tr></table></figure>
-<p>到這裡，概念與實作講解完畢，當然除登入並取得點數外，還可以加一些功能例如確認是否真的登入或者是是否有錯誤發生的判斷。</p>
-<p>可以到我的 GitHub 上參考 <a href="https://github.com/weirenxue/login-script/blob/b693c7eb020f0498222b5bfd34be587c0338c24e/ithelp/login.py#L7-L18">完整原始碼</a>。</p>
-<h2 id="每日自動登入"><a href="#每日自動登入" class="headerlink" title="每日自動登入"></a>每日自動登入</h2><p>將腳本寫好，就可以來讓它納入我的排程內啦！我使用的作業系統是 Windows 10，使用內建的排程系統就可以完成，這裡來說說如何設定排程每天自動登入</p>
-<h3 id="啟動檔-bat"><a href="#啟動檔-bat" class="headerlink" title="啟動檔 bat"></a>啟動檔 bat</h3><p>要用排程之前，最好的習慣是將啟動腳本寫成 bat 檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /d %~dp0</span><br><span class="line">python <span class="string">&quot;%~dp0login.py&quot;</span> &gt;&gt; <span class="string">&quot;%~dp0log.log&quot;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>%~dp0</code>：bat 檔案所在目錄的絕對路徑。</li>
-</ul>
-<h3 id="創建排程"><a href="#創建排程" class="headerlink" title="創建排程"></a>創建排程</h3><p>開啟 <code>Task Schedular</code>，並建立一個排程 <code>Action -&gt; Create Task...</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fcreate_task_scheduler.png?alt=media&amp;token=e2220412-cd15-49d8-aaa2-72e2a37de2c4" alt="建立排程"><span class="image-caption">建立排程</span></p>
-<p>設定排程的時間點 (每天下午 3:36) 與要執行的 bat 檔案</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fschedul_schedular.png?alt=media&amp;token=d768c1c0-ba3b-4d5d-8a77-7acb7274457d" alt="設定排程"><span class="image-caption">設定排程</span></p>
-<h3 id="測試排程"><a href="#測試排程" class="headerlink" title="測試排程"></a>測試排程</h3><p>設定完之後，在排程清單中找到剛剛建立的排程，<code>點擊右鍵 -&gt; Run</code> 讓它實際運作一次來當作測試，若有正常運作可以在與 bat 檔案相同目錄下找到 <code>log.log</code> 檔，若 log 無問題並有顯示登入成功，表示排程可以正常運作囉</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Ftest_schedular.png?alt=media&amp;token=2a35d3d6-1d93-461d-8a4a-0122493326c7" alt="測試排程與 log 檔"><span class="image-caption">測試排程與 log 檔</span></p>
-<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>這個是我在 <code>2021/04/08</code> 時開發的一個小專案，早在 2020 初次加入 iT邦幫忙 這個大家庭時就發現這個 Bug，雖然當時也有看到有人反應此問題，但都沒有下文，因此在較空閒時完成這個一直未了的小心願。最一開始的初衷只是想要解決這個生活小煩惱，同時以學習的態度來開發這個專案。</p>
-<p>然而這個 Bug 在 <code>2021/05/12</code> 時小財神宣布已經根除 (<a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>)，真是皆大歡喜。得知這個訊息的第一個想法是這個專案好像沒有用了，但其實我們還是一樣可以繼續排程，若是哪天較忙忘記瀏覽論壇，可讓爬蟲代替我們每天取得點數。</p>
-]]></content>
-      <categories>
-        <category>專案開發筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>crawl</tag>
-        <tag>ithelp</tag>
-        <tag>login</tag>
-        <tag>auto</tag>
-        <tag>credit</tag>
-        <tag>task</tag>
-        <tag>schedular</tag>
       </tags>
   </entry>
   <entry>
