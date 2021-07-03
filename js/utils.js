@@ -358,7 +358,6 @@ NexT.utils = {
             return;
         }
         sidebarAd.style.position = 'fixed';
-        console.log(window.getComputedStyle(document.querySelector('.affix')).height);
         sidebarAd.style.top = parseInt(window.getComputedStyle(document.querySelector('.affix')).height) + 15 + 'px';
     }
     window.onscroll = sidebarAdRWD;
