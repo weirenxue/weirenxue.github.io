@@ -349,6 +349,20 @@ NexT.utils = {
     var sidebarSchemePadding = (CONFIG.sidebar.padding * 2) + sidebarNavHeight + sidebarb2tHeight;
     // Margin of sidebar b2t: -4px -10px -18px, brings a different of 22px.
     if (CONFIG.scheme === 'Pisces' || CONFIG.scheme === 'Gemini') sidebarSchemePadding += (sidebarOffset * 2) - 22;
+    function sidebarAdRWD() {
+        var sidebarAd = document.querySelector('.gooAd.sidebar-inner');
+        sidebarAd.style.marginTop = '15px';
+        var affix = document.querySelector('.affix');
+        if (affix == null) {
+            sidebarAd.style.position = null;
+            return;
+        }
+        sidebarAd.style.position = 'fixed';
+        console.log(window.getComputedStyle(document.querySelector('.affix')).height);
+        sidebarAd.style.top = parseInt(window.getComputedStyle(document.querySelector('.affix')).height) + 15 + 'px';
+    }
+    window.onscroll = sidebarAdRWD;
+    window.onload = sidebarAdRWD;
     // Initialize Sidebar & TOC Height.
     var sidebarWrapperHeight = document.body.offsetHeight - sidebarSchemePadding + 'px';
     document.querySelector('.site-overview-wrap').style.maxHeight = sidebarWrapperHeight;
