@@ -1,78 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>[Apache] 修改 HTTP 標頭中的 Server 欄位</title>
-    <url>/2021/06/17/apache_http_server/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>伺服器資訊包含類型 (IIS、Apache 或 Nginx) 與版本是一個很重要的資訊，當駭客想針對一個網頁應用程式下手時，必定先蒐集這些情報，下一步再看有沒有尚未修復的漏洞可以利用。</p>
-<p>因此，若不想使這些資訊這麼透明，我們可以採取一些手段。這篇文章以 Apache 2 為例子隱藏伺服器資訊，不同類型的伺服器的概念都是一樣的。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 20.04 LTS</li>
-</ul>
-<h2 id="文章結構"><a href="#文章結構" class="headerlink" title="文章結構"></a>文章結構</h2><p>此篇文章分為兩個段落</p>
-<ol>
-<li>第一個段落說明如何從 HTTP 回應標頭 (HTTP Response Header) 來蒐集伺服器資訊，讓讀者心裡有個底為什麼接下來要這樣改。</li>
-<li>第二個段落動手修改 HTTP 回應頭欄位中的 Server 欄位，這裡會採取兩個方式<ul>
-<li>使 Server 欄位只剩下 <code>Apache</code>，版本與作業系統資訊不會顯示。</li>
-<li>將 Server 欄位改為自己想要的輸出顯示，可以連 <code>Apache</code> 都不顯示。</li>
-</ul>
-</li>
-</ol>
-<h2 id="蒐集伺服器資訊"><a href="#蒐集伺服器資訊" class="headerlink" title="蒐集伺服器資訊"></a>蒐集伺服器資訊</h2><h3 id="前置環境與作業"><a href="#前置環境與作業" class="headerlink" title="前置環境與作業"></a>前置環境與作業</h3><p>伺服器 IP 為 localhost，並在當前目錄下創建檔案 <code>message</code>，內容如下</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HEAD / HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>16 進位形式</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
-<p>這裡特別附上該檔案的 16 進位形式，注意每一行後都有 <code>\r\n</code>，也就是 <code>0x0d0a</code>，最後一個空白行 <code>\r\n</code> 可別忘了！因為 linux 的換行只有 <code>\n</code>，如何加上 <code>\r</code> 可以參考：<a href="/2021/06/17/echo_ubuntu_r/">[Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案</a>。</p>
-<h3 id="NetCat"><a href="#NetCat" class="headerlink" title="NetCat"></a>NetCat</h3><p>NetCat 是一把網路瑞士刀，用它來進行網路相關操作是最好用且方便的</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 01:37:03 GMT</span><br><span class="line">Server: Apache/2.4.41 (Ubuntu)</span><br><span class="line">Last-Modified: Thu, 03 Sep 2020 01:24:28 GMT</span><br><span class="line">ETag: <span class="string">&quot;2aa6-5ae5e9d0acf52&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 10918</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
-<h3 id="資訊洩漏"><a href="#資訊洩漏" class="headerlink" title="資訊洩漏"></a>資訊洩漏</h3><p>從輸出結果可以準確知道使用的伺服器與運行版本資訊，甚至是作業系統的資訊，這些資訊都是當服務被發現有漏洞時，對我們不利的點！</p>
-<p>因此，要如何隱藏這個資訊是我們該學的，雖然不能說隱藏起來就萬無一失，只是攻擊方在沒有這些情報下會比較難鎖定，若能拖延到補丁出現，受到攻擊的機率就被降低了！</p>
-<h2 id="修改標頭的-Server-欄位"><a href="#修改標頭的-Server-欄位" class="headerlink" title="修改標頭的 Server 欄位"></a>修改標頭的 Server 欄位</h2><p>修改的方法有兩種，各有利弊，這篇文章兩種方法都會記錄，但實際上需要哪一種還是要看個人</p>
-<ol>
-<li>修改 <code>conf</code> 檔：用 <code>apt-get</code> 安裝的 <code>Apache</code> 只能用這個方法。優點是快速，缺點是最少還是會留下 <code>Apache</code> 的字眼，讓使用者知道伺服器是 Apache。</li>
-<li>修改原始碼再自行編譯：優點是可以完全改為自己想顯示的文字，缺點是因為要自行編譯，導致若要更新 Apache，還要再重新下載新的原始碼，重複一樣的步驟，無法像 <code>apt-get</code> 安裝的套件那樣直接更新。</li>
-</ol>
-<h3 id="修改-conf-檔"><a href="#修改-conf-檔" class="headerlink" title="修改 conf 檔"></a>修改 conf 檔</h3><p>這裡使用的 Apache 版本為 2.4.41，不同版本所要修改的 <code>conf</code> 檔與其所在位置可能不同。</p>
-<p>修改 <code>security.conf</code>，其位置在 <code>/etc/apache2/conf-available/security.conf</code>，將內容中 <code>ServerTokens</code> 所對應的值改為 <code>Prod</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ServerTokens</span></span><br><span class="line"><span class="comment"># This directive configures what you return as the Server HTTP response</span></span><br><span class="line"><span class="comment"># Header. The default is &#x27;Full&#x27; which sends information about the OS-Type</span></span><br><span class="line"><span class="comment"># and compiled in modules.</span></span><br><span class="line"><span class="comment"># Set to one of:  Full | OS | Minimal | Minor | Major | Prod</span></span><br><span class="line"><span class="comment"># where Full conveys the most information, and Prod the least.</span></span><br><span class="line"><span class="comment">#ServerTokens Minimal</span></span><br><span class="line">ServerTokens Prod</span><br><span class="line"><span class="comment">#ServerTokens Full</span></span><br></pre></td></tr></table></figure>
-<p>重啟 Apache 服務，並且再做一次資訊蒐集，可以發現版本與 OS 的資訊已被隱蔽</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo /etc/init.d/apache2 restart</span><br><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 07:50:50 GMT</span><br><span class="line">Server: Apache</span><br><span class="line">Last-Modified: Thu, 03 Sep 2020 07:25:19 GMT</span><br><span class="line">ETag: <span class="string">&quot;2aa6-5ae63a79037be&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 10918</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
-<p>這個方法最多只能只能遮蔽到這個程度，知道伺服器是 Apache，但版本與 OS 無法從此處得知。</p>
-<h3 id="修改原始碼自行編譯"><a href="#修改原始碼自行編譯" class="headerlink" title="修改原始碼自行編譯"></a>修改原始碼自行編譯</h3><p><a href="https://httpd.apache.org/docs/2.4/install.html">Apache 編譯步驟</a> 官網都有教學，但我們需要修改原始碼，所以還是會細講一下步驟。</p>
-<h4 id="下載原始碼"><a href="#下載原始碼" class="headerlink" title="下載原始碼"></a>下載原始碼</h4><p>先到 <a href="https://httpd.apache.org/">Apache 官網</a> 下載想要的版本 (選 tar.gz)，解壓縮後進到資料。其中的 <code>httpd-NN</code> 就是下載的版本啦！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ gzip -d httpd-NN.tar.gz <span class="comment"># 解 gz</span></span><br><span class="line">user@pc:~$ tar xvf httpd-NN.tar    <span class="comment"># 解 tar</span></span><br><span class="line">user@pc:~$ <span class="built_in">cd</span> httpd-NN             <span class="comment"># 進到目錄下</span></span><br></pre></td></tr></table></figure>
-<h4 id="修改原始碼"><a href="#修改原始碼" class="headerlink" title="修改原始碼"></a>修改原始碼</h4><p>開啟 <code>httpd-NN/include/ap_release.h</code> 找到 <code>#define AP_SERVER_BASEPRODUCT &quot;Apache&quot;</code>，將 <code>Apache</code> 改為想要顯示在 Server 欄位的文字，僅需修改此處就可以往下個步驟</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AP_SERVER_BASEPRODUCT <span class="meta-string">&quot;Server field masked!&quot;</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="編譯原始碼"><a href="#編譯原始碼" class="headerlink" title="編譯原始碼"></a>編譯原始碼</h4><p>產出 <code>Makefile</code>，在這步驟可能會遇到相依套件沒裝的問題 <code>apr</code>、<code>apr-util</code> 與 <code>prec</code>，所以先安裝相關套件，網路上很多都教下載這些套件的原碼再 compile，但我認為若可以使用 <code>apt-get install</code> 就盡量使用它，因為之後可以用 <code>apt-get update/upgrade</code> 來更新套件！管理上省事許多</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ sudo apt-get install gcc libapr1 libapr1-dev libaprutil1 libaprutil1-dev libpcre3 libpcre3-dev</span><br><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ ./configure      </span><br></pre></td></tr></table></figure>
-<p>若有看官網教學會看到 <code>./configure --prefix=PREFIX</code>，其中 <code>PREFIX</code> 是想安裝 Apache 的地方，不指定的話，就是安裝在預設路徑 <code>/usr/local/apache2</code>，若沒特殊需求就安裝在預設路徑即可。</p>
-<p><code>configure</code> 執行成功後目錄下應該會有 <code>Makefile</code>，現在就可以來編譯然後安裝啦。安裝完預設是關閉服務的，記得開啟嘿！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ make                                           <span class="comment"># 編譯</span></span><br><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ sudo make install                              <span class="comment"># 安裝</span></span><br><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ sudo /usr/<span class="built_in">local</span>/apache2/bin/apachectl -k start <span class="comment"># 開啟服務</span></span><br></pre></td></tr></table></figure>
-<p>開啟服務後，檢查 Server 欄位是否被修改了，可以看到的確是剛修改的內容 <code>Server field masked!</code>，但是版本與 OS 的資訊還在，要改的東西還沒完，請繼續下一步修改！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 09:29:14 GMT</span><br><span class="line">Server: Server field masked!/2.4.46 (Unix)</span><br><span class="line">Last-Modified: Mon, 11 Jun 2007 18:53:14 GMT</span><br><span class="line">ETag: <span class="string">&quot;2d-432a5e4a73a80&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 45</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
-<h4 id="修改設定檔"><a href="#修改設定檔" class="headerlink" title="修改設定檔"></a>修改設定檔</h4><p>跟第一個修改方法很類似，要去修改一個 <code>conf</code> 檔，這裡為 <code>/usr/local/apache2/conf/extra/httpd-default.conf</code>，將內容中 <code>ServerTokens</code> 所對應的值改為 <code>Prod</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ServerTokens</span></span><br><span class="line"><span class="comment"># This directive configures what you return as the Server HTTP response</span></span><br><span class="line"><span class="comment"># Header. The default is &#x27;Full&#x27; which sends information about the OS-Type</span></span><br><span class="line"><span class="comment"># and compiled in modules.</span></span><br><span class="line"><span class="comment"># Set to one of:  Full | OS | Minor | Minimal | Major | Prod</span></span><br><span class="line"><span class="comment"># where Full conveys the most information, and Prod the least.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">ServerTokens Prod</span><br></pre></td></tr></table></figure>
-<p>還沒結束喔！還要修改一個 conf 檔，這裡為 <code>/usr/local/apache2/conf/httpd.conf</code>，將內容中 <code>#Include conf/extra/httpd-default.conf</code> 前的井字號拿掉, 確保上一步的 <code>httpd-default.conf</code> 設定會被載入</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Various default settings</span></span><br><span class="line">Include conf/extra/httpd-default.conf</span><br></pre></td></tr></table></figure>
-<p>重啟服務，檢查 Server 欄位，可以看到的只剩下剛修改的內容 <code>Server field masked!</code> 完全無法從 Server 欄位得知這是什麼伺服器，更狠一點，也可以改為 <code>Microsoft-IIS/10.0</code> 來混淆視聽</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo /usr/<span class="built_in">local</span>/apache2/bin/apachectl -k restart <span class="comment"># 重啟服務</span></span><br><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 09:49:28 GMT</span><br><span class="line">Server: Server field masked!</span><br><span class="line">Last-Modified: Mon, 11 Jun 2007 18:53:14 GMT</span><br><span class="line">ETag: <span class="string">&quot;2d-432a5e4a73a80&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 45</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>apache</tag>
-        <tag>ubuntu</tag>
-        <tag>20.04</tag>
-        <tag>http</tag>
-        <tag>server</tag>
-        <tag>header</tag>
-        <tag>web</tag>
-        <tag>modification</tag>
-        <tag>netcat</tag>
-        <tag>nc</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[C++] (FARPROC&amp;) 的含意</title>
     <url>/2021/06/11/cfarproc/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
@@ -104,6 +32,42 @@
         <tag>FARPROC</tag>
         <tag>cpp</tag>
         <tag>加密與解密</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
+    <url>/2021/06/15/cs_asp_net_core_3_1/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio Enterprise 2019 (16.7.2)</li>
+<li>.Net Core 3.1</li>
+</ul>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>必需使用 Visual Studio 2019 以上版本才可以用 .NET Core 3.1 (<a href="https://dotnet.microsoft.com/download/dotnet-core/3.1">參考資訊</a>)，也因為 2.1 版在 2021/08/21 就會結束支援，所以建議使用較新的 Core (3.1)。</p>
+<p>開啟「Visual Studio 2019」→「Create a new project」→ 選「ASP.NET Core Web Application」→ Project name 為「CorePractice」→ 選「Web Application」(請注意上方要為 .NET Core 與 ASP.NET Core 3.1，且右方的 HTTPS 不要勾) →「Create」</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fcreate_project.png?alt=media&amp;token=fc23ffc7-0664-4325-bd3f-9d052cf073d7" alt="創建專案步驟"><span class="image-caption">創建專案步驟</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>目錄結構如下，目前只會用到 <code>Index.cshtml</code> 與 <code>Index.cshtml.cs</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">│  appsettings.Development.json</span><br><span class="line">│  appsettings.json</span><br><span class="line">│  CorePractice.csproj</span><br><span class="line">│  Program.cs</span><br><span class="line">│  Startup.cs</span><br><span class="line">├─bin</span><br><span class="line">├─obj</span><br><span class="line">├─Pages</span><br><span class="line">│  │  Error.cshtml</span><br><span class="line">│  │  Error.cshtml.cs</span><br><span class="line">│  │  Index.cshtml</span><br><span class="line">│  │  Index.cshtml.cs</span><br><span class="line">│  │  Privacy.cshtml</span><br><span class="line">│  │  Privacy.cshtml.cs</span><br><span class="line">│  │  _ViewImports.cshtml</span><br><span class="line">│  │  _ViewStart.cshtml</span><br><span class="line">│  │</span><br><span class="line">│  └─Shared</span><br><span class="line">├─Properties</span><br><span class="line">└─wwwroot</span><br></pre></td></tr></table></figure>
+<p>修改 <code>Index.cshtml.cs</code> 內 <code>OnGet</code> 函式的內容，透過 <code>ViewData</code> 將資料傳給 View</p>
+<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.RazorPages;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CorePractice.Pages</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">IndexModel</span> : <span class="title">PageModel</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;IndexModel&gt; _logger;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">IndexModel</span>(<span class="params">ILogger&lt;IndexModel&gt; logger</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            _logger = logger;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGet</span>(<span class="params"></span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span>[] names = <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; <span class="string">&quot;Alfreda Stephenson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Swanson Swanson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Walker Pace&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Katina Le&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Lesley Calderon&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Ruth Merrill&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Cristina Buchanan&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Gallegos May&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Macdonald Lucas&quot;</span>&#125;;</span><br><span class="line">            <span class="built_in">int</span> num = <span class="number">3</span>;</span><br><span class="line">            <span class="built_in">int</span>[] age = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            <span class="built_in">string</span>[] name = <span class="keyword">new</span> <span class="built_in">string</span>[num];</span><br><span class="line">            <span class="built_in">int</span>[] family = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            Random rnd = <span class="keyword">new</span> Random();</span><br><span class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; num; i++)</span><br><span class="line">            &#123;</span><br><span class="line">                age[i] = rnd.Next(<span class="number">50</span>);</span><br><span class="line">                name[i] = names[rnd.Next(names.Length)];</span><br><span class="line">                family[i] = rnd.Next(<span class="number">5</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            ViewData[<span class="string">&quot;age&quot;</span>] = age;</span><br><span class="line">            ViewData[<span class="string">&quot;name&quot;</span>] = name;</span><br><span class="line">            ViewData[<span class="string">&quot;family&quot;</span>] = family;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>將 <code>Index.cshtml</code> 修改如下，透過 <code>ViewData</code> 將 Controller 的資料取出，在 View 中渲染</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">@page</span><br><span class="line">@model IndexModel</span><br><span class="line">@&#123;</span><br><span class="line">    ViewData[&quot;Title&quot;] = &quot;Home page&quot;;</span><br><span class="line"></span><br><span class="line">    int[] age = ViewData[&quot;age&quot;] as int[];</span><br><span class="line">    string[] name = ViewData[&quot;name&quot;] as string[];</span><br><span class="line">    int[] family = ViewData[&quot;family&quot;] as int[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;text-center&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">&quot;display-4&quot;</span>&gt;</span>Welcome<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Learn about <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://docs.microsoft.com/aspnet/core&quot;</span>&gt;</span>building Web apps with ASP.NET Core<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">style</span>=<span class="string">&quot;border-style: solid; margin-left: auto; margin-right: auto;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>名字<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>歲數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>家庭人數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    @for (var i = 0; i &lt; name.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@name[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@age[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@family[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">    <span class="selector-tag">table</span> <span class="selector-tag">td</span>, <span class="selector-tag">table</span> <span class="selector-tag">th</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">1px</span> solid black;</span></span><br><span class="line"><span class="css">    &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>編譯與建置 (F5) 後一個簡單的 ASP.NET Core 應用程式就此完成</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fproject_demo.png?alt=media&amp;token=7e1625c1-5d92-4acd-84b5-8de508a799f0" alt="完成頁面"><span class="image-caption">完成頁面</span></p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/core-practice">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>csharp</tag>
+        <tag>asp</tag>
+        <tag>.net</tag>
+        <tag>core</tag>
+        <tag>3.1</tag>
+        <tag>visual studio</tag>
+        <tag>razor</tag>
+        <tag>2019</tag>
       </tags>
   </entry>
   <entry>
@@ -178,6 +142,78 @@
       </tags>
   </entry>
   <entry>
+    <title>[Apache] 修改 HTTP 標頭中的 Server 欄位</title>
+    <url>/2021/06/17/apache_http_server/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>伺服器資訊包含類型 (IIS、Apache 或 Nginx) 與版本是一個很重要的資訊，當駭客想針對一個網頁應用程式下手時，必定先蒐集這些情報，下一步再看有沒有尚未修復的漏洞可以利用。</p>
+<p>因此，若不想使這些資訊這麼透明，我們可以採取一些手段。這篇文章以 Apache 2 為例子隱藏伺服器資訊，不同類型的伺服器的概念都是一樣的。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 20.04 LTS</li>
+</ul>
+<h2 id="文章結構"><a href="#文章結構" class="headerlink" title="文章結構"></a>文章結構</h2><p>此篇文章分為兩個段落</p>
+<ol>
+<li>第一個段落說明如何從 HTTP 回應標頭 (HTTP Response Header) 來蒐集伺服器資訊，讓讀者心裡有個底為什麼接下來要這樣改。</li>
+<li>第二個段落動手修改 HTTP 回應頭欄位中的 Server 欄位，這裡會採取兩個方式<ul>
+<li>使 Server 欄位只剩下 <code>Apache</code>，版本與作業系統資訊不會顯示。</li>
+<li>將 Server 欄位改為自己想要的輸出顯示，可以連 <code>Apache</code> 都不顯示。</li>
+</ul>
+</li>
+</ol>
+<h2 id="蒐集伺服器資訊"><a href="#蒐集伺服器資訊" class="headerlink" title="蒐集伺服器資訊"></a>蒐集伺服器資訊</h2><h3 id="前置環境與作業"><a href="#前置環境與作業" class="headerlink" title="前置環境與作業"></a>前置環境與作業</h3><p>伺服器 IP 為 localhost，並在當前目錄下創建檔案 <code>message</code>，內容如下</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">HEAD / HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>16 進位形式</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
+<p>這裡特別附上該檔案的 16 進位形式，注意每一行後都有 <code>\r\n</code>，也就是 <code>0x0d0a</code>，最後一個空白行 <code>\r\n</code> 可別忘了！因為 linux 的換行只有 <code>\n</code>，如何加上 <code>\r</code> 可以參考：<a href="/2021/06/17/echo_ubuntu_r/">[Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案</a>。</p>
+<h3 id="NetCat"><a href="#NetCat" class="headerlink" title="NetCat"></a>NetCat</h3><p>NetCat 是一把網路瑞士刀，用它來進行網路相關操作是最好用且方便的</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 01:37:03 GMT</span><br><span class="line">Server: Apache/2.4.41 (Ubuntu)</span><br><span class="line">Last-Modified: Thu, 03 Sep 2020 01:24:28 GMT</span><br><span class="line">ETag: <span class="string">&quot;2aa6-5ae5e9d0acf52&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 10918</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
+<h3 id="資訊洩漏"><a href="#資訊洩漏" class="headerlink" title="資訊洩漏"></a>資訊洩漏</h3><p>從輸出結果可以準確知道使用的伺服器與運行版本資訊，甚至是作業系統的資訊，這些資訊都是當服務被發現有漏洞時，對我們不利的點！</p>
+<p>因此，要如何隱藏這個資訊是我們該學的，雖然不能說隱藏起來就萬無一失，只是攻擊方在沒有這些情報下會比較難鎖定，若能拖延到補丁出現，受到攻擊的機率就被降低了！</p>
+<h2 id="修改標頭的-Server-欄位"><a href="#修改標頭的-Server-欄位" class="headerlink" title="修改標頭的 Server 欄位"></a>修改標頭的 Server 欄位</h2><p>修改的方法有兩種，各有利弊，這篇文章兩種方法都會記錄，但實際上需要哪一種還是要看個人</p>
+<ol>
+<li>修改 <code>conf</code> 檔：用 <code>apt-get</code> 安裝的 <code>Apache</code> 只能用這個方法。優點是快速，缺點是最少還是會留下 <code>Apache</code> 的字眼，讓使用者知道伺服器是 Apache。</li>
+<li>修改原始碼再自行編譯：優點是可以完全改為自己想顯示的文字，缺點是因為要自行編譯，導致若要更新 Apache，還要再重新下載新的原始碼，重複一樣的步驟，無法像 <code>apt-get</code> 安裝的套件那樣直接更新。</li>
+</ol>
+<h3 id="修改-conf-檔"><a href="#修改-conf-檔" class="headerlink" title="修改 conf 檔"></a>修改 conf 檔</h3><p>這裡使用的 Apache 版本為 2.4.41，不同版本所要修改的 <code>conf</code> 檔與其所在位置可能不同。</p>
+<p>修改 <code>security.conf</code>，其位置在 <code>/etc/apache2/conf-available/security.conf</code>，將內容中 <code>ServerTokens</code> 所對應的值改為 <code>Prod</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ServerTokens</span></span><br><span class="line"><span class="comment"># This directive configures what you return as the Server HTTP response</span></span><br><span class="line"><span class="comment"># Header. The default is &#x27;Full&#x27; which sends information about the OS-Type</span></span><br><span class="line"><span class="comment"># and compiled in modules.</span></span><br><span class="line"><span class="comment"># Set to one of:  Full | OS | Minimal | Minor | Major | Prod</span></span><br><span class="line"><span class="comment"># where Full conveys the most information, and Prod the least.</span></span><br><span class="line"><span class="comment">#ServerTokens Minimal</span></span><br><span class="line">ServerTokens Prod</span><br><span class="line"><span class="comment">#ServerTokens Full</span></span><br></pre></td></tr></table></figure>
+<p>重啟 Apache 服務，並且再做一次資訊蒐集，可以發現版本與 OS 的資訊已被隱蔽</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo /etc/init.d/apache2 restart</span><br><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 07:50:50 GMT</span><br><span class="line">Server: Apache</span><br><span class="line">Last-Modified: Thu, 03 Sep 2020 07:25:19 GMT</span><br><span class="line">ETag: <span class="string">&quot;2aa6-5ae63a79037be&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 10918</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
+<p>這個方法最多只能只能遮蔽到這個程度，知道伺服器是 Apache，但版本與 OS 無法從此處得知。</p>
+<h3 id="修改原始碼自行編譯"><a href="#修改原始碼自行編譯" class="headerlink" title="修改原始碼自行編譯"></a>修改原始碼自行編譯</h3><p><a href="https://httpd.apache.org/docs/2.4/install.html">Apache 編譯步驟</a> 官網都有教學，但我們需要修改原始碼，所以還是會細講一下步驟。</p>
+<h4 id="下載原始碼"><a href="#下載原始碼" class="headerlink" title="下載原始碼"></a>下載原始碼</h4><p>先到 <a href="https://httpd.apache.org/">Apache 官網</a> 下載想要的版本 (選 tar.gz)，解壓縮後進到資料。其中的 <code>httpd-NN</code> 就是下載的版本啦！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ gzip -d httpd-NN.tar.gz <span class="comment"># 解 gz</span></span><br><span class="line">user@pc:~$ tar xvf httpd-NN.tar    <span class="comment"># 解 tar</span></span><br><span class="line">user@pc:~$ <span class="built_in">cd</span> httpd-NN             <span class="comment"># 進到目錄下</span></span><br></pre></td></tr></table></figure>
+<h4 id="修改原始碼"><a href="#修改原始碼" class="headerlink" title="修改原始碼"></a>修改原始碼</h4><p>開啟 <code>httpd-NN/include/ap_release.h</code> 找到 <code>#define AP_SERVER_BASEPRODUCT &quot;Apache&quot;</code>，將 <code>Apache</code> 改為想要顯示在 Server 欄位的文字，僅需修改此處就可以往下個步驟</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AP_SERVER_BASEPRODUCT <span class="meta-string">&quot;Server field masked!&quot;</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="編譯原始碼"><a href="#編譯原始碼" class="headerlink" title="編譯原始碼"></a>編譯原始碼</h4><p>產出 <code>Makefile</code>，在這步驟可能會遇到相依套件沒裝的問題 <code>apr</code>、<code>apr-util</code> 與 <code>prec</code>，所以先安裝相關套件，網路上很多都教下載這些套件的原碼再 compile，但我認為若可以使用 <code>apt-get install</code> 就盡量使用它，因為之後可以用 <code>apt-get update/upgrade</code> 來更新套件！管理上省事許多</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ sudo apt-get install gcc libapr1 libapr1-dev libaprutil1 libaprutil1-dev libpcre3 libpcre3-dev</span><br><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ ./configure      </span><br></pre></td></tr></table></figure>
+<p>若有看官網教學會看到 <code>./configure --prefix=PREFIX</code>，其中 <code>PREFIX</code> 是想安裝 Apache 的地方，不指定的話，就是安裝在預設路徑 <code>/usr/local/apache2</code>，若沒特殊需求就安裝在預設路徑即可。</p>
+<p><code>configure</code> 執行成功後目錄下應該會有 <code>Makefile</code>，現在就可以來編譯然後安裝啦。安裝完預設是關閉服務的，記得開啟嘿！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ make                                           <span class="comment"># 編譯</span></span><br><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ sudo make install                              <span class="comment"># 安裝</span></span><br><span class="line">user@pc:~/Downloads/httpd-2.4.46 $ sudo /usr/<span class="built_in">local</span>/apache2/bin/apachectl -k start <span class="comment"># 開啟服務</span></span><br></pre></td></tr></table></figure>
+<p>開啟服務後，檢查 Server 欄位是否被修改了，可以看到的確是剛修改的內容 <code>Server field masked!</code>，但是版本與 OS 的資訊還在，要改的東西還沒完，請繼續下一步修改！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 09:29:14 GMT</span><br><span class="line">Server: Server field masked!/2.4.46 (Unix)</span><br><span class="line">Last-Modified: Mon, 11 Jun 2007 18:53:14 GMT</span><br><span class="line">ETag: <span class="string">&quot;2d-432a5e4a73a80&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 45</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
+<h4 id="修改設定檔"><a href="#修改設定檔" class="headerlink" title="修改設定檔"></a>修改設定檔</h4><p>跟第一個修改方法很類似，要去修改一個 <code>conf</code> 檔，這裡為 <code>/usr/local/apache2/conf/extra/httpd-default.conf</code>，將內容中 <code>ServerTokens</code> 所對應的值改為 <code>Prod</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ServerTokens</span></span><br><span class="line"><span class="comment"># This directive configures what you return as the Server HTTP response</span></span><br><span class="line"><span class="comment"># Header. The default is &#x27;Full&#x27; which sends information about the OS-Type</span></span><br><span class="line"><span class="comment"># and compiled in modules.</span></span><br><span class="line"><span class="comment"># Set to one of:  Full | OS | Minor | Minimal | Major | Prod</span></span><br><span class="line"><span class="comment"># where Full conveys the most information, and Prod the least.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">ServerTokens Prod</span><br></pre></td></tr></table></figure>
+<p>還沒結束喔！還要修改一個 conf 檔，這裡為 <code>/usr/local/apache2/conf/httpd.conf</code>，將內容中 <code>#Include conf/extra/httpd-default.conf</code> 前的井字號拿掉, 確保上一步的 <code>httpd-default.conf</code> 設定會被載入</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Various default settings</span></span><br><span class="line">Include conf/extra/httpd-default.conf</span><br></pre></td></tr></table></figure>
+<p>重啟服務，檢查 Server 欄位，可以看到的只剩下剛修改的內容 <code>Server field masked!</code> 完全無法從 Server 欄位得知這是什麼伺服器，更狠一點，也可以改為 <code>Microsoft-IIS/10.0</code> 來混淆視聽</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo /usr/<span class="built_in">local</span>/apache2/bin/apachectl -k restart <span class="comment"># 重啟服務</span></span><br><span class="line">user@pc:~$ nc localhost 80 &lt; message</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Date: Thu, 03 Sep 2020 09:49:28 GMT</span><br><span class="line">Server: Server field masked!</span><br><span class="line">Last-Modified: Mon, 11 Jun 2007 18:53:14 GMT</span><br><span class="line">ETag: <span class="string">&quot;2d-432a5e4a73a80&quot;</span></span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 45</span><br><span class="line">Content-Type: text/html</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>apache</tag>
+        <tag>ubuntu</tag>
+        <tag>20.04</tag>
+        <tag>http</tag>
+        <tag>server</tag>
+        <tag>header</tag>
+        <tag>web</tag>
+        <tag>modification</tag>
+        <tag>netcat</tag>
+        <tag>nc</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[C#] 發布 ASP.NET Core 應用程式</title>
     <url>/2021/06/15/cs_asp_net_core/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接續 <a href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core_3_1/">[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</a> 已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</p>
@@ -201,46 +237,10 @@
         <tag>asp</tag>
         <tag>.net</tag>
         <tag>core</tag>
+        <tag>3.1</tag>
+        <tag>visual studio</tag>
+        <tag>2019</tag>
         <tag>publish</tag>
-        <tag>3.1</tag>
-        <tag>visual studio</tag>
-        <tag>2019</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
-    <url>/2021/06/15/cs_asp_net_core_3_1/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio Enterprise 2019 (16.7.2)</li>
-<li>.Net Core 3.1</li>
-</ul>
-<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>必需使用 Visual Studio 2019 以上版本才可以用 .NET Core 3.1 (<a href="https://dotnet.microsoft.com/download/dotnet-core/3.1">參考資訊</a>)，也因為 2.1 版在 2021/08/21 就會結束支援，所以建議使用較新的 Core (3.1)。</p>
-<p>開啟「Visual Studio 2019」→「Create a new project」→ 選「ASP.NET Core Web Application」→ Project name 為「CorePractice」→ 選「Web Application」(請注意上方要為 .NET Core 與 ASP.NET Core 3.1，且右方的 HTTPS 不要勾) →「Create」</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fcreate_project.png?alt=media&amp;token=fc23ffc7-0664-4325-bd3f-9d052cf073d7" alt="創建專案步驟"><span class="image-caption">創建專案步驟</span></p>
-<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>目錄結構如下，目前只會用到 <code>Index.cshtml</code> 與 <code>Index.cshtml.cs</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">│  appsettings.Development.json</span><br><span class="line">│  appsettings.json</span><br><span class="line">│  CorePractice.csproj</span><br><span class="line">│  Program.cs</span><br><span class="line">│  Startup.cs</span><br><span class="line">├─bin</span><br><span class="line">├─obj</span><br><span class="line">├─Pages</span><br><span class="line">│  │  Error.cshtml</span><br><span class="line">│  │  Error.cshtml.cs</span><br><span class="line">│  │  Index.cshtml</span><br><span class="line">│  │  Index.cshtml.cs</span><br><span class="line">│  │  Privacy.cshtml</span><br><span class="line">│  │  Privacy.cshtml.cs</span><br><span class="line">│  │  _ViewImports.cshtml</span><br><span class="line">│  │  _ViewStart.cshtml</span><br><span class="line">│  │</span><br><span class="line">│  └─Shared</span><br><span class="line">├─Properties</span><br><span class="line">└─wwwroot</span><br></pre></td></tr></table></figure>
-<p>修改 <code>Index.cshtml.cs</code> 內 <code>OnGet</code> 函式的內容，透過 <code>ViewData</code> 將資料傳給 View</p>
-<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.RazorPages;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CorePractice.Pages</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">IndexModel</span> : <span class="title">PageModel</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;IndexModel&gt; _logger;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">IndexModel</span>(<span class="params">ILogger&lt;IndexModel&gt; logger</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            _logger = logger;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGet</span>(<span class="params"></span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span>[] names = <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; <span class="string">&quot;Alfreda Stephenson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Swanson Swanson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Walker Pace&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Katina Le&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Lesley Calderon&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Ruth Merrill&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Cristina Buchanan&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Gallegos May&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Macdonald Lucas&quot;</span>&#125;;</span><br><span class="line">            <span class="built_in">int</span> num = <span class="number">3</span>;</span><br><span class="line">            <span class="built_in">int</span>[] age = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            <span class="built_in">string</span>[] name = <span class="keyword">new</span> <span class="built_in">string</span>[num];</span><br><span class="line">            <span class="built_in">int</span>[] family = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            Random rnd = <span class="keyword">new</span> Random();</span><br><span class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; num; i++)</span><br><span class="line">            &#123;</span><br><span class="line">                age[i] = rnd.Next(<span class="number">50</span>);</span><br><span class="line">                name[i] = names[rnd.Next(names.Length)];</span><br><span class="line">                family[i] = rnd.Next(<span class="number">5</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            ViewData[<span class="string">&quot;age&quot;</span>] = age;</span><br><span class="line">            ViewData[<span class="string">&quot;name&quot;</span>] = name;</span><br><span class="line">            ViewData[<span class="string">&quot;family&quot;</span>] = family;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>將 <code>Index.cshtml</code> 修改如下，透過 <code>ViewData</code> 將 Controller 的資料取出，在 View 中渲染</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">@page</span><br><span class="line">@model IndexModel</span><br><span class="line">@&#123;</span><br><span class="line">    ViewData[&quot;Title&quot;] = &quot;Home page&quot;;</span><br><span class="line"></span><br><span class="line">    int[] age = ViewData[&quot;age&quot;] as int[];</span><br><span class="line">    string[] name = ViewData[&quot;name&quot;] as string[];</span><br><span class="line">    int[] family = ViewData[&quot;family&quot;] as int[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;text-center&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">&quot;display-4&quot;</span>&gt;</span>Welcome<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Learn about <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://docs.microsoft.com/aspnet/core&quot;</span>&gt;</span>building Web apps with ASP.NET Core<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">style</span>=<span class="string">&quot;border-style: solid; margin-left: auto; margin-right: auto;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>名字<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>歲數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>家庭人數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    @for (var i = 0; i &lt; name.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@name[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@age[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@family[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">    <span class="selector-tag">table</span> <span class="selector-tag">td</span>, <span class="selector-tag">table</span> <span class="selector-tag">th</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">1px</span> solid black;</span></span><br><span class="line"><span class="css">    &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>編譯與建置 (F5) 後一個簡單的 ASP.NET Core 應用程式就此完成</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fproject_demo.png?alt=media&amp;token=7e1625c1-5d92-4acd-84b5-8de508a799f0" alt="完成頁面"><span class="image-caption">完成頁面</span></p>
-<p>參考原始碼：<a href="https://github.com/weirenxue/core-practice">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>csharp</tag>
-        <tag>asp</tag>
-        <tag>.net</tag>
-        <tag>core</tag>
-        <tag>3.1</tag>
-        <tag>visual studio</tag>
-        <tag>2019</tag>
-        <tag>razor</tag>
       </tags>
   </entry>
   <entry>
@@ -311,64 +311,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[DLL] 在 C++ 中調用 dll 的函式</title>
-    <url>/2021/06/15/dll_cpp_dll/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 <code>C++</code> 中，使用 <code>LoadLibraryA</code>/<code>LoadLibraryW</code> 調用 dll。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio 2017</li>
-</ul>
-<h2 id="準備一個-DLL"><a href="#準備一個-DLL" class="headerlink" title="準備一個 DLL"></a>準備一個 DLL</h2><p>先自己寫一個 dll，詳細步驟說明請參考：<a href="/2021/06/15/dll_vs_2017_dllmain_dll/">[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</a>。</p>
-<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fcreate_project.png?alt=media&amp;token=fbe282e9-5cb1-4090-a01e-817bc244411e" alt="新建專案"><span class="image-caption">新建專案</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_project_type.png?alt=media&amp;token=c4a871cc-40d8-49d3-ac26-2857fb355c1d" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
-<p>Application type 選 <code>Console Application(.exe)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>&#123;project_name&#125;.cpp</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_exe.png?alt=media&amp;token=a3933b05-a276-4d7a-a0a0-7129bb6912a5" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
-<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>&#123;project_name&#125;.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-load-in-cpp">GitHub</a>)</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*voidFun)</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HMODULE hDll = <span class="built_in">LoadLibraryA</span>(<span class="string">&quot;dllMainAndFun.dll&quot;</span>);</span><br><span class="line"></span><br><span class="line">    voidFun pHelloWorldFun = (<span class="built_in"><span class="keyword">void</span></span>(*)())<span class="built_in">GetProcAddress</span>(hDll, <span class="string">&quot;helloWorldFun&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">pHelloWorldFun</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>將要匯入的 dll 放到 Debug 資料夾下，否則 <code>LoadLibraryA</code> 需要給 dll 的絕對路徑，因為 Debug 模式編譯出來的執行檔都存在此處。</p>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>按下 F5，開始 Debug 模式，看到彈出視窗 (<code>MessageBoxA</code>/<code>MessageBoxW</code>)，就代表載入成功了！顯示順序應為</p>
-<ol>
-<li>程序建立時被呼叫</li>
-<li>此函式呼叫成功</li>
-<li>程序退出時被呼叫</li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>cpp</tag>
-        <tag>dll</tag>
-        <tag>invoke</tag>
-        <tag>loadlibrarya</tag>
-        <tag>loadlibraryw</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[EJS] 單獨使用 EJS 渲染前端畫面</title>
-    <url>/2021/06/15/ejs_ejs/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>網路上有許多 <code>EJS</code> 使用範例，通常是以 <code>Node.js</code> 與 <code>Express</code> 搭配的教學，而這裡紀錄如何單獨使用 <code>EJS</code> 來渲染前端畫面。</p>
-<h2 id="使用步驟"><a href="#使用步驟" class="headerlink" title="使用步驟"></a>使用步驟</h2><p>建立一個資料夾用來放置相關檔案，並下載 <a href="https://github.com/mde/ejs/releases/tag/v3.0.2">EJS</a> 內的 <code>ejs.min.js</code> 放至此資料夾中。再新增 <code>index.html</code> 且程式碼如下</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&#x27;./ejs.min.js&#x27;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> html = ejs.render(<span class="string">&#x27;fieldA:&lt;%= fieldA %&gt;&lt;br /&gt;fieldB:&lt;%= fieldB %&gt;&#x27;</span>,</span></span><br><span class="line"><span class="javascript">                &#123;<span class="attr">fieldA</span> : <span class="string">&#x27;Hello world!&#x27;</span>, <span class="attr">fieldB</span> : <span class="string">&#x27;Hellow Taiwan!&#x27;</span>&#125;);</span></span><br><span class="line"><span class="javascript">            <span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                <span class="built_in">document</span>.getElementById(<span class="string">&#x27;divContent&#x27;</span>).innerHTML = html;</span></span><br><span class="line"><span class="javascript">            &#125;</span></span><br><span class="line"><span class="javascript">        </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;divContent&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>此時的目錄檔案結構為</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── ejs.min.js</span><br><span class="line">└── index.html</span><br></pre></td></tr></table></figure>
-<p>直接雙擊 <code>index.html</code>，用瀏灠器就可以看到結果囉！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">fieldA:Hello world!</span><br><span class="line">fieldB:Hellow Taiwan!</span><br></pre></td></tr></table></figure>
-<p>參考原始碼：<a href="https://github.com/weirenxue/ejs-first-step">GitHub</a></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ejs</tag>
-        <tag>render</tag>
-        <tag>front end</tag>
-        <tag>alone</tag>
-        <tag>node</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[EFI] 顯示 Windows 的 EFI 系統分割磁碟</title>
     <url>/2021/06/16/efi_windows_efi/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>與開機有關的文件通常會存放於 EFI 系統分割磁碟，且為了不讓一般使用者誤觸造成設定錯誤進而導致系統崩潰，通常會將磁碟隱藏起來，只讓真的有需要設定且知道如何進入的使用者自行更改設定。</p>
@@ -412,6 +354,74 @@
       </tags>
   </entry>
   <entry>
+    <title>[DLL] 在 C++ 中調用 dll 的函式</title>
+    <url>/2021/06/15/dll_cpp_dll/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>此篇文章紀錄如何在 <code>C++</code> 中，使用 <code>LoadLibraryA</code>/<code>LoadLibraryW</code> 調用 dll。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio 2017</li>
+</ul>
+<h2 id="準備一個-DLL"><a href="#準備一個-DLL" class="headerlink" title="準備一個 DLL"></a>準備一個 DLL</h2><p>先自己寫一個 dll，詳細步驟說明請參考：<a href="/2021/06/15/dll_vs_2017_dllmain_dll/">[DLL] 使用 VS 2017 寫包含 DllMain 的 dll</a>。</p>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>開啟 VS 2017，新開一個專案 <code>File → New → Project</code> 或組合鍵 <code>Ctrl + Shift + N</code>，點擊 <code>Visual C++</code> 之下的 <code>Windows Desktop</code>，選擇 <code>Windows Desktop Wizard</code>，在 <code>Name</code> 輸入好專案名稱後，按 <code>OK</code> 進到下個步驟</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fcreate_project.png?alt=media&amp;token=fbe282e9-5cb1-4090-a01e-817bc244411e" alt="新建專案"><span class="image-caption">新建專案</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_project_type.png?alt=media&amp;token=c4a871cc-40d8-49d3-ac26-2857fb355c1d" alt="選擇專案類型"><span class="image-caption">選擇專案類型</span></p>
+<p>Application type 選 <code>Console Application(.exe)</code>，Addtional options 都不用勾！按下 <code>OK</code> 就會建立好一個專案，預設會自動開啟專案中的 <code>&#123;project_name&#125;.cpp</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/DLL-%E5%9C%A8-C-%E4%B8%AD%E8%AA%BF%E7%94%A8-dll-%E7%9A%84%E5%87%BD%E5%BC%8F%2Fchoose_exe.png?alt=media&amp;token=a3933b05-a276-4d7a-a0a0-7129bb6912a5" alt="選擇 dll"><span class="image-caption">選擇 dll</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>將下面的程式碼貼到 <code>&#123;project_name&#125;.cpp</code> 中，(參考原始碼：<a href="https://github.com/weirenxue/dll-load-in-cpp">GitHub</a>)</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*voidFun)</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    HMODULE hDll = <span class="built_in">LoadLibraryA</span>(<span class="string">&quot;dllMainAndFun.dll&quot;</span>);</span><br><span class="line"></span><br><span class="line">    voidFun pHelloWorldFun = (<span class="built_in"><span class="keyword">void</span></span>(*)())<span class="built_in">GetProcAddress</span>(hDll, <span class="string">&quot;helloWorldFun&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">pHelloWorldFun</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>將要匯入的 dll 放到 Debug 資料夾下，否則 <code>LoadLibraryA</code> 需要給 dll 的絕對路徑，因為 Debug 模式編譯出來的執行檔都存在此處。</p>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>按下 F5，開始 Debug 模式，看到彈出視窗 (<code>MessageBoxA</code>/<code>MessageBoxW</code>)，就代表載入成功了！顯示順序應為</p>
+<ol>
+<li>程序建立時被呼叫</li>
+<li>此函式呼叫成功</li>
+<li>程序退出時被呼叫</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>cpp</tag>
+        <tag>dll</tag>
+        <tag>invoke</tag>
+        <tag>loadlibrarya</tag>
+        <tag>loadlibraryw</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[FTP] CentOS 7 安裝 vsftpd 省去實體與虛擬機之間傳輸設定</title>
+    <url>/2021/06/19/ftp_centos_vsftpd/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在開發時免不了會使用到虛擬機的可能性，而在虛擬機與主機之間做檔案轉移時總會遇到奇奇怪怪的問題，先不論是否是虛擬機的問題，但總是會再這無關緊要的問題上浪費掉許多寶貴時間，因此研究如何架設 FTP，讓主機直接上傳檔案到 FTP 伺服器，再從虛擬機中下載，避免檔案轉移遇到的麻煩！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 7.9</li>
+</ul>
+<h2 id="安裝-vsftpd"><a href="#安裝-vsftpd" class="headerlink" title="安裝 vsftpd"></a>安裝 vsftpd</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y vsftpd</span><br></pre></td></tr></table></figure>
+<p>修改設定檔 (<code>/etc/vsftpd/vsftpd.conf</code>)，因為目標只是要讓 VM 可以讀取我們 Host 想傳的檔案，因此只需要將 FTP server 掛在區域網路內，這樣匿名登入是可以接受的</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 修改以下設定值</span></span><br><span class="line">anonymous_enable=YES    <span class="comment"># 允許匿名登入</span></span><br><span class="line">local_enable=NO         <span class="comment"># 不允許實體使用者登入</span></span><br><span class="line">write_enable=YES        <span class="comment"># 可寫入</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 新增以下設定值</span></span><br><span class="line">pasv_enable=YES     <span class="comment"># 使用被動式連線，避免客戶端還需另外設定防火牆</span></span><br><span class="line">pasv_min_port=60101 <span class="comment"># 被動式連線的 FTP Data Port 設定為 60101 ~ 60110</span></span><br><span class="line">pasv_max_port=60110</span><br><span class="line"></span><br><span class="line">no_anon_password=YES        <span class="comment"># 匿名使用者不用輸入密碼</span></span><br><span class="line"></span><br><span class="line">anon_other_write_enable=YES <span class="comment"># 匿名使用者權限設定</span></span><br><span class="line">anon_mkdir_write_enable=YES</span><br><span class="line">anon_upload_enable=YES</span><br><span class="line"></span><br><span class="line">anon_umask=022      <span class="comment"># 匿名使用者上傳的檔案的預設權限</span></span><br><span class="line">                    <span class="comment"># user 與 other 需有 r 權限才可以被匿名使用者下載</span></span><br><span class="line">                    <span class="comment"># 此設定值預設為 077</span></span><br></pre></td></tr></table></figure>
+<p>啟用 vsftpd</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> vsftpd</span><br><span class="line">[user@localhost ~]$ sudo systemctl start vsftpd</span><br></pre></td></tr></table></figure>
+<h2 id="設定防火牆"><a href="#設定防火牆" class="headerlink" title="設定防火牆"></a>設定防火牆</h2><p>在 CentOS 中幾乎所有的 Port 預設對外服務都是關閉的，無法由外部連入，因此需要另外設定才能開放給其他主機連線，FTP 有兩種 Port 需要設定</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=21/tcp           <span class="comment"># Command Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=60101-60110/tcp  <span class="comment"># Data Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<h2 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_connect_all_unreserved=1 <span class="comment"># 設定這個才能使用 ls/dir 指令，否則出現 425 錯誤</span></span><br><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_full_access=1 <span class="comment"># 設定這個才能上傳、修改檔名、刪除</span></span><br></pre></td></tr></table></figure>
+<h2 id="創建資料夾"><a href="#創建資料夾" class="headerlink" title="創建資料夾"></a>創建資料夾</h2><p>以 <code>anonymous</code> 登入後是以 ftp 角色進行操作的，因此需另外創建匿名使用者可以上傳與下載檔案的資料夾</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /var/ftp/upload_anonymous</span><br><span class="line">[user@localhost ~]$ sudo chown ftp:ftp /var/ftp/upload_anonymous/</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>至此萬事俱全，可以開始使用 ftp 了，匿名使用者被限制只能在 <code>upload_anonymous</code> 目錄中上傳或下載檔案！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>centos</tag>
+        <tag>7.9</tag>
+        <tag>vsftpd</tag>
+        <tag>ftp</tag>
+        <tag>425</tag>
+        <tag>vm</tag>
+        <tag>copy</tag>
+        <tag>file</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案</title>
     <url>/2021/06/17/echo_ubuntu_r/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 與 Linux 使用上有一個很顯著的差異，就是兩種系統的換行字元不一樣，在 Windows 上的換行字元為 CRLF <code>\r\n</code>，而 Linux 的換行字元只有 LF <code>\n</code>。然而總會有在 Ubuntu 需要產生一個換行為 CRLF 的檔案的需求，因此紀錄一下如何使用簡單的指令 <code>echo</code> 來解決這個問題。</p>
@@ -439,45 +449,12 @@
         <tag>20.04</tag>
         <tag>netcat</tag>
         <tag>linux</tag>
+        <tag>file</tag>
         <tag>CR</tag>
         <tag>carriage</tag>
         <tag>return</tag>
         <tag>echo</tag>
-        <tag>file</tag>
         <tag>cat</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[FTP] CentOS 7 安裝 vsftpd 省去實體與虛擬機之間傳輸設定</title>
-    <url>/2021/06/19/ftp_centos_vsftpd/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在開發時免不了會使用到虛擬機的可能性，而在虛擬機與主機之間做檔案轉移時總會遇到奇奇怪怪的問題，先不論是否是虛擬機的問題，但總是會再這無關緊要的問題上浪費掉許多寶貴時間，因此研究如何架設 FTP，讓主機直接上傳檔案到 FTP 伺服器，再從虛擬機中下載，避免檔案轉移遇到的麻煩！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 7.9</li>
-</ul>
-<h2 id="安裝-vsftpd"><a href="#安裝-vsftpd" class="headerlink" title="安裝 vsftpd"></a>安裝 vsftpd</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y vsftpd</span><br></pre></td></tr></table></figure>
-<p>修改設定檔 (<code>/etc/vsftpd/vsftpd.conf</code>)，因為目標只是要讓 VM 可以讀取我們 Host 想傳的檔案，因此只需要將 FTP server 掛在區域網路內，這樣匿名登入是可以接受的</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 修改以下設定值</span></span><br><span class="line">anonymous_enable=YES    <span class="comment"># 允許匿名登入</span></span><br><span class="line">local_enable=NO         <span class="comment"># 不允許實體使用者登入</span></span><br><span class="line">write_enable=YES        <span class="comment"># 可寫入</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 新增以下設定值</span></span><br><span class="line">pasv_enable=YES     <span class="comment"># 使用被動式連線，避免客戶端還需另外設定防火牆</span></span><br><span class="line">pasv_min_port=60101 <span class="comment"># 被動式連線的 FTP Data Port 設定為 60101 ~ 60110</span></span><br><span class="line">pasv_max_port=60110</span><br><span class="line"></span><br><span class="line">no_anon_password=YES        <span class="comment"># 匿名使用者不用輸入密碼</span></span><br><span class="line"></span><br><span class="line">anon_other_write_enable=YES <span class="comment"># 匿名使用者權限設定</span></span><br><span class="line">anon_mkdir_write_enable=YES</span><br><span class="line">anon_upload_enable=YES</span><br><span class="line"></span><br><span class="line">anon_umask=022      <span class="comment"># 匿名使用者上傳的檔案的預設權限</span></span><br><span class="line">                    <span class="comment"># user 與 other 需有 r 權限才可以被匿名使用者下載</span></span><br><span class="line">                    <span class="comment"># 此設定值預設為 077</span></span><br></pre></td></tr></table></figure>
-<p>啟用 vsftpd</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> vsftpd</span><br><span class="line">[user@localhost ~]$ sudo systemctl start vsftpd</span><br></pre></td></tr></table></figure>
-<h2 id="設定防火牆"><a href="#設定防火牆" class="headerlink" title="設定防火牆"></a>設定防火牆</h2><p>在 CentOS 中幾乎所有的 Port 預設對外服務都是關閉的，無法由外部連入，因此需要另外設定才能開放給其他主機連線，FTP 有兩種 Port 需要設定</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=21/tcp           <span class="comment"># Command Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=60101-60110/tcp  <span class="comment"># Data Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
-<h2 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_connect_all_unreserved=1 <span class="comment"># 設定這個才能使用 ls/dir 指令，否則出現 425 錯誤</span></span><br><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_full_access=1 <span class="comment"># 設定這個才能上傳、修改檔名、刪除</span></span><br></pre></td></tr></table></figure>
-<h2 id="創建資料夾"><a href="#創建資料夾" class="headerlink" title="創建資料夾"></a>創建資料夾</h2><p>以 <code>anonymous</code> 登入後是以 ftp 角色進行操作的，因此需另外創建匿名使用者可以上傳與下載檔案的資料夾</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /var/ftp/upload_anonymous</span><br><span class="line">[user@localhost ~]$ sudo chown ftp:ftp /var/ftp/upload_anonymous/</span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>至此萬事俱全，可以開始使用 ftp 了，匿名使用者被限制只能在 <code>upload_anonymous</code> 目錄中上傳或下載檔案！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>centos</tag>
-        <tag>file</tag>
-        <tag>7.9</tag>
-        <tag>vsftpd</tag>
-        <tag>ftp</tag>
-        <tag>425</tag>
-        <tag>vm</tag>
-        <tag>copy</tag>
       </tags>
   </entry>
   <entry>
@@ -506,72 +483,6 @@
         <tag>origin</tag>
         <tag>push</tag>
         <tag>upstream</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Firewall] CentOS 開啟指定的 Port 或服務</title>
-    <url>/2021/06/18/firewall_centos_port/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 CentOS 中有多種防火牆 (iptables、firewalld 等)，其中 iptables 是為黑名單規則 (原則允許、例外禁止)，而 firewalld 為白名單規則 (原則禁止、例外允許)。</p>
-<p>為了要讓服務能正常運作、防止惡意連線，且讓外部可以通過網路服務來使用，這些是必定要學習如何設定的。然而相較於 iptables，firewalld 較人性化，因此選擇使用它來做 CentOS 的防火牆設定。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="確認網路環境"><a href="#確認網路環境" class="headerlink" title="確認網路環境"></a>確認網路環境</h2><p>開啟 Terminal，確定自己所對外服務的 IP 運作在哪個網卡上，此例為 <code>ens33</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># ip address</span></span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 ::1/128 scope host </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000</span><br><span class="line">    link/ether 00:0c:29:08:ef:40 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 192.168.35.134/24 brd 192.168.35.255 scope global dynamic noprefixroute ens33</span><br><span class="line">       valid_lft 1107sec preferred_lft 1107sec</span><br><span class="line">    inet6 fe80::5dee:a1e6:5618:5b6c/64 scope link noprefixroute </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
-<p>確定自己網卡 <code>ens33</code> 所在的防火牆區域 (zone)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --get-zone-of-interface=ens33</span></span><br><span class="line">public</span><br></pre></td></tr></table></figure>
-<h2 id="修改防火牆設定"><a href="#修改防火牆設定" class="headerlink" title="修改防火牆設定"></a>修改防火牆設定</h2><p>在網卡所在區域加上想要的服務 (http) 或 Port (5001/tcp)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --permanent --zone=public --add-port=5001/tcp</span></span><br><span class="line">success</span><br><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --permanent --zone=public --add-service=http</span></span><br><span class="line">success</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p><code>--permanent</code>：是將設定寫入 <code>/etc/firewalld/zones/public.xml</code>，系統重新啟動後會載入該檔案的設定，因此防火牆設定效果不會消失。可以查看 <code>/etc/firewalld/zones/public.xml</code> 內容</p>
-  <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># cat /etc/firewalld/zones/public.xml</span></span><br><span class="line">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;utf-8&quot;</span>?&gt;</span><br><span class="line">&lt;zone&gt;</span><br><span class="line">&lt;short&gt;Public&lt;/short&gt;</span><br><span class="line">&lt;description&gt;For use <span class="keyword">in</span> public areas. You <span class="keyword">do</span> not trust the other computers on networks to not harm your computer. Only selected incoming connections are accepted.&lt;/description&gt;</span><br><span class="line">&lt;service name=<span class="string">&quot;ssh&quot;</span>/&gt;</span><br><span class="line">&lt;service name=<span class="string">&quot;dhcpv6-client&quot;</span>/&gt;</span><br><span class="line">&lt;service name=<span class="string">&quot;cockpit&quot;</span>/&gt;</span><br><span class="line">&lt;service name=<span class="string">&quot;http&quot;</span>/&gt;</span><br><span class="line">&lt;port port=<span class="string">&quot;5001&quot;</span> protocol=<span class="string">&quot;tcp&quot;</span>/&gt;</span><br><span class="line">&lt;/zone&gt;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>使用 <code>--reload</code> 將設定重新載入配置，並查看所設定的規則是否已經有效，這時在瀏覽器輸入 <code>localhost</code>，就可以瀏覽掛在 80 Port 的網站了！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --reload</span></span><br><span class="line">success</span><br><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --zone=public --list-ports</span></span><br><span class="line">5001/tcp</span><br><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --zone=public --list-services </span></span><br><span class="line">cockpit dhcpv6-client http ssh</span><br></pre></td></tr></table></figure>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><p><a href="https://kknews.cc/zh-tw/code/y38kggb.html">CentOS 7/8 預裝的新型防火牆firewalld配置詳解，你會用嗎</a></p>
-</li>
-<li><p><a href="https://firewalld.org/documentation/configuration/runtime-versus-permanent.html">Runtime versus Permanent</a></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>firewall</tag>
-        <tag>firewalld</tag>
-        <tag>port</tag>
-        <tag>service</tag>
-        <tag>iptables</tag>
-        <tag>zone</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Git] git-cli 使用樹狀圖展示 Commit Log</title>
-    <url>/2021/06/13/git_terminal_git_log/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>習慣使用 cli 操作 Git 後，不會想裝 Git 的 GUI 擴充，但還是覺得若能以樹狀圖來看 Commit Log 會很方便。</p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>同樣是使用 <code>git log</code> 指令，但需加上一些參數達到這個效果</p>
-<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git log --oneline --graph --all</span><br><span class="line">* baf420b (HEAD -&gt; feat-fill-up) Text to speech</span><br><span class="line">* a06c9c8 Display the fuel prompt</span><br><span class="line">| * 5d04f92 (origin-github/feat, feat) renew API</span><br><span class="line">|/  </span><br><span class="line">* 19b0257 Rename the variables&#x27; name</span><br><span class="line">* 41992f1 renew API(communicates with golang API)</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>--oneline</code>：只顯示 log 標題，若不限定為只有標題，將會顯得雜亂。</li>
-<li><code>--graph</code>：以樹狀圖顯示 log。</li>
-<li><code>--all</code>：全部的 log，包含所有分支。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-        <tag>tree</tag>
-        <tag>log</tag>
-        <tag>commit</tag>
-        <tag>cli</tag>
       </tags>
   </entry>
   <entry>
@@ -608,6 +519,29 @@
         <tag>next</tag>
         <tag>firestore</tag>
         <tag>visitors</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[EJS] 單獨使用 EJS 渲染前端畫面</title>
+    <url>/2021/06/15/ejs_ejs/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>網路上有許多 <code>EJS</code> 使用範例，通常是以 <code>Node.js</code> 與 <code>Express</code> 搭配的教學，而這裡紀錄如何單獨使用 <code>EJS</code> 來渲染前端畫面。</p>
+<h2 id="使用步驟"><a href="#使用步驟" class="headerlink" title="使用步驟"></a>使用步驟</h2><p>建立一個資料夾用來放置相關檔案，並下載 <a href="https://github.com/mde/ejs/releases/tag/v3.0.2">EJS</a> 內的 <code>ejs.min.js</code> 放至此資料夾中。再新增 <code>index.html</code> 且程式碼如下</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&#x27;./ejs.min.js&#x27;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> html = ejs.render(<span class="string">&#x27;fieldA:&lt;%= fieldA %&gt;&lt;br /&gt;fieldB:&lt;%= fieldB %&gt;&#x27;</span>,</span></span><br><span class="line"><span class="javascript">                &#123;<span class="attr">fieldA</span> : <span class="string">&#x27;Hello world!&#x27;</span>, <span class="attr">fieldB</span> : <span class="string">&#x27;Hellow Taiwan!&#x27;</span>&#125;);</span></span><br><span class="line"><span class="javascript">            <span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                <span class="built_in">document</span>.getElementById(<span class="string">&#x27;divContent&#x27;</span>).innerHTML = html;</span></span><br><span class="line"><span class="javascript">            &#125;</span></span><br><span class="line"><span class="javascript">        </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;divContent&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>此時的目錄檔案結構為</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├── ejs.min.js</span><br><span class="line">└── index.html</span><br></pre></td></tr></table></figure>
+<p>直接雙擊 <code>index.html</code>，用瀏灠器就可以看到結果囉！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">fieldA:Hello world!</span><br><span class="line">fieldB:Hellow Taiwan!</span><br></pre></td></tr></table></figure>
+<p>參考原始碼：<a href="https://github.com/weirenxue/ejs-first-step">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ejs</tag>
+        <tag>render</tag>
+        <tag>front end</tag>
+        <tag>alone</tag>
+        <tag>node</tag>
       </tags>
   </entry>
   <entry>
@@ -665,6 +599,72 @@
       </tags>
   </entry>
   <entry>
+    <title>[Git] git-cli 使用樹狀圖展示 Commit Log</title>
+    <url>/2021/06/13/git_terminal_git_log/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>習慣使用 cli 操作 Git 後，不會想裝 Git 的 GUI 擴充，但還是覺得若能以樹狀圖來看 Commit Log 會很方便。</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>同樣是使用 <code>git log</code> 指令，但需加上一些參數達到這個效果</p>
+<figure class="highlight console"><table><tr><td class="code"><pre><span class="line">user@pc:~$ git log --oneline --graph --all</span><br><span class="line">* baf420b (HEAD -&gt; feat-fill-up) Text to speech</span><br><span class="line">* a06c9c8 Display the fuel prompt</span><br><span class="line">| * 5d04f92 (origin-github/feat, feat) renew API</span><br><span class="line">|/  </span><br><span class="line">* 19b0257 Rename the variables&#x27; name</span><br><span class="line">* 41992f1 renew API(communicates with golang API)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>--oneline</code>：只顯示 log 標題，若不限定為只有標題，將會顯得雜亂。</li>
+<li><code>--graph</code>：以樹狀圖顯示 log。</li>
+<li><code>--all</code>：全部的 log，包含所有分支。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+        <tag>tree</tag>
+        <tag>log</tag>
+        <tag>commit</tag>
+        <tag>cli</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Firewall] CentOS 開啟指定的 Port 或服務</title>
+    <url>/2021/06/18/firewall_centos_port/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 CentOS 中有多種防火牆 (iptables、firewalld 等)，其中 iptables 是為黑名單規則 (原則允許、例外禁止)，而 firewalld 為白名單規則 (原則禁止、例外允許)。</p>
+<p>為了要讓服務能正常運作、防止惡意連線，且讓外部可以通過網路服務來使用，這些是必定要學習如何設定的。然而相較於 iptables，firewalld 較人性化，因此選擇使用它來做 CentOS 的防火牆設定。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+</ul>
+<h2 id="確認網路環境"><a href="#確認網路環境" class="headerlink" title="確認網路環境"></a>確認網路環境</h2><p>開啟 Terminal，確定自己所對外服務的 IP 運作在哪個網卡上，此例為 <code>ens33</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># ip address</span></span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 ::1/128 scope host </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000</span><br><span class="line">    link/ether 00:0c:29:08:ef:40 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 192.168.35.134/24 brd 192.168.35.255 scope global dynamic noprefixroute ens33</span><br><span class="line">       valid_lft 1107sec preferred_lft 1107sec</span><br><span class="line">    inet6 fe80::5dee:a1e6:5618:5b6c/64 scope link noprefixroute </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+<p>確定自己網卡 <code>ens33</code> 所在的防火牆區域 (zone)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --get-zone-of-interface=ens33</span></span><br><span class="line">public</span><br></pre></td></tr></table></figure>
+<h2 id="修改防火牆設定"><a href="#修改防火牆設定" class="headerlink" title="修改防火牆設定"></a>修改防火牆設定</h2><p>在網卡所在區域加上想要的服務 (http) 或 Port (5001/tcp)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --permanent --zone=public --add-port=5001/tcp</span></span><br><span class="line">success</span><br><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --permanent --zone=public --add-service=http</span></span><br><span class="line">success</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>--permanent</code>：是將設定寫入 <code>/etc/firewalld/zones/public.xml</code>，系統重新啟動後會載入該檔案的設定，因此防火牆設定效果不會消失。可以查看 <code>/etc/firewalld/zones/public.xml</code> 內容</p>
+  <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># cat /etc/firewalld/zones/public.xml</span></span><br><span class="line">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;utf-8&quot;</span>?&gt;</span><br><span class="line">&lt;zone&gt;</span><br><span class="line">&lt;short&gt;Public&lt;/short&gt;</span><br><span class="line">&lt;description&gt;For use <span class="keyword">in</span> public areas. You <span class="keyword">do</span> not trust the other computers on networks to not harm your computer. Only selected incoming connections are accepted.&lt;/description&gt;</span><br><span class="line">&lt;service name=<span class="string">&quot;ssh&quot;</span>/&gt;</span><br><span class="line">&lt;service name=<span class="string">&quot;dhcpv6-client&quot;</span>/&gt;</span><br><span class="line">&lt;service name=<span class="string">&quot;cockpit&quot;</span>/&gt;</span><br><span class="line">&lt;service name=<span class="string">&quot;http&quot;</span>/&gt;</span><br><span class="line">&lt;port port=<span class="string">&quot;5001&quot;</span> protocol=<span class="string">&quot;tcp&quot;</span>/&gt;</span><br><span class="line">&lt;/zone&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>使用 <code>--reload</code> 將設定重新載入配置，並查看所設定的規則是否已經有效，這時在瀏覽器輸入 <code>localhost</code>，就可以瀏覽掛在 80 Port 的網站了！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --reload</span></span><br><span class="line">success</span><br><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --zone=public --list-ports</span></span><br><span class="line">5001/tcp</span><br><span class="line">[root@localhost ~]<span class="comment"># firewall-cmd --zone=public --list-services </span></span><br><span class="line">cockpit dhcpv6-client http ssh</span><br></pre></td></tr></table></figure>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><p><a href="https://kknews.cc/zh-tw/code/y38kggb.html">CentOS 7/8 預裝的新型防火牆firewalld配置詳解，你會用嗎</a></p>
+</li>
+<li><p><a href="https://firewalld.org/documentation/configuration/runtime-versus-permanent.html">Runtime versus Permanent</a></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>firewall</tag>
+        <tag>firewalld</tag>
+        <tag>port</tag>
+        <tag>service</tag>
+        <tag>iptables</tag>
+        <tag>zone</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[IME] 在 Ubuntu 安裝嘸蝦米等輸入法</title>
     <url>/2021/06/17/ime_ubuntu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 預設中的輸入法為 IBus 框架，除 IBus 外還有很多如 gcin、fcitx 等不同的輸入法框架，若想要使用如嘸 (ㄈㄨˇ) 蝦米等輸入法的話就需要使用有支援的框架，這篇文章主要紀錄如何安裝嘸蝦米輸入法與酷音輸入法。</p>
@@ -696,28 +696,26 @@
       </tags>
   </entry>
   <entry>
-    <title>[Jupyter] 改變 Jupyter notebook 預設路徑與瀏覽器</title>
-    <url>/2021/06/12/python_jupyter/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Jupyter notebook 是一種很方便開發 <code>Python</code> 程式的軟體，可以一步一步地來執行 Python，近年使用率也逐步提高。而我也是使用 Jupyter notebook 的愛用者，最一開始會遇到幾個問題，就是預設的瀏覽器為什麼是 Edge！要怎麼改？再來是預設路徑要怎麼改到我想放 <code>Python</code> 檔案的地方？</p>
-<h2 id="產生環境設定檔案"><a href="#產生環境設定檔案" class="headerlink" title="產生環境設定檔案"></a>產生環境設定檔案</h2><p>Jupyter notebook 的環境設定檔預設不會出現，因此要先下指令產生</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;jupyter notebook --generate-config</span><br><span class="line">Writing default config to: C:\Users\user\.jupyter\jupyter_notebook_config.py</span><br></pre></td></tr></table></figure>
-<p>產出的設定檔會在指令所提示的地方 <code>C:\Users\user\.jupyter\jupyter_notebook_config.py</code></p>
-<h2 id="修改預設瀏覽器"><a href="#修改預設瀏覽器" class="headerlink" title="修改預設瀏覽器"></a>修改預設瀏覽器</h2><p>開啟 <code>jupyter_notebook_config.py</code> 並搜尋 <code>c.NotebookApp.browser</code>，找到後先把注解符號刪除，再在 <code>&#39;&#39;</code> 內輸入想要的預設瀏覽器應用程式路徑 (如 chrome.exe)，注意：路徑中有斜線的話，要以 <code>/</code> 代替 <code>\</code>，且最後要 <code>%s</code>。不要忘記存檔！</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">c.NotebookApp.browser = <span class="string">u&#x27;C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s&#x27;</span></span><br></pre></td></tr></table></figure>
-<h2 id="修改預設路徑"><a href="#修改預設路徑" class="headerlink" title="修改預設路徑"></a>修改預設路徑</h2><p>一樣開啟 <code>jupyter_notebook_config.py</code> 並搜尋 <code>c.NotebookApp.notebook_dir</code>，先把注解符號刪除，再在 <code>&#39;&#39;</code> 內輸入想要的預設路徑，注意：路徑中有斜線的話，要以 <code>\\</code> 代替 <code>\</code>。不要忘記存檔！</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">c.NotebookApp.notebook_dir = <span class="string">u&#x27;D:\\py&#x27;</span></span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>在打開 Jupyter notebook 就可以看到使用指定瀏覽器，並且在預設路徑囉！</p>
+    <title>[IME] 有其他輸入法框架後移除 IBus 圖示</title>
+    <url>/2021/06/17/ime_ibus/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 在安裝完非預設的輸入法框架之後，在畫面右上角會看到新的輸入法圖示，但預設的 IBus 圖示仍然會存在，讓人看到就覺得煩躁進而想要移除掉圖示。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題"><a href="#問題" class="headerlink" title="問題"></a>問題</h2><p>fcitx 和 IBus 同時存在，但只有 fcitx 能使用，IBus 可以不用理它沒有關係，但看著就怪怪的，所以想要把它的圖示移除。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E6%9C%89%E5%85%B6%E4%BB%96%E8%BC%B8%E5%85%A5%E6%B3%95%E6%A1%86%E6%9E%B6%E5%BE%8C%E7%A7%BB%E9%99%A4-IBus-%E5%9C%96%E7%A4%BA%2Fime_icon.png?alt=media&amp;token=508a4f4b-74af-4238-9519-fcc2fb3c5686" alt="輸入法框架圖示"><span class="image-caption">輸入法框架圖示</span></p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>移除圖示的原理就是讓 IBus 不要執行，可以將 IBus 的 daemon 檔案移除或更改名字，使系統找不到檔案無法運行 IBus 服務，這裡為了之後有可能有需要用到 IBus 的意外，因此只做改名字的動作，檔案還是存在於系統內。更改檔名後重開機，就發現 IBus 圖示消失啦！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mv /usr/bin/ibus-daemon /usr/bin/ibus-daemon.bak</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>default</tag>
-        <tag>python</tag>
-        <tag>jupyter</tag>
-        <tag>notebook</tag>
-        <tag>path</tag>
-        <tag>browser</tag>
+        <tag>ubuntu</tag>
+        <tag>ibus</tag>
+        <tag>fcitx</tag>
+        <tag>18.04</tag>
+        <tag>remove</tag>
       </tags>
   </entry>
   <entry>
@@ -744,6 +742,31 @@
         <tag>not work</tag>
         <tag>jump</tag>
         <tag>click</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Jupyter] 改變 Jupyter notebook 預設路徑與瀏覽器</title>
+    <url>/2021/06/12/python_jupyter/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Jupyter notebook 是一種很方便開發 <code>Python</code> 程式的軟體，可以一步一步地來執行 Python，近年使用率也逐步提高。而我也是使用 Jupyter notebook 的愛用者，最一開始會遇到幾個問題，就是預設的瀏覽器為什麼是 Edge！要怎麼改？再來是預設路徑要怎麼改到我想放 <code>Python</code> 檔案的地方？</p>
+<h2 id="產生環境設定檔案"><a href="#產生環境設定檔案" class="headerlink" title="產生環境設定檔案"></a>產生環境設定檔案</h2><p>Jupyter notebook 的環境設定檔預設不會出現，因此要先下指令產生</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;jupyter notebook --generate-config</span><br><span class="line">Writing default config to: C:\Users\user\.jupyter\jupyter_notebook_config.py</span><br></pre></td></tr></table></figure>
+<p>產出的設定檔會在指令所提示的地方 <code>C:\Users\user\.jupyter\jupyter_notebook_config.py</code></p>
+<h2 id="修改預設瀏覽器"><a href="#修改預設瀏覽器" class="headerlink" title="修改預設瀏覽器"></a>修改預設瀏覽器</h2><p>開啟 <code>jupyter_notebook_config.py</code> 並搜尋 <code>c.NotebookApp.browser</code>，找到後先把注解符號刪除，再在 <code>&#39;&#39;</code> 內輸入想要的預設瀏覽器應用程式路徑 (如 chrome.exe)，注意：路徑中有斜線的話，要以 <code>/</code> 代替 <code>\</code>，且最後要 <code>%s</code>。不要忘記存檔！</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">c.NotebookApp.browser = <span class="string">u&#x27;C:/Program Files (x86)/Google/Chrome/Application/chrome.exe %s&#x27;</span></span><br></pre></td></tr></table></figure>
+<h2 id="修改預設路徑"><a href="#修改預設路徑" class="headerlink" title="修改預設路徑"></a>修改預設路徑</h2><p>一樣開啟 <code>jupyter_notebook_config.py</code> 並搜尋 <code>c.NotebookApp.notebook_dir</code>，先把注解符號刪除，再在 <code>&#39;&#39;</code> 內輸入想要的預設路徑，注意：路徑中有斜線的話，要以 <code>\\</code> 代替 <code>\</code>。不要忘記存檔！</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">c.NotebookApp.notebook_dir = <span class="string">u&#x27;D:\\py&#x27;</span></span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>在打開 Jupyter notebook 就可以看到使用指定瀏覽器，並且在預設路徑囉！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>default</tag>
+        <tag>python</tag>
+        <tag>jupyter</tag>
+        <tag>notebook</tag>
+        <tag>path</tag>
+        <tag>browser</tag>
       </tags>
   </entry>
   <entry>
@@ -777,29 +800,6 @@
         <tag>matlab</tag>
         <tag>pseudo</tag>
         <tag>algorithm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[IME] 有其他輸入法框架後移除 IBus 圖示</title>
-    <url>/2021/06/17/ime_ibus/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 在安裝完非預設的輸入法框架之後，在畫面右上角會看到新的輸入法圖示，但預設的 IBus 圖示仍然會存在，讓人看到就覺得煩躁進而想要移除掉圖示。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題"><a href="#問題" class="headerlink" title="問題"></a>問題</h2><p>fcitx 和 IBus 同時存在，但只有 fcitx 能使用，IBus 可以不用理它沒有關係，但看著就怪怪的，所以想要把它的圖示移除。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E6%9C%89%E5%85%B6%E4%BB%96%E8%BC%B8%E5%85%A5%E6%B3%95%E6%A1%86%E6%9E%B6%E5%BE%8C%E7%A7%BB%E9%99%A4-IBus-%E5%9C%96%E7%A4%BA%2Fime_icon.png?alt=media&amp;token=508a4f4b-74af-4238-9519-fcc2fb3c5686" alt="輸入法框架圖示"><span class="image-caption">輸入法框架圖示</span></p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>移除圖示的原理就是讓 IBus 不要執行，可以將 IBus 的 daemon 檔案移除或更改名字，使系統找不到檔案無法運行 IBus 服務，這裡為了之後有可能有需要用到 IBus 的意外，因此只做改名字的動作，檔案還是存在於系統內。更改檔名後重開機，就發現 IBus 圖示消失啦！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mv /usr/bin/ibus-daemon /usr/bin/ibus-daemon.bak</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>ibus</tag>
-        <tag>fcitx</tag>
-        <tag>18.04</tag>
-        <tag>remove</tag>
       </tags>
   </entry>
   <entry>
@@ -1009,37 +1009,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
-    <url>/2021/06/17/mount_iso/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
-<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-o loop</code>：使用 loop device 來掛載</li>
-</ul>
-<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
-<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>18.04</tag>
-        <tag>mount</tag>
-        <tag>unmount</tag>
-        <tag>iso</tag>
-        <tag>media</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</title>
     <url>/2021/06/18/mysql_centos_mysql_8_0_root/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL 應該是使用 PHP 第一個會碰到的資料庫，通常會包在一起來教學。記錄一下如何在 CentOS 8 單獨安裝 MySQL 吧！</p>
@@ -1072,32 +1041,6 @@
         <tag>password</tag>
         <tag>change</tag>
         <tag>forget</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Nginx] CentOS 安裝網頁伺服器 Nginx</title>
-    <url>/2021/06/18/nginx_centos_nginx/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>相較於 Apache，Nginx 消耗資源少且處理速度快，又支援高併發，是大流量應用的好選擇。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>開啟 Terminal，使用 <code>dnf</code> 來安裝 Nginx</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install -y nginx</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Complete!    <span class="comment">#看到這就行代表完成</span></span><br></pre></td></tr></table></figure>
-<h2 id="啟動並確認"><a href="#啟動並確認" class="headerlink" title="啟動並確認"></a>啟動並確認</h2><p>Nginx 預設是沒有開啟的，預設當系統開機時也不會自動開啟，所以通過指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start nginx   <span class="comment"># 現在馬上開啟 nginx 服務</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx  <span class="comment"># 之後開機也要自動開啟 nginx 服務</span></span><br></pre></td></tr></table></figure>
-<p>確認 Nginx 的服務狀態，看到 <code>active (running)</code> 代表正在運行囉</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl status nginx</span><br><span class="line">● nginx.service - The nginx HTTP and reverse proxy server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Thu 2020-09-10 09:08:10 CST; 3min 51s ago</span><br><span class="line">  Process: 2892 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2890 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2888 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)</span><br><span class="line"> Main PID: 2893 (nginx)</span><br><span class="line">    Tasks: 3 (<span class="built_in">limit</span>: 49448)</span><br><span class="line">   Memory: 5.7M</span><br><span class="line">   CGroup: /system.slice/nginx.service</span><br><span class="line">           ├─2893 nginx: master process /usr/sbin/nginx</span><br><span class="line">           ├─2894 nginx: worker process</span><br><span class="line">           └─2895 nginx: worker process</span><br><span class="line"></span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Starting The nginx HTTP and reverse proxy server...</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Started The nginx HTTP and reverse proxy server.</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>server</tag>
-        <tag>web</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -1295,28 +1238,60 @@
       </tags>
   </entry>
   <entry>
-    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
-    <url>/2021/06/15/php_phalcon_namespace/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
+    <title>[Nginx] CentOS 安裝網頁伺服器 Nginx</title>
+    <url>/2021/06/18/nginx_centos_nginx/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>相較於 Apache，Nginx 消耗資源少且處理速度快，又支援高併發，是大流量應用的好選擇。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Phalcon 4.0.3</li>
+<li>CentOS 8.2</li>
 </ul>
-<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
-<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
-<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
-<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>開啟 Terminal，使用 <code>dnf</code> 來安裝 Nginx</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install -y nginx</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">Complete!    <span class="comment">#看到這就行代表完成</span></span><br></pre></td></tr></table></figure>
+<h2 id="啟動並確認"><a href="#啟動並確認" class="headerlink" title="啟動並確認"></a>啟動並確認</h2><p>Nginx 預設是沒有開啟的，預設當系統開機時也不會自動開啟，所以通過指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start nginx   <span class="comment"># 現在馬上開啟 nginx 服務</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx  <span class="comment"># 之後開機也要自動開啟 nginx 服務</span></span><br></pre></td></tr></table></figure>
+<p>確認 Nginx 的服務狀態，看到 <code>active (running)</code> 代表正在運行囉</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl status nginx</span><br><span class="line">● nginx.service - The nginx HTTP and reverse proxy server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)</span><br><span class="line">   Active: active (running) since Thu 2020-09-10 09:08:10 CST; 3min 51s ago</span><br><span class="line">  Process: 2892 ExecStart=/usr/sbin/nginx (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2890 ExecStartPre=/usr/sbin/nginx -t (code=exited, status=0/SUCCESS)</span><br><span class="line">  Process: 2888 ExecStartPre=/usr/bin/rm -f /run/nginx.pid (code=exited, status=0/SUCCESS)</span><br><span class="line"> Main PID: 2893 (nginx)</span><br><span class="line">    Tasks: 3 (<span class="built_in">limit</span>: 49448)</span><br><span class="line">   Memory: 5.7M</span><br><span class="line">   CGroup: /system.slice/nginx.service</span><br><span class="line">           ├─2893 nginx: master process /usr/sbin/nginx</span><br><span class="line">           ├─2894 nginx: worker process</span><br><span class="line">           └─2895 nginx: worker process</span><br><span class="line"></span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Starting The nginx HTTP and reverse proxy server...</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain nginx[2890]: nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br><span class="line">Sep 10 09:08:10 localhost.localdomain systemd[1]: Started The nginx HTTP and reverse proxy server.</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>php</tag>
-        <tag>phalcon</tag>
-        <tag>namespace</tag>
+        <tag>server</tag>
+        <tag>web</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
+    <url>/2021/06/17/mount_iso/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
+<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-o loop</code>：使用 loop device 來掛載</li>
+</ul>
+<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
+<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>mount</tag>
+        <tag>unmount</tag>
+        <tag>iso</tag>
+        <tag>media</tag>
       </tags>
   </entry>
   <entry>
@@ -1362,6 +1337,31 @@
       </tags>
   </entry>
   <entry>
+    <title>[PHP] 在 Phalcon 新增一個 namespace</title>
+    <url>/2021/06/15/php_phalcon_namespace/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 <code>php</code> 中常常會用 namespace 將類別 (Class) 作區隔，然而網路上文章對於在 <code>Phalcon</code> 框架中加入一個新 namespace 的方面沒有太多的著墨，使 <code>Phalcon</code> 入門門檻增加，對新手較不友善。個人也是初次使用 <code>Phalcon</code> 框架，所以會以新手的角度來記錄這個步驟！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Phalcon 4.0.3</li>
+</ul>
+<h2 id="創建-namespace-步驟"><a href="#創建-namespace-步驟" class="headerlink" title="創建 namespace 步驟"></a>創建 namespace 步驟</h2><h3 id="新增資料夾"><a href="#新增資料夾" class="headerlink" title="新增資料夾"></a>新增資料夾</h3><p>先在 app 資料夾下創一個資料夾，是將來要放新 Class 的地方，我這裡是想要放一些我自己擴展 <code>Phalcon\Forms\Form</code> 的類別，所以資料夾取名為 <code>forms</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:/var/www/myProject/app$ tree -L 1</span><br><span class="line">.</span><br><span class="line">├── config</span><br><span class="line">├── controllers</span><br><span class="line">├── dbBackup</span><br><span class="line">├── forms</span><br><span class="line">├── library</span><br><span class="line">├── migrations</span><br><span class="line">├── models</span><br><span class="line">└── views</span><br></pre></td></tr></table></figure>
+<p>新增 <code>config.php</code> (<code>app/config/config.php</code>) 之中 <code>application</code> 內的路徑 <code>formsDir</code></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;application&#x27;</span> =&gt; [</span><br><span class="line">        <span class="string">&#x27;appDir&#x27;</span>         =&gt; APP_PATH . <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;controllersDir&#x27;</span> =&gt; APP_PATH . <span class="string">&#x27;/controllers/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;modelsDir&#x27;</span>      =&gt; APP_PATH . <span class="string">&#x27;/models/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;migrationsDir&#x27;</span>  =&gt; APP_PATH . <span class="string">&#x27;/migrations/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;viewsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/views/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;pluginsDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/plugins/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;libraryDir&#x27;</span>     =&gt; APP_PATH . <span class="string">&#x27;/library/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;formsDir&#x27;</span>       =&gt; APP_PATH . <span class="string">&#x27;/forms/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;cacheDir&#x27;</span>       =&gt; BASE_PATH . <span class="string">&#x27;/cache/&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;baseUri&#x27;</span>        =&gt; <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">    ]   </span><br></pre></td></tr></table></figure>
+<h3 id="註冊-namespace"><a href="#註冊-namespace" class="headerlink" title="註冊 namespace"></a>註冊 namespace</h3><p>要註冊新增的 namesapce，這個動作在 <code>loader.php</code> (<code>app/config/loader.php</code>)內完成，Array 中的 Key (e.g.:<code>&#39;AccountSystem\Forms&#39;</code>) 依自己喜歡，不與其它 Key 撞名即可！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$loader</span>-&gt;registerNamespaces(</span><br><span class="line">    [</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Models&#x27;</span> =&gt; <span class="variable">$config</span>-&gt;application-&gt;modelsDir,</span><br><span class="line">       <span class="string">&#x27;AccountSystem\Forms&#x27;</span>  =&gt; <span class="variable">$config</span>-&gt;application-&gt;formsDir,</span><br><span class="line">    ]      </span><br><span class="line">)-&gt;register();</span><br><span class="line"><span class="variable">$loader</span>-&gt;registerDirs(</span><br><span class="line">    [</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;controllersDir,</span><br><span class="line">        <span class="variable">$config</span>-&gt;application-&gt;modelsDir</span><br><span class="line">    ]</span><br><span class="line">)-&gt;register();</span><br></pre></td></tr></table></figure>
+<h2 id="完成與測試"><a href="#完成與測試" class="headerlink" title="完成與測試"></a>完成與測試</h2><p>這樣就算是新增完成囉！只要在 <code>app/forms</code> 資料夾下的類別中，最前面加上 <code>namespace AccountSystem\Forms;</code>，在其它的文件就可以調用 <code>AccountSystem\Forms\SignUpForm</code> 了喔！</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">AccountSystem</span>\<span class="title">Forms</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Date</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Password</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Form</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Text</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Phalcon</span>\<span class="title">Forms</span>\<span class="title">Element</span>\<span class="title">Select</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SignUpForm</span> <span class="keyword">extends</span> <span class="title">Form</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>php</tag>
+        <tag>phalcon</tag>
+        <tag>namespace</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Power] Ubuntu 筆電蓋上螢幕不休眠</title>
     <url>/2021/06/17/power_ubuntu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>筆電闔上螢幕不一定是沒有要使用，有可能是在有外接螢幕情況下只需要一個螢幕，這時就可以選擇把螢幕關上將筆電當成桌電主機一樣，因此就需要設定讓筆電關上螢幕時不會有任何動作 (包含睡眠、休眠等等)。</p>
@@ -1392,29 +1392,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Python] 爬蟲修改 User-Agent 標頭</title>
-    <url>/2021/06/15/python_user_agent/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲是一個很方便的工具，可以自動化且大量分析網頁，將別人的網頁當作自己資料庫，但也因為如此，有些網頁會偵測連線來源是否為爬蟲工具，若是的話會阻擋 (404)，或者有些會顯示出與正常使用瀏覽器瀏覽時不一樣的內容。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>python 3.8.5</li>
-</ul>
-<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p><code>Python</code> 爬蟲第一步大多數是使用 <code>requests</code> 這個套件，它內建的請求標頭 <code>User-Agent</code> 為 <code>python-requests/2.24.0</code>，也許版本號會不同，但一看就知道是爬蟲而不是真的使用者的連線請求，所以應用程式可根據這個線索來拒絕服務。但「道高一尺，魔高一丈」不是沒有道理的，只要我們改了 <code>User-Agent</code>，就能繞過根據這個標頭欄位過濾請求的網站</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://abcde.example.com&quot;</span></span><br><span class="line">response = requests.get(url, headers = headers)</span><br></pre></td></tr></table></figure>
-<p>這時，所有的請求標頭 <code>User-Agent</code> 都將顯示為 <code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36</code>。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>header</tag>
-        <tag>python</tag>
-        <tag>user</tag>
-        <tag>agent</tag>
-        <tag>crawl</tag>
-        <tag>requests</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Python] 爬蟲遇到 &#39;cp950&#39; codec can&#39;t encode ?</title>
     <url>/2021/06/12/python_cp950_codec_cant_encode/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲時，想將資料輸出到 <code>txt</code> 檔案遇到 <code>cp950</code> 等錯誤資訊，是甚麼原因？該怎麼辦？讓我來告訴你。</p>
@@ -1430,10 +1407,10 @@
       </categories>
       <tags>
         <tag>python</tag>
-        <tag>crawl</tag>
         <tag>cp950</tag>
         <tag>txt</tag>
         <tag>output</tag>
+        <tag>crawl</tag>
         <tag>unicodeencodeerror</tag>
       </tags>
   </entry>
@@ -1477,6 +1454,29 @@
         <tag>regex</tag>
         <tag>regular</tag>
         <tag>expression</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Python] 爬蟲修改 User-Agent 標頭</title>
+    <url>/2021/06/15/python_user_agent/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>爬蟲是一個很方便的工具，可以自動化且大量分析網頁，將別人的網頁當作自己資料庫，但也因為如此，有些網頁會偵測連線來源是否為爬蟲工具，若是的話會阻擋 (404)，或者有些會顯示出與正常使用瀏覽器瀏覽時不一樣的內容。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>python 3.8.5</li>
+</ul>
+<h2 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h2><p><code>Python</code> 爬蟲第一步大多數是使用 <code>requests</code> 這個套件，它內建的請求標頭 <code>User-Agent</code> 為 <code>python-requests/2.24.0</code>，也許版本號會不同，但一看就知道是爬蟲而不是真的使用者的連線請求，所以應用程式可根據這個線索來拒絕服務。但「道高一尺，魔高一丈」不是沒有道理的，只要我們改了 <code>User-Agent</code>，就能繞過根據這個標頭欄位過濾請求的網站</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://abcde.example.com&quot;</span></span><br><span class="line">response = requests.get(url, headers = headers)</span><br></pre></td></tr></table></figure>
+<p>這時，所有的請求標頭 <code>User-Agent</code> 都將顯示為 <code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36</code>。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>header</tag>
+        <tag>python</tag>
+        <tag>user</tag>
+        <tag>crawl</tag>
+        <tag>agent</tag>
+        <tag>requests</tag>
       </tags>
   </entry>
   <entry>
@@ -1557,30 +1557,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[RDP] Windows 10 新增使用者並賦予遠端桌面權限</title>
-    <url>/2021/06/13/rdp_windows_10/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在同一台電腦 Windows 上，若想要擁有自己個人桌面，就需要不與他人共用的一個使用者帳號；若想要遠端連線，則需要賦予使用者帳號遠端桌面的權限。</p>
-<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><p>組合鍵 <code>Windows + I</code> 開啟 Windows 的設定視窗。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fnew_account.png?alt=media&amp;token=7de524c5-ffa3-4354-85b8-d9bceabc340a" alt="新增其他使用者帳號"><span class="image-caption">新增其他使用者帳號</span></p>
-<p>若使用者沒有 Microsoft 帳戶或不想用 Microsoft 帳戶登入，可以在此式窗選擇「我沒有這位人員的登入資訊」→「新增沒有 Microsoft 帳戶的使用者」，填寫在地端的帳號、密碼與三個安全性問題。</p>
-<p>填寫完之後會在「家人與其他使用者」的「其他使用者」欄位看到新增的帳戶。</p>
-<h2 id="設定遠端桌面權限"><a href="#設定遠端桌面權限" class="headerlink" title="設定遠端桌面權限"></a>設定遠端桌面權限</h2><p>將設定畫面點回到「首頁」，並點選「系統」→「遠端桌面」→「啟用遠端桌面」→「選取可以從遠端存取此電腦的使用者」→「新增」，輸入使用者帳號後按兩次確定即可增加權限</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fadd_remote_privilege.png?alt=media&amp;token=e523d5c2-14ee-4afe-9931-b465b268c6cd" alt="賦予使用者遠端桌面權限"><span class="image-caption">賦予使用者遠端桌面權限</span></p>
-<p>使用者便可以遠端登入，並擁有自己的桌面與環境！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>remote</tag>
-        <tag>account</tag>
-        <tag>user</tag>
-        <tag>rdp</tag>
-        <tag>privilege</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[RDP] xrdp 遠端 menu 不見時登出的方法</title>
     <url>/2021/06/17/rdp_xrdp_menu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在一台電腦上開啟 xrdp 伺服器，讓大家可以各自用自己的帳號登入，且互不相干擾。但使用過程中遇到一些突發性圖形介面的問題，需要重新登入才能正常運作。</p>
@@ -1614,29 +1590,27 @@
       </tags>
   </entry>
   <entry>
-    <title>[Remove] Ubuntu 解除安裝應用程式</title>
-    <url>/2021/06/17/remove_ubuntu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>安裝與移除幾乎是每天都會作到的動作，移除相較安裝困難，Windows 作業系統中只需要進控制台移除程式，而在 Linux 只能使用指令來做移除的動作，且不確定是否真的移除乾淨相關檔案，最近剛好要移除 libreoffice，因此藉此紀錄移除程式的步驟與指令相對的意義。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="解除安裝"><a href="#解除安裝" class="headerlink" title="解除安裝"></a>解除安裝</h2><p>先移除目標程式及相關檔案</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get purge libreoffice*.*    <span class="comment"># 移除程式包含配置檔 (configuration file)</span></span><br></pre></td></tr></table></figure>
-<p>移除因應用程式相依所需而自動安裝，但現在已經不再需要的套件</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get autoremove              <span class="comment"># 移除原為「自動」安裝但現在不再需要的套件</span></span><br></pre></td></tr></table></figure>
-<p>移除相關的 deb 檔案</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get clean <span class="comment"># 除了「lock」檔案，移除在 /var/cache/apt/archives/ 與</span></span><br><span class="line">                              <span class="comment"># /var/cache/apt/archives/partial/ 目錄下的檔案，</span></span><br><span class="line">                              <span class="comment"># 這兩個目錄是執行「apt-get install」或「apt-get upgrade」指令時，</span></span><br><span class="line">                              <span class="comment"># 放置下載的相關套件所在，因為已經用不到，所以這些東西也可以清理掉</span></span><br></pre></td></tr></table></figure>
+    <title>[RDP] Windows 10 新增使用者並賦予遠端桌面權限</title>
+    <url>/2021/06/13/rdp_windows_10/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在同一台電腦 Windows 上，若想要擁有自己個人桌面，就需要不與他人共用的一個使用者帳號；若想要遠端連線，則需要賦予使用者帳號遠端桌面的權限。</p>
+<h2 id="新增帳號"><a href="#新增帳號" class="headerlink" title="新增帳號"></a>新增帳號</h2><p>組合鍵 <code>Windows + I</code> 開啟 Windows 的設定視窗。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fnew_account.png?alt=media&amp;token=7de524c5-ffa3-4354-85b8-d9bceabc340a" alt="新增其他使用者帳號"><span class="image-caption">新增其他使用者帳號</span></p>
+<p>若使用者沒有 Microsoft 帳戶或不想用 Microsoft 帳戶登入，可以在此式窗選擇「我沒有這位人員的登入資訊」→「新增沒有 Microsoft 帳戶的使用者」，填寫在地端的帳號、密碼與三個安全性問題。</p>
+<p>填寫完之後會在「家人與其他使用者」的「其他使用者」欄位看到新增的帳戶。</p>
+<h2 id="設定遠端桌面權限"><a href="#設定遠端桌面權限" class="headerlink" title="設定遠端桌面權限"></a>設定遠端桌面權限</h2><p>將設定畫面點回到「首頁」，並點選「系統」→「遠端桌面」→「啟用遠端桌面」→「選取可以從遠端存取此電腦的使用者」→「新增」，輸入使用者帳號後按兩次確定即可增加權限</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-Windows-10-%E6%96%B0%E5%A2%9E%E4%BD%BF%E7%94%A8%E8%80%85%E4%B8%A6%E8%B3%A6%E4%BA%88%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E6%AC%8A%E9%99%90%2Fadd_remote_privilege.png?alt=media&amp;token=e523d5c2-14ee-4afe-9931-b465b268c6cd" alt="賦予使用者遠端桌面權限"><span class="image-caption">賦予使用者遠端桌面權限</span></p>
+<p>使用者便可以遠端登入，並擁有自己的桌面與環境！</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>remove</tag>
-        <tag>libreoffice</tag>
-        <tag>uninstall</tag>
-        <tag>clean</tag>
+        <tag>windows</tag>
+        <tag>remote</tag>
+        <tag>account</tag>
+        <tag>user</tag>
+        <tag>rdp</tag>
+        <tag>privilege</tag>
       </tags>
   </entry>
   <entry>
@@ -1704,6 +1678,32 @@
       </tags>
   </entry>
   <entry>
+    <title>[Remove] Ubuntu 解除安裝應用程式</title>
+    <url>/2021/06/17/remove_ubuntu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>安裝與移除幾乎是每天都會作到的動作，移除相較安裝困難，Windows 作業系統中只需要進控制台移除程式，而在 Linux 只能使用指令來做移除的動作，且不確定是否真的移除乾淨相關檔案，最近剛好要移除 libreoffice，因此藉此紀錄移除程式的步驟與指令相對的意義。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="解除安裝"><a href="#解除安裝" class="headerlink" title="解除安裝"></a>解除安裝</h2><p>先移除目標程式及相關檔案</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get purge libreoffice*.*    <span class="comment"># 移除程式包含配置檔 (configuration file)</span></span><br></pre></td></tr></table></figure>
+<p>移除因應用程式相依所需而自動安裝，但現在已經不再需要的套件</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get autoremove              <span class="comment"># 移除原為「自動」安裝但現在不再需要的套件</span></span><br></pre></td></tr></table></figure>
+<p>移除相關的 deb 檔案</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get clean <span class="comment"># 除了「lock」檔案，移除在 /var/cache/apt/archives/ 與</span></span><br><span class="line">                              <span class="comment"># /var/cache/apt/archives/partial/ 目錄下的檔案，</span></span><br><span class="line">                              <span class="comment"># 這兩個目錄是執行「apt-get install」或「apt-get upgrade」指令時，</span></span><br><span class="line">                              <span class="comment"># 放置下載的相關套件所在，因為已經用不到，所以這些東西也可以清理掉</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>remove</tag>
+        <tag>libreoffice</tag>
+        <tag>uninstall</tag>
+        <tag>clean</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
     <url>/2021/06/15/ssl_crt_key/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
@@ -1727,38 +1727,6 @@
         <tag>match</tag>
         <tag>cert</tag>
         <tag>csr</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[SSL] 自簽憑證過程</title>
-    <url>/2021/06/15/ssl_self_sign/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
-<h2 id="產生-CA-SSL"><a href="#產生-CA-SSL" class="headerlink" title="產生 CA SSL"></a>產生 CA SSL</h2><p>⾸先為我們的 CA 產⽣⼀把屬於 CA 的私鑰</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out root/ca.key 4096</span><br></pre></td></tr></table></figure>
-<p>⽤這把私鑰產⽣⼀份⾃我簽署的 CA 憑證，其中 <code>subj</code> 可依自己需求做更改</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -x509 -days 365 -sha256 \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=localhost&quot;</span> \ </span><br><span class="line">    -key root/ca.key \ </span><br><span class="line">    -out root/ca.crt</span><br></pre></td></tr></table></figure>
-<h2 id="產生-Server-SSL"><a href="#產生-Server-SSL" class="headerlink" title="產生 Server SSL"></a>產生 Server SSL</h2><p>為我們的 Server 產⽣不加密之 PEM 格式的私密⾦鑰</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out server/server.key 2048</span><br></pre></td></tr></table></figure>
-<p>產⽣憑證請求檔 CSR，其中 <code>subj</code> 可依自己需求做更改，要注意的是 <strong>CN 不可與 CA 的 CN 相同</strong></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -key server/server.key \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=your_service_FQDN&quot;</span> \ </span><br><span class="line">    -out server/server.csr</span><br></pre></td></tr></table></figure>
-<p>把 CSR 丟給 CA 簽署</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -req -CAcreateserial -days 30 -sha256 \ </span><br><span class="line">    -CA root/ca.crt -CAkey root/ca.key \ </span><br><span class="line">    -<span class="keyword">in</span> server/server.csr \ </span><br><span class="line">    -out server/server.crt</span><br></pre></td></tr></table></figure>
-<p>現在⽬錄應該有以下這些文件，<code>server.key</code> 是 Server 的私鑰，<code>server.crt</code> 是 Server 的憑證，也因為是用我們自創的 CA 來簽核的一個憑證，又稱為自簽憑證</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ ls -alR . </span><br><span class="line"></span><br><span class="line">./root: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1968 Oct 21 02:05 ca.crt </span><br><span class="line">-rw------- 1 user user 3243 Oct 21 02:05 ca.key </span><br><span class="line">-rw-rw-r-- 1 user user   41 Oct 21 02:05 ca.srl </span><br><span class="line"></span><br><span class="line">./server: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1501 Oct 21 02:05 server.crt </span><br><span class="line">-rw-rw-r-- 1 user user  972 Oct 21 02:05 server.csr </span><br><span class="line">-rw------- 1 user user 1679 Oct 21 02:05 server.key</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ssl</tag>
-        <tag>ca</tag>
-        <tag>key</tag>
-        <tag>crt</tag>
-        <tag>csr</tag>
-        <tag>self</tag>
-        <tag>sign</tag>
-        <tag>openssl</tag>
-        <tag>mitm</tag>
       </tags>
   </entry>
   <entry>
@@ -1791,32 +1759,35 @@
       </tags>
   </entry>
   <entry>
-    <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</title>
-    <url>/2021/06/15/tool_sql_injection/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
-<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><p><a href="https://weirenxue.github.io/sql-injection-in-time/">SQL Injection Real Time</a> 這個工具是以 <code>javascript</code> 開發的，目的是隨時都可以用，不用額外安裝！</p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
-<li>將 SQL 語句貼至「SQL HERE」，注入之前的預覽會在「PREVIEW」區域。</li>
-<li>填寫要注入的參數名稱於「Parameter Name」。</li>
-<li>填寫要注入的參數名稱於「Value」。</li>
-<li>注入後的 SQL 語句會在「AFTER INJECTION」區域。</li>
-<li>可由「PREVIEW」比對「AFTER INJECTION」，就知道 SQL Injection的威力！</li>
-</ol>
-<h2 id="補充小常識"><a href="#補充小常識" class="headerlink" title="補充小常識"></a>補充小常識</h2><p>要預防被注入、安全的執行 SQL，必定要用 <code>Parameterized Query + Prepared Statement</code>，缺一不可。</p>
+    <title>[SSL] 自簽憑證過程</title>
+    <url>/2021/06/15/ssl_self_sign/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
+<h2 id="產生-CA-SSL"><a href="#產生-CA-SSL" class="headerlink" title="產生 CA SSL"></a>產生 CA SSL</h2><p>⾸先為我們的 CA 產⽣⼀把屬於 CA 的私鑰</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out root/ca.key 4096</span><br></pre></td></tr></table></figure>
+<p>⽤這把私鑰產⽣⼀份⾃我簽署的 CA 憑證，其中 <code>subj</code> 可依自己需求做更改</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -x509 -days 365 -sha256 \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=localhost&quot;</span> \ </span><br><span class="line">    -key root/ca.key \ </span><br><span class="line">    -out root/ca.crt</span><br></pre></td></tr></table></figure>
+<h2 id="產生-Server-SSL"><a href="#產生-Server-SSL" class="headerlink" title="產生 Server SSL"></a>產生 Server SSL</h2><p>為我們的 Server 產⽣不加密之 PEM 格式的私密⾦鑰</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out server/server.key 2048</span><br></pre></td></tr></table></figure>
+<p>產⽣憑證請求檔 CSR，其中 <code>subj</code> 可依自己需求做更改，要注意的是 <strong>CN 不可與 CA 的 CN 相同</strong></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -key server/server.key \ </span><br><span class="line">    -subj <span class="string">&quot;/C=TW/ST=Taipei/O=your_company/OU=your_department/CN=your_service_FQDN&quot;</span> \ </span><br><span class="line">    -out server/server.csr</span><br></pre></td></tr></table></figure>
+<p>把 CSR 丟給 CA 簽署</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -req -CAcreateserial -days 30 -sha256 \ </span><br><span class="line">    -CA root/ca.crt -CAkey root/ca.key \ </span><br><span class="line">    -<span class="keyword">in</span> server/server.csr \ </span><br><span class="line">    -out server/server.crt</span><br></pre></td></tr></table></figure>
+<p>現在⽬錄應該有以下這些文件，<code>server.key</code> 是 Server 的私鑰，<code>server.crt</code> 是 Server 的憑證，也因為是用我們自創的 CA 來簽核的一個憑證，又稱為自簽憑證</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ ls -alR . </span><br><span class="line"></span><br><span class="line">./root: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1968 Oct 21 02:05 ca.crt </span><br><span class="line">-rw------- 1 user user 3243 Oct 21 02:05 ca.key </span><br><span class="line">-rw-rw-r-- 1 user user   41 Oct 21 02:05 ca.srl </span><br><span class="line"></span><br><span class="line">./server: </span><br><span class="line">total 20 </span><br><span class="line">drwxrwxr-x 2 user user 4096 Oct 21 02:05 . </span><br><span class="line">drwxrwxr-x 4 user user 4096 Oct  7 22:40 .. </span><br><span class="line">-rw-rw-r-- 1 user user 1501 Oct 21 02:05 server.crt </span><br><span class="line">-rw-rw-r-- 1 user user  972 Oct 21 02:05 server.csr </span><br><span class="line">-rw------- 1 user user 1679 Oct 21 02:05 server.key</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>自行開發工具使用教學</category>
+        <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>tool</tag>
-        <tag>sql</tag>
-        <tag>injection</tag>
-        <tag>real</tag>
-        <tag>time</tag>
-        <tag>synthesis</tag>
-        <tag>tutorial</tag>
-        <tag>penetrate</tag>
-        <tag>pentest</tag>
+        <tag>ssl</tag>
+        <tag>ca</tag>
+        <tag>key</tag>
+        <tag>crt</tag>
+        <tag>csr</tag>
+        <tag>self</tag>
+        <tag>sign</tag>
+        <tag>openssl</tag>
+        <tag>mitm</tag>
       </tags>
   </entry>
   <entry>
@@ -1879,6 +1850,93 @@
         <tag>tool</tag>
         <tag>it</tag>
         <tag>displayer</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</title>
+    <url>/2021/06/15/tool_sql_injection/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
+<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><p><a href="https://weirenxue.github.io/sql-injection-in-time/">SQL Injection Real Time</a> 這個工具是以 <code>javascript</code> 開發的，目的是隨時都可以用，不用額外安裝！</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
+<li>將 SQL 語句貼至「SQL HERE」，注入之前的預覽會在「PREVIEW」區域。</li>
+<li>填寫要注入的參數名稱於「Parameter Name」。</li>
+<li>填寫要注入的參數名稱於「Value」。</li>
+<li>注入後的 SQL 語句會在「AFTER INJECTION」區域。</li>
+<li>可由「PREVIEW」比對「AFTER INJECTION」，就知道 SQL Injection的威力！</li>
+</ol>
+<h2 id="補充小常識"><a href="#補充小常識" class="headerlink" title="補充小常識"></a>補充小常識</h2><p>要預防被注入、安全的執行 SQL，必定要用 <code>Parameterized Query + Prepared Statement</code>，缺一不可。</p>
+]]></content>
+      <categories>
+        <category>自行開發工具使用教學</category>
+      </categories>
+      <tags>
+        <tag>tool</tag>
+        <tag>sql</tag>
+        <tag>injection</tag>
+        <tag>real</tag>
+        <tag>time</tag>
+        <tag>synthesis</tag>
+        <tag>tutorial</tag>
+        <tag>penetrate</tag>
+        <tag>pentest</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Vivado Vitis] 在軟體開發環境中缺少一堆 .h 檔的解決方法</title>
+    <url>/2021/06/13/vivado_vitis/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近接手一個 Zynq 的開發板 (RFSoC ZCU111)，新手上路肯定是要參考網路上豐富的文件，才會學得快。但在參考文獻的過程中碰到一個似乎教學的作者沒有提及，但自己遇到的問題，也就是 Build 時缺少一堆 <code>.h</code> 檔案的錯誤提示。</p>
+<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
+<li>Vivado 2019.2</li>
+<li>Vitis 2019.2</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>網路上沒有提供清楚的解決方法，因此自己記錄下遇到的問題與解決的步驟</p>
+<ol>
+<li><p>在 Vitis (或 SDK) 創建 Application Project，硬體平台選擇 Vivado 輸出的 <code>*.xsa</code> 檔案，並且將範例 <code>*.c</code> 檔匯入 <code>src</code> 資料夾下，開始 Build，會出現以下的提示，這是在路徑下找不到 <code>*.h</code> 檔案的意思，但照理來說 Vivado 的 <code>xsa</code> 都包含這些了。</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">22:54:01 **** Incremental Build of configuration Debug <span class="keyword">for</span> project LED ****</span><br><span class="line">make all </span><br><span class="line">make --no-print-directory pre-build</span><br><span class="line">a9-linaro-pre-build-step</span><br><span class="line"><span class="string">&#x27; &#x27;</span></span><br><span class="line">make --no-print-directory main-build</span><br><span class="line"><span class="string">&#x27;Building file: ../src/LED_test_tut_1C.c&#x27;</span></span><br><span class="line"><span class="string">&#x27;Invoking: ARM v7 gcc compiler&#x27;</span></span><br><span class="line">arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT<span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Zynq_Book/first_zynq_design/SDK/first_zynq_system_wrapper/<span class="built_in">export</span>/first_zynq_system_wrapper/sw/first_zynq_system_wrapper/standalone_domain/bspinclude/include -MMD -MP -MF<span class="string">&quot;src/LED_test_tut_1C.d&quot;</span> -MT<span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> -o <span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> <span class="string">&quot;../src/LED_test_tut_1C.c&quot;</span></span><br><span class="line">../src/LED_test_tut_1C.c:31:10: fatal error: xgpio.h: No such file or directory</span><br><span class="line"><span class="comment">#include &quot;xgpio.h&quot;</span></span><br><span class="line">        ^~~~~~~~~</span><br><span class="line">compilation terminated.</span><br><span class="line">make[1]: *** [src/subdir.mk:23: src/LED_test_tut_1C.o] Error 1</span><br><span class="line">make: *** [makefile:34: all] Error 2</span><br><span class="line"></span><br><span class="line">22:54:02 Build Finished (took 987ms)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看在 <code>*.h</code> 目錄底下到底有甚麼檔案，我的路徑為：</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Zynq_Book\first_zynq_design\SDK\first_zynq_system_wrapper\<span class="built_in">export</span>\first_zynq_system_wrapper\sw\first_zynq_system_wrapper\standalone_domain\bspinclude\include</span><br></pre></td></tr></table></figure>
+<p> 發現只有一個檔案 <code>xparameters.h</code> ，這為不正常的結果。</p>
+</li>
+<li><p>再回到 Vitis 畫面，直接重新 Build BSP 一次，並等待執行完成。再回到步驟 2 的路徑去查看，會發現多出很多 <code>*.h</code> 檔案，回到Vitis，Build <code>*.c</code> 檔案，結果為可以順利完成。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>vivado</tag>
+        <tag>vitis</tag>
+        <tag>h</tag>
+        <tag>lack</tag>
+        <tag>sdk</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[WIN32 API] 函數使用範例</title>
+    <url>/2021/06/15/win32_api_function_example/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接 Build 看效果。</p>
+<p>因此我看著文件慢慢的嘗試，寫出一個可以用的應用來。這裡收集了個人對於 <code>WIN32 API</code> 調用的範例，除了供大家參考外，自己也可以隨時複習。</p>
+<h2 id="原始碼"><a href="#原始碼" class="headerlink" title="原始碼"></a>原始碼</h2><ol>
+<li><a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam</a></li>
+<li><a href="https://github.com/weirenxue/enablemenuitem-example">EnableMenuItem, GetSubMenu, GetMenuItemID</a></li>
+<li><a href="https://github.com/weirenxue/settimer-example">SetTimer</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>win32</tag>
+        <tag>api</tag>
+        <tag>example</tag>
+        <tag>dialogboxparam</tag>
+        <tag>enablemenuitem</tag>
+        <tag>getsubmenu</tag>
+        <tag>getmenuitemid</tag>
+        <tag>settimer</tag>
       </tags>
   </entry>
   <entry>
@@ -1949,64 +2007,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[WIN32 API] 函數使用範例</title>
-    <url>/2021/06/15/win32_api_function_example/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接 Build 看效果。</p>
-<p>因此我看著文件慢慢的嘗試，寫出一個可以用的應用來。這裡收集了個人對於 <code>WIN32 API</code> 調用的範例，除了供大家參考外，自己也可以隨時複習。</p>
-<h2 id="原始碼"><a href="#原始碼" class="headerlink" title="原始碼"></a>原始碼</h2><ol>
-<li><a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam</a></li>
-<li><a href="https://github.com/weirenxue/enablemenuitem-example">EnableMenuItem, GetSubMenu, GetMenuItemID</a></li>
-<li><a href="https://github.com/weirenxue/settimer-example">SetTimer</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>win32</tag>
-        <tag>api</tag>
-        <tag>example</tag>
-        <tag>dialogboxparam</tag>
-        <tag>enablemenuitem</tag>
-        <tag>getsubmenu</tag>
-        <tag>getmenuitemid</tag>
-        <tag>settimer</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Vivado Vitis] 在軟體開發環境中缺少一堆 .h 檔的解決方法</title>
-    <url>/2021/06/13/vivado_vitis/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近接手一個 Zynq 的開發板 (RFSoC ZCU111)，新手上路肯定是要參考網路上豐富的文件，才會學得快。但在參考文獻的過程中碰到一個似乎教學的作者沒有提及，但自己遇到的問題，也就是 Build 時缺少一堆 <code>.h</code> 檔案的錯誤提示。</p>
-<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
-<li>Vivado 2019.2</li>
-<li>Vitis 2019.2</li>
-<li>Windows 10</li>
-</ul>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>網路上沒有提供清楚的解決方法，因此自己記錄下遇到的問題與解決的步驟</p>
-<ol>
-<li><p>在 Vitis (或 SDK) 創建 Application Project，硬體平台選擇 Vivado 輸出的 <code>*.xsa</code> 檔案，並且將範例 <code>*.c</code> 檔匯入 <code>src</code> 資料夾下，開始 Build，會出現以下的提示，這是在路徑下找不到 <code>*.h</code> 檔案的意思，但照理來說 Vivado 的 <code>xsa</code> 都包含這些了。</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">22:54:01 **** Incremental Build of configuration Debug <span class="keyword">for</span> project LED ****</span><br><span class="line">make all </span><br><span class="line">make --no-print-directory pre-build</span><br><span class="line">a9-linaro-pre-build-step</span><br><span class="line"><span class="string">&#x27; &#x27;</span></span><br><span class="line">make --no-print-directory main-build</span><br><span class="line"><span class="string">&#x27;Building file: ../src/LED_test_tut_1C.c&#x27;</span></span><br><span class="line"><span class="string">&#x27;Invoking: ARM v7 gcc compiler&#x27;</span></span><br><span class="line">arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT<span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Zynq_Book/first_zynq_design/SDK/first_zynq_system_wrapper/<span class="built_in">export</span>/first_zynq_system_wrapper/sw/first_zynq_system_wrapper/standalone_domain/bspinclude/include -MMD -MP -MF<span class="string">&quot;src/LED_test_tut_1C.d&quot;</span> -MT<span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> -o <span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> <span class="string">&quot;../src/LED_test_tut_1C.c&quot;</span></span><br><span class="line">../src/LED_test_tut_1C.c:31:10: fatal error: xgpio.h: No such file or directory</span><br><span class="line"><span class="comment">#include &quot;xgpio.h&quot;</span></span><br><span class="line">        ^~~~~~~~~</span><br><span class="line">compilation terminated.</span><br><span class="line">make[1]: *** [src/subdir.mk:23: src/LED_test_tut_1C.o] Error 1</span><br><span class="line">make: *** [makefile:34: all] Error 2</span><br><span class="line"></span><br><span class="line">22:54:02 Build Finished (took 987ms)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看在 <code>*.h</code> 目錄底下到底有甚麼檔案，我的路徑為：</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Zynq_Book\first_zynq_design\SDK\first_zynq_system_wrapper\<span class="built_in">export</span>\first_zynq_system_wrapper\sw\first_zynq_system_wrapper\standalone_domain\bspinclude\include</span><br></pre></td></tr></table></figure>
-<p> 發現只有一個檔案 <code>xparameters.h</code> ，這為不正常的結果。</p>
-</li>
-<li><p>再回到 Vitis 畫面，直接重新 Build BSP 一次，並等待執行完成。再回到步驟 2 的路徑去查看，會發現多出很多 <code>*.h</code> 檔案，回到Vitis，Build <code>*.c</code> 檔案，結果為可以順利完成。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>vivado</tag>
-        <tag>vitis</tag>
-        <tag>h</tag>
-        <tag>lack</tag>
-        <tag>sdk</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
     <url>/2021/06/15/window_modal_non_modal/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
@@ -2022,21 +2022,6 @@
         <tag>window</tag>
         <tag>modal</tag>
         <tag>non modal</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題</title>
-    <url>/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
-<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>sdk</tag>
-        <tag>xilinx</tag>
-        <tag>make</tag>
       </tags>
   </entry>
   <entry>
@@ -2070,28 +2055,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[ZIP] 壓縮檔內中文檔名呈現亂碼的解決方法</title>
-    <url>/2021/06/15/zip_chinese_garbled/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想練英文從生活周遭開始是最直接的，安裝英文版版作業系統也不奇怪，但身在中文環境工作與學習，通常經手的會是中文檔名的檔案，當英文版作業系統遇見中文檔名，總是會發生一些惱人的錯誤。這次遇到的問題是，在瀏灠內含中文檔名的 zip 壓縮檔時，中文會呈現出亂碼型態。</p>
-<h2 id="狀況描述"><a href="#狀況描述" class="headerlink" title="狀況描述"></a>狀況描述</h2><p>原本資料夾為中文(示範用)，壓縮後開啟瀏覽呈現為亂碼</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fgarbled.png?alt=media&amp;token=2c282188-e3cb-4481-9f3b-24d820ed2d74" alt="亂碼的檔案名稱"><span class="image-caption">亂碼的檔案名稱</span></p>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>先開啟控制台 (Control Panel)，按照下圖所示操作，將語言更換為 <code>Chinese (Traditional, Taiwan)</code> 之後，電腦會要求重開機，就重開機吧！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Foperation.png?alt=media&amp;token=0933c050-25ae-4a77-a8c6-1f42ca9840a0" alt="操作步驟"><span class="image-caption">操作步驟</span></p>
-<h2 id="結果"><a href="#結果" class="headerlink" title="結果"></a>結果</h2><p>重開機後就能再次開啟該 zip 壓縮檔來查看正常的檔案名稱啦！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fno_grabled.png?alt=media&amp;token=174f988f-0f11-46e0-abb7-903c57691af0" alt="沒有亂碼的檔案名稱"><span class="image-caption">沒有亂碼的檔案名稱</span></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>file</tag>
-        <tag>zip</tag>
-        <tag>chinese</tag>
-        <tag>garbled</tag>
-        <tag>name</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Xilinx SDK] GPIO 常用到的參數</title>
     <url>/2021/06/13/xilinx_sdk_gpio/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用 API 時，最重要的是正確地輸入對應參數，因此必定要先了解參數所代表的涵義，才能有正確的使用 API 姿勢。</p>
@@ -2111,12 +2074,27 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>api</tag>
         <tag>sdk</tag>
+        <tag>api</tag>
         <tag>xilinx</tag>
         <tag>gpio</tag>
         <tag>channel</tag>
         <tag>directionmask</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題</title>
+    <url>/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>sdk</tag>
+        <tag>xilinx</tag>
+        <tag>make</tag>
       </tags>
   </entry>
   <entry>
@@ -2142,6 +2120,57 @@
         <tag>install</tag>
         <tag>apt</tag>
         <tag>get</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[ZIP] 壓縮檔內中文檔名呈現亂碼的解決方法</title>
+    <url>/2021/06/15/zip_chinese_garbled/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想練英文從生活周遭開始是最直接的，安裝英文版版作業系統也不奇怪，但身在中文環境工作與學習，通常經手的會是中文檔名的檔案，當英文版作業系統遇見中文檔名，總是會發生一些惱人的錯誤。這次遇到的問題是，在瀏灠內含中文檔名的 zip 壓縮檔時，中文會呈現出亂碼型態。</p>
+<h2 id="狀況描述"><a href="#狀況描述" class="headerlink" title="狀況描述"></a>狀況描述</h2><p>原本資料夾為中文(示範用)，壓縮後開啟瀏覽呈現為亂碼</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fgarbled.png?alt=media&amp;token=2c282188-e3cb-4481-9f3b-24d820ed2d74" alt="亂碼的檔案名稱"><span class="image-caption">亂碼的檔案名稱</span></p>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>先開啟控制台 (Control Panel)，按照下圖所示操作，將語言更換為 <code>Chinese (Traditional, Taiwan)</code> 之後，電腦會要求重開機，就重開機吧！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Foperation.png?alt=media&amp;token=0933c050-25ae-4a77-a8c6-1f42ca9840a0" alt="操作步驟"><span class="image-caption">操作步驟</span></p>
+<h2 id="結果"><a href="#結果" class="headerlink" title="結果"></a>結果</h2><p>重開機後就能再次開啟該 zip 壓縮檔來查看正常的檔案名稱啦！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/ZIP-%E5%A3%93%E7%B8%AE%E6%AA%94%E5%85%A7%E4%B8%AD%E6%96%87%E6%AA%94%E5%90%8D%E5%91%88%E7%8F%BE%E4%BA%82%E7%A2%BC%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%B3%95%2Fno_grabled.png?alt=media&amp;token=174f988f-0f11-46e0-abb7-903c57691af0" alt="沒有亂碼的檔案名稱"><span class="image-caption">沒有亂碼的檔案名稱</span></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>file</tag>
+        <tag>zip</tag>
+        <tag>chinese</tag>
+        <tag>garbled</tag>
+        <tag>name</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[link] 缺少 libudev.so.0 的解決方法</title>
+    <url>/2021/06/17/link_libdev_so_0/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在安裝德州儀器的軟體時出現缺少 <code>libudev.so.0</code> 的字樣，有些解法是直接安裝 <code>libudev0:i386</code> 的套件，不幸的是這在 Ubuntu 14.04 之後的版本就移除了，取而代之的是 <code>libudev1:i386</code>，但軟體安裝就是硬要 <code>libudev.so.0</code> 這個檔案存在。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>解決的方法就是自己創一個連結檔，連結到 <code>libudev.so.1</code>，名為 <code>libudev.so.0</code> (雖然 <code>libudev.so.1</code> 本身也是連結檔 XD)。建立連結檔有兩種方式</p>
+<h3 id="使用-cp-指令"><a href="#使用-cp-指令" class="headerlink" title="使用 cp 指令"></a>使用 cp 指令</h3><p>用 <code>cp</code> 指令建立連結檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo cp -s /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$(arch)</code>：是在指令執行之前，先執行 <code>arch</code> 命令，取得當前電腦的硬體架構 (例如：x86_64) 並填回當前位置。</li>
+</ul>
+<p>可以看到 <code>libudev.so.1 -&gt; libudev.so.1.6.9</code>，也就是說最終是連結到 <code>libudev.so.1.6.9</code> 實體檔案。</p>
+<h3 id="使用-ln-指令"><a href="#使用-ln-指令" class="headerlink" title="使用 ln 指令"></a>使用 ln 指令</h3><p>其實步驟都與上面一樣，只是用不同指令達成。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>link</tag>
+        <tag>libudev</tag>
+        <tag>so</tag>
+        <tag>i386</tag>
+        <tag>cp</tag>
+        <tag>ln</tag>
       </tags>
   </entry>
   <entry>
@@ -2179,35 +2208,6 @@
         <tag>neg</tag>
         <tag>sbb</tag>
         <tag>asm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[link] 缺少 libudev.so.0 的解決方法</title>
-    <url>/2021/06/17/link_libdev_so_0/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在安裝德州儀器的軟體時出現缺少 <code>libudev.so.0</code> 的字樣，有些解法是直接安裝 <code>libudev0:i386</code> 的套件，不幸的是這在 Ubuntu 14.04 之後的版本就移除了，取而代之的是 <code>libudev1:i386</code>，但軟體安裝就是硬要 <code>libudev.so.0</code> 這個檔案存在。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>解決的方法就是自己創一個連結檔，連結到 <code>libudev.so.1</code>，名為 <code>libudev.so.0</code> (雖然 <code>libudev.so.1</code> 本身也是連結檔 XD)。建立連結檔有兩種方式</p>
-<h3 id="使用-cp-指令"><a href="#使用-cp-指令" class="headerlink" title="使用 cp 指令"></a>使用 cp 指令</h3><p>用 <code>cp</code> 指令建立連結檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo cp -s /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>$(arch)</code>：是在指令執行之前，先執行 <code>arch</code> 命令，取得當前電腦的硬體架構 (例如：x86_64) 並填回當前位置。</li>
-</ul>
-<p>可以看到 <code>libudev.so.1 -&gt; libudev.so.1.6.9</code>，也就是說最終是連結到 <code>libudev.so.1.6.9</code> 實體檔案。</p>
-<h3 id="使用-ln-指令"><a href="#使用-ln-指令" class="headerlink" title="使用 ln 指令"></a>使用 ln 指令</h3><p>其實步驟都與上面一樣，只是用不同指令達成。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>link</tag>
-        <tag>libudev</tag>
-        <tag>so</tag>
-        <tag>i386</tag>
-        <tag>cp</tag>
-        <tag>ln</tag>
       </tags>
   </entry>
   <entry>
@@ -2363,6 +2363,35 @@
       </tags>
   </entry>
   <entry>
+    <title>[轉檔] Keynote 轉 PowerPoint (pptx 而不是 ppsx)</title>
+    <url>/2021/06/27/mac_keynote_powerpoint_pptx/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Mac 上使用 Keynote 來做投影片非常方便，但在有些場合必須提供 pptx 檔案，這時必定需要使用到轉檔功能了。然而在新版的 Keynote 選擇 PowerPoint 格式輸出時，竟然輸出為奇怪的格式 ppsx，找了許久才找到解決方法，正常轉為 pptx 檔案，因此在此紀錄下來。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>macOS Big Sur 11.4</li>
+<li>Keynote 11.1</li>
+</ul>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>要轉檔為 <code>pptx</code> 的方法很繞圈子，必須先將 Keynote 轉為 <code>Keynote &#39;09</code>，再開啟 <code>Keynote &#39;09</code> 檔轉為 <code>pptx</code>，若用最原始的 Keynote 檔案來轉檔只會得到 <code>ppsx</code>。</p>
+<h3 id="Keynote-39-09"><a href="#Keynote-39-09" class="headerlink" title="Keynote &#39;09"></a>Keynote &#39;09</h3><p>開啟想要轉的 Keynote，依照指示 <code>File -&gt; Export To -&gt; Keynote &#39;09... -&gt; Next</code> 轉為 Keynote &#39;09 類型檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fexport_keynote09.png?alt=media&amp;token=74d16eb4-25c9-40f4-a4d4-02af3b840eb4" alt="轉檔為 Keynote &#39;09"><span class="image-caption">轉檔為 Keynote &#39;09</span></p>
+<p>可以觀察一下有沒有 &#39;09 到底差在哪裡，我自己除了檔案大小外，看不出差異，所以要我判斷出某個檔案是 Keynote 還是 Keynote &#39;09 是不太可能的！若有知道如何分辨的朋友們，歡迎在底下討論區留言！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2FkeynoteVSkeynote09.png?alt=media&amp;token=80e7fc49-1ee5-4c7b-b07f-c2d71fdf3ad1" alt="Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較"><span class="image-caption">Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較</span></p>
+<h3 id="pptx"><a href="#pptx" class="headerlink" title="pptx"></a>pptx</h3><p>最後就是重頭戲了，開啟剛剛轉好的 Keynote &#39;09&#39; 檔案，依照指示 <code>File -&gt; Export To -&gt; PowerPoint... -&gt; Advanced Options -&gt; .pptx -&gt; Next</code>，最後得到 pptx 檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fkey09topptx.png?alt=media&amp;token=14b8ee4b-5c46-46a6-a38b-5c4847c39bb4" alt="Keynote &#39;09 轉 pptx"><span class="image-caption">Keynote &#39;09 轉 pptx</span></p>
+<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>不知道為什麼 Apple 要繞成這樣，需要先轉為 Keynote &#39;09 才能轉為 pptx，還不說明白讓人困擾。另外個人覺得根本不應該將 Keynote 轉為 pptx，有非常多格式會因此跑掉，因此強烈建議是直接將 Keynote 轉為 pdf 即可，但最終要轉檔成甚麼還是需要看應用場景。</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><p>1 <a href="https://discussions.apple.com/thread/8524312">Keynote exports to PPSX instead of PPTX</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>mac</tag>
+        <tag>keynote</tag>
+        <tag>powerpoint</tag>
+        <tag>pptx</tag>
+        <tag>ppsx</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[轉檔] 將 rpm 檔轉為 deb 檔</title>
     <url>/2021/06/17/rpm_deb/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些軟體只提供 rpm 檔，但在 Ubuntu 的系統只能安裝 deb 檔，這時候就需要將 rpm 轉為 deb。</p>
@@ -2431,35 +2460,6 @@
         <tag>boot</tag>
         <tag>grub</tag>
         <tag>grubx64.efi</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[轉檔] Keynote 轉 PowerPoint (pptx 而不是 ppsx)</title>
-    <url>/2021/06/27/mac_keynote_powerpoint_pptx/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Mac 上使用 Keynote 來做投影片非常方便，但在有些場合必須提供 pptx 檔案，這時必定需要使用到轉檔功能了。然而在新版的 Keynote 選擇 PowerPoint 格式輸出時，竟然輸出為奇怪的格式 ppsx，找了許久才找到解決方法，正常轉為 pptx 檔案，因此在此紀錄下來。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>macOS Big Sur 11.4</li>
-<li>Keynote 11.1</li>
-</ul>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>要轉檔為 <code>pptx</code> 的方法很繞圈子，必須先將 Keynote 轉為 <code>Keynote &#39;09</code>，再開啟 <code>Keynote &#39;09</code> 檔轉為 <code>pptx</code>，若用最原始的 Keynote 檔案來轉檔只會得到 <code>ppsx</code>。</p>
-<h3 id="Keynote-39-09"><a href="#Keynote-39-09" class="headerlink" title="Keynote &#39;09"></a>Keynote &#39;09</h3><p>開啟想要轉的 Keynote，依照指示 <code>File -&gt; Export To -&gt; Keynote &#39;09... -&gt; Next</code> 轉為 Keynote &#39;09 類型檔案</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fexport_keynote09.png?alt=media&amp;token=74d16eb4-25c9-40f4-a4d4-02af3b840eb4" alt="轉檔為 Keynote &#39;09"><span class="image-caption">轉檔為 Keynote &#39;09</span></p>
-<p>可以觀察一下有沒有 &#39;09 到底差在哪裡，我自己除了檔案大小外，看不出差異，所以要我判斷出某個檔案是 Keynote 還是 Keynote &#39;09 是不太可能的！若有知道如何分辨的朋友們，歡迎在底下討論區留言！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2FkeynoteVSkeynote09.png?alt=media&amp;token=80e7fc49-1ee5-4c7b-b07f-c2d71fdf3ad1" alt="Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較"><span class="image-caption">Keynote 檔 (左) 與 Keynote &#39;09 檔 (右) 比較</span></p>
-<h3 id="pptx"><a href="#pptx" class="headerlink" title="pptx"></a>pptx</h3><p>最後就是重頭戲了，開啟剛剛轉好的 Keynote &#39;09&#39; 檔案，依照指示 <code>File -&gt; Export To -&gt; PowerPoint... -&gt; Advanced Options -&gt; .pptx -&gt; Next</code>，最後得到 pptx 檔案</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Mac-Keynote-%E8%BD%89-PowerPoint-pptx%2Fkey09topptx.png?alt=media&amp;token=14b8ee4b-5c46-46a6-a38b-5c4847c39bb4" alt="Keynote &#39;09 轉 pptx"><span class="image-caption">Keynote &#39;09 轉 pptx</span></p>
-<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>不知道為什麼 Apple 要繞成這樣，需要先轉為 Keynote &#39;09 才能轉為 pptx，還不說明白讓人困擾。另外個人覺得根本不應該將 Keynote 轉為 pptx，有非常多格式會因此跑掉，因此強烈建議是直接將 Keynote 轉為 pdf 即可，但最終要轉檔成甚麼還是需要看應用場景。</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><p>1 <a href="https://discussions.apple.com/thread/8524312">Keynote exports to PPSX instead of PPTX</a></p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>mac</tag>
-        <tag>keynote</tag>
-        <tag>powerpoint</tag>
-        <tag>pptx</tag>
-        <tag>ppsx</tag>
       </tags>
   </entry>
   <entry>

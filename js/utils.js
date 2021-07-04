@@ -360,8 +360,18 @@ NexT.utils = {
         sidebarAd.style.position = 'fixed';
         sidebarAd.style.top = parseInt(window.getComputedStyle(document.querySelector('.affix')).height) + 15 + 'px';
     }
-    window.onscroll = sidebarAdRWD;
-    window.onload = sidebarAdRWD;
+    if (window.addEventListener) {
+        window.addEventListener("load", sidebarAdRWD, false);  
+        window.addEventListener("scroll", sidebarAdRWD, false);            
+    }
+    else if (window.attachEvent) {
+        window.attachEvent("onload", sidebarAdRWD);  
+        window.attachEvent("onscroll", sidebarAdRWD);  
+    }
+    else {
+        window.onscroll = sidebarAdRWD;
+        window.onload = sidebarAdRWD;       
+    }
     // Initialize Sidebar & TOC Height.
     var sidebarWrapperHeight = document.body.offsetHeight - sidebarSchemePadding + 'px';
     document.querySelector('.site-overview-wrap').style.maxHeight = sidebarWrapperHeight;
