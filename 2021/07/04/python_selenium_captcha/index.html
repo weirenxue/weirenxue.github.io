@@ -31,12 +31,11 @@
 <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Python-%E4%BD%BF%E7%94%A8-Selenium-%E6%8A%93%E7%95%B6%E5%89%8D%E9%A0%81%E9%9D%A2%E9%A9%97%E8%AD%89%E7%A2%BC%E5%9C%96%E7%89%87%2Fdifferent_captcha.png?alt=media&amp;token=6137c314-3ce4-473c-9f72-56fb61f5ca22">
 <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Python-%E4%BD%BF%E7%94%A8-Selenium-%E6%8A%93%E7%95%B6%E5%89%8D%E9%A0%81%E9%9D%A2%E9%A9%97%E8%AD%89%E7%A2%BC%E5%9C%96%E7%89%87%2Fcaptcha_inpython.png?alt=media&amp;token=ad16a02b-e9e4-474c-94b8-ddfd75efb213">
 <meta property="article:published_time" content="2021-07-04T01:48:28.000Z">
-<meta property="article:modified_time" content="2021-07-04T03:30:09.098Z">
+<meta property="article:modified_time" content="2021-07-04T04:34:06.958Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="python">
-<meta property="article:tag" content="crawl">
-<meta property="article:tag" content="requests">
 <meta property="article:tag" content="selenium">
+<meta property="article:tag" content="crawl">
 <meta property="article:tag" content="img">
 <meta property="article:tag" content="download">
 <meta property="article:tag" content="base64">
@@ -44,6 +43,7 @@
 <meta property="article:tag" content="captcha">
 <meta property="article:tag" content="matplotlib">
 <meta property="article:tag" content="urllib">
+<meta property="article:tag" content="requests">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Python-%E4%BD%BF%E7%94%A8-Selenium-%E6%8A%93%E7%95%B6%E5%89%8D%E9%A0%81%E9%9D%A2%E9%A9%97%E8%AD%89%E7%A2%BC%E5%9C%96%E7%89%87%2Fdifferent_captcha.png?alt=media&amp;token=6137c314-3ce4-473c-9f72-56fb61f5ca22">
 
@@ -253,7 +253,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2021-07-04 09:48:28 / 修改時間：11:30:09" itemprop="dateCreated datePublished" datetime="2021-07-04T09:48:28+08:00">2021-07-04</time>
+              <time title="創建時間：2021-07-04 09:48:28 / 修改時間：12:34:06" itemprop="dateCreated datePublished" datetime="2021-07-04T09:48:28+08:00">2021-07-04</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -291,7 +291,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>正常的登入機制中有一個環節是顯示一張驗證碼圖片，然後請使用者輸入驗證碼，來達到阻擋機器人 (爬蟲) 登入的效果。但這並不能阻止程式開發為本業的我們，我們可以在將要輸入驗證碼時，將驗證碼截圖改為手動輸入，完成後剩下的工作就交由爬蟲來執行。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>正常的登入機制中有一個環節是顯示一張驗證碼圖片，請使用者輸入圖片中的驗證碼，來達到阻擋機器人 (爬蟲) 登入的效果。但這並不能阻止以爬蟲為樂的我們，我們可以在需要輸入驗證碼的時候，將驗證碼截圖並顯示在跳出對話框，請使用者手動輸入驗證碼，完成登入後剩下的工作就交由爬蟲來執行。</p>
 <p>然而，對驗證碼圖片的連結發出一個資源請求，正常來說會回傳不同於前一次的驗證碼圖片，因此我們不能只抓 img 標籤中的 src 然後重新發出請求來下載該圖片。而是應直接下載當前頁面所顯示的圖片，這篇文章紀錄如何使用 Selenium 在不重新發出請求的情形下，下載當前 img 標籤內的圖片。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Python 3.8.5</li>
@@ -304,8 +304,8 @@
 <h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>想要解決這個問題還需要使用到 Javascript (js) 來協助。</p>
 <p>先透過 js 在 Selenium 中取得 img 的內容，並以 Base64 格式回傳圖片內容到 Python 中，有了這個 Base64 圖片，甚麼都好辦，例如存檔、顯示在 tkinter 視窗或更多其他種應用。</p>
 <h3 id="取得圖片-Base64-格式"><a href="#取得圖片-Base64-格式" class="headerlink" title="取得圖片 Base64 格式"></a>取得圖片 Base64 格式</h3><p>使用 js 進行 DOM 操作，每一個步驟詳細說明盡在註解中</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 創建一個 canvas 元素</span></span><br><span class="line"><span class="keyword">var</span> canvas = <span class="built_in">document</span>.createElement(<span class="string">&#x27;canvas&#x27;</span>);</span><br><span class="line"><span class="comment">// 取得 canvas 元素中的 2d 上下文</span></span><br><span class="line"><span class="keyword">var</span> context = canvas.getContext(<span class="string">&#x27;2d&#x27;</span>);</span><br><span class="line"><span class="comment">// 取得驗證碼的 img 標籤</span></span><br><span class="line"><span class="keyword">var</span> img = <span class="built_in">document</span>.querySelector(<span class="string">&#x27;div.codes_img img&#x27;</span>);</span><br><span class="line"><span class="comment">// canvas 高度與寬度設定為與驗證碼 img 相同</span></span><br><span class="line">canvas.height = img.naturalHeight;</span><br><span class="line">canvas.width = img.naturalWidth;</span><br><span class="line"><span class="comment">// 在 canvas 2d 上下文中的座標 (0, 0) 處，畫上 img 的內容</span></span><br><span class="line">context.drawImage(img, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"><span class="comment">// 轉換此圖片為 base64 格式</span></span><br><span class="line"><span class="built_in">console</span>.log(canvas.toDataURL());</span><br></pre></td></tr></table></figure>
-<h3 id="回傳-Base64-圖片"><a href="#回傳-Base64-圖片" class="headerlink" title="回傳 Base64 圖片"></a>回傳 Base64 圖片</h3><p>我們已經會使用 js 來取得 Base64 格式的圖片了，接下來就是要將它回傳到 Python 之中，Selenium 有一個函數 <code>execute_async_script</code> 可以在當前頁面運行 js 腳本，並將結果回傳到 Python 中，</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 創建一個 canvas 元素</span></span><br><span class="line"><span class="keyword">var</span> canvas = <span class="built_in">document</span>.createElement(<span class="string">&#x27;canvas&#x27;</span>);</span><br><span class="line"><span class="comment">// 取得 canvas 元素中的 2d 上下文</span></span><br><span class="line"><span class="keyword">var</span> context = canvas.getContext(<span class="string">&#x27;2d&#x27;</span>);</span><br><span class="line"><span class="comment">// 取得驗證碼的 img 標籤</span></span><br><span class="line"><span class="keyword">var</span> img = <span class="built_in">document</span>.querySelector(<span class="string">&#x27;div.codes_img img&#x27;</span>);</span><br><span class="line"><span class="comment">// canvas 高度與寬度設定為與驗證碼 img 相同</span></span><br><span class="line">canvas.height = img.naturalHeight;</span><br><span class="line">canvas.width = img.naturalWidth;</span><br><span class="line"><span class="comment">// 在 canvas 2d 上下文中的座標 (0, 0) 處，畫上 img 的內容</span></span><br><span class="line">context.drawImage(img, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"><span class="comment">// 轉換此圖片為 Base64 格式</span></span><br><span class="line"><span class="built_in">console</span>.log(canvas.toDataURL());</span><br></pre></td></tr></table></figure>
+<h3 id="回傳-Base64-圖片"><a href="#回傳-Base64-圖片" class="headerlink" title="回傳 Base64 圖片"></a>回傳 Base64 圖片</h3><p>我們已經會使用 js 來取得 Base64 格式的圖片了，接下來就是要將它回傳到 Python 之中，Selenium 提供一個函數 <code>execute_async_script</code> 讓我們可以在當前頁面運行 js 腳本，並將結果回傳到 Python 中</p>
 <figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;https://ipost.post.gov.tw/pst/home.html&quot;</span></span><br><span class="line"></span><br><span class="line">driverPath = <span class="string">r&#x27;chromedriver.exe&#x27;</span></span><br><span class="line">browser = webdriver.Chrome(executable_path=driverPath)</span><br><span class="line">browser.get(url)</span><br><span class="line"></span><br><span class="line"><span class="comment"># callback function 會將 canvas.toDataURL() 回傳回來給 captchaBase64</span></span><br><span class="line">captchaBase64 = browser.execute_async_script(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    var canvas = document.createElement(&#x27;canvas&#x27;);</span></span><br><span class="line"><span class="string">    var context = canvas.getContext(&#x27;2d&#x27;);</span></span><br><span class="line"><span class="string">    var img = document.querySelector(&#x27;div.codes_img img&#x27;);</span></span><br><span class="line"><span class="string">    canvas.height = img.naturalHeight;</span></span><br><span class="line"><span class="string">    canvas.width = img.naturalWidth;</span></span><br><span class="line"><span class="string">    context.drawImage(img, 0, 0);</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    callback = arguments[arguments.length - 1];</span></span><br><span class="line"><span class="string">    callback(canvas.toDataURL());</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span>)</span><br></pre></td></tr></table></figure>
 <p>若想查看是否真的是驗證碼的圖，可以使用 <code>matplotlib</code> 套件來顯示，</p>
 <figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> io</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> matplotlib.image <span class="keyword">as</span> mpimg</span><br><span class="line"></span><br><span class="line"><span class="comment"># base64 to bytes，需先把 data Url 前綴去除</span></span><br><span class="line">i = base64.b64decode(captchaBase64.split(<span class="string">&#x27;,&#x27;</span>)[<span class="number">1</span>])</span><br><span class="line"><span class="comment"># 在記憶體中創建一個內容為 i 的 bytes 檔案</span></span><br><span class="line">i = io.BytesIO(i)</span><br><span class="line"><span class="comment"># 將 i 轉換為 jpg 格式</span></span><br><span class="line">i = mpimg.imread(i, <span class="built_in">format</span>=<span class="string">&#x27;JPG&#x27;</span>)</span><br><span class="line"><span class="comment"># 顯示驗證碼</span></span><br><span class="line">plt.imshow(i)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
@@ -379,9 +379,8 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/python/" rel="tag"># python</a>
-              <a href="/tags/crawl/" rel="tag"># crawl</a>
-              <a href="/tags/requests/" rel="tag"># requests</a>
               <a href="/tags/selenium/" rel="tag"># selenium</a>
+              <a href="/tags/crawl/" rel="tag"># crawl</a>
               <a href="/tags/img/" rel="tag"># img</a>
               <a href="/tags/download/" rel="tag"># download</a>
               <a href="/tags/base64/" rel="tag"># base64</a>
@@ -389,6 +388,7 @@
               <a href="/tags/captcha/" rel="tag"># captcha</a>
               <a href="/tags/matplotlib/" rel="tag"># matplotlib</a>
               <a href="/tags/urllib/" rel="tag"># urllib</a>
+              <a href="/tags/requests/" rel="tag"># requests</a>
           </div>
 
         
