@@ -31,11 +31,12 @@
 <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Python-%E4%BD%BF%E7%94%A8-Selenium-%E6%8A%93%E7%95%B6%E5%89%8D%E9%A0%81%E9%9D%A2%E9%A9%97%E8%AD%89%E7%A2%BC%E5%9C%96%E7%89%87%2Fdifferent_captcha.png?alt=media&amp;token=6137c314-3ce4-473c-9f72-56fb61f5ca22">
 <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Python-%E4%BD%BF%E7%94%A8-Selenium-%E6%8A%93%E7%95%B6%E5%89%8D%E9%A0%81%E9%9D%A2%E9%A9%97%E8%AD%89%E7%A2%BC%E5%9C%96%E7%89%87%2Fcaptcha_inpython.png?alt=media&amp;token=ad16a02b-e9e4-474c-94b8-ddfd75efb213">
 <meta property="article:published_time" content="2021-07-04T01:48:28.000Z">
-<meta property="article:modified_time" content="2021-07-04T04:34:06.958Z">
+<meta property="article:modified_time" content="2021-07-04T04:37:40.981Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="python">
-<meta property="article:tag" content="selenium">
 <meta property="article:tag" content="crawl">
+<meta property="article:tag" content="requests">
+<meta property="article:tag" content="selenium">
 <meta property="article:tag" content="img">
 <meta property="article:tag" content="download">
 <meta property="article:tag" content="base64">
@@ -43,7 +44,6 @@
 <meta property="article:tag" content="captcha">
 <meta property="article:tag" content="matplotlib">
 <meta property="article:tag" content="urllib">
-<meta property="article:tag" content="requests">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Python-%E4%BD%BF%E7%94%A8-Selenium-%E6%8A%93%E7%95%B6%E5%89%8D%E9%A0%81%E9%9D%A2%E9%A9%97%E8%AD%89%E7%A2%BC%E5%9C%96%E7%89%87%2Fdifferent_captcha.png?alt=media&amp;token=6137c314-3ce4-473c-9f72-56fb61f5ca22">
 
@@ -253,7 +253,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2021-07-04 09:48:28 / 修改時間：12:34:06" itemprop="dateCreated datePublished" datetime="2021-07-04T09:48:28+08:00">2021-07-04</time>
+              <time title="創建時間：2021-07-04 09:48:28 / 修改時間：12:37:40" itemprop="dateCreated datePublished" datetime="2021-07-04T09:48:28+08:00">2021-07-04</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -291,7 +291,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>正常的登入機制中有一個環節是顯示一張驗證碼圖片，請使用者輸入圖片中的驗證碼，來達到阻擋機器人 (爬蟲) 登入的效果。但這並不能阻止以爬蟲為樂的我們，我們可以在需要輸入驗證碼的時候，將驗證碼截圖並顯示在跳出對話框，請使用者手動輸入驗證碼，完成登入後剩下的工作就交由爬蟲來執行。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>正常的登入機制中有一個環節是顯示一張驗證碼圖片，請使用者輸入圖片中的驗證碼，來達到阻擋機器人 (爬蟲) 登入的效果。但這並不能阻止以爬蟲為樂的我們，我們可以在需要輸入驗證碼的時候，將驗證碼截圖並顯示在跳出對話框，請使用者手動輸入驗證碼。成功登入後，剩下的工作就可交由爬蟲繼續執行。</p>
 <p>然而，對驗證碼圖片的連結發出一個資源請求，正常來說會回傳不同於前一次的驗證碼圖片，因此我們不能只抓 img 標籤中的 src 然後重新發出請求來下載該圖片。而是應直接下載當前頁面所顯示的圖片，這篇文章紀錄如何使用 Selenium 在不重新發出請求的情形下，下載當前 img 標籤內的圖片。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Python 3.8.5</li>
@@ -379,8 +379,9 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/python/" rel="tag"># python</a>
-              <a href="/tags/selenium/" rel="tag"># selenium</a>
               <a href="/tags/crawl/" rel="tag"># crawl</a>
+              <a href="/tags/requests/" rel="tag"># requests</a>
+              <a href="/tags/selenium/" rel="tag"># selenium</a>
               <a href="/tags/img/" rel="tag"># img</a>
               <a href="/tags/download/" rel="tag"># download</a>
               <a href="/tags/base64/" rel="tag"># base64</a>
@@ -388,7 +389,6 @@
               <a href="/tags/captcha/" rel="tag"># captcha</a>
               <a href="/tags/matplotlib/" rel="tag"># matplotlib</a>
               <a href="/tags/urllib/" rel="tag"># urllib</a>
-              <a href="/tags/requests/" rel="tag"># requests</a>
           </div>
 
         
