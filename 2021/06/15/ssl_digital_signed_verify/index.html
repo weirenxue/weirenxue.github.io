@@ -271,12 +271,10 @@
 
         </div>
       </header>
-
     
     
     
     <div class="post-body" itemprop="articleBody">
-
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作。但我有發現一個現象，就是當講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並整理後記錄在這。</p>
 <h2 id="產製數位憑證"><a href="#產製數位憑證" class="headerlink" title="產製數位憑證"></a>產製數位憑證</h2><p>認證機構 (CA) 會先對要簽署的數據 (Data, 例如：Public Key, Subject ... 等等憑證資訊，皆為明碼) 做雜湊 (Hash) 運算，得到雜湊值 (Hash Value)，再以 CA 的私鑰 (Private Key) 對其加密以達到防止更改效果，這個產出即為數位簽章 (Digital Signature)</p>
@@ -310,6 +308,8 @@
     </li>
   </ul>
 
+      <script async src="https://cse.google.com/cse.js?cx=264c146931f2086b9"></script>
+      <div class="gcse-search"></div>
         <div class="reward-container">
   <div>以最優質的內容回應您的鼓勵</div>
   <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">

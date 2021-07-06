@@ -1325,7 +1325,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #75c163;
+  background: #61ff09;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2854,4 +2854,10 @@ ul.wrxue-timeline li::after {
 }
 ul.wrxue-timeline li h2::after {
   left: 0;
+}
+.gsc-input table {
+  margin: 0;
+}
+.gsc-input .gsib_b {
+  display: none;
 }

@@ -264,12 +264,10 @@
 
         </div>
       </header>
-
     
     
     
     <div class="post-body" itemprop="articleBody">
-
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
 <h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
@@ -290,6 +288,8 @@
     </li>
   </ul>
 
+      <script async src="https://cse.google.com/cse.js?cx=264c146931f2086b9"></script>
+      <div class="gcse-search"></div>
         <div class="reward-container">
   <div>以最優質的內容回應您的鼓勵</div>
   <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
