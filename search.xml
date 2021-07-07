@@ -73,6 +73,42 @@
       </tags>
   </entry>
   <entry>
+    <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
+    <url>/2021/06/15/cs_asp_net_core_3_1/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>Visual Studio Enterprise 2019 (16.7.2)</li>
+<li>.Net Core 3.1</li>
+</ul>
+<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>必需使用 Visual Studio 2019 以上版本才可以用 .NET Core 3.1 (<a href="https://dotnet.microsoft.com/download/dotnet-core/3.1">參考資訊</a>)，也因為 2.1 版在 2021/08/21 就會結束支援，所以建議使用較新的 Core (3.1)。</p>
+<p>開啟「Visual Studio 2019」→「Create a new project」→ 選「ASP.NET Core Web Application」→ Project name 為「CorePractice」→ 選「Web Application」(請注意上方要為 .NET Core 與 ASP.NET Core 3.1，且右方的 HTTPS 不要勾) →「Create」</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fcreate_project.png?alt=media&amp;token=fc23ffc7-0664-4325-bd3f-9d052cf073d7" alt="創建專案步驟"><span class="image-caption">創建專案步驟</span></p>
+<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>目錄結構如下，目前只會用到 <code>Index.cshtml</code> 與 <code>Index.cshtml.cs</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">│  appsettings.Development.json</span><br><span class="line">│  appsettings.json</span><br><span class="line">│  CorePractice.csproj</span><br><span class="line">│  Program.cs</span><br><span class="line">│  Startup.cs</span><br><span class="line">├─bin</span><br><span class="line">├─obj</span><br><span class="line">├─Pages</span><br><span class="line">│  │  Error.cshtml</span><br><span class="line">│  │  Error.cshtml.cs</span><br><span class="line">│  │  Index.cshtml</span><br><span class="line">│  │  Index.cshtml.cs</span><br><span class="line">│  │  Privacy.cshtml</span><br><span class="line">│  │  Privacy.cshtml.cs</span><br><span class="line">│  │  _ViewImports.cshtml</span><br><span class="line">│  │  _ViewStart.cshtml</span><br><span class="line">│  │</span><br><span class="line">│  └─Shared</span><br><span class="line">├─Properties</span><br><span class="line">└─wwwroot</span><br></pre></td></tr></table></figure>
+<p>修改 <code>Index.cshtml.cs</code> 內 <code>OnGet</code> 函式的內容，透過 <code>ViewData</code> 將資料傳給 View</p>
+<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.RazorPages;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CorePractice.Pages</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">IndexModel</span> : <span class="title">PageModel</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;IndexModel&gt; _logger;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">IndexModel</span>(<span class="params">ILogger&lt;IndexModel&gt; logger</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            _logger = logger;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGet</span>(<span class="params"></span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span>[] names = <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; <span class="string">&quot;Alfreda Stephenson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Swanson Swanson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Walker Pace&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Katina Le&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Lesley Calderon&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Ruth Merrill&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Cristina Buchanan&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Gallegos May&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Macdonald Lucas&quot;</span>&#125;;</span><br><span class="line">            <span class="built_in">int</span> num = <span class="number">3</span>;</span><br><span class="line">            <span class="built_in">int</span>[] age = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            <span class="built_in">string</span>[] name = <span class="keyword">new</span> <span class="built_in">string</span>[num];</span><br><span class="line">            <span class="built_in">int</span>[] family = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            Random rnd = <span class="keyword">new</span> Random();</span><br><span class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; num; i++)</span><br><span class="line">            &#123;</span><br><span class="line">                age[i] = rnd.Next(<span class="number">50</span>);</span><br><span class="line">                name[i] = names[rnd.Next(names.Length)];</span><br><span class="line">                family[i] = rnd.Next(<span class="number">5</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            ViewData[<span class="string">&quot;age&quot;</span>] = age;</span><br><span class="line">            ViewData[<span class="string">&quot;name&quot;</span>] = name;</span><br><span class="line">            ViewData[<span class="string">&quot;family&quot;</span>] = family;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>將 <code>Index.cshtml</code> 修改如下，透過 <code>ViewData</code> 將 Controller 的資料取出，在 View 中渲染</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">@page</span><br><span class="line">@model IndexModel</span><br><span class="line">@&#123;</span><br><span class="line">    ViewData[&quot;Title&quot;] = &quot;Home page&quot;;</span><br><span class="line"></span><br><span class="line">    int[] age = ViewData[&quot;age&quot;] as int[];</span><br><span class="line">    string[] name = ViewData[&quot;name&quot;] as string[];</span><br><span class="line">    int[] family = ViewData[&quot;family&quot;] as int[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;text-center&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">&quot;display-4&quot;</span>&gt;</span>Welcome<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Learn about <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://docs.microsoft.com/aspnet/core&quot;</span>&gt;</span>building Web apps with ASP.NET Core<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">style</span>=<span class="string">&quot;border-style: solid; margin-left: auto; margin-right: auto;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>名字<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>歲數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>家庭人數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    @for (var i = 0; i &lt; name.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@name[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@age[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@family[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">    <span class="selector-tag">table</span> <span class="selector-tag">td</span>, <span class="selector-tag">table</span> <span class="selector-tag">th</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">1px</span> solid black;</span></span><br><span class="line"><span class="css">    &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>編譯與建置 (F5) 後一個簡單的 ASP.NET Core 應用程式就此完成</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fproject_demo.png?alt=media&amp;token=7e1625c1-5d92-4acd-84b5-8de508a799f0" alt="完成頁面"><span class="image-caption">完成頁面</span></p>
+<p>參考原始碼：<a href="https://github.com/weirenxue/core-practice">GitHub</a></p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>csharp</tag>
+        <tag>asp</tag>
+        <tag>.net</tag>
+        <tag>core</tag>
+        <tag>3.1</tag>
+        <tag>visual studio</tag>
+        <tag>razor</tag>
+        <tag>2019</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[C++] (FARPROC&amp;) 的含意</title>
     <url>/2021/06/11/cfarproc/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
@@ -178,36 +214,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[C#] 發布 ASP.NET Core 應用程式</title>
-    <url>/2021/06/15/cs_asp_net_core/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接續 <a href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core_3_1/">[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</a> 已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>Visual Studio Enterprise 2019 (16.7.2)</li>
-<li>.Net Core 3.1</li>
-</ul>
-<h2 id="發布"><a href="#發布" class="headerlink" title="發布"></a>發布</h2><p>開啟 cmd 進到專案的資料夾裡</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;<span class="built_in">cd</span> C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice</span><br></pre></td></tr></table></figure>
-<p>使用 <a href="https://docs.microsoft.com/zh-tw/dotnet/core/tools/dotnet-build">Release 組建組態</a>，並以指令執行 publish，訊息中的最後一行為該專案 Publish 的位置</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice&gt;dotnet publish -c Release</span><br><span class="line">Microsoft (R) Build Engine version 16.7.0+b89cb5fde <span class="keyword">for</span> .NET</span><br><span class="line">Copyright (C) Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">  Determining projects to restore...</span><br><span class="line">  All projects are up-to-date <span class="keyword">for</span> restore.</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.Views.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish\</span><br></pre></td></tr></table></figure>
-<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>啟動 Publish 位置內的應用程式，此時應用程式在 <code>http://localhost:5000</code> 運行監聽囉，開啟瀏灠器輸入網址即可連線到網頁應用程式</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish&gt;dotnet CorePractice.dll <span class="comment"># 這裡是 dll，不是 exe</span></span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: http://localhost:5000</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: https://localhost:5001</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Application started. Press Ctrl+C to shut down.</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Hosting environment: Production</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Content root path: C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>csharp</tag>
-        <tag>asp</tag>
-        <tag>.net</tag>
-        <tag>core</tag>
-        <tag>publish</tag>
-        <tag>3.1</tag>
-        <tag>visual studio</tag>
-        <tag>2019</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[CharSet] CentOS 修改 MariaDB／MySQL 預設字符集</title>
     <url>/2021/06/19/charset_centos_mariadb/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>MySQL 是瑞典人開發的，所以預設字符集是 latin1，與其每次要創建資料庫都要指定字符集，不如直接更改預設的字符集。</p>
@@ -267,8 +273,8 @@
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>cpp</tag>
         <tag>visual studio</tag>
+        <tag>cpp</tag>
         <tag>dll</tag>
         <tag>2017</tag>
         <tag>dllmain</tag>
@@ -310,26 +316,20 @@
       </tags>
   </entry>
   <entry>
-    <title>[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</title>
-    <url>/2021/06/15/cs_asp_net_core_3_1/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>.Net Core 是一個未來趨勢，主打能夠跨平台運作，不用將自己的應用程式分為多種版本 (Windows, Linux, MacOS 等) 去維護，這對開發來說是一大福音！</p>
+    <title>[C#] 發布 ASP.NET Core 應用程式</title>
+    <url>/2021/06/15/cs_asp_net_core/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>接續 <a href="https://weirenxue.github.io/2021/06/15/cs_asp_net_core_3_1/">[C#] 使用 ASP.NET Core 3.1 建立一個初學範例</a> 已經創建好一個 ASP.NET Core 的專案，這篇要來教如何發布 (Publish)，Publish 才能將其部屬到其他平台上運作。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
 <li>Windows 10</li>
 <li>Visual Studio Enterprise 2019 (16.7.2)</li>
 <li>.Net Core 3.1</li>
 </ul>
-<h2 id="創建專案"><a href="#創建專案" class="headerlink" title="創建專案"></a>創建專案</h2><p>必需使用 Visual Studio 2019 以上版本才可以用 .NET Core 3.1 (<a href="https://dotnet.microsoft.com/download/dotnet-core/3.1">參考資訊</a>)，也因為 2.1 版在 2021/08/21 就會結束支援，所以建議使用較新的 Core (3.1)。</p>
-<p>開啟「Visual Studio 2019」→「Create a new project」→ 選「ASP.NET Core Web Application」→ Project name 為「CorePractice」→ 選「Web Application」(請注意上方要為 .NET Core 與 ASP.NET Core 3.1，且右方的 HTTPS 不要勾) →「Create」</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fcreate_project.png?alt=media&amp;token=fc23ffc7-0664-4325-bd3f-9d052cf073d7" alt="創建專案步驟"><span class="image-caption">創建專案步驟</span></p>
-<h2 id="編寫程式"><a href="#編寫程式" class="headerlink" title="編寫程式"></a>編寫程式</h2><p>目錄結構如下，目前只會用到 <code>Index.cshtml</code> 與 <code>Index.cshtml.cs</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">│  appsettings.Development.json</span><br><span class="line">│  appsettings.json</span><br><span class="line">│  CorePractice.csproj</span><br><span class="line">│  Program.cs</span><br><span class="line">│  Startup.cs</span><br><span class="line">├─bin</span><br><span class="line">├─obj</span><br><span class="line">├─Pages</span><br><span class="line">│  │  Error.cshtml</span><br><span class="line">│  │  Error.cshtml.cs</span><br><span class="line">│  │  Index.cshtml</span><br><span class="line">│  │  Index.cshtml.cs</span><br><span class="line">│  │  Privacy.cshtml</span><br><span class="line">│  │  Privacy.cshtml.cs</span><br><span class="line">│  │  _ViewImports.cshtml</span><br><span class="line">│  │  _ViewStart.cshtml</span><br><span class="line">│  │</span><br><span class="line">│  └─Shared</span><br><span class="line">├─Properties</span><br><span class="line">└─wwwroot</span><br></pre></td></tr></table></figure>
-<p>修改 <code>Index.cshtml.cs</code> 內 <code>OnGet</code> 函式的內容，透過 <code>ViewData</code> 將資料傳給 View</p>
-<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc.RazorPages;</span><br><span class="line"><span class="keyword">using</span> Microsoft.Extensions.Logging;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CorePractice.Pages</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">IndexModel</span> : <span class="title">PageModel</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;IndexModel&gt; _logger;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">IndexModel</span>(<span class="params">ILogger&lt;IndexModel&gt; logger</span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            _logger = logger;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGet</span>(<span class="params"></span>)</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span>[] names = <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; <span class="string">&quot;Alfreda Stephenson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Swanson Swanson&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Walker Pace&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Katina Le&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Lesley Calderon&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Ruth Merrill&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Cristina Buchanan&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Gallegos May&quot;</span>,</span><br><span class="line">                  <span class="string">&quot;Macdonald Lucas&quot;</span>&#125;;</span><br><span class="line">            <span class="built_in">int</span> num = <span class="number">3</span>;</span><br><span class="line">            <span class="built_in">int</span>[] age = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            <span class="built_in">string</span>[] name = <span class="keyword">new</span> <span class="built_in">string</span>[num];</span><br><span class="line">            <span class="built_in">int</span>[] family = <span class="keyword">new</span> <span class="built_in">int</span>[num];</span><br><span class="line">            Random rnd = <span class="keyword">new</span> Random();</span><br><span class="line">            <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; num; i++)</span><br><span class="line">            &#123;</span><br><span class="line">                age[i] = rnd.Next(<span class="number">50</span>);</span><br><span class="line">                name[i] = names[rnd.Next(names.Length)];</span><br><span class="line">                family[i] = rnd.Next(<span class="number">5</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            ViewData[<span class="string">&quot;age&quot;</span>] = age;</span><br><span class="line">            ViewData[<span class="string">&quot;name&quot;</span>] = name;</span><br><span class="line">            ViewData[<span class="string">&quot;family&quot;</span>] = family;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>將 <code>Index.cshtml</code> 修改如下，透過 <code>ViewData</code> 將 Controller 的資料取出，在 View 中渲染</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">@page</span><br><span class="line">@model IndexModel</span><br><span class="line">@&#123;</span><br><span class="line">    ViewData[&quot;Title&quot;] = &quot;Home page&quot;;</span><br><span class="line"></span><br><span class="line">    int[] age = ViewData[&quot;age&quot;] as int[];</span><br><span class="line">    string[] name = ViewData[&quot;name&quot;] as string[];</span><br><span class="line">    int[] family = ViewData[&quot;family&quot;] as int[];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;text-center&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">&quot;display-4&quot;</span>&gt;</span>Welcome<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Learn about <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://docs.microsoft.com/aspnet/core&quot;</span>&gt;</span>building Web apps with ASP.NET Core<span class="tag">&lt;/<span class="name">a</span>&gt;</span>.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">style</span>=<span class="string">&quot;border-style: solid; margin-left: auto; margin-right: auto;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>名字<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>歲數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>家庭人數<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    @for (var i = 0; i &lt; name.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@name[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@age[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span>@family[i]<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">    <span class="selector-tag">table</span> <span class="selector-tag">td</span>, <span class="selector-tag">table</span> <span class="selector-tag">th</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">1px</span> solid black;</span></span><br><span class="line"><span class="css">    &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>編譯與建置 (F5) 後一個簡單的 ASP.NET Core 應用程式就此完成</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/C-%E4%BD%BF%E7%94%A8-ASP-NET-Core-3-1-%E5%BB%BA%E7%AB%8B%E4%B8%80%E5%80%8B%E5%88%9D%E5%AD%B8%E7%AF%84%E4%BE%8B%2Fproject_demo.png?alt=media&amp;token=7e1625c1-5d92-4acd-84b5-8de508a799f0" alt="完成頁面"><span class="image-caption">完成頁面</span></p>
-<p>參考原始碼：<a href="https://github.com/weirenxue/core-practice">GitHub</a></p>
+<h2 id="發布"><a href="#發布" class="headerlink" title="發布"></a>發布</h2><p>開啟 cmd 進到專案的資料夾裡</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\&gt;<span class="built_in">cd</span> C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice</span><br></pre></td></tr></table></figure>
+<p>使用 <a href="https://docs.microsoft.com/zh-tw/dotnet/core/tools/dotnet-build">Release 組建組態</a>，並以指令執行 publish，訊息中的最後一行為該專案 Publish 的位置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice&gt;dotnet publish -c Release</span><br><span class="line">Microsoft (R) Build Engine version 16.7.0+b89cb5fde <span class="keyword">for</span> .NET</span><br><span class="line">Copyright (C) Microsoft Corporation. All rights reserved.</span><br><span class="line"></span><br><span class="line">  Determining projects to restore...</span><br><span class="line">  All projects are up-to-date <span class="keyword">for</span> restore.</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\CorePractice.Views.dll</span><br><span class="line">  CorePractice -&gt; C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish\</span><br></pre></td></tr></table></figure>
+<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>啟動 Publish 位置內的應用程式，此時應用程式在 <code>http://localhost:5000</code> 運行監聽囉，開啟瀏灠器輸入網址即可連線到網頁應用程式</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish&gt;dotnet CorePractice.dll <span class="comment"># 這裡是 dll，不是 exe</span></span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: http://localhost:5000</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Now listening on: https://localhost:5001</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Application started. Press Ctrl+C to shut down.</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Hosting environment: Production</span><br><span class="line">info: Microsoft.Hosting.Lifetime[0]</span><br><span class="line">      Content root path: C:\Users\wrxue\<span class="built_in">source</span>\repos\CorePractice\CorePractice\bin\Release\netcoreapp3.1\publish</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
@@ -342,7 +342,7 @@
         <tag>3.1</tag>
         <tag>visual studio</tag>
         <tag>2019</tag>
-        <tag>razor</tag>
+        <tag>publish</tag>
       </tags>
   </entry>
   <entry>
@@ -575,91 +575,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Hyper-V] 讓 Windows 的硬碟可以超過 16 TB</title>
-    <url>/2021/06/15/hyper_v_windows_16_tb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 檔案系統預設的 Cluster Size 為 4KB，進一步導致分割區最多只能到 16 TB，當要延伸磁區且總容量會超過 16 TB 時，就會出現「磁碟區無法延伸 因為叢集數目將超過檔案系統支援的最大叢集數目」的提示視窗。</p>
-<p>若想要讓 C 槽可到 16 TB 以上的容量，需要在安裝 Windows 時就先設定 (若沒設定但又需要延伸大容量硬碟的話，就重灌吧 QQ)！這篇文章便是紀錄如何設定 C 槽預設能使用更大容量的硬碟！</p>
-<h2 id="查看所需-Cluster-Size"><a href="#查看所需-Cluster-Size" class="headerlink" title="查看所需 Cluster Size"></a>查看所需 Cluster Size</h2><p>請先參考 <a href="https://support.microsoft.com/zh-tw/topic/%E9%A0%90%E8%A8%AD-ntfs-fat-%E5%92%8C-exfat-%E7%9A%84%E5%8F%A2%E9%9B%86%E5%A4%A7%E5%B0%8F-9772e6f1-e31a-00d7-e18f-73169155af95">預設 NTFS、 FAT，和 exFAT 的叢集大小。</a> 中的表格，找出自己需要的 Cluster Size ，例如我是需要將 OS 灌在 Hyper-V 之中，目前 (2021/01/29) 官方所建議的最大容量為 64 TB ，因此查表得知對應的 Cluster Size 應為 16 KB！記住這個資訊下面步驟會用到。</p>
-<h2 id="修改預設-Cluster-Size"><a href="#修改預設-Cluster-Size" class="headerlink" title="修改預設 Cluster Size"></a>修改預設 Cluster Size</h2><p>參考影片設定步驟，會用到的指令及順序如下，其中的 <code>16K</code> 請改為上一步所查找出來的結果</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART</span><br><span class="line">LIST DISK</span><br><span class="line">SELECT DISK 0</span><br><span class="line">LIST PARTITION</span><br><span class="line">SELECT PARTITION 4</span><br><span class="line">FORMAT QUICK UNIT=16K</span><br><span class="line">EXIT </span><br><span class="line">SETUP</span><br></pre></td></tr></table></figure>
-<!-- markdownlint-disable MD033 -->
-<iframe width="560" height="315" src="https://www.youtube.com/embed/KmW_b57L2Ao" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-<!-- markdownlint-restore MD033 -->
-<p>按照影片步驟做完後，該 VM 的 C 槽的 Cluster Size 就為 16 KB 囉！讓 C 槽可延伸最多到 64 TB 的容量！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>16 tb</tag>
-        <tag>hyperv</tag>
-        <tag>drive</tag>
-        <tag>cluster</tag>
-        <tag>size</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
-    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>IIS 10.0</li>
-</ul>
-<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>server</tag>
-        <tag>header</tag>
-        <tag>windows</tag>
-        <tag>iis</tag>
-        <tag>x powered by</tag>
-        <tag>x aspnet version</tag>
-        <tag>hide</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[IME] 在 Ubuntu 安裝嘸蝦米等輸入法</title>
-    <url>/2021/06/17/ime_ubuntu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 預設中的輸入法為 IBus 框架，除 IBus 外還有很多如 gcin、fcitx 等不同的輸入法框架，若想要使用如嘸 (ㄈㄨˇ) 蝦米等輸入法的話就需要使用有支援的框架，這篇文章主要紀錄如何安裝嘸蝦米輸入法與酷音輸入法。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="安裝輸入法"><a href="#安裝輸入法" class="headerlink" title="安裝輸入法"></a>安裝輸入法</h2><p>我是選擇使用 fcitx (Free Chinese Input Tool for X) 框架新增輸入法。</p>
-<p>首先先安裝該框架，在安裝需要的輸入法</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install fcitx                 <span class="comment"># fcitx 框架安裝</span></span><br><span class="line">user@pc:~$ sudo apt-get install fcitx-table-boshiamy  <span class="comment"># 嘸蝦米碼表</span></span><br><span class="line">user@pc:~$ sudo apt-get install fcitx-chewing         <span class="comment"># 酷音</span></span><br></pre></td></tr></table></figure>
-<h2 id="系統設定"><a href="#系統設定" class="headerlink" title="系統設定"></a>系統設定</h2><p>在 Languague Support 做設定，將輸入法系統改為 fcitx，重新開機後在畫面右上方可以看到 fcitx 框架的圖示，若原本是用 IBus，IBus 圖示依舊會存在 (參考：<a href="/2021/06/17/ime_ibus/">[IME] 有其他輸入法框架後移除 IBus 圖示</a>)。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E5%9C%A8-Ubuntu-%E5%AE%89%E8%A3%9D%E5%98%B8%E8%9D%A6%E7%B1%B3%E7%AD%89%E8%BC%B8%E5%85%A5%E6%B3%95%2Fchange_ime.png?alt=media&amp;token=9bc6f6db-41b9-417e-ab0f-fb1bc249c097" alt="設定輸入法系統"><span class="image-caption">設定輸入法系統</span></p>
-<p>點擊 fcitx 圖示 -&gt; Configure，若有看到嘸蝦米 (Boshiamy) 等自己安裝的輸入法，就代表安裝完成，可以開始使用了。若沒有看到，可點擊左下角的「＋」按鈕，在搜尋框內輸入 Chewing 來新增。若很確定有安裝輸入法但找不到的話，試著把「Only Show Current Language」取消勾選，就會有了</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E5%9C%A8-Ubuntu-%E5%AE%89%E8%A3%9D%E5%98%B8%E8%9D%A6%E7%B1%B3%E7%AD%89%E8%BC%B8%E5%85%A5%E6%B3%95%2Fadd_ime.png?alt=media&amp;token=14b764f6-c8e6-44cc-927a-e9dbb3d27152" alt="fcitx 介面"><span class="image-caption">fcitx 介面</span></p>
-<h2 id="貼心小提醒"><a href="#貼心小提醒" class="headerlink" title="貼心小提醒"></a>貼心小提醒</h2><p>嘸蝦米的預設通常是簡體中文，若要換成繁體中文的話可按組合鍵「Ctrl + Shift + F」做切換。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>ibus</tag>
-        <tag>gcin</tag>
-        <tag>fcitx</tag>
-        <tag>boshiamy</tag>
-        <tag>chewing</tag>
-        <tag>ime</tag>
-        <tag>18.04</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Hexo × NexT × Firestore 顯示瀏覽人次</title>
     <url>/2021/06/11/hexo_next_firestore_visitors/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>擴充性高的部落格框架有許多功能或是套件需要自己手動加入，因此在研究如何顯示瀏覽人次的同時記錄整個過程。</p>
@@ -696,6 +611,63 @@
       </tags>
   </entry>
   <entry>
+    <title>[Hyper-V] 讓 Windows 的硬碟可以超過 16 TB</title>
+    <url>/2021/06/15/hyper_v_windows_16_tb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 檔案系統預設的 Cluster Size 為 4KB，進一步導致分割區最多只能到 16 TB，當要延伸磁區且總容量會超過 16 TB 時，就會出現「磁碟區無法延伸 因為叢集數目將超過檔案系統支援的最大叢集數目」的提示視窗。</p>
+<p>若想要讓 C 槽可到 16 TB 以上的容量，需要在安裝 Windows 時就先設定 (若沒設定但又需要延伸大容量硬碟的話，就重灌吧 QQ)！這篇文章便是紀錄如何設定 C 槽預設能使用更大容量的硬碟！</p>
+<h2 id="查看所需-Cluster-Size"><a href="#查看所需-Cluster-Size" class="headerlink" title="查看所需 Cluster Size"></a>查看所需 Cluster Size</h2><p>請先參考 <a href="https://support.microsoft.com/zh-tw/topic/%E9%A0%90%E8%A8%AD-ntfs-fat-%E5%92%8C-exfat-%E7%9A%84%E5%8F%A2%E9%9B%86%E5%A4%A7%E5%B0%8F-9772e6f1-e31a-00d7-e18f-73169155af95">預設 NTFS、 FAT，和 exFAT 的叢集大小。</a> 中的表格，找出自己需要的 Cluster Size ，例如我是需要將 OS 灌在 Hyper-V 之中，目前 (2021/01/29) 官方所建議的最大容量為 64 TB ，因此查表得知對應的 Cluster Size 應為 16 KB！記住這個資訊下面步驟會用到。</p>
+<h2 id="修改預設-Cluster-Size"><a href="#修改預設-Cluster-Size" class="headerlink" title="修改預設 Cluster Size"></a>修改預設 Cluster Size</h2><p>參考影片設定步驟，會用到的指令及順序如下，其中的 <code>16K</code> 請改為上一步所查找出來的結果</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">DISKPART</span><br><span class="line">LIST DISK</span><br><span class="line">SELECT DISK 0</span><br><span class="line">LIST PARTITION</span><br><span class="line">SELECT PARTITION 4</span><br><span class="line">FORMAT QUICK UNIT=16K</span><br><span class="line">EXIT </span><br><span class="line">SETUP</span><br></pre></td></tr></table></figure>
+<!-- markdownlint-disable MD033 -->
+<iframe width="560" height="315" src="https://www.youtube.com/embed/KmW_b57L2Ao" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<!-- markdownlint-restore MD033 -->
+<p>按照影片步驟做完後，該 VM 的 C 槽的 Cluster Size 就為 16 KB 囉！讓 C 槽可延伸最多到 64 TB 的容量！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>16 tb</tag>
+        <tag>hyperv</tag>
+        <tag>drive</tag>
+        <tag>cluster</tag>
+        <tag>size</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[IME] 在 Ubuntu 安裝嘸蝦米等輸入法</title>
+    <url>/2021/06/17/ime_ubuntu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 預設中的輸入法為 IBus 框架，除 IBus 外還有很多如 gcin、fcitx 等不同的輸入法框架，若想要使用如嘸 (ㄈㄨˇ) 蝦米等輸入法的話就需要使用有支援的框架，這篇文章主要紀錄如何安裝嘸蝦米輸入法與酷音輸入法。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="安裝輸入法"><a href="#安裝輸入法" class="headerlink" title="安裝輸入法"></a>安裝輸入法</h2><p>我是選擇使用 fcitx (Free Chinese Input Tool for X) 框架新增輸入法。</p>
+<p>首先先安裝該框架，在安裝需要的輸入法</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install fcitx                 <span class="comment"># fcitx 框架安裝</span></span><br><span class="line">user@pc:~$ sudo apt-get install fcitx-table-boshiamy  <span class="comment"># 嘸蝦米碼表</span></span><br><span class="line">user@pc:~$ sudo apt-get install fcitx-chewing         <span class="comment"># 酷音</span></span><br></pre></td></tr></table></figure>
+<h2 id="系統設定"><a href="#系統設定" class="headerlink" title="系統設定"></a>系統設定</h2><p>在 Languague Support 做設定，將輸入法系統改為 fcitx，重新開機後在畫面右上方可以看到 fcitx 框架的圖示，若原本是用 IBus，IBus 圖示依舊會存在 (參考：<a href="/2021/06/17/ime_ibus/">[IME] 有其他輸入法框架後移除 IBus 圖示</a>)。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E5%9C%A8-Ubuntu-%E5%AE%89%E8%A3%9D%E5%98%B8%E8%9D%A6%E7%B1%B3%E7%AD%89%E8%BC%B8%E5%85%A5%E6%B3%95%2Fchange_ime.png?alt=media&amp;token=9bc6f6db-41b9-417e-ab0f-fb1bc249c097" alt="設定輸入法系統"><span class="image-caption">設定輸入法系統</span></p>
+<p>點擊 fcitx 圖示 -&gt; Configure，若有看到嘸蝦米 (Boshiamy) 等自己安裝的輸入法，就代表安裝完成，可以開始使用了。若沒有看到，可點擊左下角的「＋」按鈕，在搜尋框內輸入 Chewing 來新增。若很確定有安裝輸入法但找不到的話，試著把「Only Show Current Language」取消勾選，就會有了</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/IME-%E5%9C%A8-Ubuntu-%E5%AE%89%E8%A3%9D%E5%98%B8%E8%9D%A6%E7%B1%B3%E7%AD%89%E8%BC%B8%E5%85%A5%E6%B3%95%2Fadd_ime.png?alt=media&amp;token=14b764f6-c8e6-44cc-927a-e9dbb3d27152" alt="fcitx 介面"><span class="image-caption">fcitx 介面</span></p>
+<h2 id="貼心小提醒"><a href="#貼心小提醒" class="headerlink" title="貼心小提醒"></a>貼心小提醒</h2><p>嘸蝦米的預設通常是簡體中文，若要換成繁體中文的話可按組合鍵「Ctrl + Shift + F」做切換。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>ibus</tag>
+        <tag>gcin</tag>
+        <tag>fcitx</tag>
+        <tag>boshiamy</tag>
+        <tag>chewing</tag>
+        <tag>ime</tag>
+        <tag>18.04</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[IME] 有其他輸入法框架後移除 IBus 圖示</title>
     <url>/2021/06/17/ime_ibus/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 在安裝完非預設的輸入法框架之後，在畫面右上角會看到新的輸入法圖示，但預設的 IBus 圖示仍然會存在，讓人看到就覺得煩躁進而想要移除掉圖示。</p>
@@ -716,6 +688,34 @@
         <tag>fcitx</tag>
         <tag>18.04</tag>
         <tag>remove</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</title>
+    <url>/2021/06/15/iis_server_x_powered_by_x_aspnet_version/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>暴露太多關於伺服器的資訊，會增加資通安全的風險，倘若伺服器使用的版本不幸出現嚴重漏洞，馬上就會成為駭客的目標，因此學會如何藏匿伺服器的相關資訊是非常重要的。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>IIS 10.0</li>
+</ul>
+<h2 id="隱匿資訊"><a href="#隱匿資訊" class="headerlink" title="隱匿資訊"></a>隱匿資訊</h2><h3 id="隱藏-Server-欄位"><a href="#隱藏-Server-欄位" class="headerlink" title="隱藏 Server 欄位"></a>隱藏 Server 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>security</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">security</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">requestFiltering</span> <span class="attr">removeServerHeader</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">security</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-Powered-By-欄位"><a href="#隱藏-X-Powered-By-欄位" class="headerlink" title="隱藏 X-Powered-By 欄位"></a>隱藏 X-Powered-By 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.webServer</code> 節點下，加入 <code>httpProtocol</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.webServer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">remove</span> <span class="attr">name</span>=<span class="string">&quot;X-Powered-By&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">customHeaders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">httpProtocol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.webServer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="隱藏-X-AspNet-Version-欄位"><a href="#隱藏-X-AspNet-Version-欄位" class="headerlink" title="隱藏 X-AspNet-Version 欄位"></a>隱藏 X-AspNet-Version 欄位</h3><p>在 <code>Web.config</code> 內的 <code>system.web</code> 節點下，加入 <code>httpRuntime</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system.web</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">httpRuntime</span> <span class="attr">targetFramework</span>=<span class="string">&quot;4.6.1&quot;</span> <span class="attr">enableVersionHeader</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">system.web</span>&gt;</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>server</tag>
+        <tag>header</tag>
+        <tag>windows</tag>
+        <tag>iis</tag>
+        <tag>x powered by</tag>
+        <tag>x aspnet version</tag>
+        <tag>hide</tag>
       </tags>
   </entry>
   <entry>
@@ -945,34 +945,33 @@
       </tags>
   </entry>
   <entry>
-    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
-    <url>/2021/06/17/mount_iso/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
+    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
+    <url>/2021/06/19/mariadb_centos/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
+<li>CentOS 8.2</li>
 </ul>
-<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
-<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-o loop</code>：使用 loop device 來掛載</li>
-</ul>
-<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
-<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
+<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
+<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
+<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>ubuntu</tag>
+        <tag>mariadb</tag>
+        <tag>centos</tag>
+        <tag>8.2</tag>
         <tag>linux</tag>
-        <tag>18.04</tag>
-        <tag>mount</tag>
-        <tag>unmount</tag>
-        <tag>iso</tag>
-        <tag>media</tag>
+        <tag>latest</tag>
+        <tag>update</tag>
+        <tag>version</tag>
+        <tag>repository</tag>
       </tags>
   </entry>
   <entry>
@@ -1007,6 +1006,37 @@
         <tag>bit</tag>
         <tag>division</tag>
         <tag>power of 2</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Mount] 掛載與卸載一個 iso 光碟映像檔</title>
+    <url>/2021/06/17/mount_iso/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>現在很多程式的安裝檔都是直接提供 iso 光碟映像檔而不是實體光碟，若想要在 Ubuntu 掛載與卸載進而可以讀取使用，就必須學學 <code>mount</code>/<code>umount</code> 這組指令。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="掛載-iso-檔案"><a href="#掛載-iso-檔案" class="headerlink" title="掛載 iso 檔案"></a>掛載 iso 檔案</h2><p>掛載都是在 <code>/media</code> 目錄底下，因此先在 <code>/media</code> 新增一個目錄，要用來掛載 iso 檔案，藉由此目錄才能存取裡面 iso 檔案的內容，</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mkdir /media/iso <span class="comment"># 目錄名稱可以任意更改</span></span><br></pre></td></tr></table></figure>
+<p>使用 <code>mount</code> 指令將 iso 檔案掛載到 <code>/media/iso</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo mount -o loop ~/Downloads/*.iso /media/iso             <span class="comment"># * 為檔案名稱，修改為自己 iso 檔的檔名</span></span><br><span class="line">mount: /media/iso: WARNING: device write-protected, mounted read-only. <span class="comment"># 看到這行代表掛載完成</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-o loop</code>：使用 loop device 來掛載</li>
+</ul>
+<p>完成之後 <code>/media/iso</code> 目錄下就會有 iso 檔案內的檔案</p>
+<h2 id="卸載-iso-檔案"><a href="#卸載-iso-檔案" class="headerlink" title="卸載 iso 檔案"></a>卸載 iso 檔案</h2><p>使用 umount 指令即可，執行完指令並確定 <code>/media/iso</code> 目錄下已經無檔案 (目錄還會在)，代表完成卸載</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo umount -l /media/iso <span class="comment">#要卸載的目錄</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>18.04</tag>
+        <tag>mount</tag>
+        <tag>unmount</tag>
+        <tag>iso</tag>
+        <tag>media</tag>
       </tags>
   </entry>
   <entry>
@@ -1068,36 +1098,6 @@
         <tag>8.2</tag>
         <tag>linux</tag>
         <tag>nginx</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
-    <url>/2021/06/19/mariadb_centos/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
-<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
-<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>mariadb</tag>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>latest</tag>
-        <tag>update</tag>
-        <tag>version</tag>
-        <tag>repository</tag>
       </tags>
   </entry>
   <entry>
@@ -1581,39 +1581,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[RDP] xrdp 遠端 menu 不見時登出的方法</title>
-    <url>/2021/06/17/rdp_xrdp_menu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在一台電腦上開啟 xrdp 伺服器，讓大家可以各自用自己的帳號登入，且互不相干擾。但使用過程中遇到一些突發性圖形介面的問題，需要重新登入才能正常運作。</p>
-<p>然而，這個問題就是 menu 會不見，因此不能使用 GUI 的方式登出，所以查相關文獻並紀錄能夠不透過 GUI 從 Terminal 中輸入登出的指令。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>問題示意圖如下，menu 不見，Reset Panel 也無法起作用，只能重新登入得到健全的畫面</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_no_menu_icon.png?alt=media&amp;token=e2f6bf02-28ec-4546-a83c-dc819abdc50c" alt="消失的 menu"><span class="image-caption">消失的 menu</span></p>
-<h2 id="登出方法"><a href="#登出方法" class="headerlink" title="登出方法"></a>登出方法</h2><p>登出方法有兩種</p>
-<h3 id="快捷鍵"><a href="#快捷鍵" class="headerlink" title="快捷鍵"></a>快捷鍵</h3><p>第一種是設定快速鍵，設定好之後，可以直接按快捷鍵登出，不需要指令，適合不擅長記指令的人使用，但需要在問題 (menu 不見) 發生前先設定好，才能使用</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_setting_shortcut.png?alt=media&amp;token=9efdd681-5e07-42fe-846d-c3b41ab801dc" alt="設定快捷鍵"><span class="image-caption">設定快捷鍵</span></p>
-<h3 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h3><p>要先知道當前的 Desktop Environment (DE) 是甚麼，可依照自己的 DE 查詢相關的登出指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ env | grep _DESKTOP_SESSION | cut -d <span class="string">&quot;_&quot;</span> -f 1</span><br><span class="line">MATE  <span class="comment"># 這裡依個人環境有所不同</span></span><br></pre></td></tr></table></figure>
-<p>組合鍵 <code>Ctrl + Alt + T</code> 開啟 Terminal，這裡因為是用 mate DE，其登出指令如下。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mate-session-save --<span class="built_in">logout</span>  <span class="comment"># 若是 gnome 的話則為 gnome-session-quit</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>rdp</tag>
-        <tag>xrdp</tag>
-        <tag>gnome</tag>
-        <tag>logout</tag>
-        <tag>mate</tag>
-        <tag>menu</tag>
-        <tag>disappear</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</title>
     <url>/2021/06/17/remote_ubuntu_xrdp/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>xrdp (X Remote Desktop Protocal) 是 Linux 系統上的遠端桌面伺服器，能夠讓透過遠端連線的使用者有 GUI 能夠使用。但在 Ubuntu 18.04 似乎沒辦法簡單的安裝，找了許多資料，終於找到可行的辦法。</p>
@@ -1639,9 +1606,9 @@
         <tag>remote</tag>
         <tag>18.04</tag>
         <tag>rdp</tag>
-        <tag>xrdp</tag>
         <tag>多人</tag>
         <tag>多工</tag>
+        <tag>xrdp</tag>
         <tag>mstsc</tag>
       </tags>
   </entry>
@@ -1719,6 +1686,39 @@
       </tags>
   </entry>
   <entry>
+    <title>[RDP] xrdp 遠端 menu 不見時登出的方法</title>
+    <url>/2021/06/17/rdp_xrdp_menu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在一台電腦上開啟 xrdp 伺服器，讓大家可以各自用自己的帳號登入，且互不相干擾。但使用過程中遇到一些突發性圖形介面的問題，需要重新登入才能正常運作。</p>
+<p>然而，這個問題就是 menu 會不見，因此不能使用 GUI 的方式登出，所以查相關文獻並紀錄能夠不透過 GUI 從 Terminal 中輸入登出的指令。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>問題示意圖如下，menu 不見，Reset Panel 也無法起作用，只能重新登入得到健全的畫面</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_no_menu_icon.png?alt=media&amp;token=e2f6bf02-28ec-4546-a83c-dc819abdc50c" alt="消失的 menu"><span class="image-caption">消失的 menu</span></p>
+<h2 id="登出方法"><a href="#登出方法" class="headerlink" title="登出方法"></a>登出方法</h2><p>登出方法有兩種</p>
+<h3 id="快捷鍵"><a href="#快捷鍵" class="headerlink" title="快捷鍵"></a>快捷鍵</h3><p>第一種是設定快速鍵，設定好之後，可以直接按快捷鍵登出，不需要指令，適合不擅長記指令的人使用，但需要在問題 (menu 不見) 發生前先設定好，才能使用</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_setting_shortcut.png?alt=media&amp;token=9efdd681-5e07-42fe-846d-c3b41ab801dc" alt="設定快捷鍵"><span class="image-caption">設定快捷鍵</span></p>
+<h3 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h3><p>要先知道當前的 Desktop Environment (DE) 是甚麼，可依照自己的 DE 查詢相關的登出指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ env | grep _DESKTOP_SESSION | cut -d <span class="string">&quot;_&quot;</span> -f 1</span><br><span class="line">MATE  <span class="comment"># 這裡依個人環境有所不同</span></span><br></pre></td></tr></table></figure>
+<p>組合鍵 <code>Ctrl + Alt + T</code> 開啟 Terminal，這裡因為是用 mate DE，其登出指令如下。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mate-session-save --<span class="built_in">logout</span>  <span class="comment"># 若是 gnome 的話則為 gnome-session-quit</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>rdp</tag>
+        <tag>xrdp</tag>
+        <tag>gnome</tag>
+        <tag>logout</tag>
+        <tag>mate</tag>
+        <tag>menu</tag>
+        <tag>disappear</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[SSL] 數位簽名與驗證的過程</title>
     <url>/2021/06/15/ssl_digital_signed_verify/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作。但我有發現一個現象，就是當講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並整理後記錄在這。</p>
@@ -1780,35 +1780,6 @@
         <tag>mitm</tag>
         <tag>csr</tag>
         <tag>crt</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Share] VMware 裡的 CentOS 使用共享資料夾</title>
-    <url>/2021/06/19/share_vmware_centos/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>共享資料夾是使用虛擬機時常會碰到的需求，最近遇到要在 CentOS 中設定共享資料夾，沒想到挺麻煩的，因此記錄下來方便以後查閱。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>實體機 (Host) 作業系統：Windows 10</li>
-<li>虛擬機 (Guest) 作業系統：CentOS 8.2</li>
-<li>虛擬機軟體：VMware 15.5.6</li>
-</ul>
-<h2 id="設定-Host-共享資料夾"><a href="#設定-Host-共享資料夾" class="headerlink" title="設定 Host 共享資料夾"></a>設定 Host 共享資料夾</h2><p>在 Windows 上於 VMware 設定 Host 要分享的的共享資料夾，這裡的範例是 <code>D:\VMware\Shared</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Share-VMware-%E8%A3%A1%E7%9A%84-CentOS-%E4%BD%BF%E7%94%A8%E5%85%B1%E4%BA%AB%E8%B3%87%E6%96%99%E5%A4%BE%2Fshare_folder.png?alt=media&amp;token=311502b1-730c-4d26-8d29-6eea00ea2fd0" alt="Host 共享資料夾"><span class="image-caption">Host 共享資料夾</span></p>
-<h2 id="設定-Guest-共享資料夾"><a href="#設定-Guest-共享資料夾" class="headerlink" title="設定 Guest 共享資料夾"></a>設定 Guest 共享資料夾</h2><p>在 CentOS 8.2 中建立一個要當共享資料夾的目錄</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mkdir ~/shares</span><br></pre></td></tr></table></figure>
-<p>掛載共享資料夾，其中 <code>Shared</code> 是 Host 的共享資料夾名稱， <code>~/shares</code> 是 Guest 的共享目錄</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ /usr/bin/vmhgfs-fuse .host:/Shared ~/shares</span><br></pre></td></tr></table></figure>
-<p>此時 Guest 內的 <code>~/shares</code> 目錄與 Host 的 <code>D:\VMware\Shared</code> 資料夾就是互通的囉！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>centos</tag>
-        <tag>8.2</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>10</tag>
-        <tag>vmware</tag>
       </tags>
   </entry>
   <entry>
@@ -1900,6 +1871,35 @@
       </tags>
   </entry>
   <entry>
+    <title>[Share] VMware 裡的 CentOS 使用共享資料夾</title>
+    <url>/2021/06/19/share_vmware_centos/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>共享資料夾是使用虛擬機時常會碰到的需求，最近遇到要在 CentOS 中設定共享資料夾，沒想到挺麻煩的，因此記錄下來方便以後查閱。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>實體機 (Host) 作業系統：Windows 10</li>
+<li>虛擬機 (Guest) 作業系統：CentOS 8.2</li>
+<li>虛擬機軟體：VMware 15.5.6</li>
+</ul>
+<h2 id="設定-Host-共享資料夾"><a href="#設定-Host-共享資料夾" class="headerlink" title="設定 Host 共享資料夾"></a>設定 Host 共享資料夾</h2><p>在 Windows 上於 VMware 設定 Host 要分享的的共享資料夾，這裡的範例是 <code>D:\VMware\Shared</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Share-VMware-%E8%A3%A1%E7%9A%84-CentOS-%E4%BD%BF%E7%94%A8%E5%85%B1%E4%BA%AB%E8%B3%87%E6%96%99%E5%A4%BE%2Fshare_folder.png?alt=media&amp;token=311502b1-730c-4d26-8d29-6eea00ea2fd0" alt="Host 共享資料夾"><span class="image-caption">Host 共享資料夾</span></p>
+<h2 id="設定-Guest-共享資料夾"><a href="#設定-Guest-共享資料夾" class="headerlink" title="設定 Guest 共享資料夾"></a>設定 Guest 共享資料夾</h2><p>在 CentOS 8.2 中建立一個要當共享資料夾的目錄</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mkdir ~/shares</span><br></pre></td></tr></table></figure>
+<p>掛載共享資料夾，其中 <code>Shared</code> 是 Host 的共享資料夾名稱， <code>~/shares</code> 是 Guest 的共享目錄</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ /usr/bin/vmhgfs-fuse .host:/Shared ~/shares</span><br></pre></td></tr></table></figure>
+<p>此時 Guest 內的 <code>~/shares</code> 目錄與 Host 的 <code>D:\VMware\Shared</code> 資料夾就是互通的囉！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>centos</tag>
+        <tag>8.2</tag>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>10</tag>
+        <tag>vmware</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</title>
     <url>/2021/06/15/tool_sql_injection/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
@@ -1960,7 +1960,7 @@
   <entry>
     <title>[User] Linux 新增使用者並賦予其使用 sudo 的權限</title>
     <url>/2021/06/17/user_linux_sudo/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>多人多工是 Linux 本身就具備的功能，因此新增或移除使用者帳號與更改權限是管理員必備的技能。這篇文章紀錄如何在 Ubuntu、CentOS 上新增 sudoer。</p>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>多人多工是 Linux 本身就具備的功能，因此新增或移除使用者帳號與更改權限是管理員必備的技能。這篇文章記錄如何在 Ubuntu、CentOS 上新增 sudoer。</p>
 <h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><div class="tabs" id="環境"><ul class="nav-tabs"><li class="tab active"><a href="#環境-1">Ubuntu</a></li><li class="tab"><a href="#環境-2">CentOS</a></li></ul><div class="tab-content"><div class="tab-pane active" id="環境-1"><ul>
 <li>Ubuntu 18.04 LTS</li>
 </ul></div><div class="tab-pane" id="環境-2"><ul>
@@ -2076,6 +2076,36 @@
       </tags>
   </entry>
   <entry>
+    <title>[Windows] 32 位元應用程式在 64 位元作業系統運作的原理</title>
+    <url>/2021/06/11/3264/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
+<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
+<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
+<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
+<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
+<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
+<ul>
+<li>system32 放的是 64 位元的 API</li>
+<li>SysWOW64 放的是 32 位元的 API</li>
+</ul>
+<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
+<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
+<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>bit</tag>
+        <tag>32</tag>
+        <tag>64</tag>
+        <tag>application</tag>
+        <tag>os</tag>
+        <tag>wow64</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Window] Modal 與 non-Modal 視窗運作原理</title>
     <url>/2021/06/15/window_modal_non_modal/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於視窗運作有基本了解，才能夠在對的場景用對的對話框來呈現。這篇文章會帶出 Modal (模態) 與 non-Modal (非模態) 視窗的基本運作機制！</p>
@@ -2122,36 +2152,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Windows] 32 位元應用程式在 64 位元作業系統運作的原理</title>
-    <url>/2021/06/11/3264/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>知道因為 64 位元比較寬可以容納 32 位元的數據，所以可以讓 32 位元應用程式在 64 位元作業系統上正常運作，但是不知道實際到底如何運作，所以這篇就來探討一下這裡面運作的觀念。</p>
-<h2 id="32-位元與-64-位元的差異"><a href="#32-位元與-64-位元的差異" class="headerlink" title="32 位元與 64 位元的差異"></a>32 位元與 64 位元的差異</h2><p>首先就要先介紹 32 位元與 64 位元的差異，位元數的定義是以 CPU 內的<strong>通用暫存器</strong>有幾個位元來決定的，像是 x86 的 CPU 就是只有 32 位元的暫存器，數據不能超過 32 位元，超過 32 位元就會當作溢位或忽略，所以在 64 位元系統下開發的應用程式若沒有考慮到給 32 位元的系統用的話，在 32 位元的系統下開啟 64 位元的應用程式是無法正常運作的。</p>
-<h2 id="SysWOW64-資料夾"><a href="#SysWOW64-資料夾" class="headerlink" title="SysWOW64 資料夾"></a>SysWOW64 資料夾</h2><p>原生 32 位元 Windows 系統 (Windows 9x/NT/7/10) 有 system32 資料夾，存放了與系統溝通 32 位元的 API 函式庫 (kernel32.dll、user32.dll)，具有用戶接口、鍵盤滑鼠輸入、影印機等的程式幾乎都會調用到這些API。</p>
-<p>而在原生 64 位元的 Windows 為了系統兼容 32 位元的應用程式，將 64 位元的 API 函式庫放到 system32，且函數名稱與基本功能沒有改變，只是變成 64 位元代碼實現運作，而把 32 位元的函式庫通通丟到 SysWOW64 (Windows On Windows 64-bit) 這個文件夾下。</p>
-<p>SysWOW64 不只是一個文件夾的名字，它是 Windows 64 位元下的一個子系統，專門用來執行 32 位元應用程式。</p>
-<p>看到這裡可以發覺在 Windows 64 位元的作業系統上：</p>
-<ul>
-<li>system32 放的是 64 位元的 API</li>
-<li>SysWOW64 放的是 32 位元的 API</li>
-</ul>
-<h2 id="32-bit-App-on-64-bit-OS-運作原理"><a href="#32-bit-App-on-64-bit-OS-運作原理" class="headerlink" title="32-bit App on 64-bit OS 運作原理"></a>32-bit App on 64-bit OS 運作原理</h2><p>那 32 位元的應用程式如何在 64 位元的作業系統運作的呢？讀者可能知道因為 64 位元比較寬可以容納32位元的數據，所以可以正常運作，但是不知道實際到底如何運作。</p>
-<p>它的運作方式如下說明，當 32 位元應用程序開始加載時，WOW64 會依照 32 位元的 ntdll.dll 來建立 32 位元所需要的啟動環境，將 64 位元 CPU 的運作模式切換為 32 位元的模式，開始執行 32 位元的加載器並運行應用程式。</p>
-<p>WOW64 並不會直接依 32 位元的 ntdll.dll 去發送指令，反而是重定向至 64 位元的 ntdll.dll，此時 WOW64 會轉換為原生 64 位元的模式進行函數調用與取得回傳值等操作，並會將取得的資料先由 64 位元轉回 32 位元，再將運作模式轉回 32 位元，把資料給 32 位元的應用程式去處理後續動作。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>bit</tag>
-        <tag>32</tag>
-        <tag>64</tag>
-        <tag>application</tag>
-        <tag>os</tag>
-        <tag>wow64</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題</title>
     <url>/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
@@ -2189,6 +2189,60 @@
       </tags>
   </entry>
   <entry>
+    <title>[apt] Unable to locate package 問題</title>
+    <url>/2021/06/17/apt_unable_to_locate_package/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我遇到的情況是這樣子的，要安裝 <code>ntpdate</code> 時卻發現出現錯誤訊息 <code>Unable to locate package ntpdate</code>，意思是說無法找到 <code>ntpdate</code> 套件</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree       </span><br><span class="line">Reading state information... Done</span><br><span class="line">E: Unable to locate package ntpdate</span><br></pre></td></tr></table></figure>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>很有可能是因為 <code>apt-get</code> 沒有更新，所以資料庫裡面沒有 <code>ntpdate</code> 的連結，這時只需簡單的更新 <code>apt-get</code>，並且再次嘗試安裝就發現可以找到套件了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>在使用 <code>apt-get</code> 安裝之前先執行 <code>apt-get update</code> 是一個好習慣，以確保資料庫為最新，減少一個浪費時間的可能。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>update</tag>
+        <tag>install</tag>
+        <tag>apt</tag>
+        <tag>get</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[link] 缺少 libudev.so.0 的解決方法</title>
+    <url>/2021/06/17/link_libdev_so_0/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在安裝德州儀器的軟體時出現缺少 <code>libudev.so.0</code> 的字樣，有些解法是直接安裝 <code>libudev0:i386</code> 的套件，不幸的是這在 Ubuntu 14.04 之後的版本就移除了，取而代之的是 <code>libudev1:i386</code>，但軟體安裝就是硬要 <code>libudev.so.0</code> 這個檔案存在。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>解決的方法就是自己創一個連結檔，連結到 <code>libudev.so.1</code>，名為 <code>libudev.so.0</code> (雖然 <code>libudev.so.1</code> 本身也是連結檔 XD)。建立連結檔有兩種方式</p>
+<h3 id="使用-cp-指令"><a href="#使用-cp-指令" class="headerlink" title="使用 cp 指令"></a>使用 cp 指令</h3><p>用 <code>cp</code> 指令建立連結檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo cp -s /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$(arch)</code>：是在指令執行之前，先執行 <code>arch</code> 命令，取得當前電腦的硬體架構 (例如：x86_64) 並填回當前位置。</li>
+</ul>
+<p>可以看到 <code>libudev.so.1 -&gt; libudev.so.1.6.9</code>，也就是說最終是連結到 <code>libudev.so.1.6.9</code> 實體檔案。</p>
+<h3 id="使用-ln-指令"><a href="#使用-ln-指令" class="headerlink" title="使用 ln 指令"></a>使用 ln 指令</h3><p>其實步驟都與上面一樣，只是用不同指令達成。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>link</tag>
+        <tag>libudev</tag>
+        <tag>so</tag>
+        <tag>i386</tag>
+        <tag>cp</tag>
+        <tag>ln</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[asm] NEG 的運作與應用</title>
     <url>/2021/06/11/asmneg/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
@@ -2223,60 +2277,6 @@
         <tag>neg</tag>
         <tag>sbb</tag>
         <tag>asm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[link] 缺少 libudev.so.0 的解決方法</title>
-    <url>/2021/06/17/link_libdev_so_0/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在安裝德州儀器的軟體時出現缺少 <code>libudev.so.0</code> 的字樣，有些解法是直接安裝 <code>libudev0:i386</code> 的套件，不幸的是這在 Ubuntu 14.04 之後的版本就移除了，取而代之的是 <code>libudev1:i386</code>，但軟體安裝就是硬要 <code>libudev.so.0</code> 這個檔案存在。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>解決的方法就是自己創一個連結檔，連結到 <code>libudev.so.1</code>，名為 <code>libudev.so.0</code> (雖然 <code>libudev.so.1</code> 本身也是連結檔 XD)。建立連結檔有兩種方式</p>
-<h3 id="使用-cp-指令"><a href="#使用-cp-指令" class="headerlink" title="使用 cp 指令"></a>使用 cp 指令</h3><p>用 <code>cp</code> 指令建立連結檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo cp -s /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>$(arch)</code>：是在指令執行之前，先執行 <code>arch</code> 命令，取得當前電腦的硬體架構 (例如：x86_64) 並填回當前位置。</li>
-</ul>
-<p>可以看到 <code>libudev.so.1 -&gt; libudev.so.1.6.9</code>，也就是說最終是連結到 <code>libudev.so.1.6.9</code> 實體檔案。</p>
-<h3 id="使用-ln-指令"><a href="#使用-ln-指令" class="headerlink" title="使用 ln 指令"></a>使用 ln 指令</h3><p>其實步驟都與上面一樣，只是用不同指令達成。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ln -sf /lib/$(arch)-linux-gnu/libudev.so.1 /lib/$(arch)-linux-gnu/libudev.so.0</span><br><span class="line">user@pc:~$ ls -l /lib/$(arch)-linux-gnu/libudev.so.*         <span class="comment">#查看是否有建立</span></span><br><span class="line">lrwxrwxrwx 1 root root     34 十二  5 17:23 /lib/x86_64-linux-gnu/libudev.so.0 -&gt; /lib/x86_64-linux-gnu/libudev.so.1</span><br><span class="line">lrwxrwxrwx 1 root root     16 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1 -&gt; libudev.so.1.6.9</span><br><span class="line">-rw-r--r-- 1 root root 121016 十一 15 23:01 /lib/x86_64-linux-gnu/libudev.so.1.6.9</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>link</tag>
-        <tag>libudev</tag>
-        <tag>so</tag>
-        <tag>i386</tag>
-        <tag>cp</tag>
-        <tag>ln</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[apt] Unable to locate package 問題</title>
-    <url>/2021/06/17/apt_unable_to_locate_package/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有時候在使用 <code>apt-get</code> 安裝套件時會遇到錯誤情況，比較多是輸入錯誤，但也有一種情況是雖然輸入正確，卻找不到相關套件可以下載。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>我遇到的情況是這樣子的，要安裝 <code>ntpdate</code> 時卻發現出現錯誤訊息 <code>Unable to locate package ntpdate</code>，意思是說無法找到 <code>ntpdate</code> 套件</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get install ntpdate</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree       </span><br><span class="line">Reading state information... Done</span><br><span class="line">E: Unable to locate package ntpdate</span><br></pre></td></tr></table></figure>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>很有可能是因為 <code>apt-get</code> 沒有更新，所以資料庫裡面沒有 <code>ntpdate</code> 的連結，這時只需簡單的更新 <code>apt-get</code>，並且再次嘗試安裝就發現可以找到套件了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br></pre></td></tr></table></figure>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>在使用 <code>apt-get</code> 安裝之前先執行 <code>apt-get update</code> 是一個好習慣，以確保資料庫為最新，減少一個浪費時間的可能。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>update</tag>
-        <tag>install</tag>
-        <tag>apt</tag>
-        <tag>get</tag>
       </tags>
   </entry>
   <entry>
@@ -2344,6 +2344,119 @@
         <tag>credit</tag>
         <tag>task</tag>
         <tag>schedular</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>讀 Paper 懶人器</title>
+    <url>/2021/06/14/read_paper_lazier/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Paper 通常以英文流通最為廣泛，在閱讀時總是會搭配 google translate 查找不懂的語句或單字，但在複製整個語句或整段原文時，不應該存在的換行也會被複製進來。導致在輸入進 google translate 翻譯之前需要手動去掉換行。剛開始可能會覺得還好，但用到後來會發現這是非常浪費時間與惱人的事。</p>
+<p>除此之外，有時候翻譯出來的中文慣用語會是中國大陸的慣用語，而不是台灣的慣用語，例如：server 在台灣會翻為「伺服器」而非「服務器」、macro 在台灣會翻為「巨集」而非「宏」。</p>
+<p>因此我開發一個應用程式，為了解決這些困擾之處，其功能為當我們複製某段文章時，可以自動去掉換行，並且進行翻譯、替換某些自訂文字，再使用 <code>Ctrl-V</code> 貼上時，已經是翻譯與替換後的結果！絕對是碩士、博士們讀 Paper 的一個利器。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fdemo_cover.png?alt=media&amp;token=e650fd4d-4bd0-43e7-bc1c-e14ac3840132" alt="應用程式畫面展示"><span class="image-caption">應用程式畫面展示</span></p>
+<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
+<li><a href="https://youtu.be/aHq7Z5r3jDs">此專案介紹影片</a></li>
+<li><a href="https://github.com/weirenxue/read-paper-lazier">GitHub</a></li>
+<li><a href="https://www.youtube.com/watch?v=vX0utNYPfGs">使用教學影片</a></li>
+</ul>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>python 3.8.5</li>
+<li>pip 21.1.2</li>
+<li>google-cloud-translate 3.2.0</li>
+<li>pyperclip 1.8.2</li>
+</ul>
+<h2 id="概念流程圖"><a href="#概念流程圖" class="headerlink" title="概念流程圖"></a>概念流程圖</h2><p>寫程式之前紙上談兵是一個好習慣，先將流程圖畫下來，思考整個過程是否具有邏輯錯誤，一改再改，最後成為定案。下圖即為此專案的主功能流程圖，我們主要需要做的事情與順序為</p>
+<ol>
+<li>監聽 Copy 事件</li>
+<li>得到剪貼板中的文字</li>
+<li>去掉所有換行字元</li>
+<li>將其翻譯成中文</li>
+<li>翻譯後的文字替換特定文字</li>
+<li>輸出最後文字至剪貼板</li>
+</ol>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fmainfunction.png?alt=media&amp;token=c0dddc3b-e058-499e-b66d-e9f411086965" alt="主功能流程圖"><span class="image-caption">主功能流程圖</span></p>
+<h2 id="各個擊破"><a href="#各個擊破" class="headerlink" title="各個擊破"></a>各個擊破</h2><h3 id="監聽-Copy-事件"><a href="#監聽-Copy-事件" class="headerlink" title="監聽 Copy 事件"></a>監聽 Copy 事件</h3><p>在 <code>Python</code> 之中內沒有內建可以監聽 Copy 事件發生的函數，因此只能自己造輪子，我採用的方法是，比對現在剪貼板中的值與上一個狀態的值是否相同，若不同代表 Copy 事件發生</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> pyperclip</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Hook</span>():</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.run = <span class="literal">True</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">copyHook</span>(<span class="params">self, callback</span>):</span></span><br><span class="line">        self.run = <span class="literal">True</span></span><br><span class="line">        self.runHook(<span class="keyword">lambda</span> : self._copyHook(callback))</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_copyHook</span>(<span class="params">self, callback</span>):</span></span><br><span class="line">        <span class="comment"># 清除剪貼板</span></span><br><span class="line">        copiedText = <span class="string">&quot;&quot;</span></span><br><span class="line">        pyperclip.copy(copiedText)</span><br><span class="line">        <span class="keyword">while</span> self.run:</span><br><span class="line">            <span class="comment"># 複製事件是否發生</span></span><br><span class="line">            tmp_value = pyperclip.paste()</span><br><span class="line">            <span class="keyword">if</span> tmp_value != copiedText <span class="keyword">and</span> tmp_value != <span class="string">&#x27;&#x27;</span>:</span><br><span class="line">                <span class="comment"># 複製事件發生，對剪貼板中的文字進行處理</span></span><br><span class="line">                copiedText = callback(tmp_value)</span><br><span class="line">                <span class="comment"># 將處理後的文字輸出至剪貼板</span></span><br><span class="line">                pyperclip.copy(copiedText)</span><br><span class="line">            time.sleep(<span class="number">0.1</span>)</span><br><span class="line">            </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">runHook</span>(<span class="params">self, functionHandle</span>):</span></span><br><span class="line">        t = threading.Thread(target=functionHandle)</span><br><span class="line">        t.start()</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">stop</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.run = <span class="literal">False</span></span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">copyHookCallback</span>(<span class="params">copiedText</span>):</span></span><br><span class="line">    <span class="built_in">print</span>(copiedText)</span><br><span class="line">    <span class="keyword">return</span> copiedText</span><br><span class="line"></span><br><span class="line">h = Hook()</span><br><span class="line">h.copyHook(copyHookCallback)</span><br></pre></td></tr></table></figure>
+<p>執行後，任意複製文字，都會原封不動地輸出在 Console 底下，由此可以確認監聽 Copy 事件功能已經完備。</p>
+<h4 id="Callback-Function"><a href="#Callback-Function" class="headerlink" title="Callback Function"></a>Callback Function</h4><p>這裡使用了一個小技巧，可以將一個 <code>Callback Function</code> 當作參數傳給 <code>Hook.copyHook</code>，當 Copy 事件發生時，會呼叫該函數並把剪貼板的文字傳入，在函數內可以對文字做任何想做的事，最後回傳想要輸出在剪貼板的文字。</p>
+<p>這裡實際應用該函數來達到我們想要的效果，也就是去除換行、翻譯為中文、替換文字。</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cancelCRLF</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">translation</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">replaceText</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">copyHookCallback</span>(<span class="params">copiedText</span>):</span></span><br><span class="line">    <span class="comment"># 去除換行</span></span><br><span class="line">    noCRLF = cancelCRLF(copiedText)</span><br><span class="line">    <span class="comment"># 翻譯成中文</span></span><br><span class="line">    translated = translation(noCRLF)</span><br><span class="line">    <span class="comment"># 替換特定文字</span></span><br><span class="line">    replaced = replaceText(translated)</span><br><span class="line">    <span class="keyword">return</span> replaced</span><br></pre></td></tr></table></figure>
+<h3 id="去除換行"><a href="#去除換行" class="headerlink" title="去除換行"></a>去除換行</h3><p>這功能相對簡單，因為只需要將 <code>\r</code>、<code>\r\n</code>、<code>\n</code> 等去掉即可，剛好 Python 有一個內建的函式 <code>splitlines</code> 可以協助我們去除換行符號</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cancelCRLF</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27; &#x27;</span>.join(text.splitlines())</span><br></pre></td></tr></table></figure>
+<h3 id="翻譯為中文"><a href="#翻譯為中文" class="headerlink" title="翻譯為中文"></a>翻譯為中文</h3><p>在翻譯為中文這裡可以有兩種做法</p>
+<ol>
+<li>使用 <code>selenium</code> 開啟 <a href="https://translate.google.com/?hl=zh-TW">Google Translate</a>，將文字貼進左邊的原文窗格內，等待翻譯好之後再從右邊翻譯窗格拿到翻譯後的結果。但這樣的缺點是使用者需要另外下載 <code>selenium driver</code>。</li>
+<li>使用 Google Cloud Translate API 服務，以 API 的方式來做整合，較不會有環境問題，因此我採用這種作法。</li>
+</ol>
+<h4 id="Google-Cloud-Translate-API"><a href="#Google-Cloud-Translate-API" class="headerlink" title="Google Cloud Translate API"></a>Google Cloud Translate API</h4><p>想要使用這項服務，需先申請 GCP (Google Cloud Platform) 帳號，再依照下方步驟來取得 API Key</p>
+<p>啟用 Google Cloud Translation API</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fenable_translation_api.png?alt=media&amp;token=6ccd3502-bb96-404a-a002-96ae3bb6edf2" alt="啟用 Google Cloud Translation API 步驟"><span class="image-caption">啟用 Google Cloud Translation API 步驟</span></p>
+<p>啟用之後需要幾個步驟取得 API Key</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fcreate_credentials.png?alt=media&amp;token=b6e3cbb9-f26a-444c-9b70-2111cc81588e" alt="建立 Credential"><span class="image-caption">建立 Credential</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Ffill_form.png?alt=media&amp;token=74357faf-00b5-441d-8d4b-033b084e1226" alt="填寫表單資訊"><span class="image-caption">填寫表單資訊</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fmanage_api_key.png?alt=media&amp;token=af719d95-8285-4b3a-9551-885db206cf26" alt="進入管理金鑰介面"><span class="image-caption">進入管理金鑰介面</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fsave_api_key.png?alt=media&amp;token=2fb2c867-bd64-479d-95a6-f96382add50e" alt="儲存 API Key"><span class="image-caption">儲存 API Key</span></p>
+<h4 id="Translate-API-使用"><a href="#Translate-API-使用" class="headerlink" title="Translate API 使用"></a>Translate API 使用</h4><p>費勁千辛萬苦申請到 API Key 之後就可以馬上整合到應用程式裡啦！其中 <code>apiKeyJson</code> 是 API Key 的絕對路徑</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> google.cloud <span class="keyword">import</span> translate_v2 <span class="keyword">as</span> translate</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">translation</span>(<span class="params">text</span>):</span></span><br><span class="line">    translate_client = translate.Client.from_service_account_json(apiKeyJson)</span><br><span class="line">    target = <span class="string">&#x27;zh-TW&#x27;</span> <span class="comment"># 翻譯為中文</span></span><br><span class="line">    translation = translate_client.translate(text, target_language=target)</span><br><span class="line">    <span class="keyword">return</span> translation[<span class="string">&#x27;translatedText&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<h3 id="替換文字"><a href="#替換文字" class="headerlink" title="替換文字"></a>替換文字</h3><p>替換文字很簡單，只需把介面中 <code>Regex Entry</code> 與對應的 <code>Replace With Entry</code> 一一替換即可，<code>replaceMap</code> 儲存了所有對應 <code>[&#123;&#39;regexEntry&#39;: tk.Entry(), &#39;replaceWithEntry&#39;: tk.Entry()&#125;, ...]</code>。</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">replaceText</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">for</span> element <span class="keyword">in</span> replaceMap:</span><br><span class="line">        regex = element[<span class="string">&#x27;regexEntry&#x27;</span>].get()</span><br><span class="line">        replaceWith = element[<span class="string">&#x27;replaceWithEntry&#x27;</span>].get()</span><br><span class="line">        <span class="keyword">if</span> regex == <span class="string">&#x27;&#x27;</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        text = re.sub(regex, replaceWith, text)</span><br><span class="line">    <span class="keyword">return</span> text</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>到目前為止，功能基本上都已經實現，剩下的只有 GUI 呈現的部份，這部分不在此篇文章強調的重點內，可以直接參考 <a href="https://github.com/weirenxue/read-paper-lazier">GitHub</a>。最後附上使用影片教大家如何秒變懶人</p>
+<!-- markdownlint-disable MD033 -->
+<iframe width="560" height="315" src="https://www.youtube.com/embed/vX0utNYPfGs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<!-- markdownlint-restore MD033 -->
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><p><a href="https://stackoverflow.com/questions/14685999/trigger-an-event-when-clipboard-content-changes">Trigger an event when clipboard content changes</a></p>
+</li>
+<li><p><a href="https://www.appcoda.com.tw/google-translation-api/">利用 Google Translation API 添加即時翻譯功能　讓你的 App 更加升級！</a></p>
+</li>
+<li><p><a href="https://moon-half.info/p/3332">使用 Google Cloud Translate API</a></p>
+</li>
+<li><p><a href="https://cloud.google.com/docs/authentication/production#passing_code">Authenticating as a service account</a></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>專案開發筆記</category>
+      </categories>
+      <tags>
+        <tag>copy</tag>
+        <tag>python</tag>
+        <tag>api</tag>
+        <tag>paper</tag>
+        <tag>lazier</tag>
+        <tag>google</tag>
+        <tag>cloud</tag>
+        <tag>translate</tag>
+        <tag>listener</tag>
+        <tag>event</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[轉檔] 將 rpm 檔轉為 deb 檔</title>
+    <url>/2021/06/17/rpm_deb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些軟體只提供 rpm 檔，但在 Ubuntu 的系統只能安裝 deb 檔，這時候就需要將 rpm 轉為 deb。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="轉檔並安裝"><a href="#轉檔並安裝" class="headerlink" title="轉檔並安裝"></a>轉檔並安裝</h2><p><a href="https://wiki.ubuntu-tw.org/index.php?title=HowtoInstallRPM">alien</a> 套件可以幫忙把 rpm 等其他安裝檔轉成 deb 安裝檔，在 Ubuntu 中預設是沒有安裝 <code>alien</code> 套件的，因此要先安裝</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install alien</span><br></pre></td></tr></table></figure>
+<p>將 <code>name.rpm</code> 轉為 <code>name.deb</code> 檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ~/somedir/name.rpm  <span class="comment"># 會轉為同檔名的 deb 檔案，但都改為小寫</span></span><br><span class="line">                                    <span class="comment"># ~/somedir 是 rpm 的檔案路徑，依情況改寫</span></span><br></pre></td></tr></table></figure>
+<p>用 dpkg 套件執行 deb 安裝檔安裝應用程式</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo dpkg -i ~/somedir/name.deb  <span class="comment">#開始安裝</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>file</tag>
+        <tag>18.04</tag>
+        <tag>rpm</tag>
+        <tag>deb</tag>
+        <tag>alien</tag>
+        <tag>dpkg</tag>
+        <tag>convert</tag>
       </tags>
   </entry>
   <entry>
@@ -2457,91 +2570,6 @@
       </tags>
   </entry>
   <entry>
-    <title>讀 Paper 懶人器</title>
-    <url>/2021/06/14/read_paper_lazier/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Paper 通常以英文流通最為廣泛，在閱讀時總是會搭配 google translate 查找不懂的語句或單字，但在複製整個語句或整段原文時，不應該存在的換行也會被複製進來。導致在輸入進 google translate 翻譯之前需要手動去掉換行。剛開始可能會覺得還好，但用到後來會發現這是非常浪費時間與惱人的事。</p>
-<p>除此之外，有時候翻譯出來的中文慣用語會是中國大陸的慣用語，而不是台灣的慣用語，例如：server 在台灣會翻為「伺服器」而非「服務器」、macro 在台灣會翻為「巨集」而非「宏」。</p>
-<p>因此我開發一個應用程式，為了解決這些困擾之處，其功能為當我們複製某段文章時，可以自動去掉換行，並且進行翻譯、替換某些自訂文字，再使用 <code>Ctrl-V</code> 貼上時，已經是翻譯與替換後的結果！絕對是碩士、博士們讀 Paper 的一個利器。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fdemo_cover.png?alt=media&amp;token=e650fd4d-4bd0-43e7-bc1c-e14ac3840132" alt="應用程式畫面展示"><span class="image-caption">應用程式畫面展示</span></p>
-<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
-<li><a href="https://youtu.be/aHq7Z5r3jDs">此專案介紹影片</a></li>
-<li><a href="https://github.com/weirenxue/read-paper-lazier">GitHub</a></li>
-<li><a href="https://www.youtube.com/watch?v=vX0utNYPfGs">使用教學影片</a></li>
-</ul>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>python 3.8.5</li>
-<li>pip 21.1.2</li>
-<li>google-cloud-translate 3.2.0</li>
-<li>pyperclip 1.8.2</li>
-</ul>
-<h2 id="概念流程圖"><a href="#概念流程圖" class="headerlink" title="概念流程圖"></a>概念流程圖</h2><p>寫程式之前紙上談兵是一個好習慣，先將流程圖畫下來，思考整個過程是否具有邏輯錯誤，一改再改，最後成為定案。下圖即為此專案的主功能流程圖，我們主要需要做的事情與順序為</p>
-<ol>
-<li>監聽 Copy 事件</li>
-<li>得到剪貼板中的文字</li>
-<li>去掉所有換行字元</li>
-<li>將其翻譯成中文</li>
-<li>翻譯後的文字替換特定文字</li>
-<li>輸出最後文字至剪貼板</li>
-</ol>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fmainfunction.png?alt=media&amp;token=c0dddc3b-e058-499e-b66d-e9f411086965" alt="主功能流程圖"><span class="image-caption">主功能流程圖</span></p>
-<h2 id="各個擊破"><a href="#各個擊破" class="headerlink" title="各個擊破"></a>各個擊破</h2><h3 id="監聽-Copy-事件"><a href="#監聽-Copy-事件" class="headerlink" title="監聽 Copy 事件"></a>監聽 Copy 事件</h3><p>在 <code>Python</code> 之中內沒有內建可以監聽 Copy 事件發生的函數，因此只能自己造輪子，我採用的方法是，比對現在剪貼板中的值與上一個狀態的值是否相同，若不同代表 Copy 事件發生</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> pyperclip</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Hook</span>():</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.run = <span class="literal">True</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">copyHook</span>(<span class="params">self, callback</span>):</span></span><br><span class="line">        self.run = <span class="literal">True</span></span><br><span class="line">        self.runHook(<span class="keyword">lambda</span> : self._copyHook(callback))</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_copyHook</span>(<span class="params">self, callback</span>):</span></span><br><span class="line">        <span class="comment"># 清除剪貼板</span></span><br><span class="line">        copiedText = <span class="string">&quot;&quot;</span></span><br><span class="line">        pyperclip.copy(copiedText)</span><br><span class="line">        <span class="keyword">while</span> self.run:</span><br><span class="line">            <span class="comment"># 複製事件是否發生</span></span><br><span class="line">            tmp_value = pyperclip.paste()</span><br><span class="line">            <span class="keyword">if</span> tmp_value != copiedText <span class="keyword">and</span> tmp_value != <span class="string">&#x27;&#x27;</span>:</span><br><span class="line">                <span class="comment"># 複製事件發生，對剪貼板中的文字進行處理</span></span><br><span class="line">                copiedText = callback(tmp_value)</span><br><span class="line">                <span class="comment"># 將處理後的文字輸出至剪貼板</span></span><br><span class="line">                pyperclip.copy(copiedText)</span><br><span class="line">            time.sleep(<span class="number">0.1</span>)</span><br><span class="line">            </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">runHook</span>(<span class="params">self, functionHandle</span>):</span></span><br><span class="line">        t = threading.Thread(target=functionHandle)</span><br><span class="line">        t.start()</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">stop</span>(<span class="params">self</span>):</span></span><br><span class="line">        self.run = <span class="literal">False</span></span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">copyHookCallback</span>(<span class="params">copiedText</span>):</span></span><br><span class="line">    <span class="built_in">print</span>(copiedText)</span><br><span class="line">    <span class="keyword">return</span> copiedText</span><br><span class="line"></span><br><span class="line">h = Hook()</span><br><span class="line">h.copyHook(copyHookCallback)</span><br></pre></td></tr></table></figure>
-<p>執行後，任意複製文字，都會原封不動地輸出在 Console 底下，由此可以確認監聽 Copy 事件功能已經完備。</p>
-<h4 id="Callback-Function"><a href="#Callback-Function" class="headerlink" title="Callback Function"></a>Callback Function</h4><p>這裡使用了一個小技巧，可以將一個 <code>Callback Function</code> 當作參數傳給 <code>Hook.copyHook</code>，當 Copy 事件發生時，會呼叫該函數並把剪貼板的文字傳入，在函數內可以對文字做任何想做的事，最後回傳想要輸出在剪貼板的文字。</p>
-<p>這裡實際應用該函數來達到我們想要的效果，也就是去除換行、翻譯為中文、替換文字。</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cancelCRLF</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">translation</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">replaceText</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">copyHookCallback</span>(<span class="params">copiedText</span>):</span></span><br><span class="line">    <span class="comment"># 去除換行</span></span><br><span class="line">    noCRLF = cancelCRLF(copiedText)</span><br><span class="line">    <span class="comment"># 翻譯成中文</span></span><br><span class="line">    translated = translation(noCRLF)</span><br><span class="line">    <span class="comment"># 替換特定文字</span></span><br><span class="line">    replaced = replaceText(translated)</span><br><span class="line">    <span class="keyword">return</span> replaced</span><br></pre></td></tr></table></figure>
-<h3 id="去除換行"><a href="#去除換行" class="headerlink" title="去除換行"></a>去除換行</h3><p>這功能相對簡單，因為只需要將 <code>\r</code>、<code>\r\n</code>、<code>\n</code> 等去掉即可，剛好 Python 有一個內建的函式 <code>splitlines</code> 可以協助我們去除換行符號</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cancelCRLF</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27; &#x27;</span>.join(text.splitlines())</span><br></pre></td></tr></table></figure>
-<h3 id="翻譯為中文"><a href="#翻譯為中文" class="headerlink" title="翻譯為中文"></a>翻譯為中文</h3><p>在翻譯為中文這裡可以有兩種做法</p>
-<ol>
-<li>使用 <code>selenium</code> 開啟 <a href="https://translate.google.com/?hl=zh-TW">Google Translate</a>，將文字貼進左邊的原文窗格內，等待翻譯好之後再從右邊翻譯窗格拿到翻譯後的結果。但這樣的缺點是使用者需要另外下載 <code>selenium driver</code>。</li>
-<li>使用 Google Cloud Translate API 服務，以 API 的方式來做整合，較不會有環境問題，因此我採用這種作法。</li>
-</ol>
-<h4 id="Google-Cloud-Translate-API"><a href="#Google-Cloud-Translate-API" class="headerlink" title="Google Cloud Translate API"></a>Google Cloud Translate API</h4><p>想要使用這項服務，需先申請 GCP (Google Cloud Platform) 帳號，再依照下方步驟來取得 API Key</p>
-<p>啟用 Google Cloud Translation API</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fenable_translation_api.png?alt=media&amp;token=6ccd3502-bb96-404a-a002-96ae3bb6edf2" alt="啟用 Google Cloud Translation API 步驟"><span class="image-caption">啟用 Google Cloud Translation API 步驟</span></p>
-<p>啟用之後需要幾個步驟取得 API Key</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fcreate_credentials.png?alt=media&amp;token=b6e3cbb9-f26a-444c-9b70-2111cc81588e" alt="建立 Credential"><span class="image-caption">建立 Credential</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Ffill_form.png?alt=media&amp;token=74357faf-00b5-441d-8d4b-033b084e1226" alt="填寫表單資訊"><span class="image-caption">填寫表單資訊</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fmanage_api_key.png?alt=media&amp;token=af719d95-8285-4b3a-9551-885db206cf26" alt="進入管理金鑰介面"><span class="image-caption">進入管理金鑰介面</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fsave_api_key.png?alt=media&amp;token=2fb2c867-bd64-479d-95a6-f96382add50e" alt="儲存 API Key"><span class="image-caption">儲存 API Key</span></p>
-<h4 id="Translate-API-使用"><a href="#Translate-API-使用" class="headerlink" title="Translate API 使用"></a>Translate API 使用</h4><p>費勁千辛萬苦申請到 API Key 之後就可以馬上整合到應用程式裡啦！其中 <code>apiKeyJson</code> 是 API Key 的絕對路徑</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> google.cloud <span class="keyword">import</span> translate_v2 <span class="keyword">as</span> translate</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">translation</span>(<span class="params">text</span>):</span></span><br><span class="line">    translate_client = translate.Client.from_service_account_json(apiKeyJson)</span><br><span class="line">    target = <span class="string">&#x27;zh-TW&#x27;</span> <span class="comment"># 翻譯為中文</span></span><br><span class="line">    translation = translate_client.translate(text, target_language=target)</span><br><span class="line">    <span class="keyword">return</span> translation[<span class="string">&#x27;translatedText&#x27;</span>]</span><br></pre></td></tr></table></figure>
-<h3 id="替換文字"><a href="#替換文字" class="headerlink" title="替換文字"></a>替換文字</h3><p>替換文字很簡單，只需把介面中 <code>Regex Entry</code> 與對應的 <code>Replace With Entry</code> 一一替換即可，<code>replaceMap</code> 儲存了所有對應 <code>[&#123;&#39;regexEntry&#39;: tk.Entry(), &#39;replaceWithEntry&#39;: tk.Entry()&#125;, ...]</code>。</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">replaceText</span>(<span class="params">text</span>):</span></span><br><span class="line">    <span class="keyword">for</span> element <span class="keyword">in</span> replaceMap:</span><br><span class="line">        regex = element[<span class="string">&#x27;regexEntry&#x27;</span>].get()</span><br><span class="line">        replaceWith = element[<span class="string">&#x27;replaceWithEntry&#x27;</span>].get()</span><br><span class="line">        <span class="keyword">if</span> regex == <span class="string">&#x27;&#x27;</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        text = re.sub(regex, replaceWith, text)</span><br><span class="line">    <span class="keyword">return</span> text</span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>到目前為止，功能基本上都已經實現，剩下的只有 GUI 呈現的部份，這部分不在此篇文章強調的重點內，可以直接參考 <a href="https://github.com/weirenxue/read-paper-lazier">GitHub</a>。最後附上使用影片教大家如何秒變懶人</p>
-<!-- markdownlint-disable MD033 -->
-<iframe width="560" height="315" src="https://www.youtube.com/embed/vX0utNYPfGs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-<!-- markdownlint-restore MD033 -->
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><p><a href="https://stackoverflow.com/questions/14685999/trigger-an-event-when-clipboard-content-changes">Trigger an event when clipboard content changes</a></p>
-</li>
-<li><p><a href="https://www.appcoda.com.tw/google-translation-api/">利用 Google Translation API 添加即時翻譯功能　讓你的 App 更加升級！</a></p>
-</li>
-<li><p><a href="https://moon-half.info/p/3332">使用 Google Cloud Translate API</a></p>
-</li>
-<li><p><a href="https://cloud.google.com/docs/authentication/production#passing_code">Authenticating as a service account</a></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>專案開發筆記</category>
-      </categories>
-      <tags>
-        <tag>copy</tag>
-        <tag>python</tag>
-        <tag>api</tag>
-        <tag>paper</tag>
-        <tag>lazier</tag>
-        <tag>google</tag>
-        <tag>cloud</tag>
-        <tag>translate</tag>
-        <tag>listener</tag>
-        <tag>event</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[雙系統] 更改開機系統選單的預設值</title>
     <url>/2021/06/16/dual_system_change_default/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>要切換雙系統的方法主要有兩種，一是修改 BIOS 的 Boot Option，另一個是使用 grub (參考：<a href="/2021/06/16/win_10_ubuntu/">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a>])。grub 預設是以 Ubuntu 開機，若在選單畫面超過 10 秒沒有動作，預設直接進入 Ubuntu。對於主要是用 Windows 的人來說稍嫌不便，因為每次開機都要等選單出現，以免不小心進其他系統，這篇主要紀錄如何將預設系統改為 Windows。</p>
@@ -2573,34 +2601,6 @@
         <tag>option</tag>
         <tag>boot</tag>
         <tag>grub</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[轉檔] 將 rpm 檔轉為 deb 檔</title>
-    <url>/2021/06/17/rpm_deb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>有些軟體只提供 rpm 檔，但在 Ubuntu 的系統只能安裝 deb 檔，這時候就需要將 rpm 轉為 deb。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="轉檔並安裝"><a href="#轉檔並安裝" class="headerlink" title="轉檔並安裝"></a>轉檔並安裝</h2><p><a href="https://wiki.ubuntu-tw.org/index.php?title=HowtoInstallRPM">alien</a> 套件可以幫忙把 rpm 等其他安裝檔轉成 deb 安裝檔，在 Ubuntu 中預設是沒有安裝 <code>alien</code> 套件的，因此要先安裝</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo apt-get update</span><br><span class="line">user@pc:~$ sudo apt-get install alien</span><br></pre></td></tr></table></figure>
-<p>將 <code>name.rpm</code> 轉為 <code>name.deb</code> 檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo ~/somedir/name.rpm  <span class="comment"># 會轉為同檔名的 deb 檔案，但都改為小寫</span></span><br><span class="line">                                    <span class="comment"># ~/somedir 是 rpm 的檔案路徑，依情況改寫</span></span><br></pre></td></tr></table></figure>
-<p>用 dpkg 套件執行 deb 安裝檔安裝應用程式</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo dpkg -i ~/somedir/name.deb  <span class="comment">#開始安裝</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>file</tag>
-        <tag>18.04</tag>
-        <tag>rpm</tag>
-        <tag>deb</tag>
-        <tag>alien</tag>
-        <tag>dpkg</tag>
-        <tag>convert</tag>
       </tags>
   </entry>
   <entry>
