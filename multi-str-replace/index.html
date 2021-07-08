@@ -21,27 +21,20 @@
     var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <meta name="description" content="最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="[SSL] 確認申請回來的憑證與手中的私鑰匹配">
-<meta property="og:url" content="https://weirenxue.github.io/2021/06/15/ssl_crt_key/index.html">
+  <meta name="description" content="這個工具可以一鍵取代多個字串，讓你不須重複使用 Ctrl-F 來做重複的事，並且能夠將文字取代對應表匯入與匯出，省去每次重新設定的時間，也可以將該匯出檔案分享給同事或同學來使用。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="多字串取代器">
+<meta property="og:url" content="https://weirenxue.github.io/multi-str-replace/index.html">
 <meta property="og:site_name" content="薛惟仁 筆記本">
-<meta property="og:description" content="最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。">
+<meta property="og:description" content="這個工具可以一鍵取代多個字串，讓你不須重複使用 Ctrl-F 來做重複的事，並且能夠將文字取代對應表匯入與匯出，省去每次重新設定的時間，也可以將該匯出檔案分享給同事或同學來使用。">
 <meta property="og:locale" content="zh_TW">
-<meta property="article:published_time" content="2021-06-15T06:36:56.000Z">
-<meta property="article:modified_time" content="2021-06-16T13:50:37.541Z">
+<meta property="article:published_time" content="2021-07-07T12:54:12.000Z">
+<meta property="article:modified_time" content="2021-07-08T03:39:29.606Z">
 <meta property="article:author" content="Wei-Ren Xue">
-<meta property="article:tag" content="ubuntu">
-<meta property="article:tag" content="18.04">
-<meta property="article:tag" content="ssl">
-<meta property="article:tag" content="key">
-<meta property="article:tag" content="crt">
-<meta property="article:tag" content="match">
-<meta property="article:tag" content="cert">
-<meta property="article:tag" content="csr">
+<meta property="article:tag" content="AI hexo Linux js python c#">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://weirenxue.github.io/2021/06/15/ssl_crt_key/">
+<link rel="canonical" href="https://weirenxue.github.io/multi-str-replace/">
 
 
 <script id="page-configurations">
@@ -49,12 +42,13 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : true,
+    isPost : false,
     lang   : 'zh-TW'
   };
 </script>
 
-  <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配 | 薛惟仁 筆記本</title>
+  <title>多字串取代器 | 薛惟仁 筆記本
+</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
     <script>
@@ -206,192 +200,265 @@
       <div class="main-inner">
         <div class="content-wrap">
           
+  
+  
 
-          <div class="content post posts-expand">
+          <div class="content page posts-expand">
             
 
     
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2021/06/15/ssl_crt_key/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Wei-Ren Xue">
-      <meta itemprop="description" content="Software Engineer">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="薛惟仁 筆記本">
-    </span>
+    
+    
+    <div class="post-block" lang="zh-TW">
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          [SSL] 確認申請回來的憑證與手中的私鑰匹配
-        </h1>
 
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">發表於</span>
+<h1 class="post-title" itemprop="name headline">多字串取代器
+</h1>
 
-              <time title="創建時間：2021-06-15 14:36:56" itemprop="dateCreated datePublished" datetime="2021-06-15T14:36:56+08:00">2021-06-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-06-16 21:50:37" itemprop="dateModified" datetime="2021-06-16T21:50:37+08:00">2021-06-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分類於</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">學習筆記</span></a>
-                </span>
-            </span>
+<div class="post-meta">
+    <div class="post-description">這個工具可以一鍵取代多個字串，讓你不須重複使用 Ctrl-F 來做重複的事，並且能夠將文字取代對應表匯入與匯出，省去每次重新設定的時間，也可以將該匯出檔案分享給同事或同學來使用。</div>
+  
 
+</div>
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
           
-            <span class="post-meta-item" title="閱讀次數">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-users"></i>
-              </span>
-              <span class="post-meta-item-text">閱讀次數：</span>
-              <span class="firestore-visitors-count"></span>
-            </span>
-            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">閱讀次數：</span>
-              <span id="busuanzi_value_page_pv"></span>
-            </span>
-            <div class="post-description">最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</div>
-
-        </div>
-      </header>
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-      
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>OpenSSL 1.1.1f</li>
-</ul>
-<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
-<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
-
+<div class="container">
+    <div class="tabs" id="interface"><ul class="nav-tabs"><li class="tab active"><a href="#interface-1">替換文字設定</a></li><li class="tab"><a href="#interface-2">取代文字操作</a></li></ul><div class="tab-content"><div class="tab-pane active" id="interface-1"><div class="tab-container">
+    <div class="header-btn">
+        <label class="btn btn-primary">
+            <input id="import" style="display:none;" type="file" accept="application/json">
+            匯入
+        </label>
+        <button type="button" id="export" class="btn btn-primary">匯出</button>
     </div>
-
-    
-    
-    
-      
-  <div class="popular-posts-header">相關文章</div>
-  <ul class="popular-posts">
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\15\ssl_self_sign\" rel="bookmark">[SSL] 自簽憑證過程</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\07\01\mqtt_mosquitto_docker\" rel="bookmark">[MQTT] Mosquitto Docker 架設與設定詳細過程</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\17\php_ubuntu_apache_php_phalcon\" rel="bookmark">[PHP] Ubuntu 安裝 Apache 2 + PHP 7.4 + Phalcon 4.0</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\17\user_linux_sudo\" rel="bookmark">[User] Linux 新增使用者並賦予其使用 sudo 的權限</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\17\rdp_xrdp_menu\" rel="bookmark">[RDP] xrdp 遠端 menu 不見時登出的方法</a></div>
-    </li>
-  </ul>
-
-      <script async src="https://cse.google.com/cse.js?cx=264c146931f2086b9"></script>
-      <div class="gcse-search"></div>
-        <div class="reward-container">
-  <div>以最優質的內容回應您的鼓勵</div>
-  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
-    贊助
-  </button>
-  <div id="qr" style="display: none;">
-      
-      <div style="display: inline-block;">
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/jkopay.jpg" alt="Wei-Ren Xue 街口支付">
-        <p>街口支付</p>
-      </div>
-      
-      <div style="display: inline-block;">
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/opay.png" alt="Wei-Ren Xue 歐付寶">
-        <p>歐付寶</p>
-      </div>
-
-  </div>
+    <table id="mapping" class="table table-dark table-hover table-sm">
+        <thead>
+            <tr>
+                <th colspan="4"><div id="tableTitle" contenteditable="true">The Title Of The File(You Can Change It Here)</div></th>
+            </tr>
+            <tr>
+                <th style="width: 0;">No.</th>
+                <th>Find What(Regex)</th>
+                <th>Replace with</th>
+                <th><button type="button" id="addField" class="btn btn-primary">新增欄位</button></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td><input name="key-0"></td>
+                <td><input name="value-0"></td>
+                <td>
+                    <div><button type="button" class="remove btn btn-primary">移除欄位</button></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div></div><div class="tab-pane" id="interface-2"><div class="tab-container">
+    <div class="header-btn">
+        <button type="button" id="replace" class="btn btn-primary">取代</button>
+        <button type="button" id="copy" class="btn btn-primary">複製</button>
+        <button type="button" id="clear" class="btn btn-primary">清除</button>
+    </div>      
+    <textarea id="content" name="content" placeholder="將文章複製在這裡"></textarea>
+</div></div></div></div>
 </div>
 
-        
-
-<div>
-<ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>作者： </strong>Wei-Ren Xue
-  </li>
-  <li class="post-copyright-link">
-    <strong>文章連結：</strong>
-    <a href="https://weirenxue.github.io/2021/06/15/ssl_crt_key/" title="[SSL] 確認申請回來的憑證與手中的私鑰匹配">https://weirenxue.github.io/2021/06/15/ssl_crt_key/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版權聲明： </strong>本網誌所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noopener noreferrer" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 許可協議。轉載請註明出處！
-  </li>
-</ul>
-</div>
-
-
-      <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
-              <a href="/tags/18-04/" rel="tag"># 18.04</a>
-              <a href="/tags/ssl/" rel="tag"># ssl</a>
-              <a href="/tags/key/" rel="tag"># key</a>
-              <a href="/tags/crt/" rel="tag"># crt</a>
-              <a href="/tags/match/" rel="tag"># match</a>
-              <a href="/tags/cert/" rel="tag"># cert</a>
-              <a href="/tags/csr/" rel="tag"># csr</a>
+<div class="note info">
+            <p>若有任何疑問、建議或問題回報，歡迎於下方討論區留言。</p>
           </div>
 
-        
-  <div class="post-widgets">
-    <div class="wp_rating">
-      <div id="wpac-rating"></div>
-    </div>
-  </div>
+<style>
+    table #tableTitle {
+        text-align: center;
+    }
+    div.tab-container {
+        display: flex;
+        flex-direction: column;
+    }
+    div.tab-container div.header-btn {
+        align-self: flex-start;
+    }
+    div.container .btn:hover {
+        cursor: pointer;
+    }
+    #content {
+        resize: vertical;
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 200px;
+        margin-bottom: 20px;
+    }
+    td input {
+        width: 100%;
+        margin-right: 10px;
+        box-sizing: border-box;
+    }
+    .btn-td {
+        display: flex;
+    }
+    .btn-td .up-down {
+        display: flex;
+        flex-direction: column;
+    }
+</style>
 
+<script>
+    function htmlToElement(html) {
+        let template = document.createElement('template');
+        html = html.trim(); // Never return a text node of whitespace as the result
+        template.innerHTML = html;
+        return template.content.firstChild;
+    }
+    function removeBtnClick(e) {
+        let thisElement = e.target;
+        let thisTr = thisElement.parentElement.parentElement;
+        let thisNumber = thisTr.children[1].children[0].name.split('-')[1];
+        let trs = document.querySelectorAll('#mapping tbody tr');
+        if (trs.length == 1) {
+            return;
+        }
+        trs.forEach((element) => {
+            let n = element.querySelector('input').name.split('-')[1];
+            let toN = n - 1;
+            if (n > thisNumber) {
+                let inputs = element.querySelectorAll('input');
+                inputs[0].name = `key-${toN}`;
+                inputs[1].name = `value-${toN}`;
+                element.children[0].innerText = toN + 1;
+            }
+        });
+        thisTr.remove();
+        console.log(thisNumber);
+    }
+    document.getElementById("addField").addEventListener('click', () => {
+        let tbody = document.querySelector('#mapping tbody');
+        let trs = tbody.querySelectorAll('tr');
+        let nextNumber = trs.length;
+        let html = `
+                    <tr>
+                        <td>${nextNumber + 1}</td>
+                        <td><input name="key-${nextNumber}"></td>
+                        <td><input name="value-${nextNumber}"></td>
+                        <td><button type="button" class="remove btn btn-primary">移除欄位</button></td>
+                    </tr>
+        `;
+        tr = htmlToElement(html);
+        tbody.appendChild(tr);
+        tr.querySelector('.remove.btn').addEventListener('click', removeBtnClick);
+    });
+    document.querySelector('.remove.btn').addEventListener('click', removeBtnClick);
+    document.getElementById('clear').addEventListener('click', () => document.getElementById('content').value = '')
+    document.getElementById('copy').addEventListener('click', () => {
+        document.getElementById('content').select();
+        document.execCommand('copy');
+    });
+    document.getElementById('import').addEventListener('change', (e) => {
+        let thisElement = e.target;
+        if (thisElement.files.length == 1) {
+            let jsonFile = thisElement.files[0];
+            let filename = thisElement.files[0].name;
+            let reader = new FileReader();
 
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2021/06/15/win32_api_function_example/" rel="prev" title="[WIN32 API] 函數使用範例">
-      <i class="fa fa-chevron-left"></i> [WIN32 API] 函數使用範例
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/06/15/python_user_agent/" rel="next" title="[Python] 爬蟲修改 User-Agent 標頭">
-      [Python] 爬蟲修改 User-Agent 標頭 <i class="fa fa-chevron-right"></i>
-    </a></div>
+            reader.onload = (e) => {
+                let thisReader = e.target;
+                let content = JSON.parse(thisReader.result);
+                let kvp = content['kvp'];
+                let len = kvp.length;
+
+                document.getElementById('tableTitle').innerText = content['table_title'];
+
+                let tbody = document.querySelector('#mapping tbody');
+                tbody.querySelectorAll('tr').forEach((element) => {
+                    element.remove();
+                });
+                
+                for (let i = 0; i < len; i++) {
+                    let key = kvp[i]['key'];
+                    let value = kvp[i]['value'];
+                    let nextNumber = i;
+                    let html = `
+                                <tr>
+                                    <td>${nextNumber + 1}</td>
+                                    <td><input name="key-${nextNumber}"></td>
+                                    <td><input name="value-${nextNumber}"></td>
+                                    <td><button type="button" class="remove btn btn-primary">移除欄位</button></td>
+                                </tr>
+                    `;
+                    tr = htmlToElement(html);
+                    let inputs = tr.querySelectorAll('input');
+                    inputs[0].value = key;
+                    inputs[1].value = value;
+                    tbody.appendChild(tr);
+                    tr.querySelector('.remove.btn').addEventListener('click', removeBtnClick);
+                }
+            }
+            reader.readAsText(jsonFile, 'UTF-8');
+        }
+    });
+    document.getElementById('export').addEventListener('click', () => {
+        let exportedObj = {};
+        exportedObj['kvp'] = [];
+        exportedObj['table_title'] = document.getElementById('tableTitle').innerText;
+        let trs = document.querySelectorAll('#mapping tbody tr');
+        trs.forEach((element) => {
+            let inputs = element.querySelectorAll('input');
+            let key = inputs[0].value;
+            let value = inputs[1].value;
+            exportedObj['kvp'].push({
+                key: key,
+                value: value
+            })
+        });
+        let now = new Date();
+        let nowString = `${now.getFullYear()}${('0' + (now.getMonth()+1)).slice(-2)}${('0' + now.getDate()).slice(-2)}_${('0' + (now.getHours())).slice(-2)}${('0' + (now.getMinutes())).slice(-2)}${('0' + (now.getSeconds())).slice(-2)}`;
+
+        let filename = `${exportedObj['table_title']}_${nowString}`;
+        let content = new Blob([JSON.stringify(exportedObj, null, '\t')], {type : 'application/json'});
+
+        const a = document.createElement('a');
+        const url = window.URL.createObjectURL(content)
+        a.href = url;
+        a.download = `${filename}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    });
+    document.getElementById('replace').addEventListener('click', () => {
+        let contentArea = document.getElementById('content');
+        let targetStr = contentArea.value;
+        let trs = document.querySelectorAll('#mapping tbody tr');
+        trs.forEach((element) => {
+            let inputs = element.querySelectorAll('input');
+            let key = inputs[0].value;
+            let value = inputs[1].value;
+
+            let re = new RegExp(key, "gm");
+            targetStr = targetStr.replace(re, value);
+        });
+        contentArea.value = targetStr;
+    });
+</script>
+
+      </div>
+      
+      
+      
     </div>
-      </footer>
     
-  </article>
-  
-  
-  
 
+    <script async src="https://cse.google.com/cse.js?cx=264c146931f2086b9"></script>
+    <div class="gcse-search"></div>
+    
+    
+    
 
 
           </div>
@@ -449,7 +516,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%92%B0%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A9%97%E8%AD%89"><span class="nav-number">3.</span> <span class="nav-text">驗證</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -722,9 +788,9 @@ if (document.querySelectorAll('pre.mermaid').length) {
 
 <script>
   var disqus_config = function() {
-    this.page.url = "https://weirenxue.github.io/2021/06/15/ssl_crt_key/";
-    this.page.identifier = "2021/06/15/ssl_crt_key/";
-    this.page.title = "[SSL] 確認申請回來的憑證與手中的私鑰匹配";
+    this.page.url = "https://weirenxue.github.io/multi-str-replace/index.html";
+    this.page.identifier = "multi-str-replace/index.html";
+    this.page.title = "多字串取代器";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {
