@@ -29,7 +29,7 @@
 <meta property="og:description" content="MySQL 是瑞典人開發的，所以預設字符集是 latin1，與其每次要創建資料庫都要指定字符集，不如直接更改預設的字符集。">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-06-19T00:24:24.000Z">
-<meta property="article:modified_time" content="2021-06-24T12:29:50.914Z">
+<meta property="article:modified_time" content="2021-07-12T03:28:32.651Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="server">
 <meta property="article:tag" content="characterset">
@@ -252,7 +252,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-06-24 20:29:50" itemprop="dateModified" datetime="2021-06-24T20:29:50+08:00">2021-06-24</time>
+                <time title="修改時間：2021-07-12 11:28:32" itemprop="dateModified" datetime="2021-07-12T11:28:32+08:00">2021-07-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -294,6 +294,7 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8mb4        <span class="comment">## 修改 Client characterset 與 Conn. characterset</span></span><br><span class="line">[mysqld]</span><br><span class="line">character-set-server=utf8mb4         <span class="comment">## 修改 Server characterset 與 Db characterset</span></span><br><span class="line">collation-server=utf8mb4_unicode_ci  <span class="comment">## 會修改預設的校驗比對方法</span></span><br></pre></td></tr></table></figure>
 <h2 id="載入設定"><a href="#載入設定" class="headerlink" title="載入設定"></a>載入設定</h2><p>重啟 MariaDB，確認字符集已更改為所設定的</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mariadb</span><br><span class="line">[user@localhost ~]$ mysql -u user -p</span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line">MariaDB [(none)]&gt; \s</span><br><span class="line">--------------</span><br><span class="line">mysql  Ver 15.1 Distrib 10.3.17-MariaDB, <span class="keyword">for</span> Linux (x86_64) using readline 5.1</span><br><span class="line"></span><br><span class="line">Connection id:          9</span><br><span class="line">Current database:</span><br><span class="line">Current user:           user@localhost</span><br><span class="line">SSL:                    Not <span class="keyword">in</span> use</span><br><span class="line">Current pager:          stdout</span><br><span class="line">Using outfile:          <span class="string">&#x27;&#x27;</span></span><br><span class="line">Using delimiter:        ;</span><br><span class="line">Server:                 MariaDB</span><br><span class="line">Server version:         10.3.17-MariaDB MariaDB Server</span><br><span class="line">Protocol version:       10</span><br><span class="line">Connection:             Localhost via UNIX socket</span><br><span class="line">Server characterset:    utf8mb4</span><br><span class="line">Db     characterset:    utf8mb4</span><br><span class="line">Client characterset:    utf8mb4</span><br><span class="line">Conn.  characterset:    utf8mb4</span><br><span class="line">UNIX socket:            /var/lib/mysql/mysql.sock</span><br><span class="line">Uptime:                 3 min 39 sec</span><br></pre></td></tr></table></figure>
+
     </div>
 
     
