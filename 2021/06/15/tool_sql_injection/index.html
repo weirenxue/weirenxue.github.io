@@ -29,7 +29,7 @@
 <meta property="og:description" content="Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL 注入原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-06-15T13:21:54.000Z">
-<meta property="article:modified_time" content="2021-06-19T02:55:22.497Z">
+<meta property="article:modified_time" content="2021-07-12T00:25:27.956Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="tool">
 <meta property="article:tag" content="sql">
@@ -245,7 +245,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2021-06-19 10:55:22" itemprop="dateModified" datetime="2021-06-19T10:55:22+08:00">2021-06-19</time>
+                <time title="修改時間：2021-07-12 08:25:27" itemprop="dateModified" datetime="2021-07-12T08:25:27+08:00">2021-07-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -282,13 +282,16 @@
     <div class="post-body" itemprop="articleBody">
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
-<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><p><a href="https://weirenxue.github.io/sql-injection-in-time/">SQL Injection Real Time</a> 這個工具是以 <code>javascript</code> 開發的，目的是隨時都可以用，不用額外安裝！</p>
+<h2 id="工具連結"><a href="#工具連結" class="headerlink" title="工具連結"></a>工具連結</h2><div class="note info">
+            <p><a href="/injection-in-time/">SQL 注入合成器</a></p>
+          </div>
+<h2 id="安裝說明"><a href="#安裝說明" class="headerlink" title="安裝說明"></a>安裝說明</h2><p>這個工具是以 <code>javascript</code> 開發的，目的是讓使用者只需有瀏覽器，即可隨時使用，不用額外安裝軟體！</p>
 <h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
-<li>將 SQL 語句貼至「SQL HERE」，注入之前的預覽會在「PREVIEW」區域。</li>
-<li>填寫要注入的參數名稱於「Parameter Name」。</li>
-<li>填寫要注入的參數名稱於「Value」。</li>
-<li>注入後的 SQL 語句會在「AFTER INJECTION」區域。</li>
-<li>可由「PREVIEW」比對「AFTER INJECTION」，就知道 SQL Injection的威力！</li>
+<li>將 SQL 語句貼至 <code>GUESS SQL HERE</code>，注入之前的預覽會在 <code>PREVIEW</code> 區域。</li>
+<li>填寫要注入的參數名稱於 <code>Parameter Name</code>。</li>
+<li>填寫對應要注入的值於 <code>Value</code>。</li>
+<li>注入後的 SQL 語句會顯示在 <code>AFTER INJECTION</code> 區域。</li>
+<li>可由 <code>PREVIEW</code> 與 <code>AFTER INJECTION</code> 對比查看，體會一下 SQL Injection 的威力！</li>
 </ol>
 <h2 id="補充小常識"><a href="#補充小常識" class="headerlink" title="補充小常識"></a>補充小常識</h2><p>要預防被注入、安全的執行 SQL，必定要用 <code>Parameterized Query + Prepared Statement</code>，缺一不可。</p>
 
@@ -453,7 +456,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%96%E5%BE%97%E5%B7%A5%E5%85%B7"><span class="nav-number">2.</span> <span class="nav-text">取得工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A3%9C%E5%85%85%E5%B0%8F%E5%B8%B8%E8%AD%98"><span class="nav-number">4.</span> <span class="nav-text">補充小常識</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E9%80%A3%E7%B5%90"><span class="nav-number">2.</span> <span class="nav-text">工具連結</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%9D%E8%AA%AA%E6%98%8E"><span class="nav-number">3.</span> <span class="nav-text">安裝說明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A3%9C%E5%85%85%E5%B0%8F%E5%B8%B8%E8%AD%98"><span class="nav-number">5.</span> <span class="nav-text">補充小常識</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

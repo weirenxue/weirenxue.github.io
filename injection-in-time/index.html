@@ -21,29 +21,20 @@
     var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <meta name="description" content="Windows 與 Linux 使用上有一個很顯著的差異，就是兩種系統的換行字元不一樣，在 Windows 上的換行字元為 CRLF，而 Linux 的換行字元只有 LF。然而總會有在 Ubuntu 需要產生一個換行為 CRLF 的檔案的需求，因此紀錄一下如何使用簡單的指令 echo 來解決這個問題。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="[Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案">
-<meta property="og:url" content="https://weirenxue.github.io/2021/06/17/echo_ubuntu_r/index.html">
+  <meta name="description" content="這是一個讓初學者能親身體會 SQL 注入實現原理的一個小工具，透過合成顯示注入後的 SQL 子句，讓使用者明白 SQL 注入的威力。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SQL 注入合成器">
+<meta property="og:url" content="https://weirenxue.github.io/injection-in-time/index.html">
 <meta property="og:site_name" content="薛惟仁 筆記本">
-<meta property="og:description" content="Windows 與 Linux 使用上有一個很顯著的差異，就是兩種系統的換行字元不一樣，在 Windows 上的換行字元為 CRLF，而 Linux 的換行字元只有 LF。然而總會有在 Ubuntu 需要產生一個換行為 CRLF 的檔案的需求，因此紀錄一下如何使用簡單的指令 echo 來解決這個問題。">
+<meta property="og:description" content="這是一個讓初學者能親身體會 SQL 注入實現原理的一個小工具，透過合成顯示注入後的 SQL 子句，讓使用者明白 SQL 注入的威力。">
 <meta property="og:locale" content="zh_TW">
-<meta property="article:published_time" content="2021-06-17T12:36:59.000Z">
-<meta property="article:modified_time" content="2021-06-17T13:45:18.568Z">
+<meta property="article:published_time" content="2021-07-10T02:35:12.000Z">
+<meta property="article:modified_time" content="2021-07-12T00:14:25.670Z">
 <meta property="article:author" content="Wei-Ren Xue">
-<meta property="article:tag" content="linux">
-<meta property="article:tag" content="ubuntu">
-<meta property="article:tag" content="20.04">
-<meta property="article:tag" content="netcat">
-<meta property="article:tag" content="CR">
-<meta property="article:tag" content="carriage">
-<meta property="article:tag" content="return">
-<meta property="article:tag" content="echo">
-<meta property="article:tag" content="file">
-<meta property="article:tag" content="cat">
+<meta property="article:tag" content="AI hexo Linux js python c#">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://weirenxue.github.io/2021/06/17/echo_ubuntu_r/">
+<link rel="canonical" href="https://weirenxue.github.io/injection-in-time/">
 
 
 <script id="page-configurations">
@@ -51,12 +42,13 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : true,
+    isPost : false,
     lang   : 'zh-TW'
   };
 </script>
 
-  <title>[Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案 | 薛惟仁 筆記本</title>
+  <title>SQL 注入合成器 | 薛惟仁 筆記本
+</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
     <script>
@@ -208,97 +200,242 @@
       <div class="main-inner">
         <div class="content-wrap">
           
+  
+  
 
-          <div class="content post posts-expand">
+          <div class="content page posts-expand">
             
 
     
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2021/06/17/echo_ubuntu_r/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Wei-Ren Xue">
-      <meta itemprop="description" content="Software Engineer">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="薛惟仁 筆記本">
-    </span>
+    
+    
+    <div class="post-block" lang="zh-TW">
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          [Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案
-        </h1>
 
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">發表於</span>
-              
+<h1 class="post-title" itemprop="name headline">SQL 注入合成器
+</h1>
 
-              <time title="創建時間：2021-06-17 20:36:59 / 修改時間：21:45:18" itemprop="dateCreated datePublished" datetime="2021-06-17T20:36:59+08:00">2021-06-17</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分類於</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">學習筆記</span></a>
-                </span>
-            </span>
+<div class="post-meta">
+    <div class="post-description">這是一個讓初學者能親身體會 SQL 注入實現原理的一個小工具，透過合成顯示注入後的 SQL 子句，讓使用者明白 SQL 注入的威力。</div>
+  
 
-          
-            <span class="post-meta-item" title="閱讀次數">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-users"></i>
-              </span>
-              <span class="post-meta-item-text">閱讀次數：</span>
-              <span class="firestore-visitors-count"></span>
-            </span>
-            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">閱讀次數：</span>
-              <span id="busuanzi_value_page_pv"></span>
-            </span>
-            <div class="post-description">Windows 與 Linux 使用上有一個很顯著的差異，就是兩種系統的換行字元不一樣，在 Windows 上的換行字元為 CRLF，而 Linux 的換行字元只有 LF。然而總會有在 Ubuntu 需要產生一個換行為 CRLF 的檔案的需求，因此紀錄一下如何使用簡單的指令 echo 來解決這個問題。</div>
+</div>
 
-        </div>
-      </header>
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
+</header>
+
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Windows 與 Linux 使用上有一個很顯著的差異，就是兩種系統的換行字元不一樣，在 Windows 上的換行字元為 CRLF <code>\r\n</code>，而 Linux 的換行字元只有 LF <code>\n</code>。然而總會有在 Ubuntu 需要產生一個換行為 CRLF 的檔案的需求，因此紀錄一下如何使用簡單的指令 <code>echo</code> 來解決這個問題。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 20.04</li>
-</ul>
-<h2 id="檔案內容敘述"><a href="#檔案內容敘述" class="headerlink" title="檔案內容敘述"></a>檔案內容敘述</h2><p>假設現在我想製作一個 HTTP 標頭檔，因 HTTP 標頭格式的換行必須為 CRLF，若直接開啟文件並使用文字編輯器來編輯，換行一定只有 LF，因此需藉由指令的力量來完成這件事，希望的檔案內容如下，注意最後一行空白是必要的</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HEAD / HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>看文字不清楚，轉為 16 進位形式來看清楚，每個換行皆為 CLRF，最後有一個單獨的 CLRF，才會讓檔案內容看起來有一個空白行。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
-<h2 id="產製檔案"><a href="#產製檔案" class="headerlink" title="產製檔案"></a>產製檔案</h2><p>使用基本指令 <code>echo</code> 就能解決我們的困擾囉</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> -ne <span class="string">&quot;HEAD / HTTP/1.1\r\nHost: localhost\r\n\r\n&quot;</span> &gt; message</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-n</code>：不要輸出最後的換行 (<code>echo</code> 指令自己預設最後會輸出換行 LF)。</li>
-<li><code>-e</code>：會直譯跳脫字元，讓我們可以輸入 <code>\r</code>、<code>\n</code> 等跳脫字元。</li>
-</ul>
-<p>查看該檔案 16 進位形式確認完成！</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">user@pc:~$ xxd message</span><br><span class="line">00000000: 4845 4144 202f 2048 5454 502f 312e 310d  HEAD / HTTP/1.1.</span><br><span class="line">00000010: 0a48 6f73 743a 206c 6f63 616c 686f 7374  .Host: localhost</span><br><span class="line">00000020: 0d0a 0d0a                                ....</span><br></pre></td></tr></table></figure>
+      
+      
+      <div class="post-body">
+          
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.1.0/highlight.min.js"></script>
 
+<div class="container-fluid">
+    <div class="block">
+        <h4>GUESS SQL HERE</h4>
+        <textarea id="content" placeholder="SELECT * FROM `Member` WHERE username = '@username'"></textarea>
     </div>
+    <div class="block">
+        <h4>PREVIEW</h4>
+        <pre id="preview"><code class="sql">SELECT * FROM `Member` WHERE username = '@username'</code></pre>
+    </div>
+    <div class="block">
+        <h4>AFTER INJECTION</h4>
+        <pre id="result"><code class="sql">SELECT * FROM `Member` WHERE username = '1' OR 1=1 -- Comment'</code></pre>
+    </div>
+    <div class="block">
+        <h4>PARAMETER SETTING</h4>
+        <table id="mapping" class="table table-hover table-dark">
+            <thead>
+                <tr>
+                    <th style="width:1px;">#</th>
+                    <th style="width:20%">Parameter Name</th>
+                    <th>Value</th>
+                    <th style="width: 1px; white-space: nowrap;"><button type="button" id="addField" class="btn btn-primary">新增欄位</button></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-id="1">
+                    <td>1</td>
+                    <td><input name="key-0" placeholder="@username"></td>
+                    <td><input name="value-0" placeholder="1' OR 1=1 -- Comment"></td>
+                    <td><button type="button" class="remove btn btn-primary">移除欄位</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
+<style>
+    body {
+        font-family: "Lato","PingFang TC", "Helvetica Neue", Helvetica, "微軟正黑體", "新細明體", Arial, sans-serif;
+    }
+    .block {
+        font-size: 14pt;
+    }
+    textarea, input {
+        box-sizing: border-box;
+        width: 100%;
+    }
+    textarea {
+        resize: vertical;
+    }
+    #content {
+        min-height: 100px;
+    }
+    pre code {
+        padding: 0;
+        font-size: inherit;
+        color: inherit;
+        white-space: pre-wrap;
+        background-color: transparent;
+        border-radius: 10px;
+    }
+    pre {
+        padding: 0;
+        background-color: transparent;
+    }
+    .hljs-keyword {
+        color:#0086b3;
+    }  
+    #go-home {
+        position: fixed;
+        right: 0px;
+        bottom: 0px;
+        border-radius: 50%;
+        background-color: #BE3144;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        padding: 10px;
+        color: white;
+    }
+    #manual {
+        position: fixed;
+        right: 0px;
+        bottom: 60px;
+        border-radius: 50%;
+        background-color: #BE3144;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        padding: 10px;
+        color: white;
+    }
+    a span {
+        font-size: 10px;
+    }
+</style>
+
+<script>
+    function htmlToElement(html) {
+        let template = document.createElement('template');
+        html = html.trim(); // Never return a text node of whitespace as the result
+        template.innerHTML = html;
+        return template.content.firstChild;
+    }
+    document.getElementById("addField").addEventListener('click', () => {
+        let tbody = document.querySelector('#mapping tbody');
+        let trs = tbody.querySelectorAll('tr');
+        let nextNumber = trs.length;
+        let html = `
+                    <tr>
+                        <td>${nextNumber + 1}</td>
+                        <td><input name="key-${nextNumber}"></td>
+                        <td><input name="value-${nextNumber}"></td>
+                        <td><button type="button" class="remove btn btn-primary">移除欄位</button></td>
+                    </tr>
+        `;
+        tr = htmlToElement(html);
+        tbody.appendChild(tr);
+        tr.querySelector('.remove.btn').addEventListener('click', removeBtnClick);
+        tr.querySelectorAll('input').forEach((element) => {
+            element.addEventListener('input', injection);
+        });
+    });
+    function removeBtnClick(e) {
+        let thisElement = e.target;
+        let thisTr = thisElement.parentElement.parentElement;
+        let thisNumber = thisTr.children[1].children[0].name.split('-')[1];
+        let trs = document.querySelectorAll('#mapping tbody tr');
+        if (trs.length == 1) {
+            return;
+        }
+        trs.forEach((element) => {
+            let n = element.querySelector('input').name.split('-')[1];
+            let toN = n - 1;
+            if (n > thisNumber) {
+                let inputs = element.querySelectorAll('input');
+                inputs[0].name = `key-${toN}`;
+                inputs[1].name = `value-${toN}`;
+                element.children[0].innerText = toN + 1;
+            }
+        });
+        thisTr.remove();
+    }
+    document.querySelector('.remove.btn').addEventListener('click', removeBtnClick);
+    window.onload = () => {
+        renderCodeBlock()
+    }
+    const renderCodeBlock = () => {
+        if (window.hljs) {
+            window.hljs.initHighlighting.called = false;
+            window.hljs.initHighlighting();
+        }
+    };
+    const injection = () => {
+        let type = 'sql';
+        let contentArea = document.getElementById('content');
+        let targetStr = contentArea.value;
+        let originStr = targetStr;
+        let trs = document.querySelectorAll('#mapping tbody tr');
+        trs.forEach((element) => {
+            let inputs = element.querySelectorAll('input');
+            let key = inputs[0].value;
+            let value = inputs[1].value;
+
+            let re = new RegExp(key, "gm");
+            targetStr = targetStr.replace(re, value);
+        });
+        let html = `<code class='$&#123;type&#125;'>$&#123;originStr&#125;</code>`;
+        let preview = document.createElement('code');
+        preview.classList.add(type);
+        preview.innerHTML = originStr;
+        
+        let after = document.createElement('code');
+        after.classList.add(type);
+        after.innerHTML = targetStr;
+
+        document.getElementById('preview').innerHTML = '';
+        document.getElementById('preview').append(preview);
+
+        document.getElementById('result').innerHTML = '';
+        document.getElementById('result').append(after);
+
+        renderCodeBlock();
+    };
+    document.getElementById('content').addEventListener('input', injection);
+
+    document.querySelectorAll('#mapping input').forEach((element) => {
+        element.addEventListener('input', injection);
+    });
+</script>
+      </div>
+      
+      
+      
+    </div>
     
-    
-    
-      <div>
+
+
+    <div>
     <script type="text/javascript">
       document.write(
         "<iframe scrolling='no' frameborder='0' style='height: 212px; width: 100%;' " + 
@@ -307,103 +444,13 @@
         encodeURIComponent(location.href.split("?")[0].split("#")[0]) + "'></iframe>");
     </script>
 </div>
-      
-  <div class="popular-posts-header">相關文章</div>
-  <ul class="popular-posts">
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\07\01\mqtt_mosquitto_docker\" rel="bookmark">[MQTT] Mosquitto Docker 架設與設定詳細過程</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\17\apache_http_server\" rel="bookmark">[Apache] 修改 HTTP 標頭中的 Server 欄位</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\17\php_ubuntu_apache_php_phalcon\" rel="bookmark">[PHP] Ubuntu 安裝 Apache 2 + PHP 7.4 + Phalcon 4.0</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\17\user_linux_sudo\" rel="bookmark">[User] Linux 新增使用者並賦予其使用 sudo 的權限</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2021\06\17\remote_ubuntu_xrdp\" rel="bookmark">[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</a></div>
-    </li>
-  </ul>
-
-        <div class="reward-container">
-  <div>以最優質的內容回應您的鼓勵</div>
-  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
-    贊助
-  </button>
-  <div id="qr" style="display: none;">
-      
-      <div style="display: inline-block;">
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/jkopay.jpg" alt="Wei-Ren Xue 街口支付">
-        <p>街口支付</p>
-      </div>
-      
-      <div style="display: inline-block;">
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/opay.png" alt="Wei-Ren Xue 歐付寶">
-        <p>歐付寶</p>
-      </div>
-
-  </div>
-</div>
-
-
-      <script async src="https://cse.google.com/cse.js?cx=264c146931f2086b9"></script>
+    <script async src="https://cse.google.com/cse.js?cx=264c146931f2086b9"></script>
 <div class="gcse-search"></div>
 
-        
-
-<div>
-<ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>作者： </strong>Wei-Ren Xue
-  </li>
-  <li class="post-copyright-link">
-    <strong>文章連結：</strong>
-    <a href="https://weirenxue.github.io/2021/06/17/echo_ubuntu_r/" title="[Echo] 在 Ubuntu 產生包含 \r 換行字元的檔案">https://weirenxue.github.io/2021/06/17/echo_ubuntu_r/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版權聲明： </strong>本網誌所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noopener noreferrer" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 許可協議。轉載請註明出處！
-  </li>
-</ul>
-</div>
-
-
-      <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/linux/" rel="tag"># linux</a>
-              <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
-              <a href="/tags/20-04/" rel="tag"># 20.04</a>
-              <a href="/tags/netcat/" rel="tag"># netcat</a>
-              <a href="/tags/CR/" rel="tag"># CR</a>
-              <a href="/tags/carriage/" rel="tag"># carriage</a>
-              <a href="/tags/return/" rel="tag"># return</a>
-              <a href="/tags/echo/" rel="tag"># echo</a>
-              <a href="/tags/file/" rel="tag"># file</a>
-              <a href="/tags/cat/" rel="tag"># cat</a>
-          </div>
-
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2021/06/17/apache_http_server/" rel="prev" title="[Apache] 修改 HTTP 標頭中的 Server 欄位">
-      <i class="fa fa-chevron-left"></i> [Apache] 修改 HTTP 標頭中的 Server 欄位
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/06/18/nginx_centos_nginx/" rel="next" title="[Nginx] CentOS 安裝網頁伺服器 Nginx">
-      [Nginx] CentOS 安裝網頁伺服器 Nginx <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
     
-  </article>
-  
-  
-  
-
+    
+    
+    
 
 
           </div>
@@ -461,7 +508,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%92%B0%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AA%94%E6%A1%88%E5%85%A7%E5%AE%B9%E6%95%98%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">檔案內容敘述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A2%E8%A3%BD%E6%AA%94%E6%A1%88"><span class="nav-number">4.</span> <span class="nav-text">產製檔案</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -714,9 +760,9 @@ if (document.querySelectorAll('pre.mermaid').length) {
 
 <script>
   var disqus_config = function() {
-    this.page.url = "https://weirenxue.github.io/2021/06/17/echo_ubuntu_r/";
-    this.page.identifier = "2021/06/17/echo_ubuntu_r/";
-    this.page.title = "[Echo] 在 Ubuntu 產生包含 \\r 換行字元的檔案";
+    this.page.url = "https://weirenxue.github.io/injection-in-time/index.html";
+    this.page.identifier = "injection-in-time/index.html";
+    this.page.title = "SQL 注入合成器";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {
