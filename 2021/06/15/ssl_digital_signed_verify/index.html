@@ -28,11 +28,10 @@
 <meta property="og:site_name" content="薛惟仁 筆記本">
 <meta property="og:description" content="SSL 是用來提升 HTTP 安全性的手法，網路上不乏許多原理講解與實作。但我有發現一個現象，就是當講到如何驗證憑證是否為某 CA 所發，都是說以 CA 公鑰去檢查憑證，但到底檢查甚麼，又是怎樣檢查的，非常令人好奇，因此查了一些相關資訊並整理後記錄在這。">
 <meta property="og:locale" content="zh_TW">
-<meta property="article:published_time" content="2021-06-15T07:48:37.000Z">
-<meta property="article:modified_time" content="2021-06-15T08:12:32.318Z">
+<meta property="article:published_time" content="2021-06-15T14:48:37.000Z">
+<meta property="article:modified_time" content="2021-06-15T14:48:37.000Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="ssl">
-<meta property="article:tag" content="key">
 <meta property="article:tag" content="digital">
 <meta property="article:tag" content="signature">
 <meta property="article:tag" content="verify">
@@ -41,6 +40,7 @@
 <meta property="article:tag" content="certificate">
 <meta property="article:tag" content="private">
 <meta property="article:tag" content="public">
+<meta property="article:tag" content="key">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://weirenxue.github.io/2021/06/15/ssl_digital_signed_verify/">
@@ -242,9 +242,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">發表於</span>
-              
 
-              <time title="創建時間：2021-06-15 15:48:37 / 修改時間：16:12:32" itemprop="dateCreated datePublished" datetime="2021-06-15T15:48:37+08:00">2021-06-15</time>
+              <time title="創建時間：2021-06-15 22:48:37" itemprop="dateCreated datePublished" datetime="2021-06-15T22:48:37+08:00">2021-06-15</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -359,7 +358,6 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/ssl/" rel="tag"># ssl</a>
-              <a href="/tags/key/" rel="tag"># key</a>
               <a href="/tags/digital/" rel="tag"># digital</a>
               <a href="/tags/signature/" rel="tag"># signature</a>
               <a href="/tags/verify/" rel="tag"># verify</a>
@@ -368,6 +366,7 @@
               <a href="/tags/certificate/" rel="tag"># certificate</a>
               <a href="/tags/private/" rel="tag"># private</a>
               <a href="/tags/public/" rel="tag"># public</a>
+              <a href="/tags/key/" rel="tag"># key</a>
           </div>
 
         
@@ -376,12 +375,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/06/15/iis_server_x_powered_by_x_aspnet_version/" rel="prev" title="[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭">
-      <i class="fa fa-chevron-left"></i> [IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭
+    <a href="/2021/06/15/ssl_crt_key/" rel="prev" title="[SSL] 確認申請回來的憑證與手中的私鑰匹配">
+      <i class="fa fa-chevron-left"></i> [SSL] 確認申請回來的憑證與手中的私鑰匹配
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/06/15/ssl_self_sign/" rel="next" title="[SSL] 自簽憑證過程">
-      [SSL] 自簽憑證過程 <i class="fa fa-chevron-right"></i>
+    <a href="/2021/06/15/math_2/" rel="next" title="[Math] 以移位運算優化除數為 2 的冪次方的除法">
+      [Math] 以移位運算優化除數為 2 的冪次方的除法 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
