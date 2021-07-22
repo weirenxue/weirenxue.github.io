@@ -275,7 +275,7 @@
 </ul>
 <h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>網路上沒有提供清楚的解決方法，因此自己記錄下遇到的問題與解決的步驟</p>
 <ol>
-<li><p>在 Vitis (或 SDK) 創建 Application Project，硬體平台選擇 Vivado 輸出的 <code>*.xsa</code> 檔案，並且將範例 <code>*.c</code> 檔匯入 <code>src</code> 資料夾下，開始 Build，會出現以下的提示，這是在路徑下找不到 <code>*.h</code> 檔案的意思，但照理來說 Vivado 的 <code>xsa</code> 都包含這些了。</p>
+<li><p>在 Vitis (或 SDK) 創建 Application Project，硬體平台選擇 Vivado 輸出的 <code>*.xsa</code> 檔案，並且將範例 <code>*.c</code> 檔匯入 <code>src</code> 目錄下，開始 Build，會出現以下的提示，這是在路徑下找不到 <code>*.h</code> 檔案的意思，但照理來說 Vivado 的 <code>xsa</code> 都包含這些了。</p>
  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">22:54:01 **** Incremental Build of configuration Debug <span class="keyword">for</span> project LED ****</span><br><span class="line">make all </span><br><span class="line">make --no-print-directory pre-build</span><br><span class="line">a9-linaro-pre-build-step</span><br><span class="line"><span class="string">&#x27; &#x27;</span></span><br><span class="line">make --no-print-directory main-build</span><br><span class="line"><span class="string">&#x27;Building file: ../src/LED_test_tut_1C.c&#x27;</span></span><br><span class="line"><span class="string">&#x27;Invoking: ARM v7 gcc compiler&#x27;</span></span><br><span class="line">arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT<span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Zynq_Book/first_zynq_design/SDK/first_zynq_system_wrapper/<span class="built_in">export</span>/first_zynq_system_wrapper/sw/first_zynq_system_wrapper/standalone_domain/bspinclude/include -MMD -MP -MF<span class="string">&quot;src/LED_test_tut_1C.d&quot;</span> -MT<span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> -o <span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> <span class="string">&quot;../src/LED_test_tut_1C.c&quot;</span></span><br><span class="line">../src/LED_test_tut_1C.c:31:10: fatal error: xgpio.h: No such file or directory</span><br><span class="line"><span class="comment">#include &quot;xgpio.h&quot;</span></span><br><span class="line">        ^~~~~~~~~</span><br><span class="line">compilation terminated.</span><br><span class="line">make[1]: *** [src/subdir.mk:23: src/LED_test_tut_1C.o] Error 1</span><br><span class="line">make: *** [makefile:34: all] Error 2</span><br><span class="line"></span><br><span class="line">22:54:02 Build Finished (took 987ms)</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>查看在 <code>*.h</code> 目錄底下到底有甚麼檔案，我的路徑為：</p>
@@ -457,20 +457,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">74</span>
+          <span class="site-state-item-count">75</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">分類</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">338</span>
+        <span class="site-state-item-count">344</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>

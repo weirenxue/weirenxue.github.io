@@ -282,7 +282,7 @@
 <h2 id="設定防火牆"><a href="#設定防火牆" class="headerlink" title="設定防火牆"></a>設定防火牆</h2><p>在 CentOS 中幾乎所有的 Port 預設對外服務都是關閉的，無法由外部連入，因此需要另外設定才能開放給其他主機連線，FTP 有兩種 Port 需要設定</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=21/tcp           <span class="comment"># Command Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=60101-60110/tcp  <span class="comment"># Data Port</span></span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
 <h2 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_connect_all_unreserved=1 <span class="comment"># 設定這個才能使用 ls/dir 指令，否則出現 425 錯誤</span></span><br><span class="line">[user@localhost ~]$ sudo setsebool -P ftpd_full_access=1 <span class="comment"># 設定這個才能上傳、修改檔名、刪除</span></span><br></pre></td></tr></table></figure>
-<h2 id="創建資料夾"><a href="#創建資料夾" class="headerlink" title="創建資料夾"></a>創建資料夾</h2><p>以 <code>anonymous</code> 登入後是以 ftp 角色進行操作的，因此需另外創建匿名使用者可以上傳與下載檔案的資料夾</p>
+<h2 id="創建目錄"><a href="#創建目錄" class="headerlink" title="創建目錄"></a>創建目錄</h2><p>以 <code>anonymous</code> 登入後是以 ftp 角色進行操作的，因此需另外創建匿名使用者可以上傳與下載檔案的目錄</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mkdir /var/ftp/upload_anonymous</span><br><span class="line">[user@localhost ~]$ sudo chown ftp:ftp /var/ftp/upload_anonymous/</span><br></pre></td></tr></table></figure>
 <h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>至此萬事俱全，可以開始使用 ftp 了，匿名使用者被限制只能在 <code>upload_anonymous</code> 目錄中上傳或下載檔案！</p>
 
@@ -454,7 +454,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%92%B0%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%9D-vsftpd"><span class="nav-number">3.</span> <span class="nav-text">安裝 vsftpd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A8%AD%E5%AE%9A%E9%98%B2%E7%81%AB%E7%89%86"><span class="nav-number">4.</span> <span class="nav-text">設定防火牆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A8%AD%E5%AE%9A-SELinux"><span class="nav-number">5.</span> <span class="nav-text">設定 SELinux</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%B5%E5%BB%BA%E8%B3%87%E6%96%99%E5%A4%BE"><span class="nav-number">6.</span> <span class="nav-text">創建資料夾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%88%90"><span class="nav-number">7.</span> <span class="nav-text">完成</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%92%B0%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%9D-vsftpd"><span class="nav-number">3.</span> <span class="nav-text">安裝 vsftpd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A8%AD%E5%AE%9A%E9%98%B2%E7%81%AB%E7%89%86"><span class="nav-number">4.</span> <span class="nav-text">設定防火牆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A8%AD%E5%AE%9A-SELinux"><span class="nav-number">5.</span> <span class="nav-text">設定 SELinux</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%B5%E5%BB%BA%E7%9B%AE%E9%8C%84"><span class="nav-number">6.</span> <span class="nav-text">創建目錄</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%88%90"><span class="nav-number">7.</span> <span class="nav-text">完成</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -469,20 +469,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">74</span>
+          <span class="site-state-item-count">75</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">分類</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">338</span>
+        <span class="site-state-item-count">344</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>

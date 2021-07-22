@@ -38,8 +38,8 @@
 <meta property="article:tag" content="18.04">
 <meta property="article:tag" content="10">
 <meta property="article:tag" content="menu">
-<meta property="article:tag" content="dual">
 <meta property="article:tag" content="system">
+<meta property="article:tag" content="dual">
 <meta property="article:tag" content="option">
 <meta property="article:tag" content="boot">
 <meta property="article:tag" content="grub">
@@ -292,7 +292,7 @@
 </li>
 </ol>
 <p>以上三點都確認完，重開機後還是沒有出現選單的話，再接著去做下面的事情</p>
-<h2 id="grubx64-efi-確認"><a href="#grubx64-efi-確認" class="headerlink" title="grubx64.efi 確認"></a>grubx64.efi 確認</h2><p>進 EFI 系統分割磁碟區(參考：<a href="/2021/06/16/efi_windows_efi/">[EFI] 顯示 Windows 的 EFI 系統分割磁碟</a>)下的 ubuntu 資料夾，看是否有關鍵檔案 <code>grubx64.efi</code>，這是 Linux 的引導開機檔案，若沒有看到的話請 <a target="_blank" rel="external nofollow noopener noreferrer" href="https://mega.nz/#!iIonWA4a!unTw_2I5r6pXLZaXUe-gU5D_lOqCHQJVwgcDeQyl0FU">點此下載 grubx64.efi</a> 並將其移到這個目錄下，再繼續下一步</p>
+<h2 id="grubx64-efi-確認"><a href="#grubx64-efi-確認" class="headerlink" title="grubx64.efi 確認"></a>grubx64.efi 確認</h2><p>進 EFI 系統分割磁碟區(參考：<a href="/2021/06/16/efi_windows_efi/">[EFI] 顯示 Windows 的 EFI 系統分割磁碟</a>)下的 ubuntu 目錄，看是否有關鍵檔案 <code>grubx64.efi</code>，這是 Linux 的引導開機檔案，若沒有看到的話請 <a target="_blank" rel="external nofollow noopener noreferrer" href="https://mega.nz/#!iIonWA4a!unTw_2I5r6pXLZaXUe-gU5D_lOqCHQJVwgcDeQyl0FU">點此下載 grubx64.efi</a> 並將其移到這個目錄下，再繼續下一步</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">P:\EFI\ubuntu&gt;dir</span><br><span class="line"></span><br><span class="line"> P:\EFI\ubuntu 的目錄</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          .</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          ..</span><br><span class="line">2019/09/27  下午 06:16    &lt;DIR&gt;          fw</span><br><span class="line">2019/09/27  下午 06:16            75,992 fwupx64.efi</span><br><span class="line">2019/09/27  下午 06:20               121 grub.cfg</span><br><span class="line">2019/09/27  下午 06:20         1,334,816 shimx64.efi</span><br><span class="line">2019/09/27  下午 06:20         1,269,496 mmx64.efi</span><br><span class="line">2019/09/27  下午 06:20               108 BOOTX64.CSV</span><br><span class="line">2019/09/28  下午 01:01           956,792 grubx64.efi</span><br><span class="line">               6 個檔案       3,637,325 位元組</span><br><span class="line">               3 個目錄     236,093,440 位元組可用</span><br></pre></td></tr></table></figure>
 <p>以系統管理員身分開啟 cmd (打開命令提示字元)，並在命令提示字元視窗內輸入下方指令</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\&gt;bcdedit /<span class="built_in">set</span> &#123;bootmgr&#125; path \EFI\ubuntu\grubx64.efi</span><br><span class="line"></span><br><span class="line">操作順利完成。</span><br></pre></td></tr></table></figure>
@@ -384,8 +384,8 @@
               <a href="/tags/18-04/" rel="tag"># 18.04</a>
               <a href="/tags/10/" rel="tag"># 10</a>
               <a href="/tags/menu/" rel="tag"># menu</a>
-              <a href="/tags/dual/" rel="tag"># dual</a>
               <a href="/tags/system/" rel="tag"># system</a>
+              <a href="/tags/dual/" rel="tag"># dual</a>
               <a href="/tags/option/" rel="tag"># option</a>
               <a href="/tags/boot/" rel="tag"># boot</a>
               <a href="/tags/grub/" rel="tag"># grub</a>
@@ -485,20 +485,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">74</span>
+          <span class="site-state-item-count">75</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">分類</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">338</span>
+        <span class="site-state-item-count">344</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>

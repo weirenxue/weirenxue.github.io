@@ -268,7 +268,7 @@
     <div class="post-body" itemprop="articleBody">
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>網路上有許多 <code>EJS</code> 使用範例，通常是以 <code>Node.js</code> 與 <code>Express</code> 搭配的教學，而這裡紀錄如何單獨使用 <code>EJS</code> 來渲染前端畫面。</p>
-<h2 id="使用步驟"><a href="#使用步驟" class="headerlink" title="使用步驟"></a>使用步驟</h2><p>建立一個資料夾用來放置相關檔案，並下載 <a target="_blank" rel="external nofollow noopener noreferrer" href="https://github.com/mde/ejs/releases/tag/v3.0.2">EJS</a> 內的 <code>ejs.min.js</code> 放至此資料夾中。再新增 <code>index.html</code> 且程式碼如下</p>
+<h2 id="使用步驟"><a href="#使用步驟" class="headerlink" title="使用步驟"></a>使用步驟</h2><p>建立一個目錄用來放置相關檔案，並下載 <a target="_blank" rel="external nofollow noopener noreferrer" href="https://github.com/mde/ejs/releases/tag/v3.0.2">EJS</a> 內的 <code>ejs.min.js</code> 放至此目錄中。再新增 <code>index.html</code> 且程式碼如下</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&#x27;./ejs.min.js&#x27;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> html = ejs.render(<span class="string">&#x27;fieldA:&lt;%= fieldA %&gt;&lt;br /&gt;fieldB:&lt;%= fieldB %&gt;&#x27;</span>,</span></span><br><span class="line"><span class="javascript">                &#123;<span class="attr">fieldA</span> : <span class="string">&#x27;Hello world!&#x27;</span>, <span class="attr">fieldB</span> : <span class="string">&#x27;Hellow Taiwan!&#x27;</span>&#125;);</span></span><br><span class="line"><span class="javascript">            <span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                <span class="built_in">document</span>.getElementById(<span class="string">&#x27;divContent&#x27;</span>).innerHTML = html;</span></span><br><span class="line"><span class="javascript">            &#125;</span></span><br><span class="line"><span class="javascript">        </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;divContent&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>此時的目錄檔案結構為</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── ejs.min.js</span><br><span class="line">└── index.html</span><br></pre></td></tr></table></figure>
@@ -444,20 +444,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">74</span>
+          <span class="site-state-item-count">75</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">分類</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">338</span>
+        <span class="site-state-item-count">344</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
