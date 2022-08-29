@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <meta name="google-site-verification" content="bRutnYAGKI_g4c5FRGiaW-C5afjLcMHUt0AsB4kSRaU">
+    <title>Projectile Game! | 薛惟仁筆記本</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300&display=swap" rel="stylesheet">
+    <meta name="description" content="紓壓小遊戲">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #000;
+        }
+
+        .score-item {
+            position: fixed;
+            color: #fff;
+            top: 20px;
+            left: 20px;
+            font-size: 30px;
+            font-family: 'Azeret Mono', monospace;
+            user-select: none;
+        }
+        .modal {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal .container{
+            width: 100%;
+            max-width: 400px;
+            padding: 50px 20px;
+            text-align: center;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255);
+        }
+        .modal button {
+            width: 100%;
+            padding: 10px 0;
+            color: #fff;
+            border: none;
+            background-color: #0af;
+            font-size: 20px;
+            border-radius: 200px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        .modal .txt h1 {
+            font-size: 42px;
+            font-family: 'Azeret Mono', monospace;
+        }
+        .modal .txt p {
+            font-size: 14px;
+            font-family: 'Azeret Mono', monospace;
+            color: #aaa;
+        }
+    </style>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-0W9Q94E89P');
+        gtag('config', 'UA-195965659-1');
+      }
+    </script>
+</head>
+
+<body>
+    <div class="score-item">
+        <span>Score:</span><span id="score">0</span>
+    </div>
+
+    <div class="modal" id="start-game-modal">
+        <div class="container">
+            <div class="txt">
+                <h1 id="big-score">0</h1>
+                <p>Points</p>
+            </div>
+            <div class="btn">
+                <button id="start-game-btn">Start Game</button>
+            </div>
+        </div>
+    </div>
+
+    <canvas></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"
+        integrity="sha512-UxP+UhJaGRWuMG2YC6LPWYpFQnsSgnor0VUF3BHdD83PS/pOpN+FYbZmrYN+ISX8jnvgVUciqP/fILOXDjZSwg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
