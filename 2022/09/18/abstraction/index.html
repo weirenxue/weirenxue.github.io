@@ -20,18 +20,20 @@
     var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 <script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <meta name="description" content="Software Engineer">
-<meta property="og:type" content="website">
-<meta property="og:title" content="薛惟仁 筆記本">
-<meta property="og:url" content="https://weirenxue.github.io/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/page/8/index.html">
+  <meta name="description" content="前言當我在學 Design Pattern 時，請教前輩：「抽象是什麼？」對方熱心的一陣瘋狂輸出解釋並舉些範例，我的心中最後冒出一個想法：「聽起來好抽象。」同時依然無法體會抽象的含義，這便是我的親身經歷。就是這麼奇怪，我知道什麼場景可以用這個詞，但背後含意卻不清楚。為了徹底弄懂「抽象」的含義，特別寫成文章強迫自己將認為的「抽象」解釋出來。 辭典解釋根據教育部國語辭典，「抽象」有兩個解釋：  哲學上">
+<meta property="og:type" content="article">
+<meta property="og:title" content="抽象是什麼？聽起來好抽象">
+<meta property="og:url" content="https://weirenxue.github.io/2022/09/18/abstraction/index.html">
 <meta property="og:site_name" content="薛惟仁 筆記本">
-<meta property="og:description" content="Software Engineer">
+<meta property="og:description" content="前言當我在學 Design Pattern 時，請教前輩：「抽象是什麼？」對方熱心的一陣瘋狂輸出解釋並舉些範例，我的心中最後冒出一個想法：「聽起來好抽象。」同時依然無法體會抽象的含義，這便是我的親身經歷。就是這麼奇怪，我知道什麼場景可以用這個詞，但背後含意卻不清楚。為了徹底弄懂「抽象」的含義，特別寫成文章強迫自己將認為的「抽象」解釋出來。 辭典解釋根據教育部國語辭典，「抽象」有兩個解釋：  哲學上">
 <meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2022-09-18T06:52:59.000Z">
+<meta property="article:modified_time" content="2022-09-18T06:52:59.000Z">
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="AI hexo Linux js python c#">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://weirenxue.github.io/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/page/8/">
+<link rel="canonical" href="https://weirenxue.github.io/2022/09/18/abstraction/">
 
 
 <script id="page-configurations">
@@ -39,12 +41,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-TW'
   };
 </script>
 
-  <title>分類: 學習筆記 | 薛惟仁 筆記本</title>
+  <title>抽象是什麼？聽起來好抽象 | 薛惟仁 筆記本</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
     <script>
@@ -206,220 +208,201 @@
         <div class="content-wrap">
           
 
-          <div class="content category">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">學習筆記
-          <small>分類</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2022/09/18/abstraction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Wei-Ren Xue">
+      <meta itemprop="description" content="Software Engineer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="薛惟仁 筆記本">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          抽象是什麼？聽起來好抽象
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2022-09-18 14:52:59" itemprop="dateCreated datePublished" datetime="2022-09-18T14:52:59+08:00">2022-09-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Design-Pattern/" itemprop="url" rel="index"><span itemprop="name">Design Pattern</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>當我在學 Design Pattern 時，請教前輩：「抽象是什麼？」對方熱心的一陣瘋狂輸出解釋並舉些範例，我的心中最後冒出一個想法：「聽起來好抽象。」同時依然無法體會抽象的含義，這便是我的親身經歷。就是這麼奇怪，我知道什麼場景可以用這個詞，但背後含意卻不清楚。為了徹底弄懂「抽象」的含義，特別寫成文章強迫自己將認為的「抽象」解釋出來。</p>
+<h2 id="辭典解釋"><a href="#辭典解釋" class="headerlink" title="辭典解釋"></a>辭典解釋</h2><p>根據<a target="_blank" rel="external nofollow noopener noreferrer" href="https://dict.revised.moe.edu.tw/dictView.jsp?ID=122548&amp;la=0&amp;powerMode=0">教育部國語辭典</a>，「抽象」有兩個解釋：</p>
+<ol>
+<li>哲學上指從個別的、偶然的不同事物中，分析出其共同點的思想活動。相對於具體而言。</li>
+<li>泛指籠統概括。亦相對於具體而言。</li>
+</ol>
+<p>這才明白，原來日常生活中所說的「抽象」，指的是第二個解釋「泛指籠統概括」。當所說的話語過於籠統不夠具體，導致聽者不懂時，聽者通常會說「聽起來好抽象」，如同我的親身經歷。</p>
+<p>接下來讓我們回到正題，<strong>抽象是什麼？</strong></p>
+<h2 id="抽象是什麼？"><a href="#抽象是什麼？" class="headerlink" title="抽象是什麼？"></a>抽象是什麼？</h2><!-- markdownlint-disable MD033 -->
+<p>國語辭典的第一個解釋則與程式設計中的「抽象」沾到邊了！「抽象」指的是<font style="color:red;"><strong>一種思想活動，從個別的、偶然的不同事物中分析出其共同點的思考過程</strong></font>。但為什麼我說只是沾到邊呢？因為還少了一個重點，就是抽象還<font style="color:red;"><strong>隱藏了不相關的細節</strong></font>。<br><!-- markdownlint-enable MD033 --></p>
+<p>我在 <a target="_blank" rel="external nofollow noopener noreferrer" href="https://www.udemy.com/course/solid-principles-object-oriented-design-architecture/">Abstractions in Digital World</a> 發現一個對於抽象 (Abstraction) 一詞不錯的解釋</p>
+<blockquote>
+<p>Abstraction:<br>Alternative representation of a concept that hides irrelevant details and exposes only the properties that we’re interested in.</p>
+<p>翻譯蒟蒻：抽象為一個概念的替代性表述，隱藏不相關的細節，只暴露我們感興趣的屬性。</p>
+</blockquote>
+<p>簡單來說抽象主要做了兩件事</p>
+<ol>
+<li>分析不同東西之間的共同點</li>
+<li>隱藏不相關的細節，只暴露感興趣的屬性</li>
+</ol>
+<h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><p>學習一個觀念要能夠舉出例子，才算真的明白它的道理，這裡舉出兩個常見但沒有仔細思考過的範例：</p>
+<ol>
+<li><p>奇數：若看到一串數字 <code>1, 3, 5, 7, 9, ...</code>，會覺得這串數字背後所想表達的含義是什麼？也許會說「這些數字都是奇數 (正奇數、正整數或整數 ... 等等)」，不論如何，這些都是我們針對不同的數字進行分析，發現它們共通點所產生的結論。</p>
+<ul>
+<li><p>可以說奇數是使用來替代性的表示這些數字的一個概念 (抽象)，我們感興趣的並非數字本身 (細節)，而是它們整體的特質，例如不能被 2 整除 (感興趣的屬性)。</p>
+</li>
+<li><p>將其抽象為奇數後，我們便能捨棄原本的數字，直接對奇數進行更高層次的討論。</p>
+</li>
+</ul>
+</li>
+<li><p>通訊設備：手機可以透過 4G LTE 通話、電腦可以透過乙太網路通話、平板可以透過 Wi-Fi 通話，它們的共通點都是可以通話，差別只在於實現通話的方式不同。</p>
+<ul>
+<li>我們可以使用通訊設備這個概念 (抽象) 來替代性的表示手機、電腦與平板，不去理會通話的原理 (細節)，就能夠用它來撥通號碼 (感興趣的屬性)。</li>
+</ul>
+</li>
+</ol>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>其實抽象的概念並不難，會覺得難的是因為我們平常把「抽象」理解為「籠統概括、艱澀難懂」，而不知道他還有另一個含義「尋找共通點、隱藏細節」，所以抽象真的抽象嗎？</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://dict.revised.moe.edu.tw/dictView.jsp?ID=122548&amp;la=0&amp;powerMode=0">教育部國語辭典</a></p>
+</li>
+<li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://www.udemy.com/course/solid-principles-object-oriented-design-architecture/">SOLID Principles of Object-Oriented Design and Architecture - Abstractions in Digital World</a></p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      <div>
+    <strong>很高興能在這裡幫助到您，歡迎登入 Liker 為我鼓掌 5 次，或者成為我的讚賞公民，鼓勵我繼續創造優質文章。</strong>
+    <script type="text/javascript">
+      document.write(
+        "<iframe scrolling='no' frameborder='0' style='height: 212px; width: 100%;' " + 
+        "sandbox='allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation' " + 
+        "src='https://button.like.co/in/embed/weirenxue/button?referrer=" +
+        encodeURIComponent(location.href.split("?")[0].split("#")[0]) + "'></iframe>");
+    </script>
+</div>
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
-    </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-13T20:53:15+08:00" content="2021-06-13">
-          06-13
-        </time>
+        <div class="reward-container">
+  <div>以最優質的內容回應您的鼓勵</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    贊助
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/jkopay.jpg" alt="Wei-Ren Xue 街口支付">
+        <p>街口支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/opay.png" alt="Wei-Ren Xue 歐付寶">
+        <p>歐付寶</p>
       </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/13/latex_texmaker/" itemprop="url">
-            <span itemprop="name">[LaTeX] Texmaker 點擊跳轉失效</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-13T20:38:04+08:00" content="2021-06-13">
-          06-13
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/13/rdp_windows_10_multi/" itemprop="url">
-            <span itemprop="name">[RDP] Windows 10 設定遠端多人多工</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T22:44:23+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/matlab_k_means/" itemprop="url">
-            <span itemprop="name">[MATLAB] k-means 演算法說明與實作</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T22:14:37+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/python_email_protected/" itemprop="url">
-            <span itemprop="name">[Python] 爬蟲遇到 email protected 的原因與解決方法</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T21:26:38+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/python_regular_expression/" itemprop="url">
-            <span itemprop="name">[Python] 使用 regular expression 驗證密碼長度與安全性</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T21:22:09+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/ip_finder/" itemprop="url">
-            <span itemprop="name">[MATLAB] 模仿儀器商附的 IP Finder 並整合進自己的系統裡</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T21:19:11+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/python_cp950_codec_cant_encode/" itemprop="url">
-            <span itemprop="name">[Python] 爬蟲遇到 'cp950' codec can't encode ?</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T20:51:58+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/python_jupyter/" itemprop="url">
-            <span itemprop="name">[Jupyter] 改變 Jupyter notebook 預設路徑與瀏覽器</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-12T20:42:52+08:00" content="2021-06-12">
-          06-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/12/opcodejmp/" itemprop="url">
-            <span itemprop="name">[Opcode] JMP 轉成機械碼的原理與過程</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated" datetime="2021-06-11T19:41:26+08:00" content="2021-06-11">
-          06-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/06/11/asmneg/" itemprop="url">
-            <span itemprop="name">[asm] NEG 的運作與應用</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-    </div>
   </div>
-  
-  
-  
+</div>
 
+
+      <ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-f7+5u+4t-da+6l" data-ad-client="ca-pub-1417890905860188" data-ad-slot="8643645962"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>作者： </strong>Wei-Ren Xue
+  </li>
+  <li class="post-copyright-link">
+    <strong>文章連結：</strong>
+    <a href="https://weirenxue.github.io/2022/09/18/abstraction/" title="抽象是什麼？聽起來好抽象">https://weirenxue.github.io/2022/09/18/abstraction/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版權聲明： </strong>本網誌所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noopener noreferrer" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 許可協議。轉載請註明出處！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/30/unit_convert/" rel="prev" title="優雅的單位轉換公式與推導">
+      <i class="fa fa-chevron-left"></i> 優雅的單位轉換公式與推導
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
   
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/page/7/"><i class="fa fa-angle-left" aria-label="上一頁"></i></a><a class="page-number" href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/">1</a><span class="space">&hellip;</span><a class="page-number" href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/page/9/">9</a><a class="extend next" rel="next" href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/page/9/"><i class="fa fa-angle-right" aria-label="下一頁"></i></a>
-  </nav>
+  
+  
 
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -466,6 +449,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%AD%E5%85%B8%E8%A7%A3%E9%87%8B"><span class="nav-number">2.</span> <span class="nav-text">辭典解釋</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E6%98%AF%E4%BB%80%E9%BA%BC%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">抽象是什麼？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B"><span class="nav-number">4.</span> <span class="nav-text">範例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">5.</span> <span class="nav-text">結語</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E6%96%87%E7%8D%BB"><span class="nav-number">6.</span> <span class="nav-text">參考文獻</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -480,14 +464,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-count">127</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">分類</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -716,6 +700,26 @@ if (document.querySelectorAll('pre.mermaid').length) {
 
   
 
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://weirenxue.github.io/2022/09/18/abstraction/";
+    this.page.identifier = "2022/09/18/abstraction/";
+    this.page.title = "抽象是什麼？聽起來好抽象";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://weirenxue.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
 
 
         <style>

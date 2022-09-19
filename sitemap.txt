@@ -1,9 +1,10 @@
+https://weirenxue.github.io/2022/09/18/abstraction/
 https://weirenxue.github.io/2022/08/30/unit_convert/
 https://weirenxue.github.io/tools/index.html
-https://weirenxue.github.io/multi-str-replace/index.html
 https://weirenxue.github.io/portfolios/index.html
-https://weirenxue.github.io/tags/index.html
 https://weirenxue.github.io/injection-in-time/index.html
+https://weirenxue.github.io/multi-str-replace/index.html
+https://weirenxue.github.io/tags/index.html
 https://weirenxue.github.io/google79fff82c490e8be5.html
 https://weirenxue.github.io/course-code-parsing/index.html
 https://weirenxue.github.io/game/projectile/index.html
@@ -138,7 +139,13 @@ https://weirenxue.github.io/2021/06/11/cs_dpi/
 https://weirenxue.github.io/
 https://weirenxue.github.io/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/
 https://weirenxue.github.io/categories/Hexo-%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98/
+https://weirenxue.github.io/categories/Design-Pattern/
 https://weirenxue.github.io/categories/Slack-%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98/
+https://weirenxue.github.io/categories/SSL-%E7%AD%86%E8%A8%98/
 https://weirenxue.github.io/categories/Tableau-%E8%BC%95%E9%AC%86%E5%AD%B8/
+https://weirenxue.github.io/categories/Xilinx-%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98/
+https://weirenxue.github.io/categories/%E4%BC%BA%E6%9C%8D%E5%99%A8%E6%9E%B6%E8%A8%AD%E7%AD%86%E8%A8%98/
 https://weirenxue.github.io/categories/%E5%B0%88%E6%A1%88%E9%96%8B%E7%99%BC%E7%AD%86%E8%A8%98/
+https://weirenxue.github.io/categories/%E7%88%AC%E8%9F%B2%E7%AD%86%E8%A8%98/
 https://weirenxue.github.io/categories/%E8%87%AA%E8%A1%8C%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E6%95%99%E5%AD%B8/
+https://weirenxue.github.io/categories/%E9%81%A0%E7%AB%AF%E6%A1%8C%E9%9D%A2%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98/
