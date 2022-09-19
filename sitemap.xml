@@ -29,7 +29,7 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/portfolios/index.html</loc>
+    <loc>https://weirenxue.github.io/multi-str-replace/index.html</loc>
     
     <lastmod>2022-08-28</lastmod>
     
@@ -47,7 +47,7 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/multi-str-replace/index.html</loc>
+    <loc>https://weirenxue.github.io/portfolios/index.html</loc>
     
     <lastmod>2022-08-28</lastmod>
     
@@ -1276,13 +1276,6 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/categories/Slack-%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98/</loc>
-    <lastmod>2022-09-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://weirenxue.github.io/categories/SSL-%E7%AD%86%E8%A8%98/</loc>
     <lastmod>2022-09-19</lastmod>
     <changefreq>weekly</changefreq>
@@ -1290,7 +1283,7 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/categories/Tableau-%E8%BC%95%E9%AC%86%E5%AD%B8/</loc>
+    <loc>https://weirenxue.github.io/categories/Slack-%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98/</loc>
     <lastmod>2022-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1311,7 +1304,7 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/categories/%E5%B0%88%E6%A1%88%E9%96%8B%E7%99%BC%E7%AD%86%E8%A8%98/</loc>
+    <loc>https://weirenxue.github.io/categories/Tableau-%E8%BC%95%E9%AC%86%E5%AD%B8/</loc>
     <lastmod>2022-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1319,6 +1312,13 @@
   
   <url>
     <loc>https://weirenxue.github.io/categories/%E7%88%AC%E8%9F%B2%E7%AD%86%E8%A8%98/</loc>
+    <lastmod>2022-09-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/categories/%E5%B0%88%E6%A1%88%E9%96%8B%E7%99%BC%E7%AD%86%E8%A8%98/</loc>
     <lastmod>2022-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
