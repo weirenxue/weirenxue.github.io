@@ -38,7 +38,7 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/multi-str-replace/index.html</loc>
+    <loc>https://weirenxue.github.io/portfolios/index.html</loc>
     
     <lastmod>2022-08-28</lastmod>
     
@@ -47,7 +47,7 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/portfolios/index.html</loc>
+    <loc>https://weirenxue.github.io/multi-str-replace/index.html</loc>
     
     <lastmod>2022-08-28</lastmod>
     
@@ -1262,14 +1262,14 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/categories/Hexo-%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98/</loc>
+    <loc>https://weirenxue.github.io/categories/Design-Pattern/</loc>
     <lastmod>2022-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/categories/Design-Pattern/</loc>
+    <loc>https://weirenxue.github.io/categories/Hexo-%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98/</loc>
     <lastmod>2022-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1283,14 +1283,14 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/categories/Slack-%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98/</loc>
+    <loc>https://weirenxue.github.io/categories/Xilinx-%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98/</loc>
     <lastmod>2022-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/categories/Xilinx-%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98/</loc>
+    <loc>https://weirenxue.github.io/categories/Slack-%E4%BD%BF%E7%94%A8%E7%AD%86%E8%A8%98/</loc>
     <lastmod>2022-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1311,13 +1311,6 @@
   </url>
   
   <url>
-    <loc>https://weirenxue.github.io/categories/%E8%87%AA%E8%A1%8C%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E6%95%99%E5%AD%B8/</loc>
-    <lastmod>2022-09-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://weirenxue.github.io/categories/Tableau-%E8%BC%95%E9%AC%86%E5%AD%B8/</loc>
     <lastmod>2022-09-19</lastmod>
     <changefreq>weekly</changefreq>
@@ -1326,6 +1319,13 @@
   
   <url>
     <loc>https://weirenxue.github.io/categories/%E7%88%AC%E8%9F%B2%E7%AD%86%E8%A8%98/</loc>
+    <lastmod>2022-09-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://weirenxue.github.io/categories/%E8%87%AA%E8%A1%8C%E9%96%8B%E7%99%BC%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E6%95%99%E5%AD%B8/</loc>
     <lastmod>2022-09-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
