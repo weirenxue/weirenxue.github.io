@@ -264,50 +264,15 @@
     
     <div class="post-body" itemprop="articleBody">
       
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>當我在學 Design Pattern 時，請教前輩：「抽象是什麼？」對方熱心的一陣瘋狂輸出解釋並舉些範例，我的心中最後冒出一個想法：「聽起來好抽象。」同時依然無法體會抽象的含義，這便是我的親身經歷。就是這麼奇怪，我知道什麼場景可以用這個詞，但背後含意卻不清楚。為了徹底弄懂「抽象」的含義，特別寫成文章強迫自己將認為的「抽象」解釋出來。</p>
-<h2 id="辭典解釋"><a href="#辭典解釋" class="headerlink" title="辭典解釋"></a>辭典解釋</h2><p>根據<a target="_blank" rel="external nofollow noopener noreferrer" href="https://dict.revised.moe.edu.tw/dictView.jsp?ID=122548&amp;la=0&amp;powerMode=0">教育部國語辭典</a>，「抽象」有兩個解釋：</p>
-<ol>
-<li>哲學上指從個別的、偶然的不同事物中，分析出其共同點的思想活動。相對於具體而言。</li>
-<li>泛指籠統概括。亦相對於具體而言。</li>
-</ol>
-<p>這才明白，原來日常生活中所說的「抽象」，指的是第二個解釋「泛指籠統概括」。當所說的話語過於籠統不夠具體，導致聽者不懂時，聽者通常會說「聽起來好抽象」，如同我的親身經歷。</p>
-<p>接下來讓我們回到正題，<strong>抽象是什麼？</strong></p>
-<h2 id="抽象是什麼？"><a href="#抽象是什麼？" class="headerlink" title="抽象是什麼？"></a>抽象是什麼？</h2><!-- markdownlint-disable MD033 -->
-<p>國語辭典的第一個解釋則與程式設計中的「抽象」沾到邊了！「抽象」指的是<font style="color:red;"><strong>一種思想活動，從個別的、偶然的不同事物中分析出其共同點的思考過程</strong></font>。但為什麼我說只是沾到邊呢？因為還少了一個重點，就是抽象還<font style="color:red;"><strong>隱藏了不相關的細節</strong></font>。<br><!-- markdownlint-enable MD033 --></p>
-<p>我在 <a target="_blank" rel="external nofollow noopener noreferrer" href="https://www.udemy.com/course/solid-principles-object-oriented-design-architecture/">Abstractions in Digital World</a> 發現一個對於抽象 (Abstraction) 一詞不錯的解釋</p>
-<blockquote>
-<p>Abstraction:<br>Alternative representation of a concept that hides irrelevant details and exposes only the properties that we’re interested in.</p>
-<p>翻譯蒟蒻：抽象為一個概念的替代性表述，隱藏不相關的細節，只暴露我們感興趣的屬性。</p>
-</blockquote>
-<p>簡單來說抽象主要做了兩件事</p>
-<ol>
-<li>分析不同東西之間的共同點</li>
-<li>隱藏不相關的細節，只暴露感興趣的屬性</li>
-</ol>
-<h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><p>學習一個觀念要能夠舉出例子，才算真的明白它的道理，這裡舉出兩個常見但沒有仔細思考過的範例：</p>
-<ol>
-<li><p>奇數：若看到一串數字 <code>1, 3, 5, 7, 9, ...</code>，會覺得這串數字背後所想表達的含義是什麼？也許會說「這些數字都是奇數 (正奇數、正整數或整數 ... 等等)」，不論如何，這些都是我們針對不同的數字進行分析，發現它們共通點所產生的結論。</p>
-<ul>
-<li><p>可以說奇數是使用來替代性的表示這些數字的一個概念 (抽象)，我們感興趣的並非數字本身 (細節)，而是它們整體的特質，例如不能被 2 整除 (感興趣的屬性)。</p>
-</li>
-<li><p>將其抽象為奇數後，我們便能捨棄原本的數字，直接對奇數進行更高層次的討論。</p>
-</li>
-</ul>
-</li>
-<li><p>通訊設備：手機可以透過 4G LTE 通話、電腦可以透過乙太網路通話、平板可以透過 Wi-Fi 通話，它們的共通點都是可以通話，差別只在於實現通話的方式不同。</p>
-<ul>
-<li>我們可以使用通訊設備這個概念 (抽象) 來替代性的表示手機、電腦與平板，不去理會通話的原理 (細節)，就能夠用它來撥通號碼 (感興趣的屬性)。</li>
-</ul>
-</li>
-</ol>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>其實抽象的概念並不難，會覺得難的是因為我們平常把「抽象」理解為「籠統概括、艱澀難懂」，而不知道他還有另一個含義「尋找共通點、隱藏細節」，所以抽象真的抽象嗎？</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://dict.revised.moe.edu.tw/dictView.jsp?ID=122548&amp;la=0&amp;powerMode=0">教育部國語辭典</a></p>
-</li>
-<li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://www.udemy.com/course/solid-principles-object-oriented-design-architecture/">SOLID Principles of Object-Oriented Design and Architecture - Abstractions in Digital World</a></p>
-</li>
-</ol>
-
+          <p>當我在學 Design Pattern 時，請教前輩：「抽象是什麼？」對方熱心的一陣瘋狂輸出解釋並舉些範例，我的心中最後冒出一個想法：「聽起來好抽象。」同時依然無法體會抽象的含義，這便是我的親身經歷。就是這麼奇怪，我知道什麼場景可以用這個詞，但背後含意卻不清楚。為了徹底弄懂「抽象」的含義，特別寫成文章強迫自己將認為的「抽象」解釋出來。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/09/18/abstraction/">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1116,7 +1081,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">521</span>
+        <span class="site-state-item-count">526</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
