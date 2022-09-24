@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh-TW,en,default">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <meta name="google-site-verification" content="bRutnYAGKI_g4c5FRGiaW-C5afjLcMHUt0AsB4kSRaU">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+<script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <meta name="description" content="開發程式的過程中最常做的事就是編譯、運行、看結果，若結果不符預期，對原始碼進行修改後再執行一樣的步驟直到正確為止，一來一回著實耗費工程師不少寶貴時間。此外，修改代碼時還需要注意不要影響到其它地方的程式碼運行，若因此而產生錯誤就要花更多時間修改，是一種維護成本。長時間下來，這樣的程式碼難免成為所謂的「遺毒」。自動化測試這時候就能派上用場，自動化測試是解決這個問題的一種方法，也是最根本的方法，讓電腦代">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自動化測試概述 - 撰寫測試案例與自動執行測試">
+<meta property="og:url" content="https://weirenxue.github.io/2022/09/25/automated-testing/index.html">
+<meta property="og:site_name" content="薛惟仁 筆記本">
+<meta property="og:description" content="開發程式的過程中最常做的事就是編譯、運行、看結果，若結果不符預期，對原始碼進行修改後再執行一樣的步驟直到正確為止，一來一回著實耗費工程師不少寶貴時間。此外，修改代碼時還需要注意不要影響到其它地方的程式碼運行，若因此而產生錯誤就要花更多時間修改，是一種維護成本。長時間下來，這樣的程式碼難免成為所謂的「遺毒」。自動化測試這時候就能派上用場，自動化測試是解決這個問題的一種方法，也是最根本的方法，讓電腦代">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2022-09-25T12:56:29.000Z">
+<meta property="article:modified_time" content="2022-09-25T12:56:29.000Z">
+<meta property="article:author" content="Wei-Ren Xue">
+<meta property="article:tag" content="unit">
+<meta property="article:tag" content="pros">
+<meta property="article:tag" content="cons">
+<meta property="article:tag" content="test">
+<meta property="article:tag" content="automate">
+<meta property="article:tag" content="integration">
+<meta property="article:tag" content="e2e">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://weirenxue.github.io/2022/09/25/automated-testing/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>自動化測試概述 - 撰寫測試案例與自動執行測試 | 薛惟仁 筆記本</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-0W9Q94E89P');
+        gtag('config', 'UA-195965659-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">薛惟仁 筆記本</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">歡迎來到知識寶庫</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+        <li class="menu-item menu-item-tools">
+
+    <a href="/tools/" rel="section"><i class="fas fa-toolbox fa-fw"></i>工具箱</a>
+
+  </li>
+        <li class="menu-item menu-item-portfolios">
+
+    <a href="/portfolios/" rel="section"><i class="fas fa-code-branch fa-fw"></i>學習歷程</a>
+
+  </li>
+        <li class="menu-item menu-item-tableau-easy">
+
+    <a href="/categories/Tableau-%E8%BC%95%E9%AC%86%E5%AD%B8/" rel="section"><i class="fas fa-chart-bar fa-fw"></i>Tableau 輕鬆學</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" placeholder="搜尋..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/weirenxue" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="external nofollow noopener noreferrer" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2022/09/25/automated-testing/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Wei-Ren Xue">
+      <meta itemprop="description" content="Software Engineer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="薛惟仁 筆記本">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          自動化測試概述 - 撰寫測試案例與自動執行測試
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2022-09-25 20:56:29" itemprop="dateCreated datePublished" datetime="2022-09-25T20:56:29+08:00">2022-09-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B8%AC%E8%A9%A6%E7%AD%86%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">測試筆記</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+            <div class="post-description">開發程式的過程中最常做的事就是編譯、運行、看結果，若結果不符預期，對原始碼進行修改後再執行一樣的步驟直到正確為止，一來一回著實耗費工程師不少寶貴時間。此外，修改代碼時還需要注意不要影響到其它地方的程式碼運行，若因此而產生錯誤就要花更多時間修改，是一種維護成本。長時間下來，這樣的程式碼難免成為所謂的「遺毒」。自動化測試這時候就能派上用場，自動化測試是解決這個問題的一種方法，也是最根本的方法，讓電腦代替人工進行對 Codebase 的測試，除了有省時省力的好處，同時也是降低維護成本的關鍵。</div>
+
+        </div>
+      </header>
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>開發程式的過程中最常做的事就是編譯、運行、看結果，若結果不符預期，對原始碼進行修改後再執行一樣的步驟直到運作正確為止，一來一回著實耗費工程師不少寶貴時間。此外，修改代碼時還需要注意不要影響到其它地方的程式碼運行，若因此而產生錯誤就要花更多時間修改，是一種維護成本。長時間下來，這樣的程式碼難免成為所謂的「遺毒」。自動化測試這時候就能派上用場，自動化測試是解決這個問題的一種方法，也是最根本的方法，讓電腦代替人工進行對 Codebase 的測試，除了有省時省力的好處，同時也是降低維護成本的關鍵。</p>
+<h2 id="自動化測試"><a href="#自動化測試" class="headerlink" title="自動化測試"></a>自動化測試</h2><p>需先有測試案例才有東西可以自動運行，因此雖然自動化測試是一個詞，但實際上包含兩件事，分別是撰寫測試案例 (Write Test Cases) 與自動執行測試 (Automated testing)</p>
+<ol>
+<li><p>撰寫測試案例 (Write Test Cases)：</p>
+<p> 測試案例即是描述 SUT (System Under Test，測試目標) 在給定輸入的情況下預期對應怎樣的輸出，若進一步將這樣的描述寫成可重複執行的測試腳本，即為撰寫測試案例。每當需要驗證程式的正確性，只需執行測試腳本，等待測試結束並產出相關報告，確認沒問題後，便可進行部署等後續工作。</p>
+</li>
+<li><p>自動執行測試 (Automated testing)：</p>
+<p> 只要有人參與的環節，都有機會出現疏漏，每次都要有人手動執行測試腳本是不太實際的，忘記測試就直接提交的情況非常有可能出現。因此，撰寫測試結束後，最終的目標是使測試能被自動運行，例如串在 CI/CD 流程之中，當 Commit 後、Merge 前或者要發布前都會自動執行測試腳本，使團隊能夠即時發現程式任何非預期的行為，減少 Bug 上線的機會。</p>
+<p> 舉例來說：LeetCode 將每個題目的輸入與輸出寫成測試案例，當我們提交答案時，它會自動提供預期的輸入給我們寫的 Function，並比對 Function 的輸出是否符合它的預期，也因為 LeetCode 在我們提交答案時自動執行測試，讓我們在刷題時能及時地得到回饋。</p>
+</li>
+</ol>
+<h2 id="撰寫測試案例的好處"><a href="#撰寫測試案例的好處" class="headerlink" title="撰寫測試案例的好處"></a>撰寫測試案例的好處</h2><p>撰寫測試案例最主要的目的是能夠隨時驗證程式運作結果確如預期，此外還有許多優點，下面列舉個人最有感的三大好處</p>
+<ol>
+<li><p>節省維護時間：</p>
+<p> 要知道一個 Function 的輸入與輸出的關係或運作結果是否是對的，一般且直接的作法就是刻意呼叫該 Function，並且使用 <code>print</code> 函數將結果輸出於 Console，最後使用人眼觀看輸出的值並用人腦判斷是否為預期，即所謂的 <code>print</code> 大法。如此一來每撰寫新的 Function 就要進行一次這樣的輪迴，若不小心改壞其他地方更是災難性的大量拉長維護時間，因為時間大部分都會花在思考要如何用 <code>print</code> 大法來 Debug，或者思考前一次使用來驗證輸入與輸出是否正確的值是什麼。</p>
+<p> 倘若今天只是開發較簡單的功能，例如：給兩個數並計算出兩數的合，這樣的作法是更快更容易的。但若是開發如 RESTful API Server 這種對外的服務，<code>print</code> 大法的運作流程為：編譯程式並運行，再使用 <code>curl</code>、<code>Postman</code> 等外部工具發一個 HTTP Request 到 Server，再回到 Server 的 Console 來確認輸出結果。當系統龐大起來，要用 <code>print</code> 大法確認每個 Endpoint 的正確性，光是想像也能感覺到這是非常耗時且不是這麼容易、可靠的，對吧？</p>
+<p> 撰寫測試案例可以將預期輸入與輸出的比對交由程式代勞，不需要再使用人眼與人腦去檢查，節省維護時間外，還可以將所有測資保存下來。若之後想將功能移植 (Porting) 到不同的程式語言，原本是需要詢問作者要餵什麼樣的資料與預期輸出的資料，而現在直接透過閱讀測試案例就能掌握使用方法。</p>
+</li>
+<li><p>降低維護人員的心理負擔：</p>
+<p> 不知道讀者有沒有這樣的經驗：接手一份 Code 並被交代要新增 A 功能的任務，在開發過程中影響到原本就存在的 B 功能與 C 功能的運作，一陣修補後勉勉強強的交出能動的 A 功能，而自己心裡知道雖然 B 功能與 C 功能現在正常，卻無法對它們能夠一直正常運作這件事保持信心，原因在於沒有可參考的測試案例或資料，無法確保在修改的過程中考慮到所有發生過的問題。</p>
+<p> 通常這樣的程式碼淪為「遺毒」的可能性是非常高的，沒有任何人敢對程式碼進行擴充、刪除或修改功能，因為沒有任何有效的方法可以快速知道程式碼是否有被改壞。若前人有撰寫完整的測試案例，讓後人在每次修改時得以運行測試腳本，明確的知道功能為正常運行，提高團隊對這份程式碼的信心。</p>
+</li>
+<li><p>即時修改程式架構以降低 SUT 之間的耦合性 (此處 SUT 泛指 Function、Class ⋯⋯等等))：</p>
+<p> 撰寫測試案例的好處很吸引人，聽起來也很容易，本質上就是將預期的輸入提供給 SUT ，並檢查 SUT 的輸出是否符合預期輸出，No Big Deal！但做起來其實不太容易，若較不熟悉 Design Patterns 的開發者，開發出的程式碼通常會偏向高耦合性，即 SUT 依賴於另一個物件或程式 (此時會稱被依賴的物件或程式為 DOC，Depended-On Component) 。</p>
+<p> 例如：在一個 A 物件中直接 <code>new</code> 另一個 B 物件並使用，這時若要測試 A 物件，必定也要同時把 B 物件的運行邏輯考慮進 A，最後導致測試 A 的時候其實也在測試 B 物件。這樣的壞處是什麼？可以想想看，假設應需求修改 B 物件的部分功能，原本只需要修改 B 物件本身的測試案例，現在連同 A 物件的測試案例也要修改！倘若 A 依賴更多物件，將導致撰寫或修改測試案例的難度大大提升，一樣會提高後續維護的難度，淪為「遺毒」指日可待。</p>
+<p> 從這個例子反思，並不是撰寫出測試案例就完事，我非常贊同自己曾經講過的一句話「只要是好測試的軟體架構，就是好架構」，好架構的前提是好測試。所以測試案例過於複雜也會導致沒有人敢增加或修改，因為牽一髮動全身，原本只有 SUT 與 DOC 之間連動，現在連測試案例也相互連動，修改所感到的痛苦是加倍的痛苦。</p>
+<p> 我們可以在撰寫測試案例過程中思考現在的架構是不是好測試的架構，若發現不是，應該即時修改架構使測試更加容易，最後寫出簡單又好維護的測試案例，附帶來的是好的程式架構。</p>
+</li>
+</ol>
+<h2 id="導入撰寫測試案例的潛在問題"><a href="#導入撰寫測試案例的潛在問題" class="headerlink" title="導入撰寫測試案例的潛在問題"></a>導入撰寫測試案例的潛在問題</h2><p>導入撰寫測試案例初衷都是好的，不外乎就是希望 Codebase 品質提升、降低維護成本、確保功能正確⋯⋯等等。但將此項目導入到團隊開發流程中之前，需要先思考可能遇到的問題</p>
+<ol>
+<li><p>團隊成員沒有撰寫測試案例的經驗：</p>
+<p> 撰寫測試案例與撰寫程式碼相同，透過經驗的積累較有辦法寫出優質的測試案例代碼，因此需要有更寬裕的開發時辰，允許成員在寫出初版測試案例後，有時間根據過程中學習到的經驗、知識或衍生想法修改為第二版、第三版測試，提高測試代碼的品質。</p>
+<p> 最佳的情況是團隊中有成員對於撰寫測試案例有豐富的經驗，透過經驗分享提供給初次撰寫測試案例的成員作為參考，減少摸索的時間。</p>
+</li>
+<li><p>撰寫測試案例時間長：</p>
+<p> 有經驗的人都能認同撰寫測試案例的時間會比開發功能的時間來得長，所以導入之前需要評估該項目是否真的需要撰寫測試案例，如果只是在概念驗證 (PoC，Proof of Concept) 階段，測試的撰寫可能就沒這麼必要，因為功能與開發方向會常常改變，導致原本的測試案例沒有作用。</p>
+<p> 若是要在產品化的項目中導入撰寫測試案例，那將會是非常明智的選擇，雖然一開始的開發時間需要稍微拉長，但測試所帶來的許多好處是讓大家不忍拒絕的呀！</p>
+</li>
+<li><p>需更改舊有的程式架構：</p>
+<p> 撰寫測試案例的好處之一「即時修改程式架構以降低 SUT 之間的耦合性」可以說是雙面刃，若今天是在新的專案中導入，這好處是非常吸引人的；但若是在舊有的程式碼中導入撰寫測試，那肯定是會有痛點的，因為原先的程式架構並沒有將測試的觀點考慮進去，導致無法寫出簡潔的測試案例，最後勢必要更改程式架構來配合測試案例的撰寫。</p>
+</li>
+</ol>
+<h2 id="測試的種類"><a href="#測試的種類" class="headerlink" title="測試的種類"></a>測試的種類</h2><p>根據測試所涵蓋範圍可以分為三種測試，分別為單元測試 (Unit Testing)、整合測試 (Integration Testing) 與端對端測試 (E2E Testing，End to End Testing)</p>
+<ol>
+<li><p>單元測試 (Unit Testing)：</p>
+<p> 所謂的 Unit 指的是純函數 (Pure Function)，而 Unit Testing 就是測試 Pure Function 的運作是否如預期，由於 SUT 是 Pure Function，所以 Unit Testing 的測試案例是非常容易撰寫的。</p>
+</li>
+<li><p>整合測試 (Integration Testing) ：</p>
+<p> 若 Unit Testing 是對純函做測試，那 Integration Testing 可以說是對有副作用 (Side Effect) 的 Function 做測試。舉例來說：若 Function 內部會透過呼叫其他模組 (例如：API、Database、Class、Function ⋯⋯等等) 以取得資料，針對這樣的函數所寫的測試案例就會被歸類在 Integration Testing。</p>
+<p> 為了進行 Integration Testing，必須先初始化 SUT 的外部依賴 (Database、DOC ⋯⋯等等)，若程式的結構過於複雜，初始化的撰寫往往是造成測試案例複雜度提升的主要元兇。為了解決此問題，發展出測試替身 (Test Doubles) 的概念，可以確保元件之間的低耦合度，使我們能夠撰寫出簡潔的 Integration Testing 測試案例。</p>
+</li>
+<li><p>端對端測試 (E2E Testing，End to End Testing)：</p>
+<p> E2E Testing 是三種測試中最貼近使用者觀點的測試，從使用者 (End) 的角度對 (to) 整個系統 (End) 進行測試，許多高層無法理解 Unit Testing 與 Integration Testing 的重要性卻可以認同 E2E Testing 有存在的必要，因為只要通過 E2E Testing，基本上可以確保使用者使用起來不會有太大的問題。</p>
+<p> 這也是三種測試中最難以撰寫、耗時、維護成本最高的測試，通常會遵照 80/20 法則，將大部分撰寫測試案例的心力放在最重要、不能出錯的功能上。例如：對電商平台來說，最重要的不外乎是「使用者能順利將商品放入購物車」、「使用者能順利下單並付款」等相關操作，因此針對這些功能所撰寫的 E2E Testing 測試案例所帶來的效益較高。</p>
+</li>
+</ol>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>測試是一門很深的學問，如何將測試寫得好？寫得有效？寫得可維護？這些問題並沒有標準答案，但透過平常撰寫測試案例的經驗與想法加上一次次的改進與反思，相信讀者能整理出一套撰寫測試案例的邏輯，若讀者還沒導入測試到自己的專案之中，現在正是時候！</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://moduscreate.com/blog/an-overview-of-unit-integration-and-e2e-testing/">AN OVERVIEW OF UNIT, INTEGRATION, AND E2E TESTING Quality Assurance</a></p>
+</li>
+<li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://circleci.com/blog/unit-testing-vs-integration-testing/">Unit testing vs integration testing</a></p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      <div>
+    <strong>很高興能在這裡幫助到您，歡迎登入 Liker 為我鼓掌 5 次，或者成為我的讚賞公民，鼓勵我繼續創造優質文章。</strong>
+    <script type="text/javascript">
+      document.write(
+        "<iframe scrolling='no' frameborder='0' style='height: 212px; width: 100%;' " + 
+        "sandbox='allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation' " + 
+        "src='https://button.like.co/in/embed/weirenxue/button?referrer=" +
+        encodeURIComponent(location.href.split("?")[0].split("#")[0]) + "'></iframe>");
+    </script>
+</div>
+
+      
+  <div class="popular-posts-header">相關文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/07/23/day02_tableau/" rel="bookmark">[Day02] Tableau 輕鬆學 - Tableau 介紹</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/08/30/unit_convert/" rel="bookmark">優雅的單位轉換公式與推導</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/10/31/tool_dummy_file/" rel="bookmark">[Tool] 傳輸測試必備 - 垃圾檔案製造機</a></div>
+    </li>
+  </ul>
+
+        <div class="reward-container">
+  <div>以最優質的內容回應您的鼓勵</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    贊助
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/jkopay.jpg" alt="Wei-Ren Xue 街口支付">
+        <p>街口支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/opay.png" alt="Wei-Ren Xue 歐付寶">
+        <p>歐付寶</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-f7+5u+4t-da+6l" data-ad-client="ca-pub-1417890905860188" data-ad-slot="8643645962"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>作者： </strong>Wei-Ren Xue
+  </li>
+  <li class="post-copyright-link">
+    <strong>文章連結：</strong>
+    <a href="https://weirenxue.github.io/2022/09/25/automated-testing/" title="自動化測試概述 - 撰寫測試案例與自動執行測試">https://weirenxue.github.io/2022/09/25/automated-testing/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版權聲明： </strong>本網誌所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noopener noreferrer" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 許可協議。轉載請註明出處！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/unit/" rel="tag"># unit</a>
+              <a href="/tags/pros/" rel="tag"># pros</a>
+              <a href="/tags/cons/" rel="tag"># cons</a>
+              <a href="/tags/test/" rel="tag"># test</a>
+              <a href="/tags/automate/" rel="tag"># automate</a>
+              <a href="/tags/integration/" rel="tag"># integration</a>
+              <a href="/tags/e2e/" rel="tag"># e2e</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/09/19/abstraction/" rel="prev" title="抽象是什麼？聽起來好抽象">
+      <i class="fa fa-chevron-left"></i> 抽象是什麼？聽起來好抽象
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%8B%95%E5%8C%96%E6%B8%AC%E8%A9%A6"><span class="nav-number">2.</span> <span class="nav-text">自動化測試</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%92%B0%E5%AF%AB%E6%B8%AC%E8%A9%A6%E6%A1%88%E4%BE%8B%E7%9A%84%E5%A5%BD%E8%99%95"><span class="nav-number">3.</span> <span class="nav-text">撰寫測試案例的好處</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8E%E5%85%A5%E6%92%B0%E5%AF%AB%E6%B8%AC%E8%A9%A6%E6%A1%88%E4%BE%8B%E7%9A%84%E6%BD%9B%E5%9C%A8%E5%95%8F%E9%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">導入撰寫測試案例的潛在問題</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%AC%E8%A9%A6%E7%9A%84%E7%A8%AE%E9%A1%9E"><span class="nav-number">5.</span> <span class="nav-text">測試的種類</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">6.</span> <span class="nav-text">結語</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E6%96%87%E7%8D%BB"><span class="nav-number">7.</span> <span class="nav-text">參考文獻</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Wei-Ren Xue" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Wei-Ren Xue</p>
+  <div class="site-description" itemprop="description">Software Engineer</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">128</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">532</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/weirenxue" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;weirenxue" rel="external nofollow noopener noreferrer" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:weirenxue@gmail.com" title="E-Mail → mailto:weirenxue@gmail.com" rel="external nofollow noopener noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/16755404" title="StackOverflow → https:&#x2F;&#x2F;stackoverflow.com&#x2F;users&#x2F;16755404" rel="external nofollow noopener noreferrer" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+
+    <div class="gooAd sidebar-inner" style="display: block; opacity: 1; transform: initial;">
+      <!-- Google AdSense start -->
+      <!-- sidebar廣告 -->
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1417890905860188" data-ad-slot="8051131597" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+      <!-- Google AdSense end -->
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fab fa-redhat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wei-Ren Xue 若要轉載，請標註出處與原網址。</span>
+</div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60dc346c8505aa6a" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+  <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-firestore.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey   : 'AIzaSyAlpzvsZgBg0RMAyT6Ror6sl3FJRJw7su0',
+      projectId: 'gh-pages-88339'
+    });
+
+    function getCount(doc, increaseCount) {
+      // IncreaseCount will be false when not in article page
+      return doc.get().then(d => {
+        var count = 0;
+        if (!d.exists) { // Has no data, initialize count
+          if (increaseCount) {
+            doc.set({
+              count: 1
+            });
+            count = 1;
+          }
+        } else { // Has data
+          count = d.data().count;
+          if (increaseCount) {
+            // If first view this article
+            doc.set({ // Increase count
+              count: count + 1,
+              pathname: window.location.pathname,
+              updatedAt: firebase.firestore.Timestamp.fromDate(new Date())
+            });
+            count++;
+          }
+        }
+
+        return count;
+      });
+    }
+
+    function appendCountTo(el) {
+      return count => {
+        el.innerText = count;
+      }
+    }
+  </script>
+  <script>
+    (function() {
+      var db = firebase.firestore();
+      var articles = db.collection('articles');
+
+      if (CONFIG.page.isPost) { // Is article page
+        var title = document.querySelector('.post-title').innerText.trim();
+        var doc = articles.doc(title);
+        var increaseCount = CONFIG.hostname === location.hostname;
+        if (localStorage.getItem(title)) {
+          increaseCount = false;
+        } else {
+          // Mark as visited
+          localStorage.setItem(title, true);
+        }
+        getCount(doc, increaseCount).then(appendCountTo(document.querySelector('.firestore-visitors-count')));
+      } else if (CONFIG.page.isHome) { // Is index page
+        var promises = [...document.querySelectorAll('.post-title')].map(element => {
+          var title = element.innerText.trim();
+          var doc = articles.doc(title);
+          return getCount(doc);
+        });
+        Promise.all(promises).then(counts => {
+          var metas = document.querySelectorAll('.firestore-visitors-count');
+          counts.forEach((val, idx) => {
+            appendCountTo(metas[idx])(val);
+          });
+        });
+      }
+    })();
+  </script>
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://weirenxue.github.io/2022/09/25/automated-testing/";
+    this.page.identifier = "2022/09/25/automated-testing/";
+    this.page.title = "自動化測試概述 - 撰寫測試案例與自動執行測試";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://weirenxue.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(e){e.imageLazyLoadSetting.processImages=t;var n=e.imageLazyLoadSetting.isSPA,i=e.imageLazyLoadSetting.preloadRatio||1,r=o();function o(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){n&&(r=o());for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(e.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];e=function(){r=r.filter(function(t){return o!==t})},(t=o).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,t.removeAttribute("data-original"),e&&e()},t.src!==i&&(n.src=i))}()}function a(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",a),e.addEventListener("resize",a),e.addEventListener("orientationchange",a)}(this);</script></body>
+</html>

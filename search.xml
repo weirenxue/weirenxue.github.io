@@ -1,6 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>[C++] (FARPROC&amp;) 的含意</title>
+    <url>/2021/06/11/cfarproc/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr; </span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...省略...)</span><br></pre></td></tr></table></figure>
+<p>平常只會看到像是 <code>(int)</code>、<code>(int*)</code> 之類的轉型，第一次看到轉型是帶著 <code>&amp;</code> 符號的，引發我的好奇心，藉此研究一番。</p>
+<h2 id="探討"><a href="#探討" class="headerlink" title="探討"></a>探討</h2><p>要探討這問題，就要先知道一般再宣告的時候，<code>&amp;</code> 運算元到底發揮甚麼功用，所以先用最簡單的整數(<code>int</code>)宣告來測試，內容分為以下三種：</p>
+<ol>
+<li><p><code>int a = b;   //這應該大家都知道，就是把b的值給a</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="type">int</span> a = b;</span><br><span class="line"><span class="comment">//結果：a = 2; b = 2; &amp;a = 006FF8C0; &amp;b = 006FF8CC;</span></span><br><span class="line"><span class="comment">//結論：值一樣但記憶體位址不一樣</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>int *a = &amp;b; //程度好一些的應該知道，這是把b的記憶體位址存到a裡面</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> b = <span class="number">3</span>;</span><br><span class="line"><span class="type">int</span> *a = &amp;b;</span><br><span class="line"><span class="comment">//結果：a = 006FF8B4; b = 3; &amp;a = 006FF8A8; &amp;b = 006FF8B4;</span></span><br><span class="line"><span class="comment">//結論：a存著b的位址，但兩個記憶體位址還是不一樣</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>int &amp;a = b;  //但這個呢？讓我們繼續看下去</code></p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> b = <span class="number">4</span>;</span><br><span class="line"><span class="type">int</span> &amp;a = b;</span><br><span class="line"><span class="comment">//結果：a = 4; b = 4; &amp;a = 006FF89C; &amp;b = 006FF89C;</span></span><br><span class="line"><span class="comment">//結論：a的位址跟b一樣，所以a跟b一模一樣了！</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>以這些實驗可以得到結論：在宣告的時候 ，<code>int&amp;</code> 會把「等號左邊(<code>a</code>)的變數地址」改變成「等號右邊(<code>b</code>)變數的地址」，因此 <code>a</code> 與 <code>b</code> 兩個是一樣的東西（也就是記憶體位址一樣）！</p>
+<p>回到最一開始的問題：<code>(FARPROC&amp;) addr</code> 到底是甚麼呢？我還是用程式做一下實驗，先以書上的程式碼為第一個實驗，用 <code>(FARPROC&amp;)</code> 去接 <code>GetProcAddress</code> 的值，看會如何；再用 <code>addr</code> 直接去接，又會如何。以下是實驗結果：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA94; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA88; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
+<p>可以發現其實沒有像是我們在最原本例子 <code>int &amp;a=b;</code> 看到的把 <code>addr</code> 位址變為 <code>GetProcAddress</code> 的位址，反而是addr的值變化了，變為 <code>GetProcAddress</code> 回傳的地址，也就是說 <code>(FARPROC&amp;)</code> 在這個實驗中看起來是沒有作用到的。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p><code>(FARPROC&amp;) addr = GetProcAddress(...)</code> 等同於 <code>addr = GetProcAddress(...)</code>，只是不知道書上為何多此一舉。</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>FARPROC</tag>
+        <tag>cpp</tag>
+        <tag>加密與解密</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Apache] 修改 HTTP 標頭中的 Server 欄位</title>
     <url>/2021/06/17/apache_http_server/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>伺服器資訊包含類型 (IIS、Apache 或 Nginx) 與版本是一個很重要的資訊，當駭客想針對一個網頁應用程式下手時，必定先蒐集這些情報，下一步再看有沒有尚未修復的漏洞可以利用。</p>
@@ -70,40 +104,6 @@
         <tag>modification</tag>
         <tag>netcat</tag>
         <tag>nc</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[C++] (FARPROC&amp;) 的含意</title>
-    <url>/2021/06/11/cfarproc/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在加密與解密一書中看到這樣的寫法</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr; </span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...省略...)</span><br></pre></td></tr></table></figure>
-<p>平常只會看到像是 <code>(int)</code>、<code>(int*)</code> 之類的轉型，第一次看到轉型是帶著 <code>&amp;</code> 符號的，引發我的好奇心，藉此研究一番。</p>
-<h2 id="探討"><a href="#探討" class="headerlink" title="探討"></a>探討</h2><p>要探討這問題，就要先知道一般再宣告的時候，<code>&amp;</code> 運算元到底發揮甚麼功用，所以先用最簡單的整數(<code>int</code>)宣告來測試，內容分為以下三種：</p>
-<ol>
-<li><p><code>int a = b;   //這應該大家都知道，就是把b的值給a</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> b = <span class="number">2</span>;</span><br><span class="line"><span class="type">int</span> a = b;</span><br><span class="line"><span class="comment">//結果：a = 2; b = 2; &amp;a = 006FF8C0; &amp;b = 006FF8CC;</span></span><br><span class="line"><span class="comment">//結論：值一樣但記憶體位址不一樣</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>int *a = &amp;b; //程度好一些的應該知道，這是把b的記憶體位址存到a裡面</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> b = <span class="number">3</span>;</span><br><span class="line"><span class="type">int</span> *a = &amp;b;</span><br><span class="line"><span class="comment">//結果：a = 006FF8B4; b = 3; &amp;a = 006FF8A8; &amp;b = 006FF8B4;</span></span><br><span class="line"><span class="comment">//結論：a存著b的位址，但兩個記憶體位址還是不一樣</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>int &amp;a = b;  //但這個呢？讓我們繼續看下去</code></p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> b = <span class="number">4</span>;</span><br><span class="line"><span class="type">int</span> &amp;a = b;</span><br><span class="line"><span class="comment">//結果：a = 4; b = 4; &amp;a = 006FF89C; &amp;b = 006FF89C;</span></span><br><span class="line"><span class="comment">//結論：a的位址跟b一樣，所以a跟b一模一樣了！</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>以這些實驗可以得到結論：在宣告的時候 ，<code>int&amp;</code> 會把「等號左邊(<code>a</code>)的變數地址」改變成「等號右邊(<code>b</code>)變數的地址」，因此 <code>a</code> 與 <code>b</code> 兩個是一樣的東西（也就是記憶體位址一樣）！</p>
-<p>回到最一開始的問題：<code>(FARPROC&amp;) addr</code> 到底是甚麼呢？我還是用程式做一下實驗，先以書上的程式碼為第一個實驗，用 <code>(FARPROC&amp;)</code> 去接 <code>GetProcAddress</code> 的值，看會如何；再用 <code>addr</code> 直接去接，又會如何。以下是實驗結果：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">(FARPROC&amp;) addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA94; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">FARPROC addr;</span><br><span class="line">addr = GetProcAddress(...);</span><br><span class="line"><span class="comment">//結果：addr = 74307E60; &amp;addr = 012FFA88; GetProcAddress(...) = 74307E60;</span></span><br></pre></td></tr></table></figure>
-<p>可以發現其實沒有像是我們在最原本例子 <code>int &amp;a=b;</code> 看到的把 <code>addr</code> 位址變為 <code>GetProcAddress</code> 的位址，反而是addr的值變化了，變為 <code>GetProcAddress</code> 回傳的地址，也就是說 <code>(FARPROC&amp;)</code> 在這個實驗中看起來是沒有作用到的。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p><code>(FARPROC&amp;) addr = GetProcAddress(...)</code> 等同於 <code>addr = GetProcAddress(...)</code>，只是不知道書上為何多此一舉。</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>FARPROC</tag>
-        <tag>cpp</tag>
-        <tag>加密與解密</tag>
       </tags>
   </entry>
   <entry>
@@ -962,6 +962,32 @@
       </tags>
   </entry>
   <entry>
+    <title>[LaTeX] Texmaker 點擊跳轉失效</title>
+    <url>/2021/06/13/latex_texmaker/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>點擊 pdf 跳轉到相對應的 tex 程式碼是非常好用的工具，若少了這項功能 tex 將變得難以使用。</p>
+<h2 id="原因及解決方法"><a href="#原因及解決方法" class="headerlink" title="原因及解決方法"></a>原因及解決方法</h2><p>無法使用這個功能主要有兩個可能原因</p>
+<ol>
+<li><p>先到「選項」→「設定Texmaker」→「命令」，看看自己使用哪個編譯器，我是用的是 <code>XeLaTeX</code></p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">xelatex -synctex=1 -interaction=nonstopmode %.tex</span><br></pre></td></tr></table></figure>
+<p> 其中 <code>-synctex=1</code> 是將同步 (Synchronize) 功能打開的關鍵，若無法使用很可能是沒有這個，直接加入即可。</p>
+</li>
+<li><p>檔案路徑中不要有中文或特殊符號，若有，先將檔案移動到沒有中文或特殊符號的路徑下，並確保檔名也符合此條件。再重新開啟 Texmaker 測試點擊跳轉功能。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>latex</tag>
+        <tag>synctex</tag>
+        <tag>texmaker</tag>
+        <tag>not work</tag>
+        <tag>jump</tag>
+        <tag>click</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[IME] 有其他輸入法框架後移除 IBus 圖示</title>
     <url>/2021/06/17/ime_ibus/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Ubuntu 在安裝完非預設的輸入法框架之後，在畫面右上角會看到新的輸入法圖示，但預設的 IBus 圖示仍然會存在，讓人看到就覺得煩躁進而想要移除掉圖示。</p>
@@ -1007,32 +1033,6 @@
         <tag>notebook</tag>
         <tag>python</tag>
         <tag>browser</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[LaTeX] Texmaker 點擊跳轉失效</title>
-    <url>/2021/06/13/latex_texmaker/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>點擊 pdf 跳轉到相對應的 tex 程式碼是非常好用的工具，若少了這項功能 tex 將變得難以使用。</p>
-<h2 id="原因及解決方法"><a href="#原因及解決方法" class="headerlink" title="原因及解決方法"></a>原因及解決方法</h2><p>無法使用這個功能主要有兩個可能原因</p>
-<ol>
-<li><p>先到「選項」→「設定Texmaker」→「命令」，看看自己使用哪個編譯器，我是用的是 <code>XeLaTeX</code></p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">xelatex -synctex=1 -interaction=nonstopmode %.tex</span><br></pre></td></tr></table></figure>
-<p> 其中 <code>-synctex=1</code> 是將同步 (Synchronize) 功能打開的關鍵，若無法使用很可能是沒有這個，直接加入即可。</p>
-</li>
-<li><p>檔案路徑中不要有中文或特殊符號，若有，先將檔案移動到沒有中文或特殊符號的路徑下，並確保檔名也符合此條件。再重新開啟 Texmaker 測試點擊跳轉功能。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>latex</tag>
-        <tag>synctex</tag>
-        <tag>texmaker</tag>
-        <tag>not work</tag>
-        <tag>jump</tag>
-        <tag>click</tag>
       </tags>
   </entry>
   <entry>
@@ -2598,31 +2598,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[WIN32 API] 函數使用範例</title>
-    <url>/2021/06/15/win32_api_function_example/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接 Build 看效果。</p>
-<p>因此我看著文件慢慢的嘗試，寫出一個可以用的應用來。這裡收集了個人對於 <code>WIN32 API</code> 調用的範例，除了供大家參考外，自己也可以隨時複習。</p>
-<h2 id="原始碼"><a href="#原始碼" class="headerlink" title="原始碼"></a>原始碼</h2><ol>
-<li><a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam</a></li>
-<li><a href="https://github.com/weirenxue/enablemenuitem-example">EnableMenuItem, GetSubMenu, GetMenuItemID</a></li>
-<li><a href="https://github.com/weirenxue/settimer-example">SetTimer</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>win32</tag>
-        <tag>api</tag>
-        <tag>example</tag>
-        <tag>dialogboxparam</tag>
-        <tag>enablemenuitem</tag>
-        <tag>getsubmenu</tag>
-        <tag>getmenuitemid</tag>
-        <tag>settimer</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[WSL] 透過 WSL2 與 VS Code 在 Windows 進行 Linux 應用開發</title>
     <url>/2022/03/22/wsl_vscode/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>跨平台是一種趨勢，但也造成開發上許多不便之處。例如：有些服務 (Server) 只能運行在 Windows 環境，而對應的用戶端 (Client) 開發被要求在 Linux 環境。這種情況下，可能會被較多人採用的是 VM 的技術，用以建置這樣的開發環境。得益於 Windows 近年來推出的 WSL2，使虛擬化技術更進一步，成為一種解決方案，因此這篇文章將記錄如何安裝 WSL2 並搭配 VS Code 在 Windows 上進行 Linux 應用開發。</p>
@@ -2679,6 +2654,31 @@
         <tag>window</tag>
         <tag>modal</tag>
         <tag>non modal</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[WIN32 API] 函數使用範例</title>
+    <url>/2021/06/15/win32_api_function_example/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接 Build 看效果。</p>
+<p>因此我看著文件慢慢的嘗試，寫出一個可以用的應用來。這裡收集了個人對於 <code>WIN32 API</code> 調用的範例，除了供大家參考外，自己也可以隨時複習。</p>
+<h2 id="原始碼"><a href="#原始碼" class="headerlink" title="原始碼"></a>原始碼</h2><ol>
+<li><a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam</a></li>
+<li><a href="https://github.com/weirenxue/enablemenuitem-example">EnableMenuItem, GetSubMenu, GetMenuItemID</a></li>
+<li><a href="https://github.com/weirenxue/settimer-example">SetTimer</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>win32</tag>
+        <tag>api</tag>
+        <tag>example</tag>
+        <tag>dialogboxparam</tag>
+        <tag>enablemenuitem</tag>
+        <tag>getsubmenu</tag>
+        <tag>getmenuitemid</tag>
+        <tag>settimer</tag>
       </tags>
   </entry>
   <entry>
@@ -2763,43 +2763,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[asm] NEG 的運作與應用</title>
-    <url>/2021/06/11/asmneg/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
-<p>它的運作影響了旗標，進而用來當作實現 <code>BOOL function</code> 回傳的一個選項。就一起來看看 <code>NEG</code> 是如何運作以及對應到的高階語言是如何呈現的。</p>
-<h2 id="運作原理"><a href="#運作原理" class="headerlink" title="運作原理"></a>運作原理</h2><p>想知道一個程式碼如何運作，不外乎就是兩種方法：</p>
-<ol>
-<li>直接編譯/組譯然後執行，觀察結果(暫存器輸出、旗標設置等等)，此方式在本篇文章不強調。</li>
-<li>最基本的就是看技術文件，若參數很多或者回傳複雜無法直接觀察結果推斷的時候，相關文件最有用了。例如 Windows 的 API 可以去 MSDN 上找函數介紹，而組合語言的語法能夠找所使用 CPU 的廠商要文檔，AMD 與 Intel 的組合語言可能有差異，所以若是使用 Intel 的就請找 Intel 的指令手冊來參考。</li>
-</ol>
-<p>我的電腦為 Intel CPU，上網找到對應的指令手冊(<a href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)，內文對 <code>NEG</code> 指令的描述摘要如下</p>
-<blockquote>
-<p>NEG—Two&#39;s Complement Negation<br>Description<br>Replaces the value of operand (the destination operand) with its two&#39;s complement. (This operation is equivalent to subtracting the operand from 0.) The destination operand is located in a general-purpose register or a memory location.</p>
-</blockquote>
-<p>簡單說明一下，<code>NEG</code> 是一個 2 補數的運算，將一個數取 2 補數之後放回原本的目的地，等同於一個數被 0 減掉再放回暫存器(即 <code>eax = 0 - eax</code>)，目的地可以是暫存器也可以是記憶體位址。它原文下面還有說明，但到這就能夠來說明想要表達的程式碼了。再來看看它的流程 Pseudo code</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Operation</span><br><span class="line">IF DEST = <span class="number">0</span></span><br><span class="line">　THEN CF ← <span class="number">0</span>;</span><br><span class="line">　ELSE CF ← <span class="number">1</span>;</span><br><span class="line">FI;</span><br><span class="line">DEST ← [– (DEST)]</span><br></pre></td></tr></table></figure>
-<p>短短幾行 Pseudo code，代表了無數的文字，相信一看就懂它想說甚麼。在簡短的 <code>NEG</code> 描述與操作流程可以知道若 <code>DEST</code> 不為 0，進位旗標 (<code>CF</code>) 會被設置為 1，這是因為 0 減非 0 的數需要補位。</p>
-<h2 id="應用方式"><a href="#應用方式" class="headerlink" title="應用方式"></a>應用方式</h2><p>這時候假設你的程式中有個副程式如下</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">NEGtest</span><span class="params">(TCHAR *str1, TCHAR *str2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">lstrcmp</span>(str1, str2) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>不論是組合語言或高階語言，有很多不同編寫方式來完成相同的事情，然而這個函數內的 <code>if else</code> 所對應到的組合語言可能為</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">push ebp        <span class="comment">//str2 的位址</span></span><br><span class="line">push eax        <span class="comment">//str1 的位址</span></span><br><span class="line">call [<span class="number">00404004</span>] <span class="comment">//呼叫 lstrcmp 函數</span></span><br><span class="line">neg eax         <span class="comment">//API 函數回傳值都放在 eax 暫存器裡，因此對比較後的結果作 NEG 運算</span></span><br><span class="line">sbb eax, eax    <span class="comment">//eax = eax - eax - CY</span></span><br><span class="line">inc eax         <span class="comment">//eax = eax + 1</span></span><br></pre></td></tr></table></figure>
-<p><code>lstrcmp</code> 需要兩個參數，因此先壓參數入堆疊再調用 (call) 其函數，而它的回傳值放在 <code>eax</code> 裡面，若兩個字串相同，則 <code>eax == 0</code>；反之 <code>eax != 0</code>。此時分為兩個情況來討論：</p>
-<ol>
-<li><code>str1 == str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為 0，<code>neg eax</code> 之後 <code>eax</code> 還是 0 且 <code>CY</code> 為 0，因此到程式結束時 <code>eax</code> 為 1，即 <code>return true</code></li>
-<li><code>str1 !=  str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為非 0，<code>neg eax</code> 之後 <code>eax</code> 還是非 0 且 <code>CY</code> 為1，因此第五行的執行結果為 <code>eax = eax - eax - CY = 0xFFFFFFFF</code> (32位元的話)，最後 <code>eax = eax + 1 = 0</code> 即 <code>return false</code></li>
-</ol>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個執行結果，與高階語言的效果是一樣的。當然，也可以用 <code>cmp</code>、<code>jmp</code>等指令來完成同一件事，但不覺得程式拐個彎寫得簡單優雅，會有更有成就感嗎？呵呵！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>neg</tag>
-        <tag>sbb</tag>
-        <tag>asm</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[link] 缺少 libudev.so.0 的解決方法</title>
     <url>/2021/06/17/link_libdev_so_0/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在安裝德州儀器的軟體時出現缺少 <code>libudev.so.0</code> 的字樣，有些解法是直接安裝 <code>libudev0:i386</code> 的套件，不幸的是這在 Ubuntu 14.04 之後的版本就移除了，取而代之的是 <code>libudev1:i386</code>，但軟體安裝就是硬要 <code>libudev.so.0</code> 這個檔案存在。</p>
@@ -2879,6 +2842,43 @@
         <tag>fomula</tag>
         <tag>speed</tag>
         <tag>factor</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[asm] NEG 的運作與應用</title>
+    <url>/2021/06/11/asmneg/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>NEG</code> 在程式中不常用到，不過當在高階語言寫完，使用 Debug 介面的時候有機會看到它在組合語言中出現。</p>
+<p>它的運作影響了旗標，進而用來當作實現 <code>BOOL function</code> 回傳的一個選項。就一起來看看 <code>NEG</code> 是如何運作以及對應到的高階語言是如何呈現的。</p>
+<h2 id="運作原理"><a href="#運作原理" class="headerlink" title="運作原理"></a>運作原理</h2><p>想知道一個程式碼如何運作，不外乎就是兩種方法：</p>
+<ol>
+<li>直接編譯/組譯然後執行，觀察結果(暫存器輸出、旗標設置等等)，此方式在本篇文章不強調。</li>
+<li>最基本的就是看技術文件，若參數很多或者回傳複雜無法直接觀察結果推斷的時候，相關文件最有用了。例如 Windows 的 API 可以去 MSDN 上找函數介紹，而組合語言的語法能夠找所使用 CPU 的廠商要文檔，AMD 與 Intel 的組合語言可能有差異，所以若是使用 Intel 的就請找 Intel 的指令手冊來參考。</li>
+</ol>
+<p>我的電腦為 Intel CPU，上網找到對應的指令手冊(<a href="https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html">Intel® 64 and IA-32 Architectures Software Developer&#39;s Manual</a>)，內文對 <code>NEG</code> 指令的描述摘要如下</p>
+<blockquote>
+<p>NEG—Two&#39;s Complement Negation<br>Description<br>Replaces the value of operand (the destination operand) with its two&#39;s complement. (This operation is equivalent to subtracting the operand from 0.) The destination operand is located in a general-purpose register or a memory location.</p>
+</blockquote>
+<p>簡單說明一下，<code>NEG</code> 是一個 2 補數的運算，將一個數取 2 補數之後放回原本的目的地，等同於一個數被 0 減掉再放回暫存器(即 <code>eax = 0 - eax</code>)，目的地可以是暫存器也可以是記憶體位址。它原文下面還有說明，但到這就能夠來說明想要表達的程式碼了。再來看看它的流程 Pseudo code</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Operation</span><br><span class="line">IF DEST = <span class="number">0</span></span><br><span class="line">　THEN CF ← <span class="number">0</span>;</span><br><span class="line">　ELSE CF ← <span class="number">1</span>;</span><br><span class="line">FI;</span><br><span class="line">DEST ← [– (DEST)]</span><br></pre></td></tr></table></figure>
+<p>短短幾行 Pseudo code，代表了無數的文字，相信一看就懂它想說甚麼。在簡短的 <code>NEG</code> 描述與操作流程可以知道若 <code>DEST</code> 不為 0，進位旗標 (<code>CF</code>) 會被設置為 1，這是因為 0 減非 0 的數需要補位。</p>
+<h2 id="應用方式"><a href="#應用方式" class="headerlink" title="應用方式"></a>應用方式</h2><p>這時候假設你的程式中有個副程式如下</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">NEGtest</span><span class="params">(TCHAR *str1, TCHAR *str2)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">lstrcmp</span>(str1, str2) == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不論是組合語言或高階語言，有很多不同編寫方式來完成相同的事情，然而這個函數內的 <code>if else</code> 所對應到的組合語言可能為</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">push ebp        <span class="comment">//str2 的位址</span></span><br><span class="line">push eax        <span class="comment">//str1 的位址</span></span><br><span class="line">call [<span class="number">00404004</span>] <span class="comment">//呼叫 lstrcmp 函數</span></span><br><span class="line">neg eax         <span class="comment">//API 函數回傳值都放在 eax 暫存器裡，因此對比較後的結果作 NEG 運算</span></span><br><span class="line">sbb eax, eax    <span class="comment">//eax = eax - eax - CY</span></span><br><span class="line">inc eax         <span class="comment">//eax = eax + 1</span></span><br></pre></td></tr></table></figure>
+<p><code>lstrcmp</code> 需要兩個參數，因此先壓參數入堆疊再調用 (call) 其函數，而它的回傳值放在 <code>eax</code> 裡面，若兩個字串相同，則 <code>eax == 0</code>；反之 <code>eax != 0</code>。此時分為兩個情況來討論：</p>
+<ol>
+<li><code>str1 == str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為 0，<code>neg eax</code> 之後 <code>eax</code> 還是 0 且 <code>CY</code> 為 0，因此到程式結束時 <code>eax</code> 為 1，即 <code>return true</code></li>
+<li><code>str1 !=  str2</code><br> 在第三行指令執行完時 <code>eax</code> 值為非 0，<code>neg eax</code> 之後 <code>eax</code> 還是非 0 且 <code>CY</code> 為1，因此第五行的執行結果為 <code>eax = eax - eax - CY = 0xFFFFFFFF</code> (32位元的話)，最後 <code>eax = eax + 1 = 0</code> 即 <code>return false</code></li>
+</ol>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這個執行結果，與高階語言的效果是一樣的。當然，也可以用 <code>cmp</code>、<code>jmp</code>等指令來完成同一件事，但不覺得程式拐個彎寫得簡單優雅，會有更有成就感嗎？呵呵！</p>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>neg</tag>
+        <tag>sbb</tag>
+        <tag>asm</tag>
       </tags>
   </entry>
   <entry>
@@ -2982,6 +2982,40 @@
       </tags>
   </entry>
   <entry>
+    <title>[雙系統] 更改開機系統選單的預設值</title>
+    <url>/2021/06/16/dual_system_change_default/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>要切換雙系統的方法主要有兩種，一是修改 BIOS 的 Boot Option，另一個是使用 grub (參考：<a href="/2021/06/16/win_10_ubuntu/">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a>])。grub 預設是以 Ubuntu 開機，若在選單畫面超過 10 秒沒有動作，預設直接進入 Ubuntu。對於主要是用 Windows 的人來說稍嫌不便，因為每次開機都要等選單出現，以免不小心進其他系統，這篇主要紀錄如何將預設系統改為 Windows。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="修改-grub"><a href="#修改-grub" class="headerlink" title="修改 grub"></a>修改 grub</h2><p>以下動作皆在 Ubuntu 中執行，先知道 Windows 啟動檔的位置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ <span class="built_in">cat</span> /boot/grub/grub.cfg | grep windows</span><br><span class="line">menuentry <span class="string">&#x27;Windows Boot Manager (於 /dev/sdb2)&#x27;</span> --class windows --class os <span class="variable">$menuentry_id_option</span> <span class="string">&#x27;osprober-efi-264C-BB58&#x27;</span> &#123;</span><br></pre></td></tr></table></figure>
+<p>記住檔案位置 <code>&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 後，再開啟 <code>/ect/default/grub</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo gedit /etc/default/grub</span><br></pre></td></tr></table></figure>
+<p>修改 <code>GRUB_DEFAULT=0</code> 為 <code>GRUB_DEFAULT=&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 並儲存，注意不要少了單引號</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-%E6%9B%B4%E6%94%B9%E9%96%8B%E6%A9%9F%E7%B3%BB%E7%B5%B1%E9%81%B8%E5%96%AE%E7%9A%84%E9%A0%90%E8%A8%AD%E5%80%BC%2Fchange_setting.png?alt=media&amp;token=55bafa2f-b2ff-4fb6-94a1-7a81fc3e9107" alt="修改 GRUB_DEFAULT"><span class="image-caption">修改 GRUB_DEFAULT</span></p>
+<p>更新 grub 後重新開機，就可以發現預設選項落在 Windows 上囉！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo update-grub</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>windows</tag>
+        <tag>18.04</tag>
+        <tag>menu</tag>
+        <tag>10</tag>
+        <tag>dual</tag>
+        <tag>system</tag>
+        <tag>option</tag>
+        <tag>boot</tag>
+        <tag>grub</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[雙系統] 同步 Ubuntu 與 Windows 的系統時間</title>
     <url>/2021/06/17/ubuntu_windows_time/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>使用 Ubuntu + Windows 雙系統的用戶，應該會發現 Ubuntu 的時間總是與 Windows 的不一樣，在 UTC+8 的地方，Ubuntu 比 Windows 快 8 小時，切換系統後總是要手動調整時間，造成一定的困擾。最佳解決之道應為將雙系統時間設為同步，因此這裡紀錄了如何將雙系統的時間設為一致。</p>
@@ -3018,40 +3052,6 @@
         <tag>system</tag>
         <tag>synchronize</tag>
         <tag>time</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[雙系統] 更改開機系統選單的預設值</title>
-    <url>/2021/06/16/dual_system_change_default/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>要切換雙系統的方法主要有兩種，一是修改 BIOS 的 Boot Option，另一個是使用 grub (參考：<a href="/2021/06/16/win_10_ubuntu/">[雙系統] Win10 + Ubuntu 開機選單，讓使用者開機可以選擇系統</a>])。grub 預設是以 Ubuntu 開機，若在選單畫面超過 10 秒沒有動作，預設直接進入 Ubuntu。對於主要是用 Windows 的人來說稍嫌不便，因為每次開機都要等選單出現，以免不小心進其他系統，這篇主要紀錄如何將預設系統改為 Windows。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>Windows 10</li>
-</ul>
-<h2 id="修改-grub"><a href="#修改-grub" class="headerlink" title="修改 grub"></a>修改 grub</h2><p>以下動作皆在 Ubuntu 中執行，先知道 Windows 啟動檔的位置</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ <span class="built_in">cat</span> /boot/grub/grub.cfg | grep windows</span><br><span class="line">menuentry <span class="string">&#x27;Windows Boot Manager (於 /dev/sdb2)&#x27;</span> --class windows --class os <span class="variable">$menuentry_id_option</span> <span class="string">&#x27;osprober-efi-264C-BB58&#x27;</span> &#123;</span><br></pre></td></tr></table></figure>
-<p>記住檔案位置 <code>&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 後，再開啟 <code>/ect/default/grub</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo gedit /etc/default/grub</span><br></pre></td></tr></table></figure>
-<p>修改 <code>GRUB_DEFAULT=0</code> 為 <code>GRUB_DEFAULT=&#39;Windows Boot Manager (於 /dev/sdb2)&#39;</code> 並儲存，注意不要少了單引號</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E9%9B%99%E7%B3%BB%E7%B5%B1-%E6%9B%B4%E6%94%B9%E9%96%8B%E6%A9%9F%E7%B3%BB%E7%B5%B1%E9%81%B8%E5%96%AE%E7%9A%84%E9%A0%90%E8%A8%AD%E5%80%BC%2Fchange_setting.png?alt=media&amp;token=55bafa2f-b2ff-4fb6-94a1-7a81fc3e9107" alt="修改 GRUB_DEFAULT"><span class="image-caption">修改 GRUB_DEFAULT</span></p>
-<p>更新 grub 後重新開機，就可以發現預設選項落在 Windows 上囉！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo update-grub</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>windows</tag>
-        <tag>18.04</tag>
-        <tag>menu</tag>
-        <tag>10</tag>
-        <tag>dual</tag>
-        <tag>system</tag>
-        <tag>option</tag>
-        <tag>boot</tag>
-        <tag>grub</tag>
       </tags>
   </entry>
   <entry>
@@ -3301,6 +3301,54 @@
       </tags>
   </entry>
   <entry>
+    <title>[Slack API] files.upload 將檔案傳到頻道中</title>
+    <url>/2021/09/10/slack_api_files_upload/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="/2021/09/09/hello_slack_webhook/">Hello Slack Webhook! 一起 Slack 最大化</a> 一文詳細說明如何使用 Slack 的 Incoming Webhook 來做到將訊息傳送到頻道或對話中。儘管 Slack Webhook 如此好用，還是有美中不足的地方，也就是它無法傳送檔案，必須使用其他方法來達到傳送檔案的功能。這篇文章詳細記載如何在 Slack 中開通傳送檔案權限，最後再以 Python 寫一個傳送檔案的範例，讓讀者更有感。</p>
+<h2 id="開通-Slack-寫檔案權限"><a href="#開通-Slack-寫檔案權限" class="headerlink" title="開通 Slack 寫檔案權限"></a>開通 Slack 寫檔案權限</h2><p>需先按照 <a href="/2021/09/09/hello_slack_webhook/">Hello Slack Webhook! 一起 Slack 最大化</a> 創建一個 Slack 應用程式，再於 <code>OAuth &amp; Permissions</code> 設定中新增 <code>files.write</code> 權限，並且重新安裝應用程式 (<code>reinstall your app</code>)</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Ffiles_write_permission.png?alt=media&amp;token=3bd96ee1-6e23-4529-bcf3-f1c11fe29d74" alt="設定 files:write 權限"><span class="image-caption">設定 files:write 權限</span></p>
+<p>並且允許應用程式可以取得這項權限</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Fallow.png?alt=media&amp;token=a91885f6-543b-4f89-ba57-1e6f43c360f5" alt="允許"><span class="image-caption">允許</span></p>
+<p>記下 <code>Bot User OAuth Token</code>，其為 <code>xoxb-</code> 開頭 (若為 <code>User OAuth Token</code> 則為 <code>xoxp-</code> 開頭，參考 <a href="https://api.slack.com/authentication/token-types#bot">Access tokens</a>)</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Foauth_token.png?alt=media&amp;token=f6a6f2a4-5f1f-4a17-b8ab-07607c30eb74" alt="Bot User OAuth Token"><span class="image-caption">Bot User OAuth Token</span></p>
+<p>OAuth Token 為機密性的資訊，若有外流或其他情況可以選擇到 <code>OAuth &amp; Permissions</code> 最下方撤銷 Token。如此一來，重新安裝該 Slack 應用程式到工作空間時，便可得到新的 OAuth Token</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Frevoke%20tokens.png?alt=media&amp;token=e485fffb-3201-4b7b-9523-f8dabc00e014" alt="撤銷 OAuth Token"><span class="image-caption">撤銷 OAuth Token</span></p>
+<h2 id="將應用程式整合至頻道中"><a href="#將應用程式整合至頻道中" class="headerlink" title="將應用程式整合至頻道中"></a>將應用程式整合至頻道中</h2><p>與 Webhook 不同的是，使用 <a href="https://api.slack.com/methods/files.upload">files.upload</a> API 上傳檔案之前，需要將應用程式加入到 (整合) 對應的頻道中</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Fintegrate_app.png?alt=media&amp;token=a2b17e30-13f4-4930-91e7-7b73f4c84af0" alt="頻道整合"><span class="image-caption">頻道整合</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Fadd_integrate_app.png?alt=media&amp;token=6479c423-0d8c-41aa-9c7d-b8e87fb6d38a" alt="選擇應用程式"><span class="image-caption">選擇應用程式</span></p>
+<p>若頻道中出現對應訊息，表示應用程式已經整合進頻道中囉！</p>
+<h2 id="測試檔案上傳"><a href="#測試檔案上傳" class="headerlink" title="測試檔案上傳"></a>測試檔案上傳</h2><h3 id="傳至特定頻道中"><a href="#傳至特定頻道中" class="headerlink" title="傳至特定頻道中"></a>傳至特定頻道中</h3><p><a href="https://api.slack.com/methods/files.upload">files.upload</a> 是透過頻道識別碼來判斷要上傳到哪一個頻道中的，因此需要先記錄下頻道識別碼，該資訊可以在頻道的 <code>關於</code> 或網址列中得到</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Fchannel_id.png?alt=media&amp;token=99ffaad6-e29d-44f4-980e-19a80f6d6eab" alt="頻道識別碼位置"><span class="image-caption">頻道識別碼位置</span></p>
+<p>準備一個內容如下的測試檔案 <code>D:\test.json</code></p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Hello Slack files.upload!&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;author&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Wei-Ren Xue&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>在執行 Python 程式之前，需要先安裝 <a href="https://slack.dev/python-slack-sdk/#installation">slack_sdk</a> 套件</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install slack_sdk</span><br></pre></td></tr></table></figure>
+<p>等待套件安裝完畢，便可執行下方 Python 程式，主要有三個地方要注意</p>
+<ol>
+<li><code>your_bot_user_auth_token</code>：取代為你的 <code>Bot User OAuth Token</code> (<code>xoxb-</code> 為開頭)。</li>
+<li><code>target_channel_id</code>：取代為你的頻道識別碼。若想一次傳給多個頻道，可以用半形逗號 (,) 來分隔，例如：傳給 <code>C111</code> 與 <code>C222</code> 頻道，則將 <code>target_channel_id</code> 替換為 <code>C111,C222</code>。當然地，對應的頻道需要將該 Slack 應用程式整合進頻道中才能接收到檔案。</li>
+<li><code>D:/test.json</code>：檔案路徑的部分需要依讀者的環境來做變化。</li>
+</ol>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> slack_sdk <span class="keyword">import</span> WebClient</span><br><span class="line"><span class="keyword">from</span> slack_sdk.errors <span class="keyword">import</span> SlackApiError</span><br><span class="line"></span><br><span class="line">oauth_token = <span class="string">&#x27;your_bot_user_auth_token&#x27;</span></span><br><span class="line">client = WebClient(token=oauth_token)</span><br><span class="line">channel_id = <span class="string">&#x27;target_channel_id&#x27;</span></span><br><span class="line"></span><br><span class="line">file_name = <span class="string">&#x27;D:/test.json&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    result = client.files_upload(</span><br><span class="line">        channels=channel_id,</span><br><span class="line">        initial_comment=<span class="string">&#x27;Here\&#x27;s my file :smile:&#x27;</span>,</span><br><span class="line">        file=file_name,</span><br><span class="line">    )</span><br><span class="line"><span class="keyword">except</span> SlackApiError <span class="keyword">as</span> e:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Error uploading file: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(e))</span><br></pre></td></tr></table></figure>
+<p>最後，在頻道中就能看到 Slack 應用程式傳來的檔案囉</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Ffile_content.png?alt=media&amp;token=16b1c62a-cc4a-4210-abde-4918f600723d" alt="透過 Python 傳輸檔案到 Channel 中"><span class="image-caption">透過 Python 傳輸檔案到 Channel 中</span></p>
+<h3 id="私訊傳至特定使用者"><a href="#私訊傳至特定使用者" class="headerlink" title="私訊傳至特定使用者"></a>私訊傳至特定使用者</h3><p>與頻道識別碼相同，需要先找出使用者識別碼。首先於工作空間的左側選單中找到 <code>人員與使用者群組</code>，再尋找想要用 Slack API 私訊的成員，點擊 <code>更多</code> 即可查看成員識別碼</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Fuser_id.png?alt=media&amp;token=3a0c40c6-ed54-4ceb-87dc-a8580e3b891b" alt="使用者識別碼"><span class="image-caption">使用者識別碼</span></p>
+<p>使用與傳輸至頻道一樣的程式碼，只是 <code>target_channel_id</code> 就需要用使用者識別碼來取代。同樣地，可以使用半形逗號 (,) 來分隔多個頻道識別碼、使用者識別碼，一次將檔案傳輸給多個頻道或者私訊給多個使用者！</p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>Slack API 與 Webhook 是互補的關係，舉例來說：我們可以透過 <code>files.upload</code> 上傳檔案後，再用 <code>Webhook</code> 傳輸訊息來對檔案做註解，讓頻道中的同仁可以更清楚該檔案的作用是甚麼。因此，並不是只能在 Slack API 與 Webhook 兩者中擇一使用，這樣的特性讓 Slack 應用程式使用方式更多元！</p>
+]]></content>
+      <categories>
+        <category>Slack 使用筆記</category>
+      </categories>
+      <tags>
+        <tag>api</tag>
+        <tag>slack</tag>
+        <tag>files</tag>
+        <tag>upload</tag>
+        <tag>channel</tag>
+        <tag>webhook</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hello Slack Webhook! 一起 Slack 最大化</title>
     <url>/2021/09/09/hello_slack_webhook/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Slack 通訊軟體儼然成為企業在合作溝通上的一種選擇，除了可以針對特定不同專案開設不同頻道外，還能使用 Incoming Webhooks、Slash Commands 等工具協助作業流程自動化。這篇文章記錄如何建立 Incoming Webhooks 並且實際通過 Webhook 傳輸訊息！</p>
@@ -3351,135 +3399,10 @@
       </categories>
       <tags>
         <tag>slack</tag>
+        <tag>channel</tag>
         <tag>webhook</tag>
         <tag>command</tag>
-        <tag>channel</tag>
         <tag>postman</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Slack API] files.upload 將檔案傳到頻道中</title>
-    <url>/2021/09/10/slack_api_files_upload/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="/2021/09/09/hello_slack_webhook/">Hello Slack Webhook! 一起 Slack 最大化</a> 一文詳細說明如何使用 Slack 的 Incoming Webhook 來做到將訊息傳送到頻道或對話中。儘管 Slack Webhook 如此好用，還是有美中不足的地方，也就是它無法傳送檔案，必須使用其他方法來達到傳送檔案的功能。這篇文章詳細記載如何在 Slack 中開通傳送檔案權限，最後再以 Python 寫一個傳送檔案的範例，讓讀者更有感。</p>
-<h2 id="開通-Slack-寫檔案權限"><a href="#開通-Slack-寫檔案權限" class="headerlink" title="開通 Slack 寫檔案權限"></a>開通 Slack 寫檔案權限</h2><p>需先按照 <a href="/2021/09/09/hello_slack_webhook/">Hello Slack Webhook! 一起 Slack 最大化</a> 創建一個 Slack 應用程式，再於 <code>OAuth &amp; Permissions</code> 設定中新增 <code>files.write</code> 權限，並且重新安裝應用程式 (<code>reinstall your app</code>)</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Ffiles_write_permission.png?alt=media&amp;token=3bd96ee1-6e23-4529-bcf3-f1c11fe29d74" alt="設定 files:write 權限"><span class="image-caption">設定 files:write 權限</span></p>
-<p>並且允許應用程式可以取得這項權限</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Fallow.png?alt=media&amp;token=a91885f6-543b-4f89-ba57-1e6f43c360f5" alt="允許"><span class="image-caption">允許</span></p>
-<p>記下 <code>Bot User OAuth Token</code>，其為 <code>xoxb-</code> 開頭 (若為 <code>User OAuth Token</code> 則為 <code>xoxp-</code> 開頭，參考 <a href="https://api.slack.com/authentication/token-types#bot">Access tokens</a>)</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Foauth_token.png?alt=media&amp;token=f6a6f2a4-5f1f-4a17-b8ab-07607c30eb74" alt="Bot User OAuth Token"><span class="image-caption">Bot User OAuth Token</span></p>
-<p>OAuth Token 為機密性的資訊，若有外流或其他情況可以選擇到 <code>OAuth &amp; Permissions</code> 最下方撤銷 Token。如此一來，重新安裝該 Slack 應用程式到工作空間時，便可得到新的 OAuth Token</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Frevoke%20tokens.png?alt=media&amp;token=e485fffb-3201-4b7b-9523-f8dabc00e014" alt="撤銷 OAuth Token"><span class="image-caption">撤銷 OAuth Token</span></p>
-<h2 id="將應用程式整合至頻道中"><a href="#將應用程式整合至頻道中" class="headerlink" title="將應用程式整合至頻道中"></a>將應用程式整合至頻道中</h2><p>與 Webhook 不同的是，使用 <a href="https://api.slack.com/methods/files.upload">files.upload</a> API 上傳檔案之前，需要將應用程式加入到 (整合) 對應的頻道中</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Fintegrate_app.png?alt=media&amp;token=a2b17e30-13f4-4930-91e7-7b73f4c84af0" alt="頻道整合"><span class="image-caption">頻道整合</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Fadd_integrate_app.png?alt=media&amp;token=6479c423-0d8c-41aa-9c7d-b8e87fb6d38a" alt="選擇應用程式"><span class="image-caption">選擇應用程式</span></p>
-<p>若頻道中出現對應訊息，表示應用程式已經整合進頻道中囉！</p>
-<h2 id="測試檔案上傳"><a href="#測試檔案上傳" class="headerlink" title="測試檔案上傳"></a>測試檔案上傳</h2><h3 id="傳至特定頻道中"><a href="#傳至特定頻道中" class="headerlink" title="傳至特定頻道中"></a>傳至特定頻道中</h3><p><a href="https://api.slack.com/methods/files.upload">files.upload</a> 是透過頻道識別碼來判斷要上傳到哪一個頻道中的，因此需要先記錄下頻道識別碼，該資訊可以在頻道的 <code>關於</code> 或網址列中得到</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Fchannel_id.png?alt=media&amp;token=99ffaad6-e29d-44f4-980e-19a80f6d6eab" alt="頻道識別碼位置"><span class="image-caption">頻道識別碼位置</span></p>
-<p>準備一個內容如下的測試檔案 <code>D:\test.json</code></p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Hello Slack files.upload!&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;author&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Wei-Ren Xue&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-<p>在執行 Python 程式之前，需要先安裝 <a href="https://slack.dev/python-slack-sdk/#installation">slack_sdk</a> 套件</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install slack_sdk</span><br></pre></td></tr></table></figure>
-<p>等待套件安裝完畢，便可執行下方 Python 程式，主要有三個地方要注意</p>
-<ol>
-<li><code>your_bot_user_auth_token</code>：取代為你的 <code>Bot User OAuth Token</code> (<code>xoxb-</code> 為開頭)。</li>
-<li><code>target_channel_id</code>：取代為你的頻道識別碼。若想一次傳給多個頻道，可以用半形逗號 (,) 來分隔，例如：傳給 <code>C111</code> 與 <code>C222</code> 頻道，則將 <code>target_channel_id</code> 替換為 <code>C111,C222</code>。當然地，對應的頻道需要將該 Slack 應用程式整合進頻道中才能接收到檔案。</li>
-<li><code>D:/test.json</code>：檔案路徑的部分需要依讀者的環境來做變化。</li>
-</ol>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> slack_sdk <span class="keyword">import</span> WebClient</span><br><span class="line"><span class="keyword">from</span> slack_sdk.errors <span class="keyword">import</span> SlackApiError</span><br><span class="line"></span><br><span class="line">oauth_token = <span class="string">&#x27;your_bot_user_auth_token&#x27;</span></span><br><span class="line">client = WebClient(token=oauth_token)</span><br><span class="line">channel_id = <span class="string">&#x27;target_channel_id&#x27;</span></span><br><span class="line"></span><br><span class="line">file_name = <span class="string">&#x27;D:/test.json&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    result = client.files_upload(</span><br><span class="line">        channels=channel_id,</span><br><span class="line">        initial_comment=<span class="string">&#x27;Here\&#x27;s my file :smile:&#x27;</span>,</span><br><span class="line">        file=file_name,</span><br><span class="line">    )</span><br><span class="line"><span class="keyword">except</span> SlackApiError <span class="keyword">as</span> e:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Error uploading file: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(e))</span><br></pre></td></tr></table></figure>
-<p>最後，在頻道中就能看到 Slack 應用程式傳來的檔案囉</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Ffile_content.png?alt=media&amp;token=16b1c62a-cc4a-4210-abde-4918f600723d" alt="透過 Python 傳輸檔案到 Channel 中"><span class="image-caption">透過 Python 傳輸檔案到 Channel 中</span></p>
-<h3 id="私訊傳至特定使用者"><a href="#私訊傳至特定使用者" class="headerlink" title="私訊傳至特定使用者"></a>私訊傳至特定使用者</h3><p>與頻道識別碼相同，需要先找出使用者識別碼。首先於工作空間的左側選單中找到 <code>人員與使用者群組</code>，再尋找想要用 Slack API 私訊的成員，點擊 <code>更多</code> 即可查看成員識別碼</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Slack-API-files-upload-%E5%B0%87%E6%AA%94%E6%A1%88%E5%82%B3%E5%88%B0%E9%A0%BB%E9%81%93%E4%B8%AD%2Fuser_id.png?alt=media&amp;token=3a0c40c6-ed54-4ceb-87dc-a8580e3b891b" alt="使用者識別碼"><span class="image-caption">使用者識別碼</span></p>
-<p>使用與傳輸至頻道一樣的程式碼，只是 <code>target_channel_id</code> 就需要用使用者識別碼來取代。同樣地，可以使用半形逗號 (,) 來分隔多個頻道識別碼、使用者識別碼，一次將檔案傳輸給多個頻道或者私訊給多個使用者！</p>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>Slack API 與 Webhook 是互補的關係，舉例來說：我們可以透過 <code>files.upload</code> 上傳檔案後，再用 <code>Webhook</code> 傳輸訊息來對檔案做註解，讓頻道中的同仁可以更清楚該檔案的作用是甚麼。因此，並不是只能在 Slack API 與 Webhook 兩者中擇一使用，這樣的特性讓 Slack 應用程式使用方式更多元！</p>
-]]></content>
-      <categories>
-        <category>Slack 使用筆記</category>
-      </categories>
-      <tags>
-        <tag>api</tag>
-        <tag>slack</tag>
-        <tag>webhook</tag>
-        <tag>channel</tag>
-        <tag>files</tag>
-        <tag>upload</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Vivado Vitis] 在軟體開發環境中缺少一堆 .h 檔的解決方法</title>
-    <url>/2021/06/13/vivado_vitis/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近接手一個 Zynq 的開發板 (RFSoC ZCU111)，新手上路肯定是要參考網路上豐富的文件，才會學得快。但在參考文獻的過程中碰到一個似乎教學的作者沒有提及，但自己遇到的問題，也就是 Build 時缺少一堆 <code>.h</code> 檔案的錯誤提示。</p>
-<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
-<li>Vivado 2019.2</li>
-<li>Vitis 2019.2</li>
-<li>Windows 10</li>
-</ul>
-<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>網路上沒有提供清楚的解決方法，因此自己記錄下遇到的問題與解決的步驟</p>
-<ol>
-<li><p>在 Vitis (或 SDK) 創建 Application Project，硬體平台選擇 Vivado 輸出的 <code>*.xsa</code> 檔案，並且將範例 <code>*.c</code> 檔匯入 <code>src</code> 目錄下，開始 Build，會出現以下的提示，這是在路徑下找不到 <code>*.h</code> 檔案的意思，但照理來說 Vivado 的 <code>xsa</code> 都包含這些了。</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">22:54:01 **** Incremental Build of configuration Debug <span class="keyword">for</span> project LED ****</span><br><span class="line">make all </span><br><span class="line">make --no-print-directory pre-build</span><br><span class="line">a9-linaro-pre-build-step</span><br><span class="line"><span class="string">&#x27; &#x27;</span></span><br><span class="line">make --no-print-directory main-build</span><br><span class="line"><span class="string">&#x27;Building file: ../src/LED_test_tut_1C.c&#x27;</span></span><br><span class="line"><span class="string">&#x27;Invoking: ARM v7 gcc compiler&#x27;</span></span><br><span class="line">arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT<span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Zynq_Book/first_zynq_design/SDK/first_zynq_system_wrapper/export/first_zynq_system_wrapper/sw/first_zynq_system_wrapper/standalone_domain/bspinclude/include -MMD -MP -MF<span class="string">&quot;src/LED_test_tut_1C.d&quot;</span> -MT<span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> -o <span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> <span class="string">&quot;../src/LED_test_tut_1C.c&quot;</span></span><br><span class="line">../src/LED_test_tut_1C.c:31:10: fatal error: xgpio.h: No such file or directory</span><br><span class="line"><span class="comment">#include &quot;xgpio.h&quot;</span></span><br><span class="line">        ^~~~~~~~~</span><br><span class="line">compilation terminated.</span><br><span class="line">make[1]: *** [src/subdir.mk:23: src/LED_test_tut_1C.o] Error 1</span><br><span class="line">make: *** [makefile:34: all] Error 2</span><br><span class="line"></span><br><span class="line">22:54:02 Build Finished (took 987ms)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看在 <code>*.h</code> 目錄底下到底有甚麼檔案，我的路徑為：</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Zynq_Book\first_zynq_design\SDK\first_zynq_system_wrapper\<span class="built_in">export</span>\first_zynq_system_wrapper\sw\first_zynq_system_wrapper\standalone_domain\bspinclude\include</span><br></pre></td></tr></table></figure>
-<p> 發現只有一個檔案 <code>xparameters.h</code> ，這為不正常的結果。</p>
-</li>
-<li><p>再回到 Vitis 畫面，直接重新 Build BSP 一次，並等待執行完成。再回到步驟 2 的路徑去查看，會發現多出很多 <code>*.h</code> 檔案，回到Vitis，Build <code>*.c</code> 檔案，結果為可以順利完成。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Xilinx 使用筆記</category>
-      </categories>
-      <tags>
-        <tag>vivado</tag>
-        <tag>vitis</tag>
-        <tag>h</tag>
-        <tag>lack</tag>
-        <tag>sdk</tag>
-        <tag>xilinx</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Xilinx SDK] GPIO 常用到的參數</title>
-    <url>/2021/06/13/xilinx_sdk_gpio/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用 API 時，最重要的是正確地輸入對應參數，因此必定要先了解參數所代表的涵義，才能有正確的使用 API 姿勢。</p>
-<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
-<li>RFSoC ZCU111</li>
-</ul>
-<h2 id="參數說明"><a href="#參數說明" class="headerlink" title="參數說明"></a>參數說明</h2><ol>
-<li><p><code>channel</code>：這是在 Vivado 內使用 IP 來做設計時就決定的，打開 GPIO 的 IP 設定視窗可以看到 GPIO 與 GPIO2，這裡的例子通道 1 與通道 2 分別為 led 與 push button。</p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Xilinx-SDK-GPIO-%E5%B8%B8%E7%94%A8%E5%88%B0%E7%9A%84%E5%8F%83%E6%95%B8%2Fgpio.png?alt=media&amp;token=1edff119-f05f-4e10-bc7a-fb60595872fa" alt="GPIO IP 設定畫面"><span class="image-caption">GPIO IP 設定畫面</span></p>
-</li>
-<li><p><code>DirectionMask</code>：這是決定 GPIO 為輸入或輸出 (相對於晶片來說) 的參數，需要特別點開 <code>*.h</code> 或 <code>*.c</code> 去看說明，此說明在 <code>xgpio.c</code> 的註解裡，以下為摘要</p>
- <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Bits set to 0 are output and bits set to 1 are input.</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Xilinx 使用筆記</category>
-      </categories>
-      <tags>
-        <tag>api</tag>
-        <tag>channel</tag>
-        <tag>sdk</tag>
-        <tag>xilinx</tag>
-        <tag>gpio</tag>
-        <tag>directionmask</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題</title>
-    <url>/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
-<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
-]]></content>
-      <categories>
-        <category>Xilinx 使用筆記</category>
-      </categories>
-      <tags>
-        <tag>sdk</tag>
-        <tag>xilinx</tag>
-        <tag>make</tag>
       </tags>
   </entry>
   <entry>
@@ -3638,6 +3561,29 @@
       </tags>
   </entry>
   <entry>
+    <title>[Day03] Tableau 輕鬆學 - Tableau 相關職缺</title>
+    <url>/2021/07/24/day03_tableau/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於所待公司正在使用 Tableau 做商業智能開發的讀者來說，學習這套軟體的動機是無庸置疑的，強而有力的學習動機就是公司需要，因此可以毫無懸念的去專研。</p>
+<p>但是對於初次接觸或甚至是還在猶豫要不要學的讀者來說，我認為還是有必要先市場調查一下，觀察 Tableau 相關職缺的情況是如何，從人力市場來了解技術的需求度是最真實的，藉以建立讀者學習這套軟體的目標與目的性。畢竟現在技術這麼多，總是會怕花時間學一個無處發揮技術。</p>
+<h2 id="人力市場調查"><a href="#人力市場調查" class="headerlink" title="人力市場調查"></a>人力市場調查</h2><p>當前時間為 <code>2021/07/11</code>，個人在某人力銀行網站上，單純搜尋關鍵字 <code>tableau</code>，結果顯示出目前總共有 449 個相關職缺，其中 435 個是全職的人力需求</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay03-Tableau-%E7%9B%B8%E9%97%9C%E8%81%B7%E7%BC%BA%2Ftableau_job_total.png?alt=media&amp;token=71d694db-f16f-404d-bfcb-7201cd717c1a" alt="Tableau 相關職缺總數"><span class="image-caption">Tableau 相關職缺總數</span></p>
+<p>從眾多刊登中挑選四家公司的職缺出來看，分別是愛金卡、晶元光電、OB嚴選、微星，當然還有多家公司同樣也刊載 Tableau 的尋人啟事，但這裡特意挑選四個不同領域且規模不小的公司，呼應到個人在前言說的，無論什麼領域的公司，皆會面臨到將零散的原始數據轉換為公司寶貴資產 BI 的課題，而這個過程脫離不了使用 BI 工具來協助</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay03-Tableau-%E7%9B%B8%E9%97%9C%E8%81%B7%E7%BC%BA%2Ftableau_job_four.png?alt=media&amp;token=a29c9a15-f4d5-4e47-b85b-16fb6ff7be3f" alt="四個不同領域但與 Tableau 相關的徵才資訊"><span class="image-caption">四個不同領域但與 Tableau 相關的徵才資訊</span></p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>很顯然，這四家公司皆選擇使用 Tableau 作為 BI 工具，若想應徵這些職缺，那就需要先把 Tableau 學好，因為對這些職位來說，Tableau 只是最基本的要求而已。我想，這應該是一個讓讀者督促自己學習 Tableau 很好的理由。</p>
+]]></content>
+      <categories>
+        <category>Tableau 輕鬆學</category>
+      </categories>
+      <tags>
+        <tag>tableau</tag>
+        <tag>job</tag>
+        <tag>relate</tag>
+        <tag>skill</tag>
+        <tag>technology</tag>
+        <tag>requirement</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Day02] Tableau 輕鬆學 - Tableau 介紹</title>
     <url>/2021/07/23/day02_tableau/</url>
     <content><![CDATA[<h2 id="Tableau-優點"><a href="#Tableau-優點" class="headerlink" title="Tableau 優點"></a>Tableau 優點</h2><p>Tableau 是一種企業級的商業智能 (BI, Business Intelligence) 軟體，提供直覺式的使用者介面，使用者只需使用滑鼠拖曳就能完成數據視覺化的作業程序，且可隨時變換呈現的方式，減少在分析過程中因為技術問題而中斷的可能性。</p>
@@ -3668,29 +3614,6 @@
         <tag>advantage</tag>
         <tag>pros</tag>
         <tag>cons</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Day03] Tableau 輕鬆學 - Tableau 相關職缺</title>
-    <url>/2021/07/24/day03_tableau/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對於所待公司正在使用 Tableau 做商業智能開發的讀者來說，學習這套軟體的動機是無庸置疑的，強而有力的學習動機就是公司需要，因此可以毫無懸念的去專研。</p>
-<p>但是對於初次接觸或甚至是還在猶豫要不要學的讀者來說，我認為還是有必要先市場調查一下，觀察 Tableau 相關職缺的情況是如何，從人力市場來了解技術的需求度是最真實的，藉以建立讀者學習這套軟體的目標與目的性。畢竟現在技術這麼多，總是會怕花時間學一個無處發揮技術。</p>
-<h2 id="人力市場調查"><a href="#人力市場調查" class="headerlink" title="人力市場調查"></a>人力市場調查</h2><p>當前時間為 <code>2021/07/11</code>，個人在某人力銀行網站上，單純搜尋關鍵字 <code>tableau</code>，結果顯示出目前總共有 449 個相關職缺，其中 435 個是全職的人力需求</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay03-Tableau-%E7%9B%B8%E9%97%9C%E8%81%B7%E7%BC%BA%2Ftableau_job_total.png?alt=media&amp;token=71d694db-f16f-404d-bfcb-7201cd717c1a" alt="Tableau 相關職缺總數"><span class="image-caption">Tableau 相關職缺總數</span></p>
-<p>從眾多刊登中挑選四家公司的職缺出來看，分別是愛金卡、晶元光電、OB嚴選、微星，當然還有多家公司同樣也刊載 Tableau 的尋人啟事，但這裡特意挑選四個不同領域且規模不小的公司，呼應到個人在前言說的，無論什麼領域的公司，皆會面臨到將零散的原始數據轉換為公司寶貴資產 BI 的課題，而這個過程脫離不了使用 BI 工具來協助</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay03-Tableau-%E7%9B%B8%E9%97%9C%E8%81%B7%E7%BC%BA%2Ftableau_job_four.png?alt=media&amp;token=a29c9a15-f4d5-4e47-b85b-16fb6ff7be3f" alt="四個不同領域但與 Tableau 相關的徵才資訊"><span class="image-caption">四個不同領域但與 Tableau 相關的徵才資訊</span></p>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>很顯然，這四家公司皆選擇使用 Tableau 作為 BI 工具，若想應徵這些職缺，那就需要先把 Tableau 學好，因為對這些職位來說，Tableau 只是最基本的要求而已。我想，這應該是一個讓讀者督促自己學習 Tableau 很好的理由。</p>
-]]></content>
-      <categories>
-        <category>Tableau 輕鬆學</category>
-      </categories>
-      <tags>
-        <tag>tableau</tag>
-        <tag>job</tag>
-        <tag>relate</tag>
-        <tag>skill</tag>
-        <tag>technology</tag>
-        <tag>requirement</tag>
       </tags>
   </entry>
   <entry>
@@ -4044,6 +3967,39 @@
       </tags>
   </entry>
   <entry>
+    <title>[Day15] Tableau 輕鬆學 - 地圖工作表</title>
+    <url>/2021/08/05/day15_tableau/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我們已經學會使用長條圖來做資料探索。然而，Tableau Desktop 除了長條圖外，還有其他有趣的圖表可以使用，地圖就是其中一種，這裡分享如何使用地圖圖表來將數據視覺化。</p>
+<h2 id="地圖圖表"><a href="#地圖圖表" class="headerlink" title="地圖圖表"></a>地圖圖表</h2><p>我們先前已經製作了一個 <code>區域產品銷售額與利潤</code> 工作表，並加以美化。接下來我們想知道每個州每年的獲利情況，點擊 <code>New Worksheet</code>，開啟一個新的工作表</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Fnew_worksheet.png?alt=media&amp;token=0bff1b0b-ae22-4a23-bc12-218ed0df8843" alt="新增工作表"><span class="image-caption">新增工作表</span></p>
+<p>雙擊 <code>State</code> 欄位，由於 <code>State</code> 為地理屬性 (欄位名稱前方有一個小地球)，Tableau Desktop 預設會幫我們以地圖的方式顯示出來，這裡的經緯度是由 Tableau Desktop 自動產生的，因此可以準確地將數據標註在地圖上 (每個州對應一個資料點)。但正常來說，若我們經手的資料有顯示在地圖上的需求，通常會要求資料自己本身帶有經緯度資訊</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Fmap_init.png?alt=media&amp;token=8e32142f-2aae-4b16-95a3-f5b01e0901b7" alt="每個州對應一個資料點"><span class="image-caption">每個州對應一個資料點</span></p>
+<h2 id="州年度利潤地圖"><a href="#州年度利潤地圖" class="headerlink" title="州年度利潤地圖"></a>州年度利潤地圖</h2><p>我們的目標是知道每個州每年的獲利情況，因此以 <code>Profit</code> 作為上色依據，將其拖曳至 <code>Marks</code> 選項卡中的 <code>Color</code>，再把 <code>Profit</code> 與 <code>Profit Ratio</code> 兩個欄位拖曳至 <code>Marks</code> 選項卡中的 <code>Label</code>，<code>Label</code> 會將對應到的值標註於圖表中，讓使用者一眼能看出利潤與利潤率</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Fstate_profit.png?alt=media&amp;token=53a82dfa-cbf3-4d22-9d09-892216baee08" alt="利潤與利潤率"><span class="image-caption">利潤與利潤率</span></p>
+<p>再對著 <code>Order Date</code> 點擊右鍵選擇 <code>Show Filter</code> 來加上年度篩選器，Tableau Desktop 會自動在 <code>Filters</code> 選項卡中自動加上 <code>YEAR(Order Date)</code> 並且將其顯示在工作表的最右方，預設篩選器形式為複選清單 <code>Multiple Value (list)</code>，這裡我們將其改為單值滑動的方式 <code>Single Value (slider)</code>。完成後，我們就可以透過這個篩選器來選擇想要查看的年度</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Forder_date_filter.png?alt=media&amp;token=d67aa612-cb26-4842-b974-198a04acad85" alt="YEAR(Order Date) 篩選器"><span class="image-caption">YEAR(Order Date) 篩選器</span></p>
+<p>我們發現地圖上的利潤率並不是以百分比來顯示，有點不太直覺。這個顯示格式是可以調整的，右鍵點擊 <code>AGG(ProfitRatio)</code> 並選擇 <code>Format</code>，將 <code>Numbers</code> 設定為 <code>Percentage</code> 格式，利潤率就會以百分比顯示，若不想要小數點後的位數，也可以將 <code>Decimal places</code> 設為 0</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Fpercentage.png?alt=media&amp;token=fa926274-d62f-4772-b4ac-6270e619351c" alt="百分比格式設定"><span class="image-caption">百分比格式設定</span></p>
+<p>最後，將此工作表命名為 <code>州年度利潤地圖</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Fstate_year_profit.png?alt=media&amp;token=501fa0dc-1829-4d48-ada9-b60e42a2ff93" alt="州年度利潤地圖"><span class="image-caption">州年度利潤地圖</span></p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>到目前為止，工作簿內含有兩個工作表，分別為 <code>區域產品銷售額與利潤</code> 與 <code>州年度利潤地圖</code>。同樣地，我們也可以幫 <code>州年度利潤地圖</code> 工作表修改樣式，就留給讀者自由發揮。</p>
+<h2 id="工作簿原始檔案"><a href="#工作簿原始檔案" class="headerlink" title="工作簿原始檔案"></a>工作簿原始檔案</h2><!-- markdownlint-disable MD034 -->
+<a class="btn" href="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Fday15_tableau.twb?alt=media&token=596f8378-0805-4877-b5ef-3d077dd69763" title="完成的工作簿">
+            <i class="fa fa-download fa-lg"></i>Workbook
+          </a>
+<!-- markdownlint-restore MD034 -->
+<p>在實作中遇到困難是難免的，這裡提供原始檔作為參考，若仍然無法解決歡迎至下方討論區留言。</p>
+]]></content>
+      <categories>
+        <category>Tableau 輕鬆學</category>
+      </categories>
+      <tags>
+        <tag>tableau</tag>
+        <tag>map</tag>
+        <tag>filter</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Day16] Tableau 輕鬆學 - 儀表板</title>
     <url>/2021/08/06/day16_tableau/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我們目前完成了兩個工作表的製作，再來就是要學習如何讓多個工作表可以一起互動，而儀表板的功能就是將多個工作表放在同一個畫面，使工作表能夠交互作用，更容易闡述從資料得到的觀點，因此這裡會分享如何建立儀表板。</p>
@@ -4076,39 +4032,6 @@
       <tags>
         <tag>tableau</tag>
         <tag>dashboard</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Day15] Tableau 輕鬆學 - 地圖工作表</title>
-    <url>/2021/08/05/day15_tableau/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我們已經學會使用長條圖來做資料探索。然而，Tableau Desktop 除了長條圖外，還有其他有趣的圖表可以使用，地圖就是其中一種，這裡分享如何使用地圖圖表來將數據視覺化。</p>
-<h2 id="地圖圖表"><a href="#地圖圖表" class="headerlink" title="地圖圖表"></a>地圖圖表</h2><p>我們先前已經製作了一個 <code>區域產品銷售額與利潤</code> 工作表，並加以美化。接下來我們想知道每個州每年的獲利情況，點擊 <code>New Worksheet</code>，開啟一個新的工作表</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Fnew_worksheet.png?alt=media&amp;token=0bff1b0b-ae22-4a23-bc12-218ed0df8843" alt="新增工作表"><span class="image-caption">新增工作表</span></p>
-<p>雙擊 <code>State</code> 欄位，由於 <code>State</code> 為地理屬性 (欄位名稱前方有一個小地球)，Tableau Desktop 預設會幫我們以地圖的方式顯示出來，這裡的經緯度是由 Tableau Desktop 自動產生的，因此可以準確地將數據標註在地圖上 (每個州對應一個資料點)。但正常來說，若我們經手的資料有顯示在地圖上的需求，通常會要求資料自己本身帶有經緯度資訊</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Fmap_init.png?alt=media&amp;token=8e32142f-2aae-4b16-95a3-f5b01e0901b7" alt="每個州對應一個資料點"><span class="image-caption">每個州對應一個資料點</span></p>
-<h2 id="州年度利潤地圖"><a href="#州年度利潤地圖" class="headerlink" title="州年度利潤地圖"></a>州年度利潤地圖</h2><p>我們的目標是知道每個州每年的獲利情況，因此以 <code>Profit</code> 作為上色依據，將其拖曳至 <code>Marks</code> 選項卡中的 <code>Color</code>，再把 <code>Profit</code> 與 <code>Profit Ratio</code> 兩個欄位拖曳至 <code>Marks</code> 選項卡中的 <code>Label</code>，<code>Label</code> 會將對應到的值標註於圖表中，讓使用者一眼能看出利潤與利潤率</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Fstate_profit.png?alt=media&amp;token=53a82dfa-cbf3-4d22-9d09-892216baee08" alt="利潤與利潤率"><span class="image-caption">利潤與利潤率</span></p>
-<p>再對著 <code>Order Date</code> 點擊右鍵選擇 <code>Show Filter</code> 來加上年度篩選器，Tableau Desktop 會自動在 <code>Filters</code> 選項卡中自動加上 <code>YEAR(Order Date)</code> 並且將其顯示在工作表的最右方，預設篩選器形式為複選清單 <code>Multiple Value (list)</code>，這裡我們將其改為單值滑動的方式 <code>Single Value (slider)</code>。完成後，我們就可以透過這個篩選器來選擇想要查看的年度</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Forder_date_filter.png?alt=media&amp;token=d67aa612-cb26-4842-b974-198a04acad85" alt="YEAR(Order Date) 篩選器"><span class="image-caption">YEAR(Order Date) 篩選器</span></p>
-<p>我們發現地圖上的利潤率並不是以百分比來顯示，有點不太直覺。這個顯示格式是可以調整的，右鍵點擊 <code>AGG(ProfitRatio)</code> 並選擇 <code>Format</code>，將 <code>Numbers</code> 設定為 <code>Percentage</code> 格式，利潤率就會以百分比顯示，若不想要小數點後的位數，也可以將 <code>Decimal places</code> 設為 0</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Fpercentage.png?alt=media&amp;token=fa926274-d62f-4772-b4ac-6270e619351c" alt="百分比格式設定"><span class="image-caption">百分比格式設定</span></p>
-<p>最後，將此工作表命名為 <code>州年度利潤地圖</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Fstate_year_profit.png?alt=media&amp;token=501fa0dc-1829-4d48-ada9-b60e42a2ff93" alt="州年度利潤地圖"><span class="image-caption">州年度利潤地圖</span></p>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>到目前為止，工作簿內含有兩個工作表，分別為 <code>區域產品銷售額與利潤</code> 與 <code>州年度利潤地圖</code>。同樣地，我們也可以幫 <code>州年度利潤地圖</code> 工作表修改樣式，就留給讀者自由發揮。</p>
-<h2 id="工作簿原始檔案"><a href="#工作簿原始檔案" class="headerlink" title="工作簿原始檔案"></a>工作簿原始檔案</h2><!-- markdownlint-disable MD034 -->
-<a class="btn" href="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay15-%E5%9C%B0%E5%9C%96%E5%B7%A5%E4%BD%9C%E8%A1%A8%2Fday15_tableau.twb?alt=media&token=596f8378-0805-4877-b5ef-3d077dd69763" title="完成的工作簿">
-            <i class="fa fa-download fa-lg"></i>Workbook
-          </a>
-<!-- markdownlint-restore MD034 -->
-<p>在實作中遇到困難是難免的，這裡提供原始檔作為參考，若仍然無法解決歡迎至下方討論區留言。</p>
-]]></content>
-      <categories>
-        <category>Tableau 輕鬆學</category>
-      </categories>
-      <tags>
-        <tag>tableau</tag>
-        <tag>map</tag>
-        <tag>filter</tag>
       </tags>
   </entry>
   <entry>
@@ -4288,40 +4211,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Day23] Tableau 輕鬆學 - TabPy 安裝與連線</title>
-    <url>/2021/08/13/day23_tableau/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對 TabPy 有一定程度的認識之後，便能開始學習 TabPy 安裝與使用，這篇文章會分享如何安裝 Python 與 TabPy，最後將 TabPy Server 啟動並測試與 Tableau Desktop 的連線。</p>
-<h2 id="Python-安裝"><a href="#Python-安裝" class="headerlink" title="Python 安裝"></a>Python 安裝</h2><p>TabPy 是 Tableau 發佈的 Python 套件，必須要先安裝 Python 才可使用，依個人喜好可以安裝 Anaconda 或者直接安裝 Python，而我個人習慣直接安裝 Python，因此這裡分享的安裝步驟也是採用直接安裝的方法。</p>
-<p>首先至官方網站根據作業系統選擇 <a href="https://www.python.org/downloads/release/python-385/">Python 3.8.5</a> 安裝檔，要注意的是若作業系統為 Windows，需要下載 x86-64 的安裝檔才會是 64 位元的 Python。安裝之前要特別勾選 <code>Add Python 3.8 to PATH</code>，再點擊 <code>Install Now</code> 進行安裝，千萬別忽略了，若因為任何原因沒有勾選，麻煩重新安裝 Python，將會節省很多時間</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay23-TabPy-%E5%AE%89%E8%A3%9D%E8%88%87%E9%80%A3%E7%B7%9A%2Fpython_install.png?alt=media&amp;token=5575a4fa-80d9-488f-9997-4fda1af63061" alt="Add Python to PATH"><span class="image-caption">Add Python to PATH</span></p>
-<p>安裝完畢後，開啟 <code>cmd.exe</code> 並輸入 <code>python</code>，若出現 <code>Python 3.8.5</code> 字樣，表示 Python 安裝成功</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue&gt;python</span><br><span class="line">Python 3.8.5 (tags/v3.8.5:580fbb0, Jul 20 2020, 15:57:54) [MSC v.1924 64 bit (AMD64)] on win32</span><br><span class="line">Type <span class="string">&quot;help&quot;</span>, <span class="string">&quot;copyright&quot;</span>, <span class="string">&quot;credits&quot;</span> or <span class="string">&quot;license&quot;</span> <span class="keyword">for</span> more information.</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="TabPy-安裝"><a href="#TabPy-安裝" class="headerlink" title="TabPy 安裝"></a>TabPy 安裝</h2><p>在安裝 TabPy 之前，先建立 Python 虛擬環境，將 TabPy 環境與一般開發環境區隔開來，避免安裝的套件混合在一起導致難以管理。同樣在 <code>cmd.exe</code> 輸入指令，建立一個名為 <code>Tableau-Python-Server</code> 的虛擬環境</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue&gt;python -m venv Tableau-Python-Server</span><br></pre></td></tr></table></figure>
-<p>現在，讓我們先進到虛擬環境，若要知道現在所處的虛擬環境名稱，可經由提示字元前圓括弧內的名稱得知</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue&gt;Tableau-Python-Server\Scripts\activate</span><br><span class="line"></span><br><span class="line">(Tableau-Python-Server) C:\Users\wrxue&gt;</span><br></pre></td></tr></table></figure>
-<p>pip 是 Python 的套件管理工具，而 TabPy 是 Python 中的一個套件，因此 TabPy 也可以直接使用 pip 來安裝，非常方便。使用 pip 之前的良好習慣是先將 pip 更新，再安裝套件</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">(Tableau-Python-Server) C:\Users\wrxue&gt;python -m pip install --upgrade pip</span><br><span class="line"></span><br><span class="line">(Tableau-Python-Server) C:\Users\wrxue&gt;pip install tabpy</span><br></pre></td></tr></table></figure>
-<p>若仔細觀察 TabPy 安裝的過程，會發現其實同時安裝了非常多的套件，資料處理中常用到的例如 numpy、pandas、sklearn 等都已包含在內，以下是安裝 TabPy 時也一同被安裝的套件</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">Installing collected packages: pyparsing, pycparser, numpy, colorama, urllib3, tqdm, toml, threadpoolctl, six, scipy, regex, py, pluggy, packaging, joblib, iniconfig, idna, click, charset-normalizer, cffi, certifi, attrs, atomicwrites, zope.interface, twisted-iocpsupport, sortedcontainers, scikit-learn, requests, pytz, python-dateutil, pytest, pyrsistent, nltk, incremental, hyperlink, docopt, cryptography, coverage, constantly, Automat, twisted, tornado, textblob, sklearn, simplejson, pytest-cov, pyopenssl, pandas, mock, jsonschema, hypothesis, genson, future, coveralls, configparser, cloudpickle, tabpy</span><br></pre></td></tr></table></figure>
-<p>最後，要啟動 TabPy Server 非常容易，只需輸入 <code>tabpy</code> 即可啟動</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">(Tableau-Python-Server) C:\Users\wrxue&gt;tabpy</span><br><span class="line">[INFO] (app.py:app:242): Parsing config file c:\<span class="built_in">users</span>\wrxue\tableau-python-server\lib\site-packages\tabpy\tabpy_server\app\..\common\default.conf</span><br><span class="line">[INFO] (app.py:app:431): Loading state from state file C:\Users\wrxue\Tableau-Python-Server\Lib\site-packages\tabpy\tabpy_server\state.ini</span><br><span class="line">[INFO] (app.py:app:328): Password file is not specified: Authentication is not enabled</span><br><span class="line">[INFO] (app.py:app:343): Call context logging is disabled</span><br><span class="line">[INFO] (app.py:app:124): Initializing TabPy...</span><br><span class="line">[INFO] (callbacks.py:callbacks:43): Initializing TabPy Server...</span><br><span class="line">[INFO] (app.py:app:128): Done initializing TabPy.</span><br><span class="line">[INFO] (app.py:app:82): Setting max request size to 104857600 bytes</span><br><span class="line">[INFO] (callbacks.py:callbacks:64): Initializing models...</span><br><span class="line">[INFO] (app.py:app:105): Web service listening on port 9004</span><br></pre></td></tr></table></figure>
-<p>啟動訊息提示我們 TabPy Server 運作在 Port 9004，因此我們在瀏覽器輸入 <a href="http://localhost:9004/">http://localhost:9004/</a> 就能看到 Tableau Python Server 的資訊囉，同時也代表 TabPy 正常運作中</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay23-TabPy-%E5%AE%89%E8%A3%9D%E8%88%87%E9%80%A3%E7%B7%9A%2Ftabpy_info.png?alt=media&amp;token=eaa12722-5822-4220-9b85-76f368755af5" alt="TabPy Server 資訊"><span class="image-caption">TabPy Server 資訊</span></p>
-<h2 id="與-Tableau-Desktop-連線"><a href="#與-Tableau-Desktop-連線" class="headerlink" title="與 Tableau Desktop 連線"></a>與 Tableau Desktop 連線</h2><p>Tableau Desktop 要使用 TabPy 之前需要事先設定連線，讓工作簿知道應該找誰執行 Python 程式，TabPy 是允許遠端連線的，因此這裡的連線設定有可能因環境而異。透過 <code>Help → Settings and Performance → Manage Analytics Extension Connection...</code> 開啟連線設定視窗，選擇 <code>TabPy/External API</code> 並填寫 <code>TabPy Server</code> 的連線資訊，最後點擊 <code>Test Connection</code> 按鈕測試連線，若連線正常會出現含有 <code>Successfully connected to the analytics extension.</code> 訊息的提示視窗</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay23-TabPy-%E5%AE%89%E8%A3%9D%E8%88%87%E9%80%A3%E7%B7%9A%2Fconnect_check.png?alt=media&amp;token=f74e77d0-4126-4080-9474-b0148d26878a" alt="連線確認"><span class="image-caption">連線確認</span></p>
-]]></content>
-      <categories>
-        <category>Tableau 輕鬆學</category>
-      </categories>
-      <tags>
-        <tag>install</tag>
-        <tag>tableau</tag>
-        <tag>connect</tag>
-        <tag>tabpy</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Day24] Tableau 輕鬆學 - TabPy 使用方法 1</title>
     <url>/2021/08/14/day24_tableau/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>簡單來說，Python 在 Tableau Desktop 中使用方法有兩種，第一種是將 TabPy 當作 Python 直譯器，將 Python 程式碼直接寫在 Tableau Desktop 中，需要運算時再將該程式碼傳送給 TabPy 執行。第二種是預先寫好函式，將其存放於 TabPy Server，Tableau 要呼叫時只需指定函式名稱與傳遞資料即可。這裡會分享如何使用第一種方式，將 Python 整合進 Tableau Desktop 使用。</p>
@@ -4432,6 +4321,40 @@
         <tag>develop</tag>
         <tag>tableau</tag>
         <tag>desktop</tag>
+        <tag>tabpy</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Day23] Tableau 輕鬆學 - TabPy 安裝與連線</title>
+    <url>/2021/08/13/day23_tableau/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>對 TabPy 有一定程度的認識之後，便能開始學習 TabPy 安裝與使用，這篇文章會分享如何安裝 Python 與 TabPy，最後將 TabPy Server 啟動並測試與 Tableau Desktop 的連線。</p>
+<h2 id="Python-安裝"><a href="#Python-安裝" class="headerlink" title="Python 安裝"></a>Python 安裝</h2><p>TabPy 是 Tableau 發佈的 Python 套件，必須要先安裝 Python 才可使用，依個人喜好可以安裝 Anaconda 或者直接安裝 Python，而我個人習慣直接安裝 Python，因此這裡分享的安裝步驟也是採用直接安裝的方法。</p>
+<p>首先至官方網站根據作業系統選擇 <a href="https://www.python.org/downloads/release/python-385/">Python 3.8.5</a> 安裝檔，要注意的是若作業系統為 Windows，需要下載 x86-64 的安裝檔才會是 64 位元的 Python。安裝之前要特別勾選 <code>Add Python 3.8 to PATH</code>，再點擊 <code>Install Now</code> 進行安裝，千萬別忽略了，若因為任何原因沒有勾選，麻煩重新安裝 Python，將會節省很多時間</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay23-TabPy-%E5%AE%89%E8%A3%9D%E8%88%87%E9%80%A3%E7%B7%9A%2Fpython_install.png?alt=media&amp;token=5575a4fa-80d9-488f-9997-4fda1af63061" alt="Add Python to PATH"><span class="image-caption">Add Python to PATH</span></p>
+<p>安裝完畢後，開啟 <code>cmd.exe</code> 並輸入 <code>python</code>，若出現 <code>Python 3.8.5</code> 字樣，表示 Python 安裝成功</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue&gt;python</span><br><span class="line">Python 3.8.5 (tags/v3.8.5:580fbb0, Jul 20 2020, 15:57:54) [MSC v.1924 64 bit (AMD64)] on win32</span><br><span class="line">Type <span class="string">&quot;help&quot;</span>, <span class="string">&quot;copyright&quot;</span>, <span class="string">&quot;credits&quot;</span> or <span class="string">&quot;license&quot;</span> <span class="keyword">for</span> more information.</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="TabPy-安裝"><a href="#TabPy-安裝" class="headerlink" title="TabPy 安裝"></a>TabPy 安裝</h2><p>在安裝 TabPy 之前，先建立 Python 虛擬環境，將 TabPy 環境與一般開發環境區隔開來，避免安裝的套件混合在一起導致難以管理。同樣在 <code>cmd.exe</code> 輸入指令，建立一個名為 <code>Tableau-Python-Server</code> 的虛擬環境</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue&gt;python -m venv Tableau-Python-Server</span><br></pre></td></tr></table></figure>
+<p>現在，讓我們先進到虛擬環境，若要知道現在所處的虛擬環境名稱，可經由提示字元前圓括弧內的名稱得知</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue&gt;Tableau-Python-Server\Scripts\activate</span><br><span class="line"></span><br><span class="line">(Tableau-Python-Server) C:\Users\wrxue&gt;</span><br></pre></td></tr></table></figure>
+<p>pip 是 Python 的套件管理工具，而 TabPy 是 Python 中的一個套件，因此 TabPy 也可以直接使用 pip 來安裝，非常方便。使用 pip 之前的良好習慣是先將 pip 更新，再安裝套件</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">(Tableau-Python-Server) C:\Users\wrxue&gt;python -m pip install --upgrade pip</span><br><span class="line"></span><br><span class="line">(Tableau-Python-Server) C:\Users\wrxue&gt;pip install tabpy</span><br></pre></td></tr></table></figure>
+<p>若仔細觀察 TabPy 安裝的過程，會發現其實同時安裝了非常多的套件，資料處理中常用到的例如 numpy、pandas、sklearn 等都已包含在內，以下是安裝 TabPy 時也一同被安裝的套件</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">Installing collected packages: pyparsing, pycparser, numpy, colorama, urllib3, tqdm, toml, threadpoolctl, six, scipy, regex, py, pluggy, packaging, joblib, iniconfig, idna, click, charset-normalizer, cffi, certifi, attrs, atomicwrites, zope.interface, twisted-iocpsupport, sortedcontainers, scikit-learn, requests, pytz, python-dateutil, pytest, pyrsistent, nltk, incremental, hyperlink, docopt, cryptography, coverage, constantly, Automat, twisted, tornado, textblob, sklearn, simplejson, pytest-cov, pyopenssl, pandas, mock, jsonschema, hypothesis, genson, future, coveralls, configparser, cloudpickle, tabpy</span><br></pre></td></tr></table></figure>
+<p>最後，要啟動 TabPy Server 非常容易，只需輸入 <code>tabpy</code> 即可啟動</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">(Tableau-Python-Server) C:\Users\wrxue&gt;tabpy</span><br><span class="line">[INFO] (app.py:app:242): Parsing config file c:\<span class="built_in">users</span>\wrxue\tableau-python-server\lib\site-packages\tabpy\tabpy_server\app\..\common\default.conf</span><br><span class="line">[INFO] (app.py:app:431): Loading state from state file C:\Users\wrxue\Tableau-Python-Server\Lib\site-packages\tabpy\tabpy_server\state.ini</span><br><span class="line">[INFO] (app.py:app:328): Password file is not specified: Authentication is not enabled</span><br><span class="line">[INFO] (app.py:app:343): Call context logging is disabled</span><br><span class="line">[INFO] (app.py:app:124): Initializing TabPy...</span><br><span class="line">[INFO] (callbacks.py:callbacks:43): Initializing TabPy Server...</span><br><span class="line">[INFO] (app.py:app:128): Done initializing TabPy.</span><br><span class="line">[INFO] (app.py:app:82): Setting max request size to 104857600 bytes</span><br><span class="line">[INFO] (callbacks.py:callbacks:64): Initializing models...</span><br><span class="line">[INFO] (app.py:app:105): Web service listening on port 9004</span><br></pre></td></tr></table></figure>
+<p>啟動訊息提示我們 TabPy Server 運作在 Port 9004，因此我們在瀏覽器輸入 <a href="http://localhost:9004/">http://localhost:9004/</a> 就能看到 Tableau Python Server 的資訊囉，同時也代表 TabPy 正常運作中</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay23-TabPy-%E5%AE%89%E8%A3%9D%E8%88%87%E9%80%A3%E7%B7%9A%2Ftabpy_info.png?alt=media&amp;token=eaa12722-5822-4220-9b85-76f368755af5" alt="TabPy Server 資訊"><span class="image-caption">TabPy Server 資訊</span></p>
+<h2 id="與-Tableau-Desktop-連線"><a href="#與-Tableau-Desktop-連線" class="headerlink" title="與 Tableau Desktop 連線"></a>與 Tableau Desktop 連線</h2><p>Tableau Desktop 要使用 TabPy 之前需要事先設定連線，讓工作簿知道應該找誰執行 Python 程式，TabPy 是允許遠端連線的，因此這裡的連線設定有可能因環境而異。透過 <code>Help → Settings and Performance → Manage Analytics Extension Connection...</code> 開啟連線設定視窗，選擇 <code>TabPy/External API</code> 並填寫 <code>TabPy Server</code> 的連線資訊，最後點擊 <code>Test Connection</code> 按鈕測試連線，若連線正常會出現含有 <code>Successfully connected to the analytics extension.</code> 訊息的提示視窗</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay23-TabPy-%E5%AE%89%E8%A3%9D%E8%88%87%E9%80%A3%E7%B7%9A%2Fconnect_check.png?alt=media&amp;token=f74e77d0-4126-4080-9474-b0148d26878a" alt="連線確認"><span class="image-caption">連線確認</span></p>
+]]></content>
+      <categories>
+        <category>Tableau 輕鬆學</category>
+      </categories>
+      <tags>
+        <tag>install</tag>
+        <tag>tableau</tag>
+        <tag>connect</tag>
         <tag>tabpy</tag>
       </tags>
   </entry>
@@ -4560,6 +4483,83 @@
       </tags>
   </entry>
   <entry>
+    <title>[Vivado Vitis] 在軟體開發環境中缺少一堆 .h 檔的解決方法</title>
+    <url>/2021/06/13/vivado_vitis/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近接手一個 Zynq 的開發板 (RFSoC ZCU111)，新手上路肯定是要參考網路上豐富的文件，才會學得快。但在參考文獻的過程中碰到一個似乎教學的作者沒有提及，但自己遇到的問題，也就是 Build 時缺少一堆 <code>.h</code> 檔案的錯誤提示。</p>
+<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
+<li>Vivado 2019.2</li>
+<li>Vitis 2019.2</li>
+<li>Windows 10</li>
+</ul>
+<h2 id="解決方法"><a href="#解決方法" class="headerlink" title="解決方法"></a>解決方法</h2><p>網路上沒有提供清楚的解決方法，因此自己記錄下遇到的問題與解決的步驟</p>
+<ol>
+<li><p>在 Vitis (或 SDK) 創建 Application Project，硬體平台選擇 Vivado 輸出的 <code>*.xsa</code> 檔案，並且將範例 <code>*.c</code> 檔匯入 <code>src</code> 目錄下，開始 Build，會出現以下的提示，這是在路徑下找不到 <code>*.h</code> 檔案的意思，但照理來說 Vivado 的 <code>xsa</code> 都包含這些了。</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">22:54:01 **** Incremental Build of configuration Debug <span class="keyword">for</span> project LED ****</span><br><span class="line">make all </span><br><span class="line">make --no-print-directory pre-build</span><br><span class="line">a9-linaro-pre-build-step</span><br><span class="line"><span class="string">&#x27; &#x27;</span></span><br><span class="line">make --no-print-directory main-build</span><br><span class="line"><span class="string">&#x27;Building file: ../src/LED_test_tut_1C.c&#x27;</span></span><br><span class="line"><span class="string">&#x27;Invoking: ARM v7 gcc compiler&#x27;</span></span><br><span class="line">arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT<span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Zynq_Book/first_zynq_design/SDK/first_zynq_system_wrapper/export/first_zynq_system_wrapper/sw/first_zynq_system_wrapper/standalone_domain/bspinclude/include -MMD -MP -MF<span class="string">&quot;src/LED_test_tut_1C.d&quot;</span> -MT<span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> -o <span class="string">&quot;src/LED_test_tut_1C.o&quot;</span> <span class="string">&quot;../src/LED_test_tut_1C.c&quot;</span></span><br><span class="line">../src/LED_test_tut_1C.c:31:10: fatal error: xgpio.h: No such file or directory</span><br><span class="line"><span class="comment">#include &quot;xgpio.h&quot;</span></span><br><span class="line">        ^~~~~~~~~</span><br><span class="line">compilation terminated.</span><br><span class="line">make[1]: *** [src/subdir.mk:23: src/LED_test_tut_1C.o] Error 1</span><br><span class="line">make: *** [makefile:34: all] Error 2</span><br><span class="line"></span><br><span class="line">22:54:02 Build Finished (took 987ms)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看在 <code>*.h</code> 目錄底下到底有甚麼檔案，我的路徑為：</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">C:\Zynq_Book\first_zynq_design\SDK\first_zynq_system_wrapper\<span class="built_in">export</span>\first_zynq_system_wrapper\sw\first_zynq_system_wrapper\standalone_domain\bspinclude\include</span><br></pre></td></tr></table></figure>
+<p> 發現只有一個檔案 <code>xparameters.h</code> ，這為不正常的結果。</p>
+</li>
+<li><p>再回到 Vitis 畫面，直接重新 Build BSP 一次，並等待執行完成。再回到步驟 2 的路徑去查看，會發現多出很多 <code>*.h</code> 檔案，回到Vitis，Build <code>*.c</code> 檔案，結果為可以順利完成。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Xilinx 使用筆記</category>
+      </categories>
+      <tags>
+        <tag>vivado</tag>
+        <tag>vitis</tag>
+        <tag>h</tag>
+        <tag>lack</tag>
+        <tag>sdk</tag>
+        <tag>xilinx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Xilinx SDK] GPIO 常用到的參數</title>
+    <url>/2021/06/13/xilinx_sdk_gpio/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用 API 時，最重要的是正確地輸入對應參數，因此必定要先了解參數所代表的涵義，才能有正確的使用 API 姿勢。</p>
+<h2 id="開發環境"><a href="#開發環境" class="headerlink" title="開發環境"></a>開發環境</h2><ul>
+<li>RFSoC ZCU111</li>
+</ul>
+<h2 id="參數說明"><a href="#參數說明" class="headerlink" title="參數說明"></a>參數說明</h2><ol>
+<li><p><code>channel</code>：這是在 Vivado 內使用 IP 來做設計時就決定的，打開 GPIO 的 IP 設定視窗可以看到 GPIO 與 GPIO2，這裡的例子通道 1 與通道 2 分別為 led 與 push button。</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Xilinx-SDK-GPIO-%E5%B8%B8%E7%94%A8%E5%88%B0%E7%9A%84%E5%8F%83%E6%95%B8%2Fgpio.png?alt=media&amp;token=1edff119-f05f-4e10-bc7a-fb60595872fa" alt="GPIO IP 設定畫面"><span class="image-caption">GPIO IP 設定畫面</span></p>
+</li>
+<li><p><code>DirectionMask</code>：這是決定 GPIO 為輸入或輸出 (相對於晶片來說) 的參數，需要特別點開 <code>*.h</code> 或 <code>*.c</code> 去看說明，此說明在 <code>xgpio.c</code> 的註解裡，以下為摘要</p>
+ <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Bits set to 0 are output and bits set to 1 are input.</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Xilinx 使用筆記</category>
+      </categories>
+      <tags>
+        <tag>api</tag>
+        <tag>channel</tag>
+        <tag>sdk</tag>
+        <tag>xilinx</tag>
+        <tag>gpio</tag>
+        <tag>directionmask</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Xilinx SDK] make: Nothing to be done for &#39;all&#39;. 的問題</title>
+    <url>/2021/06/13/xilinx_sdk_make_nothing_to_be_done_for_all/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Xilinx SDK 編輯完程式之後，通常會 Build Project 看看是否可以運行，但常常在 Console 看到 <code>make: Nothing to be done for &#39;all&#39;.</code> 的訊息。</p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>這個意思是跟上次編譯結果相比，沒有東西被更動，所以不需要再 make 一次。明明剛修改好然後而去按 Build Project，為什麼也會看到這訊息呢？這主要是因為 SDK 預設存檔的動作包含 Build，也就是說，存檔 + Build Project是同時做的，存好檔案之後可以直接在 Console 查看 Build 的結果，不需要再自行編譯一次。</p>
+]]></content>
+      <categories>
+        <category>Xilinx 使用筆記</category>
+      </categories>
+      <tags>
+        <tag>sdk</tag>
+        <tag>xilinx</tag>
+        <tag>make</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[FTP] CentOS 7 安裝 vsftpd 省去實體與虛擬機之間傳輸設定</title>
     <url>/2021/06/19/ftp_centos_vsftpd/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在開發時免不了會使用到虛擬機的可能性，而在虛擬機與主機之間做檔案轉移時總會遇到奇奇怪怪的問題，先不論是否是虛擬機的問題，但總是會再這無關緊要的問題上浪費掉許多寶貴時間，因此研究如何架設 FTP，讓主機直接上傳檔案到 FTP 伺服器，再從虛擬機中下載，避免檔案轉移遇到的麻煩！</p>
@@ -4590,6 +4590,72 @@
         <tag>425</tag>
         <tag>vm</tag>
         <tag>copy</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[MQTT] CentOS 7 安裝 Mosquitto 並使用帳密驗證</title>
+    <url>/2021/06/19/mqtt_centos_7/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 Mosquitto，網路上有許多 Mosquitto 的說明，這裡只紀錄如何架設與測試。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 7.9</li>
+</ul>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>Mosquitto 預設是不在安裝套件內的，因此需要先安裝 Extra Packages for Enterprise Linux (EPEL)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y epel-release</span><br></pre></td></tr></table></figure>
+<p>安裝 Mosquitto 並啟動服務</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y mosquitto</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mosquitto   <span class="comment"># 讓 Mosquitto 重開機會自動啟動</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl start mosquitto    <span class="comment"># 現在馬上啟動 Mosquitto</span></span><br></pre></td></tr></table></figure>
+<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>開啟一個新的 Terminal (在此稱 tty1)，輸入指令來訂閱主題</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mosquitto_sub</code>：訂閱主題。</li>
+<li><code>-h</code>：指定 MQTT Broker 的 IP 或 FQDN。</li>
+<li><code>-t</code>：指定訂閱的主題名稱。</li>
+</ul>
+<p>開啟另一個新的 Terminal (在此稱 tty2)，輸入指令來發布主題</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_pub -h localhost -t Try/MQTT/CentOS7 -m <span class="string">&quot;Test Message&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mosquitto_pub</code>：發布主題。</li>
+<li><code>-h</code>：指定 MQTT Broker 的 IP 或 FQDN。</li>
+<li><code>-t</code>：指定發布的主題。</li>
+<li><code>-m</code>：發布的訊息。</li>
+</ul>
+<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表 Mosquitto 安裝完成且可以正常運行！測試完畢後，可以關閉 tty1 與 tty2。</p>
+<h2 id="建立使用者帳號"><a href="#建立使用者帳號" class="headerlink" title="建立使用者帳號"></a>建立使用者帳號</h2><p>創建帳號</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mosquitto_passwd -c /etc/mosquitto/passwd test_account</span><br><span class="line">Password:           <span class="comment"># 輸入 test_account 的密碼</span></span><br><span class="line">Reenter password:   <span class="comment"># 再次輸入 test_account 的密碼</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-c</code>：執行指令的同時建立一個帳密檔。</li>
+<li><code>/etc/mosquitto/passwd</code>：為帳密檔位置。</li>
+<li><code>test_account</code>：為所要新增的帳號，可以自行更改。</li>
+</ul>
+<p>修改 Mosquitto 設定檔 (<code>/etc/mosquitto/mosquitto.conf</code>)，加入以下兩行</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">allow_anonymous <span class="literal">false</span>               <span class="comment"># 不可匿名登入，一定要輸入帳密</span></span><br><span class="line">password_file /etc/mosquitto/passwd <span class="comment"># 讓 Mosquitto 知道帳密檔在哪裡</span></span><br></pre></td></tr></table></figure>
+<p>重啟 Mosquitto 服務</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mosquitto</span><br></pre></td></tr></table></figure>
+<h3 id="使用者帳號測試"><a href="#使用者帳號測試" class="headerlink" title="使用者帳號測試"></a>使用者帳號測試</h3><p>開啟一個新的 Terminal (在此稱 tty1)，使用指令來訂閱主題。但由於我們已經設定為不可匿名登入，可以預想到的是會無法正常運作，因為沒有授權 (也就是沒有輸入帳號)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7</span><br><span class="line">Connection error: Connection Refused: not authorised.</span><br></pre></td></tr></table></figure>
+<p>tty1 中的指令更改如下</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7 -u test_account -P 1234</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-u</code>：指定使用者帳號。</li>
+<li><code>-P</code>：指定密碼，注意是大寫 P。</li>
+</ul>
+<p>開啟另一個新的 Terminal (在此稱 tty2)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_pub -h localhost -t Try/MQTT/CentOS7 -m <span class="string">&quot;Test Message&quot;</span> -u test_account -P 1234 </span><br></pre></td></tr></table></figure>
+<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表帳號密碼機制設定完成並且有正常運作！</p>
+<h2 id="設定防火牆"><a href="#設定防火牆" class="headerlink" title="設定防火牆"></a>設定防火牆</h2><p>在 CentOS 中幾乎所有的 Port 預設對外服務都是關閉的，無法由外部連入，因此需要另外設定才能開放給其他主機連線，MQTT 預設的 Port 為 1883</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=1883/tcp</span><br><span class="line">success</span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --reload</span><br><span class="line">success</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>伺服器架設筆記</category>
+      </categories>
+      <tags>
+        <tag>centos</tag>
+        <tag>firewall</tag>
+        <tag>user</tag>
+        <tag>7.9</tag>
+        <tag>mqtt</tag>
+        <tag>mosquitto</tag>
+        <tag>authorise</tag>
+        <tag>account</tag>
       </tags>
   </entry>
   <entry>
@@ -4756,72 +4822,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[MQTT] CentOS 7 安裝 Mosquitto 並使用帳密驗證</title>
-    <url>/2021/06/19/mqtt_centos_7/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 IoT 領域第一個碰到的傳輸協定應該會是 http，再深入一點則是 MQTT，MQTT 是一個非常輕便的傳輸協定，沒有像是 http header 的東西，可以節省相當的流量！實現 MQTT 傳輸協定最有名的軟體應該莫過於 Mosquitto，網路上有許多 Mosquitto 的說明，這裡只紀錄如何架設與測試。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 7.9</li>
-</ul>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>Mosquitto 預設是不在安裝套件內的，因此需要先安裝 Extra Packages for Enterprise Linux (EPEL)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y epel-release</span><br></pre></td></tr></table></figure>
-<p>安裝 Mosquitto 並啟動服務</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo yum install -y mosquitto</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mosquitto   <span class="comment"># 讓 Mosquitto 重開機會自動啟動</span></span><br><span class="line">[user@localhost ~]$ sudo systemctl start mosquitto    <span class="comment"># 現在馬上啟動 Mosquitto</span></span><br></pre></td></tr></table></figure>
-<h2 id="測試"><a href="#測試" class="headerlink" title="測試"></a>測試</h2><p>開啟一個新的 Terminal (在此稱 tty1)，輸入指令來訂閱主題</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>mosquitto_sub</code>：訂閱主題。</li>
-<li><code>-h</code>：指定 MQTT Broker 的 IP 或 FQDN。</li>
-<li><code>-t</code>：指定訂閱的主題名稱。</li>
-</ul>
-<p>開啟另一個新的 Terminal (在此稱 tty2)，輸入指令來發布主題</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_pub -h localhost -t Try/MQTT/CentOS7 -m <span class="string">&quot;Test Message&quot;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>mosquitto_pub</code>：發布主題。</li>
-<li><code>-h</code>：指定 MQTT Broker 的 IP 或 FQDN。</li>
-<li><code>-t</code>：指定發布的主題。</li>
-<li><code>-m</code>：發布的訊息。</li>
-</ul>
-<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表 Mosquitto 安裝完成且可以正常運行！測試完畢後，可以關閉 tty1 與 tty2。</p>
-<h2 id="建立使用者帳號"><a href="#建立使用者帳號" class="headerlink" title="建立使用者帳號"></a>建立使用者帳號</h2><p>創建帳號</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo mosquitto_passwd -c /etc/mosquitto/passwd test_account</span><br><span class="line">Password:           <span class="comment"># 輸入 test_account 的密碼</span></span><br><span class="line">Reenter password:   <span class="comment"># 再次輸入 test_account 的密碼</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-c</code>：執行指令的同時建立一個帳密檔。</li>
-<li><code>/etc/mosquitto/passwd</code>：為帳密檔位置。</li>
-<li><code>test_account</code>：為所要新增的帳號，可以自行更改。</li>
-</ul>
-<p>修改 Mosquitto 設定檔 (<code>/etc/mosquitto/mosquitto.conf</code>)，加入以下兩行</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">allow_anonymous <span class="literal">false</span>               <span class="comment"># 不可匿名登入，一定要輸入帳密</span></span><br><span class="line">password_file /etc/mosquitto/passwd <span class="comment"># 讓 Mosquitto 知道帳密檔在哪裡</span></span><br></pre></td></tr></table></figure>
-<p>重啟 Mosquitto 服務</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl restart mosquitto</span><br></pre></td></tr></table></figure>
-<h3 id="使用者帳號測試"><a href="#使用者帳號測試" class="headerlink" title="使用者帳號測試"></a>使用者帳號測試</h3><p>開啟一個新的 Terminal (在此稱 tty1)，使用指令來訂閱主題。但由於我們已經設定為不可匿名登入，可以預想到的是會無法正常運作，因為沒有授權 (也就是沒有輸入帳號)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7</span><br><span class="line">Connection error: Connection Refused: not authorised.</span><br></pre></td></tr></table></figure>
-<p>tty1 中的指令更改如下</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_sub -h localhost -t Try/MQTT/CentOS7 -u test_account -P 1234</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-u</code>：指定使用者帳號。</li>
-<li><code>-P</code>：指定密碼，注意是大寫 P。</li>
-</ul>
-<p>開啟另一個新的 Terminal (在此稱 tty2)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ mosquitto_pub -h localhost -t Try/MQTT/CentOS7 -m <span class="string">&quot;Test Message&quot;</span> -u test_account -P 1234 </span><br></pre></td></tr></table></figure>
-<p>這時在 tty1 應該就能看到 <code>Test Message</code> 的訊息，此時代表帳號密碼機制設定完成並且有正常運作！</p>
-<h2 id="設定防火牆"><a href="#設定防火牆" class="headerlink" title="設定防火牆"></a>設定防火牆</h2><p>在 CentOS 中幾乎所有的 Port 預設對外服務都是關閉的，無法由外部連入，因此需要另外設定才能開放給其他主機連線，MQTT 預設的 Port 為 1883</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo firewall-cmd --permanent --add-port=1883/tcp</span><br><span class="line">success</span><br><span class="line">[user@localhost ~]$ sudo firewall-cmd --reload</span><br><span class="line">success</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>伺服器架設筆記</category>
-      </categories>
-      <tags>
-        <tag>centos</tag>
-        <tag>firewall</tag>
-        <tag>user</tag>
-        <tag>7.9</tag>
-        <tag>mqtt</tag>
-        <tag>mosquitto</tag>
-        <tag>authorise</tag>
-        <tag>account</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
     <url>/2021/06/19/mariadb_centos/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
@@ -4849,6 +4849,67 @@
         <tag>latest</tag>
         <tag>version</tag>
         <tag>repository</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Gist 幫你吸引目光 - 文章點閱率顯示</title>
+    <url>/2021/10/31/gist_article_click/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>GitHub 的 Gist 服務不僅能拿來紀錄程式碼片段、寫筆記，還能讓你的 GitHub Profile 更加引人注目。此篇文章紀錄如何使用 Gist API 將部落格點擊率放置到 GitHub Profile！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Gist-%E5%B9%AB%E4%BD%A0%E5%90%B8%E5%BC%95%E7%9B%AE%E5%85%89-%E6%96%87%E7%AB%A0%E9%BB%9E%E9%96%B1%E7%8E%87%E9%A1%AF%E7%A4%BA%2Fgithub_profile.png?alt=media&amp;token=b5f60c45-089d-4306-9ab4-b99606956147" alt="完成後的樣子"><span class="image-caption">完成後的樣子</span></p>
+<div class="note info">
+            <p>歡迎直接進入<a href="https://github.com/weirenxue">我的 GitHub</a> 參觀唷！</p>
+          </div>
+<!-- markdownlint-disable MD034 -->
+<a class="btn" href="https://github.com/weirenxue/click-ranking-gist" title="Source Code of using Gist API">
+            <i class="fab fa-github"></i>Source Code
+          </a>
+<!-- markdownlint-restore MD034 -->
+<h2 id="Gist-API"><a href="#Gist-API" class="headerlink" title="Gist API"></a>Gist API</h2><p><a href="https://docs.github.com/en/rest/reference/gists">Gist API</a> 有提供 Shell 操作 API 的範例，基本上可以透過任何程式語言來操作。此外，也有提供 Node 的 SDK <a href="https://github.com/octokit/core.js#readme">octokit/core.js</a> 使我們不需要從頭建立一個 Request，只需給定參數即可達到想要效果。秉持著用輪不造輪的精神，此專案使用 <a href="https://github.com/octokit/core.js#readme">octokit/core.js</a> 呼叫 Gist API。</p>
+<h2 id="手動建立一個-Gist"><a href="#手動建立一個-Gist" class="headerlink" title="手動建立一個 Gist"></a>手動建立一個 Gist</h2><p>在使用 Gist API 更新 Gist 之前，需要先有一個可被更新的 Gist 目標，若沒有則需要建立一個 Gist。進入 <a href="https://gist.github.com/">GitHub Gist 創建頁面</a>，如下圖建立一個 <strong>Public Gist</strong> (若為 Secret Gist 則無法釘選到 GitHub Profile)</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Gist-%E5%B9%AB%E4%BD%A0%E5%90%B8%E5%BC%95%E7%9B%AE%E5%85%89-%E6%96%87%E7%AB%A0%E9%BB%9E%E9%96%B1%E7%8E%87%E9%A1%AF%E7%A4%BA%2Fcreate_a_gist.png?alt=media&amp;token=26993bca-e51b-474d-a1f6-ed1cd9a8c99b" alt="建立一個 Gist"><span class="image-caption">建立一個 Gist</span></p>
+<p>再進入該 Gist 觀察 URL，記下 URL 中的 Gist ID。例如：<a href="https://gist.github.com/weirenxue/1582d41aa4cf561d9a51fc1606f388bc">我的 Gist</a> ，其 Gist ID 為 <code>1582d41aa4cf561d9a51fc1606f388bc</code>。</p>
+<h2 id="申請-PAT"><a href="#申請-PAT" class="headerlink" title="申請 PAT"></a>申請 PAT</h2><p>參考申請 PAT (Personal Access Token) 的詳細教學 <a href="/2021/08/17/github_pat/">[GitHub] Please use a personal access token instead.</a>，其中需要注意的是 <code>Select scopes</code> 要勾選 <code>gist (Create gists)</code>，這樣才有編輯 Gist 的權限唷！申請好之後別忘了把 PAT 記錄下來。</p>
+<h2 id="使用-octokit-core-上傳內容"><a href="#使用-octokit-core-上傳內容" class="headerlink" title="使用 @octokit/core 上傳內容"></a>使用 @octokit/core 上傳內容</h2><p>開發之前，需先安裝 <code>@octokit/core</code> 套件至 Node 專案中</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm i @octokit/core</span><br></pre></td></tr></table></figure>
+<p>上傳內容到指定 Gist ID 下的檔案，以註解來說明程式運作邏輯</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; <span class="title class_">Octokit</span> &#125; = <span class="built_in">require</span>(<span class="string">&quot;@octokit/core&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">main</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> data = []</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">        處理取得部落格點閱率的邏輯，</span></span><br><span class="line"><span class="comment">        並用 data 變數來存每一筆紀錄</span></span><br><span class="line"><span class="comment">        例如：</span></span><br><span class="line"><span class="comment">        record = `$&#123;點閱率&#125;|$&#123;文章名稱&#125;`;</span></span><br><span class="line"><span class="comment">        data.push(record);</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="comment">// &#123;PAT&#125; 要替換為真實的 PAT</span></span><br><span class="line">    <span class="keyword">const</span> octokit = <span class="keyword">new</span> <span class="title class_">Octokit</span>(&#123;</span><br><span class="line">        <span class="attr">auth</span>: <span class="string">&#x27;&#123;PAT&#125;&#x27;</span>,</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="comment">// &#123;gist_id&#125; 要替換為真實的 Gist ID</span></span><br><span class="line">    <span class="keyword">let</span> response = <span class="keyword">await</span> octokit.<span class="title function_">request</span>(<span class="string">&#x27;PATCH /gists/&#123;gist_id&#125;&#x27;</span>, &#123;</span><br><span class="line">        <span class="attr">files</span>: &#123;</span><br><span class="line">            <span class="comment">// ranking 為 Gist 中的目標檔名，依情況更改</span></span><br><span class="line">            <span class="string">&#x27;ranking&#x27;</span>: &#123;</span><br><span class="line">                <span class="attr">content</span>: data.<span class="title function_">join</span>(<span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">public</span>: <span class="literal">true</span></span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(response.<span class="property">data</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 呼叫 main 函式</span></span><br><span class="line"><span class="title function_">main</span>();</span><br></pre></td></tr></table></figure>
+<!-- markdownlint-disable MD034 -->
+<div class="note info">
+            <ul><li><p>個人的專案是使用 Firebase 的 Firestore Database 來存放每個文章的點閱率。因此，若剛好讀者也是使用 Firestore Database，歡迎參考<a href="https://github.com/weirenxue/click-ranking-gist">原始碼</a>。</p></li><li><p>若讀者的部落格是 Hexo 搭配 NexT 主題的話，也可以參考 <a href="/2021/06/11/hexo_next_firestore_visitors/">Hexo × NexT × Firestore 顯示瀏覽人次</a> 如何將瀏覽人次使用 Firestore 來存放。</p></li></ul>
+          </div>
+<!-- markdownlint-restore MD034 -->
+<h2 id="Pin-Gist-至-Profile"><a href="#Pin-Gist-至-Profile" class="headerlink" title="Pin Gist 至 Profile"></a>Pin Gist 至 Profile</h2><p>在 GitHub Profile 頁面中點擊 <code>Customize your pins</code>，選擇對應的 Gist，儲存後便可以在 Profile 看到 Gist 的內容囉</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Gist-%E5%B9%AB%E4%BD%A0%E5%90%B8%E5%BC%95%E7%9B%AE%E5%85%89-%E6%96%87%E7%AB%A0%E9%BB%9E%E9%96%B1%E7%8E%87%E9%A1%AF%E7%A4%BA%2Fpin_gist.png?alt=media&amp;token=b9580ccd-68a8-4f9d-baa3-a4625bed9926" alt="釘選 Gist"><span class="image-caption">釘選 Gist</span></p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>我們已經學會如何使用程式的方式上傳 Gist，若要使 Gist 能定時自動更新，讀者只需要利用排程定時運行該程式。例如：使用 Windows 內建的「工作排程器」或 Unix-like 的 Cron，皆可達到定時讓程式執行的效果，進而能定時更新 Gist 的內容。</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><p><a href="https://docs.github.com/en/rest/reference/gists">Gist API</a></p>
+</li>
+<li><p><a href="https://github.com/octokit/core.js#readme">octokit/core.js</a></p>
+</li>
+<li><p><a href="https://www.zhihu.com/question/35547115">如何在Github获取gist id？</a></p>
+</li>
+<li><p><a href="/2021/08/17/github_pat/">[GitHub] Please use a personal access token instead.</a></p>
+</li>
+<li><p><a href="https://stackoverflow.com/questions/68460308/create-github-gist-using-file-with-gist-api">Create Github gist using file, with Gist API</a></p>
+</li>
+<li><p><a href="https://medium.com/starbugs/%E5%AF%A6%E4%BD%9C%E9%96%8B%E6%BA%90%E5%B0%8F%E5%B7%A5%E5%85%B7-%E8%88%87-github-actions-%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E7%9B%B8%E9%81%87-3dd2d70eeb">實作開源小工具，與 Github Actions 的第一次相遇！</a></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>專案開發筆記</category>
+      </categories>
+      <tags>
+        <tag>core</tag>
+        <tag>node</tag>
+        <tag>js</tag>
+        <tag>github</tag>
+        <tag>click</tag>
+        <tag>api</tag>
+        <tag>firestore</tag>
+        <tag>gist</tag>
+        <tag>article</tag>
+        <tag>octokit</tag>
       </tags>
   </entry>
   <entry>
@@ -4937,6 +4998,106 @@
         <tag>reinforcement</tag>
         <tag>agent</tag>
         <tag>reward</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>自動每日登入 iT邦幫忙 取得活動點數</title>
+    <url>/2021/06/27/ithelp_auto_login/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>許多論壇都擁有活動點數制度，「iT邦幫忙」也不意外的擁有這項功能，其中有一項是每天登入可以加 2 點活動點數，但不知道是 Bug 還是故意的，竟然需要先登出再登入，有了登入的動作才會計算當天登入的活動點數，很不符合常理。</p>
+<p>因此利用爬蟲技能寫了一個專案，每天到指定時間會自動完成登入動作，讓我就算沒有登入這個動作，也可以得到活動點數，雖說這個點數量不多，但就是想要抵抗這個 Bug。</p>
+<p>詳細登入問題也有人提請官方修正，可參考 <a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>。</p>
+<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
+<li><a href="https://github.com/weirenxue/ithelp-login-script">GitHub</a></li>
+<li>實際成效<br>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fresult.png?alt=media&amp;token=7a24e416-b438-41ef-a0fa-df95233e5083" alt="成果圖"><span class="image-caption">成果圖</span></li>
+</ul>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Windows 10</li>
+<li>python 3.8.5</li>
+<li>beautifulsoup4 4.9.3</li>
+<li>requests 2.25.1</li>
+</ul>
+<h2 id="環節觀察"><a href="#環節觀察" class="headerlink" title="環節觀察"></a>環節觀察</h2><p>在動手爬蟲之前，必須先觀察在登入計算活動點數時，會經過哪些步驟與所需資訊，觀察時請記得使用開發人員工具 (F12) 來查看資訊流動。</p>
+<h3 id="登入"><a href="#登入" class="headerlink" title="登入"></a>登入</h3><p>第一步至 <a href="https://member.ithome.com.tw/login">iThome會員登入頁面</a> 任意輸入一組帳號，按下登入按鈕然後查看封包，會看到有三個欄位分別為 <code>_token</code>、<code>account</code> 還有 <code>password</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_token_field.png?alt=media&amp;token=8671a0cd-8f92-4cc9-8a54-44ca3ee4b6c0" alt="登入所需欄位"><span class="image-caption">登入所需欄位</span></p>
+<p><code>account</code> 與 <code>password</code> 我們理解，但是 <code>_token</code> 的值從何而來呢？到開發人員工具的 <code>Elements</code> 頁籤搜尋 <code>_token</code>，就可以找到它所在位置，原來是在登入表單內的一個隱藏欄位 (hidden input)！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2F_token_position.png?alt=media&amp;token=da926d26-662f-4bed-8272-d40b1cf5d306" alt="_token 的位置"><span class="image-caption">_token 的位置</span></p>
+<h4 id="實作登入功能"><a href="#實作登入功能" class="headerlink" title="實作登入功能"></a>實作登入功能</h4><p>知道登入需要甚麼資訊，且資訊在哪裡可以取得，就可以開始規劃要如何利用爬蟲來做登入功能。</p>
+<ol>
+<li>先取得 <code>_token</code> 欄位的值。</li>
+<li>將 <code>_token</code>、<code>account</code> 與 <code>password</code> 一起 <code>POST</code> 到 <code>https://member.ithome.com.tw/login</code></li>
+</ol>
+<p>需要注意的是，這些過程中的 <code>Cookie</code> 需要被維護，也就是每個 Request 都必須是同一個 <code>Session</code>，否則 <code>_token</code> 值無效。強大的 <code>requests</code> 套件已經幫我們準備好 <code>Session</code> 物件來處理這些事情，讓我們不用手動轉移 <code>Cookie</code> 到不同的 request 之中。</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 從 sAccount.json 檔案讀取帳密資料</span></span><br><span class="line">s_account = json.load(<span class="built_in">open</span>(<span class="string">&quot;./sAccount.json&quot;</span>, <span class="string">&quot;r&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更改 User-Agent 標頭以免被阻擋</span></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"><span class="comment"># 製作 Payload，有三個欄位分別為 _token、account 與 password</span></span><br><span class="line">loginPayload = &#123;<span class="string">&#x27;account&#x27;</span>: s_account[<span class="string">&#x27;account&#x27;</span>], <span class="string">&#x27;password&#x27;</span>: s_account[<span class="string">&#x27;password&#x27;</span>], <span class="string">&#x27;_token&#x27;</span>:<span class="string">&#x27;&#x27;</span>&#125;</span><br><span class="line"><span class="comment"># 建立一個 Session 物件幫我們維護 Coookie 的運行</span></span><br><span class="line">sess = requests.Session()</span><br><span class="line"><span class="comment"># 將 User-Agent 標頭修改為我們所給的值</span></span><br><span class="line">sess.headers.update(headers)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 先取得 _token 值</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.get(url)</span><br><span class="line">bsObj = bs(response.text, <span class="string">&quot;html.parser&quot;</span>)</span><br><span class="line">loginToken = bsObj.find(<span class="string">&#x27;input&#x27;</span>, &#123;<span class="string">&#x27;name&#x27;</span>:<span class="string">&#x27;_token&#x27;</span>&#125;).attrs[<span class="string">&#x27;value&#x27;</span>]</span><br><span class="line"><span class="comment"># 把 _token 值存到我們之前建立的 Payload 內</span></span><br><span class="line">loginPayload[<span class="string">&#x27;_token&#x27;</span>] = loginToken</span><br><span class="line"></span><br><span class="line"><span class="comment"># 對登入頁面 POST 一次，就可以順利登入囉</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.post(url, data=loginPayload)</span><br></pre></td></tr></table></figure>
+<p><code>sAccount.json</code> 內容如下，只需填入對應的帳號密碼</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;account&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>到這裡，登入功能已經完成了。但假如真的去運行這個程式碼，你會發現雖然成功登入，可是並沒有取得想要的到的每日登入活動點數，這個是因為登入與取得點數的功能是分開運行的。</p>
+<h3 id="每日登入活動點數"><a href="#每日登入活動點數" class="headerlink" title="每日登入活動點數"></a>每日登入活動點數</h3><p>再讓我們觀察一下取得活動點數的關鍵在哪裡。先進入 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a>，再點擊登入按鈕，這次需要輸入正確的帳號密碼，並且觀察開發人員工具中的封包，將會看到其實在成功登入後，從 <a href="https://member.ithome.com.tw/login">會員中心</a> 跳轉回 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a> 之前還有其他封包被傳送，可以猜測這些封包就是用來激活每日登入的條件</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_point.png?alt=media&amp;token=731a5c99-9258-49ca-b4ee-69a08b4dead5" alt="每日登入關鍵封包"><span class="image-caption">每日登入關鍵封包</span></p>
+<p>也就是說當我們的爬蟲成功登入後，需要發出 <code>GET https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code</code> 請求，來取得這天的每日登入活動點數。</p>
+<h4 id="實作取得點數功能"><a href="#實作取得點數功能" class="headerlink" title="實作取得點數功能"></a>實作取得點數功能</h4><p>這是最簡單的部分，只需要在登入之後加上下面兩行程式，就可以達到效果了</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code&quot;</span></span><br><span class="line">response = sess.get(url)</span><br></pre></td></tr></table></figure>
+<p>到這裡，概念與實作講解完畢，當然除登入並取得點數外，還可以加一些功能例如確認是否真的登入或者是是否有錯誤發生的判斷。</p>
+<p>可以到我的 GitHub 上參考 <a href="https://github.com/weirenxue/ithelp-login-script/blob/b693c7eb020f0498222b5bfd34be587c0338c24e/ithelp/login.py#L7-L18">完整原始碼</a>。</p>
+<h2 id="每日自動登入"><a href="#每日自動登入" class="headerlink" title="每日自動登入"></a>每日自動登入</h2><p>將腳本寫好，就可以來讓它納入我的排程內啦！我使用的作業系統是 Windows 10，使用內建的排程系統就可以完成，這裡來說說如何設定排程每天自動登入</p>
+<h3 id="啟動檔-bat"><a href="#啟動檔-bat" class="headerlink" title="啟動檔 bat"></a>啟動檔 bat</h3><p>要用排程之前，最好的習慣是將啟動腳本寫成 bat 檔</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /d %~dp0</span><br><span class="line">python <span class="string">&quot;%~dp0login.py&quot;</span> &gt;&gt; <span class="string">&quot;%~dp0log.log&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>%~dp0</code>：bat 檔案所在目錄的絕對路徑。</li>
+</ul>
+<h3 id="創建排程"><a href="#創建排程" class="headerlink" title="創建排程"></a>創建排程</h3><p>開啟 <code>Task Schedular</code>，並建立一個排程 <code>Action -&gt; Create Task...</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fcreate_task_scheduler.png?alt=media&amp;token=e2220412-cd15-49d8-aaa2-72e2a37de2c4" alt="建立排程"><span class="image-caption">建立排程</span></p>
+<p>設定排程的時間點 (每天下午 3:36) 與要執行的 bat 檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fschedul_schedular.png?alt=media&amp;token=d768c1c0-ba3b-4d5d-8a77-7acb7274457d" alt="設定排程"><span class="image-caption">設定排程</span></p>
+<h3 id="測試排程"><a href="#測試排程" class="headerlink" title="測試排程"></a>測試排程</h3><p>設定完之後，在排程清單中找到剛剛建立的排程，<code>點擊右鍵 -&gt; Run</code> 讓它實際運作一次來當作測試，若有正常運作可以在與 bat 檔案相同目錄下找到 <code>log.log</code> 檔，若 log 無問題並有顯示登入成功，表示排程可以正常運作囉</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Ftest_schedular.png?alt=media&amp;token=2a35d3d6-1d93-461d-8a4a-0122493326c7" alt="測試排程與 log 檔"><span class="image-caption">測試排程與 log 檔</span></p>
+<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>這個是我在 <code>2021/04/08</code> 時開發的一個小專案，早在 2020 初次加入 iT邦幫忙 這個大家庭時就發現這個 Bug，雖然當時也有看到有人反應此問題，但都沒有下文，因此在較空閒時完成這個一直未了的小心願。最一開始的初衷只是想要解決這個生活小煩惱，同時以學習的態度來開發這個專案。</p>
+<p>然而這個 Bug 在 <code>2021/05/12</code> 時小財神宣布已經根除 (<a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>)，真是皆大歡喜。得知這個訊息的第一個想法是這個專案好像沒有用了，但其實我們還是一樣可以繼續排程，若是哪天較忙忘記瀏覽論壇，可讓爬蟲代替我們每天取得點數。</p>
+<h2 id="2022-02-22-更新"><a href="#2022-02-22-更新" class="headerlink" title="2022/02/22 更新"></a>2022/02/22 更新</h2><p>已將<a href="https://github.com/weirenxue/ithelp-login-script">專案</a>修改為能夠透過 <a href="https://github.com/features/actions">GitHub Action</a> 自動排程，因此讀者只需要直接 Fork 此專案，並添加對應的 <code>secrets</code> 環境變數，即可使用此專案的自動登入功能！接下來將補充說明如何使用 Fork 並透過 Action 排程與運行此專案。</p>
+<h3 id="Fork-且執行-Workflow"><a href="#Fork-且執行-Workflow" class="headerlink" title="Fork 且執行 Workflow"></a>Fork 且執行 Workflow</h3><ol>
+<li><p>在<a href="https://github.com/weirenxue/ithelp-login-script">專案</a>頁面中點擊 <code>Fork</code>，看到 <code>forked from weirenxue/ithelp-login-script</code> 即為 Fork 成功！</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Ffork_project.png?alt=media&amp;token=b6269127-446b-4016-8f53-bb3b10e51cc4" alt="Fork iThelp 自動登入專案"><span class="image-caption">Fork iThelp 自動登入專案</span></p>
+</li>
+<li><p>將 iThelp 帳號密碼加入 <code>secrets</code> 環境變數，變數名稱需要完全相同 (注：任何存在 <code>secrets</code> 環境變數中的數值都是加密過的，因此可以放心輸入)</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fadd_secrets.png?alt=media&amp;token=b3f627bf-618e-4fa0-8a67-f61fb3da7aae" alt="新增 Secrets 環境變數"><span class="image-caption">新增 Secrets 環境變數</span></p>
+</li>
+<li><p>因為此專案來源為 Fork，GitHub 預設關閉透過 Fork 而來的 Repo 其 Action 功能與 Workflow，因此需要手動啟用</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fenable_action.png?alt=media&amp;token=1de90567-ddf0-48b6-94de-ed50807e0ef0" alt="啟用 GitHub Action"><span class="image-caption">啟用 GitHub Action</span></p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fenable_workflow.png?alt=media&amp;token=d1f5e1d8-78ac-4a10-b84d-6d587e25ddad" alt="啟用 Workflow"><span class="image-caption">啟用 Workflow</span></p>
+</li>
+<li><p>最後只需要手動執行 Workflow 即可測試是否能正常地自動登入 iThelp 論壇</p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fmanually_run_workflow.png?alt=media&amp;token=69136407-2c32-4932-8bba-75f6a96350c0" alt="手動啟動 Workflow"><span class="image-caption">手動啟動 Workflow</span></p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fworkflow_success.png?alt=media&amp;token=85deb4e7-e5b1-4dba-8464-b6895870668a" alt="Workflow 執行完成"><span class="image-caption">Workflow 執行完成</span></p>
+<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_successful.png?alt=media&amp;token=2e773e5c-41d4-48bb-9d17-ab115075b8b3" alt="確認自動登入成功"><span class="image-caption">確認自動登入成功</span></p>
+</li>
+</ol>
+<h3 id="排程-Workflow"><a href="#排程-Workflow" class="headerlink" title="排程 Workflow"></a>排程 Workflow</h3><p>Workflow 可以透過 <a href="https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows">GitHub Action schedule</a> 來描述何時該執行，即排程的做法。當指定的時間到來，則可以直接在 GitHub 上運行，不用額外開機器去執行，非常方便！</p>
+<p>目前專案的排程設定可以在 <code>.github/workflows/main.yml</code> 中找到，預設為每日的 12 點執行此 Workflow</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">schedule:</span><br><span class="line">  - cron: <span class="string">&quot;0 12 * * *&quot;</span></span><br></pre></td></tr></table></figure>
+<div class="note info">
+            <p>這裡指的是 UTC+0 的時間，所以 GitHub Action 12 點 (UTC+0) 對應到台灣時間為晚上 8 點 (UTC+8)。</p>
+          </div>
+<p>若讀者想要自定義排程時間，這裡提供相對應的時間說明供讀者參考，讀者可以在 Fork 後的專案自行更改！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">┌───────────── minute (0 - 59)</span><br><span class="line">│ ┌───────────── hour (0 - 23)</span><br><span class="line">│ │ ┌───────────── day of the month (1 - 31)</span><br><span class="line">│ │ │ ┌───────────── month (1 - 12 or JAN-DEC)</span><br><span class="line">│ │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)</span><br><span class="line">│ │ │ │ │</span><br><span class="line">│ │ │ │ │</span><br><span class="line">│ │ │ │ │</span><br><span class="line">* * * * *</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>專案開發筆記</category>
+      </categories>
+      <tags>
+        <tag>windows</tag>
+        <tag>github</tag>
+        <tag>action</tag>
+        <tag>task</tag>
+        <tag>ithelp</tag>
+        <tag>login</tag>
+        <tag>auto</tag>
+        <tag>credit</tag>
+        <tag>crawl</tag>
+        <tag>schedular</tag>
+        <tag>schedule</tag>
+        <tag>cron</tag>
+        <tag>workflow</tag>
+        <tag>secrets</tag>
+        <tag>fork</tag>
       </tags>
   </entry>
   <entry>
@@ -5136,167 +5297,6 @@
         <tag>kaggle</tag>
         <tag>object detection</tag>
         <tag>mask</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Gist 幫你吸引目光 - 文章點閱率顯示</title>
-    <url>/2021/10/31/gist_article_click/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>GitHub 的 Gist 服務不僅能拿來紀錄程式碼片段、寫筆記，還能讓你的 GitHub Profile 更加引人注目。此篇文章紀錄如何使用 Gist API 將部落格點擊率放置到 GitHub Profile！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Gist-%E5%B9%AB%E4%BD%A0%E5%90%B8%E5%BC%95%E7%9B%AE%E5%85%89-%E6%96%87%E7%AB%A0%E9%BB%9E%E9%96%B1%E7%8E%87%E9%A1%AF%E7%A4%BA%2Fgithub_profile.png?alt=media&amp;token=b5f60c45-089d-4306-9ab4-b99606956147" alt="完成後的樣子"><span class="image-caption">完成後的樣子</span></p>
-<div class="note info">
-            <p>歡迎直接進入<a href="https://github.com/weirenxue">我的 GitHub</a> 參觀唷！</p>
-          </div>
-<!-- markdownlint-disable MD034 -->
-<a class="btn" href="https://github.com/weirenxue/click-ranking-gist" title="Source Code of using Gist API">
-            <i class="fab fa-github"></i>Source Code
-          </a>
-<!-- markdownlint-restore MD034 -->
-<h2 id="Gist-API"><a href="#Gist-API" class="headerlink" title="Gist API"></a>Gist API</h2><p><a href="https://docs.github.com/en/rest/reference/gists">Gist API</a> 有提供 Shell 操作 API 的範例，基本上可以透過任何程式語言來操作。此外，也有提供 Node 的 SDK <a href="https://github.com/octokit/core.js#readme">octokit/core.js</a> 使我們不需要從頭建立一個 Request，只需給定參數即可達到想要效果。秉持著用輪不造輪的精神，此專案使用 <a href="https://github.com/octokit/core.js#readme">octokit/core.js</a> 呼叫 Gist API。</p>
-<h2 id="手動建立一個-Gist"><a href="#手動建立一個-Gist" class="headerlink" title="手動建立一個 Gist"></a>手動建立一個 Gist</h2><p>在使用 Gist API 更新 Gist 之前，需要先有一個可被更新的 Gist 目標，若沒有則需要建立一個 Gist。進入 <a href="https://gist.github.com/">GitHub Gist 創建頁面</a>，如下圖建立一個 <strong>Public Gist</strong> (若為 Secret Gist 則無法釘選到 GitHub Profile)</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Gist-%E5%B9%AB%E4%BD%A0%E5%90%B8%E5%BC%95%E7%9B%AE%E5%85%89-%E6%96%87%E7%AB%A0%E9%BB%9E%E9%96%B1%E7%8E%87%E9%A1%AF%E7%A4%BA%2Fcreate_a_gist.png?alt=media&amp;token=26993bca-e51b-474d-a1f6-ed1cd9a8c99b" alt="建立一個 Gist"><span class="image-caption">建立一個 Gist</span></p>
-<p>再進入該 Gist 觀察 URL，記下 URL 中的 Gist ID。例如：<a href="https://gist.github.com/weirenxue/1582d41aa4cf561d9a51fc1606f388bc">我的 Gist</a> ，其 Gist ID 為 <code>1582d41aa4cf561d9a51fc1606f388bc</code>。</p>
-<h2 id="申請-PAT"><a href="#申請-PAT" class="headerlink" title="申請 PAT"></a>申請 PAT</h2><p>參考申請 PAT (Personal Access Token) 的詳細教學 <a href="/2021/08/17/github_pat/">[GitHub] Please use a personal access token instead.</a>，其中需要注意的是 <code>Select scopes</code> 要勾選 <code>gist (Create gists)</code>，這樣才有編輯 Gist 的權限唷！申請好之後別忘了把 PAT 記錄下來。</p>
-<h2 id="使用-octokit-core-上傳內容"><a href="#使用-octokit-core-上傳內容" class="headerlink" title="使用 @octokit/core 上傳內容"></a>使用 @octokit/core 上傳內容</h2><p>開發之前，需先安裝 <code>@octokit/core</code> 套件至 Node 專案中</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm i @octokit/core</span><br></pre></td></tr></table></figure>
-<p>上傳內容到指定 Gist ID 下的檔案，以註解來說明程式運作邏輯</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; <span class="title class_">Octokit</span> &#125; = <span class="built_in">require</span>(<span class="string">&quot;@octokit/core&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">main</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> data = []</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">        處理取得部落格點閱率的邏輯，</span></span><br><span class="line"><span class="comment">        並用 data 變數來存每一筆紀錄</span></span><br><span class="line"><span class="comment">        例如：</span></span><br><span class="line"><span class="comment">        record = `$&#123;點閱率&#125;|$&#123;文章名稱&#125;`;</span></span><br><span class="line"><span class="comment">        data.push(record);</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="comment">// &#123;PAT&#125; 要替換為真實的 PAT</span></span><br><span class="line">    <span class="keyword">const</span> octokit = <span class="keyword">new</span> <span class="title class_">Octokit</span>(&#123;</span><br><span class="line">        <span class="attr">auth</span>: <span class="string">&#x27;&#123;PAT&#125;&#x27;</span>,</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="comment">// &#123;gist_id&#125; 要替換為真實的 Gist ID</span></span><br><span class="line">    <span class="keyword">let</span> response = <span class="keyword">await</span> octokit.<span class="title function_">request</span>(<span class="string">&#x27;PATCH /gists/&#123;gist_id&#125;&#x27;</span>, &#123;</span><br><span class="line">        <span class="attr">files</span>: &#123;</span><br><span class="line">            <span class="comment">// ranking 為 Gist 中的目標檔名，依情況更改</span></span><br><span class="line">            <span class="string">&#x27;ranking&#x27;</span>: &#123;</span><br><span class="line">                <span class="attr">content</span>: data.<span class="title function_">join</span>(<span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">public</span>: <span class="literal">true</span></span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(response.<span class="property">data</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 呼叫 main 函式</span></span><br><span class="line"><span class="title function_">main</span>();</span><br></pre></td></tr></table></figure>
-<!-- markdownlint-disable MD034 -->
-<div class="note info">
-            <ul><li><p>個人的專案是使用 Firebase 的 Firestore Database 來存放每個文章的點閱率。因此，若剛好讀者也是使用 Firestore Database，歡迎參考<a href="https://github.com/weirenxue/click-ranking-gist">原始碼</a>。</p></li><li><p>若讀者的部落格是 Hexo 搭配 NexT 主題的話，也可以參考 <a href="/2021/06/11/hexo_next_firestore_visitors/">Hexo × NexT × Firestore 顯示瀏覽人次</a> 如何將瀏覽人次使用 Firestore 來存放。</p></li></ul>
-          </div>
-<!-- markdownlint-restore MD034 -->
-<h2 id="Pin-Gist-至-Profile"><a href="#Pin-Gist-至-Profile" class="headerlink" title="Pin Gist 至 Profile"></a>Pin Gist 至 Profile</h2><p>在 GitHub Profile 頁面中點擊 <code>Customize your pins</code>，選擇對應的 Gist，儲存後便可以在 Profile 看到 Gist 的內容囉</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Gist-%E5%B9%AB%E4%BD%A0%E5%90%B8%E5%BC%95%E7%9B%AE%E5%85%89-%E6%96%87%E7%AB%A0%E9%BB%9E%E9%96%B1%E7%8E%87%E9%A1%AF%E7%A4%BA%2Fpin_gist.png?alt=media&amp;token=b9580ccd-68a8-4f9d-baa3-a4625bed9926" alt="釘選 Gist"><span class="image-caption">釘選 Gist</span></p>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>我們已經學會如何使用程式的方式上傳 Gist，若要使 Gist 能定時自動更新，讀者只需要利用排程定時運行該程式。例如：使用 Windows 內建的「工作排程器」或 Unix-like 的 Cron，皆可達到定時讓程式執行的效果，進而能定時更新 Gist 的內容。</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><p><a href="https://docs.github.com/en/rest/reference/gists">Gist API</a></p>
-</li>
-<li><p><a href="https://github.com/octokit/core.js#readme">octokit/core.js</a></p>
-</li>
-<li><p><a href="https://www.zhihu.com/question/35547115">如何在Github获取gist id？</a></p>
-</li>
-<li><p><a href="/2021/08/17/github_pat/">[GitHub] Please use a personal access token instead.</a></p>
-</li>
-<li><p><a href="https://stackoverflow.com/questions/68460308/create-github-gist-using-file-with-gist-api">Create Github gist using file, with Gist API</a></p>
-</li>
-<li><p><a href="https://medium.com/starbugs/%E5%AF%A6%E4%BD%9C%E9%96%8B%E6%BA%90%E5%B0%8F%E5%B7%A5%E5%85%B7-%E8%88%87-github-actions-%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E7%9B%B8%E9%81%87-3dd2d70eeb">實作開源小工具，與 Github Actions 的第一次相遇！</a></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>專案開發筆記</category>
-      </categories>
-      <tags>
-        <tag>core</tag>
-        <tag>node</tag>
-        <tag>js</tag>
-        <tag>github</tag>
-        <tag>click</tag>
-        <tag>api</tag>
-        <tag>firestore</tag>
-        <tag>gist</tag>
-        <tag>article</tag>
-        <tag>octokit</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>自動每日登入 iT邦幫忙 取得活動點數</title>
-    <url>/2021/06/27/ithelp_auto_login/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>許多論壇都擁有活動點數制度，「iT邦幫忙」也不意外的擁有這項功能，其中有一項是每天登入可以加 2 點活動點數，但不知道是 Bug 還是故意的，竟然需要先登出再登入，有了登入的動作才會計算當天登入的活動點數，很不符合常理。</p>
-<p>因此利用爬蟲技能寫了一個專案，每天到指定時間會自動完成登入動作，讓我就算沒有登入這個動作，也可以得到活動點數，雖說這個點數量不多，但就是想要抵抗這個 Bug。</p>
-<p>詳細登入問題也有人提請官方修正，可參考 <a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>。</p>
-<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
-<li><a href="https://github.com/weirenxue/ithelp-login-script">GitHub</a></li>
-<li>實際成效<br>  <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fresult.png?alt=media&amp;token=7a24e416-b438-41ef-a0fa-df95233e5083" alt="成果圖"><span class="image-caption">成果圖</span></li>
-</ul>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Windows 10</li>
-<li>python 3.8.5</li>
-<li>beautifulsoup4 4.9.3</li>
-<li>requests 2.25.1</li>
-</ul>
-<h2 id="環節觀察"><a href="#環節觀察" class="headerlink" title="環節觀察"></a>環節觀察</h2><p>在動手爬蟲之前，必須先觀察在登入計算活動點數時，會經過哪些步驟與所需資訊，觀察時請記得使用開發人員工具 (F12) 來查看資訊流動。</p>
-<h3 id="登入"><a href="#登入" class="headerlink" title="登入"></a>登入</h3><p>第一步至 <a href="https://member.ithome.com.tw/login">iThome會員登入頁面</a> 任意輸入一組帳號，按下登入按鈕然後查看封包，會看到有三個欄位分別為 <code>_token</code>、<code>account</code> 還有 <code>password</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_token_field.png?alt=media&amp;token=8671a0cd-8f92-4cc9-8a54-44ca3ee4b6c0" alt="登入所需欄位"><span class="image-caption">登入所需欄位</span></p>
-<p><code>account</code> 與 <code>password</code> 我們理解，但是 <code>_token</code> 的值從何而來呢？到開發人員工具的 <code>Elements</code> 頁籤搜尋 <code>_token</code>，就可以找到它所在位置，原來是在登入表單內的一個隱藏欄位 (hidden input)！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2F_token_position.png?alt=media&amp;token=da926d26-662f-4bed-8272-d40b1cf5d306" alt="_token 的位置"><span class="image-caption">_token 的位置</span></p>
-<h4 id="實作登入功能"><a href="#實作登入功能" class="headerlink" title="實作登入功能"></a>實作登入功能</h4><p>知道登入需要甚麼資訊，且資訊在哪裡可以取得，就可以開始規劃要如何利用爬蟲來做登入功能。</p>
-<ol>
-<li>先取得 <code>_token</code> 欄位的值。</li>
-<li>將 <code>_token</code>、<code>account</code> 與 <code>password</code> 一起 <code>POST</code> 到 <code>https://member.ithome.com.tw/login</code></li>
-</ol>
-<p>需要注意的是，這些過程中的 <code>Cookie</code> 需要被維護，也就是每個 Request 都必須是同一個 <code>Session</code>，否則 <code>_token</code> 值無效。強大的 <code>requests</code> 套件已經幫我們準備好 <code>Session</code> 物件來處理這些事情，讓我們不用手動轉移 <code>Cookie</code> 到不同的 request 之中。</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 從 sAccount.json 檔案讀取帳密資料</span></span><br><span class="line">s_account = json.load(<span class="built_in">open</span>(<span class="string">&quot;./sAccount.json&quot;</span>, <span class="string">&quot;r&quot;</span>, encoding=<span class="string">&quot;utf-8&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更改 User-Agent 標頭以免被阻擋</span></span><br><span class="line">headers = &#123;<span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36&quot;</span>&#125;</span><br><span class="line"><span class="comment"># 製作 Payload，有三個欄位分別為 _token、account 與 password</span></span><br><span class="line">loginPayload = &#123;<span class="string">&#x27;account&#x27;</span>: s_account[<span class="string">&#x27;account&#x27;</span>], <span class="string">&#x27;password&#x27;</span>: s_account[<span class="string">&#x27;password&#x27;</span>], <span class="string">&#x27;_token&#x27;</span>:<span class="string">&#x27;&#x27;</span>&#125;</span><br><span class="line"><span class="comment"># 建立一個 Session 物件幫我們維護 Coookie 的運行</span></span><br><span class="line">sess = requests.Session()</span><br><span class="line"><span class="comment"># 將 User-Agent 標頭修改為我們所給的值</span></span><br><span class="line">sess.headers.update(headers)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 先取得 _token 值</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.get(url)</span><br><span class="line">bsObj = bs(response.text, <span class="string">&quot;html.parser&quot;</span>)</span><br><span class="line">loginToken = bsObj.find(<span class="string">&#x27;input&#x27;</span>, &#123;<span class="string">&#x27;name&#x27;</span>:<span class="string">&#x27;_token&#x27;</span>&#125;).attrs[<span class="string">&#x27;value&#x27;</span>]</span><br><span class="line"><span class="comment"># 把 _token 值存到我們之前建立的 Payload 內</span></span><br><span class="line">loginPayload[<span class="string">&#x27;_token&#x27;</span>] = loginToken</span><br><span class="line"></span><br><span class="line"><span class="comment"># 對登入頁面 POST 一次，就可以順利登入囉</span></span><br><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/login&quot;</span></span><br><span class="line">response = sess.post(url, data=loginPayload)</span><br></pre></td></tr></table></figure>
-<p><code>sAccount.json</code> 內容如下，只需填入對應的帳號密碼</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;account&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;password&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-<p>到這裡，登入功能已經完成了。但假如真的去運行這個程式碼，你會發現雖然成功登入，可是並沒有取得想要的到的每日登入活動點數，這個是因為登入與取得點數的功能是分開運行的。</p>
-<h3 id="每日登入活動點數"><a href="#每日登入活動點數" class="headerlink" title="每日登入活動點數"></a>每日登入活動點數</h3><p>再讓我們觀察一下取得活動點數的關鍵在哪裡。先進入 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a>，再點擊登入按鈕，這次需要輸入正確的帳號密碼，並且觀察開發人員工具中的封包，將會看到其實在成功登入後，從 <a href="https://member.ithome.com.tw/login">會員中心</a> 跳轉回 <a href="https://ithelp.ithome.com.tw/">iT邦幫忙</a> 之前還有其他封包被傳送，可以猜測這些封包就是用來激活每日登入的條件</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_point.png?alt=media&amp;token=731a5c99-9258-49ca-b4ee-69a08b4dead5" alt="每日登入關鍵封包"><span class="image-caption">每日登入關鍵封包</span></p>
-<p>也就是說當我們的爬蟲成功登入後，需要發出 <code>GET https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code</code> 請求，來取得這天的每日登入活動點數。</p>
-<h4 id="實作取得點數功能"><a href="#實作取得點數功能" class="headerlink" title="實作取得點數功能"></a>實作取得點數功能</h4><p>這是最簡單的部分，只需要在登入之後加上下面兩行程式，就可以達到效果了</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line">url = <span class="string">&quot;https://member.ithome.com.tw/oauth/authorize?client_id=ithelp&amp;redirect_uri=https://ithelp.ithome.com.tw/users/callback&amp;response_type=code&quot;</span></span><br><span class="line">response = sess.get(url)</span><br></pre></td></tr></table></figure>
-<p>到這裡，概念與實作講解完畢，當然除登入並取得點數外，還可以加一些功能例如確認是否真的登入或者是是否有錯誤發生的判斷。</p>
-<p>可以到我的 GitHub 上參考 <a href="https://github.com/weirenxue/ithelp-login-script/blob/b693c7eb020f0498222b5bfd34be587c0338c24e/ithelp/login.py#L7-L18">完整原始碼</a>。</p>
-<h2 id="每日自動登入"><a href="#每日自動登入" class="headerlink" title="每日自動登入"></a>每日自動登入</h2><p>將腳本寫好，就可以來讓它納入我的排程內啦！我使用的作業系統是 Windows 10，使用內建的排程系統就可以完成，這裡來說說如何設定排程每天自動登入</p>
-<h3 id="啟動檔-bat"><a href="#啟動檔-bat" class="headerlink" title="啟動檔 bat"></a>啟動檔 bat</h3><p>要用排程之前，最好的習慣是將啟動腳本寫成 bat 檔</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /d %~dp0</span><br><span class="line">python <span class="string">&quot;%~dp0login.py&quot;</span> &gt;&gt; <span class="string">&quot;%~dp0log.log&quot;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>%~dp0</code>：bat 檔案所在目錄的絕對路徑。</li>
-</ul>
-<h3 id="創建排程"><a href="#創建排程" class="headerlink" title="創建排程"></a>創建排程</h3><p>開啟 <code>Task Schedular</code>，並建立一個排程 <code>Action -&gt; Create Task...</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fcreate_task_scheduler.png?alt=media&amp;token=e2220412-cd15-49d8-aaa2-72e2a37de2c4" alt="建立排程"><span class="image-caption">建立排程</span></p>
-<p>設定排程的時間點 (每天下午 3:36) 與要執行的 bat 檔案</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fschedul_schedular.png?alt=media&amp;token=d768c1c0-ba3b-4d5d-8a77-7acb7274457d" alt="設定排程"><span class="image-caption">設定排程</span></p>
-<h3 id="測試排程"><a href="#測試排程" class="headerlink" title="測試排程"></a>測試排程</h3><p>設定完之後，在排程清單中找到剛剛建立的排程，<code>點擊右鍵 -&gt; Run</code> 讓它實際運作一次來當作測試，若有正常運作可以在與 bat 檔案相同目錄下找到 <code>log.log</code> 檔，若 log 無問題並有顯示登入成功，表示排程可以正常運作囉</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Ftest_schedular.png?alt=media&amp;token=2a35d3d6-1d93-461d-8a4a-0122493326c7" alt="測試排程與 log 檔"><span class="image-caption">測試排程與 log 檔</span></p>
-<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>這個是我在 <code>2021/04/08</code> 時開發的一個小專案，早在 2020 初次加入 iT邦幫忙 這個大家庭時就發現這個 Bug，雖然當時也有看到有人反應此問題，但都沒有下文，因此在較空閒時完成這個一直未了的小心願。最一開始的初衷只是想要解決這個生活小煩惱，同時以學習的態度來開發這個專案。</p>
-<p>然而這個 Bug 在 <code>2021/05/12</code> 時小財神宣布已經根除 (<a href="https://ithelp.ithome.com.tw/questions/10203315">關於IT邦登入時點數的問題</a>)，真是皆大歡喜。得知這個訊息的第一個想法是這個專案好像沒有用了，但其實我們還是一樣可以繼續排程，若是哪天較忙忘記瀏覽論壇，可讓爬蟲代替我們每天取得點數。</p>
-<h2 id="2022-02-22-更新"><a href="#2022-02-22-更新" class="headerlink" title="2022/02/22 更新"></a>2022/02/22 更新</h2><p>已將<a href="https://github.com/weirenxue/ithelp-login-script">專案</a>修改為能夠透過 <a href="https://github.com/features/actions">GitHub Action</a> 自動排程，因此讀者只需要直接 Fork 此專案，並添加對應的 <code>secrets</code> 環境變數，即可使用此專案的自動登入功能！接下來將補充說明如何使用 Fork 並透過 Action 排程與運行此專案。</p>
-<h3 id="Fork-且執行-Workflow"><a href="#Fork-且執行-Workflow" class="headerlink" title="Fork 且執行 Workflow"></a>Fork 且執行 Workflow</h3><ol>
-<li><p>在<a href="https://github.com/weirenxue/ithelp-login-script">專案</a>頁面中點擊 <code>Fork</code>，看到 <code>forked from weirenxue/ithelp-login-script</code> 即為 Fork 成功！</p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Ffork_project.png?alt=media&amp;token=b6269127-446b-4016-8f53-bb3b10e51cc4" alt="Fork iThelp 自動登入專案"><span class="image-caption">Fork iThelp 自動登入專案</span></p>
-</li>
-<li><p>將 iThelp 帳號密碼加入 <code>secrets</code> 環境變數，變數名稱需要完全相同 (注：任何存在 <code>secrets</code> 環境變數中的數值都是加密過的，因此可以放心輸入)</p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fadd_secrets.png?alt=media&amp;token=b3f627bf-618e-4fa0-8a67-f61fb3da7aae" alt="新增 Secrets 環境變數"><span class="image-caption">新增 Secrets 環境變數</span></p>
-</li>
-<li><p>因為此專案來源為 Fork，GitHub 預設關閉透過 Fork 而來的 Repo 其 Action 功能與 Workflow，因此需要手動啟用</p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fenable_action.png?alt=media&amp;token=1de90567-ddf0-48b6-94de-ed50807e0ef0" alt="啟用 GitHub Action"><span class="image-caption">啟用 GitHub Action</span></p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fenable_workflow.png?alt=media&amp;token=d1f5e1d8-78ac-4a10-b84d-6d587e25ddad" alt="啟用 Workflow"><span class="image-caption">啟用 Workflow</span></p>
-</li>
-<li><p>最後只需要手動執行 Workflow 即可測試是否能正常地自動登入 iThelp 論壇</p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fmanually_run_workflow.png?alt=media&amp;token=69136407-2c32-4932-8bba-75f6a96350c0" alt="手動啟動 Workflow"><span class="image-caption">手動啟動 Workflow</span></p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Fworkflow_success.png?alt=media&amp;token=85deb4e7-e5b1-4dba-8464-b6895870668a" alt="Workflow 執行完成"><span class="image-caption">Workflow 執行完成</span></p>
-<p> <img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%87%AA%E5%8B%95%E6%AF%8F%E6%97%A5%E7%99%BB%E5%85%A5-iT%E9%82%A6%E5%B9%AB%E5%BF%99-%E5%8F%96%E5%BE%97%E6%B4%BB%E5%8B%95%E9%BB%9E%E6%95%B8%2Flogin_successful.png?alt=media&amp;token=2e773e5c-41d4-48bb-9d17-ab115075b8b3" alt="確認自動登入成功"><span class="image-caption">確認自動登入成功</span></p>
-</li>
-</ol>
-<h3 id="排程-Workflow"><a href="#排程-Workflow" class="headerlink" title="排程 Workflow"></a>排程 Workflow</h3><p>Workflow 可以透過 <a href="https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows">GitHub Action schedule</a> 來描述何時該執行，即排程的做法。當指定的時間到來，則可以直接在 GitHub 上運行，不用額外開機器去執行，非常方便！</p>
-<p>目前專案的排程設定可以在 <code>.github/workflows/main.yml</code> 中找到，預設為每日的 12 點執行此 Workflow</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">schedule:</span><br><span class="line">  - cron: <span class="string">&quot;0 12 * * *&quot;</span></span><br></pre></td></tr></table></figure>
-<div class="note info">
-            <p>這裡指的是 UTC+0 的時間，所以 GitHub Action 12 點 (UTC+0) 對應到台灣時間為晚上 8 點 (UTC+8)。</p>
-          </div>
-<p>若讀者想要自定義排程時間，這裡提供相對應的時間說明供讀者參考，讀者可以在 Fork 後的專案自行更改！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">┌───────────── minute (0 - 59)</span><br><span class="line">│ ┌───────────── hour (0 - 23)</span><br><span class="line">│ │ ┌───────────── day of the month (1 - 31)</span><br><span class="line">│ │ │ ┌───────────── month (1 - 12 or JAN-DEC)</span><br><span class="line">│ │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)</span><br><span class="line">│ │ │ │ │</span><br><span class="line">│ │ │ │ │</span><br><span class="line">│ │ │ │ │</span><br><span class="line">* * * * *</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>專案開發筆記</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>github</tag>
-        <tag>action</tag>
-        <tag>task</tag>
-        <tag>ithelp</tag>
-        <tag>login</tag>
-        <tag>auto</tag>
-        <tag>credit</tag>
-        <tag>crawl</tag>
-        <tag>schedular</tag>
-        <tag>schedule</tag>
-        <tag>cron</tag>
-        <tag>workflow</tag>
-        <tag>secrets</tag>
-        <tag>fork</tag>
       </tags>
   </entry>
   <entry>
@@ -5848,6 +5848,39 @@
       </tags>
   </entry>
   <entry>
+    <title>[RDP] xrdp 遠端 menu 不見時登出的方法</title>
+    <url>/2021/06/17/rdp_xrdp_menu/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在一台電腦上開啟 xrdp 伺服器，讓大家可以各自用自己的帳號登入，且互不相干擾。但使用過程中遇到一些突發性圖形介面的問題，需要重新登入才能正常運作。</p>
+<p>然而，這個問題就是 menu 會不見，因此不能使用 GUI 的方式登出，所以查相關文獻並紀錄能夠不透過 GUI 從 Terminal 中輸入登出的指令。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>問題示意圖如下，menu 不見，Reset Panel 也無法起作用，只能重新登入得到健全的畫面</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_no_menu_icon.png?alt=media&amp;token=e2f6bf02-28ec-4546-a83c-dc819abdc50c" alt="消失的 menu"><span class="image-caption">消失的 menu</span></p>
+<h2 id="登出方法"><a href="#登出方法" class="headerlink" title="登出方法"></a>登出方法</h2><p>登出方法有兩種</p>
+<h3 id="快捷鍵"><a href="#快捷鍵" class="headerlink" title="快捷鍵"></a>快捷鍵</h3><p>第一種是設定快速鍵，設定好之後，可以直接按快捷鍵登出，不需要指令，適合不擅長記指令的人使用，但需要在問題 (menu 不見) 發生前先設定好，才能使用</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_setting_shortcut.png?alt=media&amp;token=9efdd681-5e07-42fe-846d-c3b41ab801dc" alt="設定快捷鍵"><span class="image-caption">設定快捷鍵</span></p>
+<h3 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h3><p>要先知道當前的 Desktop Environment (DE) 是甚麼，可依照自己的 DE 查詢相關的登出指令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ <span class="built_in">env</span> | grep _DESKTOP_SESSION | <span class="built_in">cut</span> -d <span class="string">&quot;_&quot;</span> -f 1</span><br><span class="line">MATE  <span class="comment"># 這裡依個人環境有所不同</span></span><br></pre></td></tr></table></figure>
+<p>組合鍵 <code>Ctrl + Alt + T</code> 開啟 Terminal，這裡因為是用 mate DE，其登出指令如下。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mate-session-save --<span class="built_in">logout</span>  <span class="comment"># 若是 gnome 的話則為 gnome-session-quit</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>遠端桌面使用筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>menu</tag>
+        <tag>rdp</tag>
+        <tag>xrdp</tag>
+        <tag>gnome</tag>
+        <tag>logout</tag>
+        <tag>mate</tag>
+        <tag>disappear</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[RDP] Windows 10 設定遠端多人多工</title>
     <url>/2021/06/13/rdp_windows_10_multi/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在許多實驗室內擁有被稱作 Super 的高配備電腦，希望能藉由提高運算速度，進而使產能增加。大多數人熟悉的作業系統是 Windows，為了配合使用者，Super 也是採用 Windows 的作業系統。</p>
@@ -5895,39 +5928,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[RDP] xrdp 遠端 menu 不見時登出的方法</title>
-    <url>/2021/06/17/rdp_xrdp_menu/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在一台電腦上開啟 xrdp 伺服器，讓大家可以各自用自己的帳號登入，且互不相干擾。但使用過程中遇到一些突發性圖形介面的問題，需要重新登入才能正常運作。</p>
-<p>然而，這個問題就是 menu 會不見，因此不能使用 GUI 的方式登出，所以查相關文獻並紀錄能夠不透過 GUI 從 Terminal 中輸入登出的指令。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題描述"><a href="#問題描述" class="headerlink" title="問題描述"></a>問題描述</h2><p>問題示意圖如下，menu 不見，Reset Panel 也無法起作用，只能重新登入得到健全的畫面</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_no_menu_icon.png?alt=media&amp;token=e2f6bf02-28ec-4546-a83c-dc819abdc50c" alt="消失的 menu"><span class="image-caption">消失的 menu</span></p>
-<h2 id="登出方法"><a href="#登出方法" class="headerlink" title="登出方法"></a>登出方法</h2><p>登出方法有兩種</p>
-<h3 id="快捷鍵"><a href="#快捷鍵" class="headerlink" title="快捷鍵"></a>快捷鍵</h3><p>第一種是設定快速鍵，設定好之後，可以直接按快捷鍵登出，不需要指令，適合不擅長記指令的人使用，但需要在問題 (menu 不見) 發生前先設定好，才能使用</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/RDP-xrdp-%E9%81%A0%E7%AB%AF-menu-%E4%B8%8D%E8%A6%8B%E6%99%82%E7%99%BB%E5%87%BA%E7%9A%84%E6%96%B9%E6%B3%95%2Fxrdp_setting_shortcut.png?alt=media&amp;token=9efdd681-5e07-42fe-846d-c3b41ab801dc" alt="設定快捷鍵"><span class="image-caption">設定快捷鍵</span></p>
-<h3 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h3><p>要先知道當前的 Desktop Environment (DE) 是甚麼，可依照自己的 DE 查詢相關的登出指令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ <span class="built_in">env</span> | grep _DESKTOP_SESSION | <span class="built_in">cut</span> -d <span class="string">&quot;_&quot;</span> -f 1</span><br><span class="line">MATE  <span class="comment"># 這裡依個人環境有所不同</span></span><br></pre></td></tr></table></figure>
-<p>組合鍵 <code>Ctrl + Alt + T</code> 開啟 Terminal，這裡因為是用 mate DE，其登出指令如下。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ mate-session-save --<span class="built_in">logout</span>  <span class="comment"># 若是 gnome 的話則為 gnome-session-quit</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>遠端桌面使用筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>menu</tag>
-        <tag>rdp</tag>
-        <tag>xrdp</tag>
-        <tag>gnome</tag>
-        <tag>logout</tag>
-        <tag>mate</tag>
-        <tag>disappear</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[RDP] 在 Ubuntu 18.04 使用 xrdp 遠端多人多工</title>
     <url>/2021/06/17/remote_ubuntu_xrdp/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>xrdp (X Remote Desktop Protocal) 是 Linux 系統上的遠端桌面伺服器，能夠讓透過遠端連線的使用者有 GUI 能夠使用。但在 Ubuntu 18.04 似乎沒辦法簡單的安裝，找了許多資料，終於找到可行的辦法。</p>
@@ -5953,10 +5953,91 @@
         <tag>remote</tag>
         <tag>18.04</tag>
         <tag>rdp</tag>
+        <tag>xrdp</tag>
         <tag>mstsc</tag>
         <tag>多人</tag>
         <tag>多工</tag>
-        <tag>xrdp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>自動化測試概述 - 撰寫測試案例與自動執行測試</title>
+    <url>/2022/09/25/automated-testing/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>開發程式的過程中最常做的事就是編譯、運行、看結果，若結果不符預期，對原始碼進行修改後再執行一樣的步驟直到運作正確為止，一來一回著實耗費工程師不少寶貴時間。此外，修改代碼時還需要注意不要影響到其它地方的程式碼運行，若因此而產生錯誤就要花更多時間修改，是一種維護成本。長時間下來，這樣的程式碼難免成為所謂的「遺毒」。自動化測試這時候就能派上用場，自動化測試是解決這個問題的一種方法，也是最根本的方法，讓電腦代替人工進行對 Codebase 的測試，除了有省時省力的好處，同時也是降低維護成本的關鍵。</p>
+<h2 id="自動化測試"><a href="#自動化測試" class="headerlink" title="自動化測試"></a>自動化測試</h2><p>需先有測試案例才有東西可以自動運行，因此雖然自動化測試是一個詞，但實際上包含兩件事，分別是撰寫測試案例 (Write Test Cases) 與自動執行測試 (Automated testing)</p>
+<ol>
+<li><p>撰寫測試案例 (Write Test Cases)：</p>
+<p> 測試案例即是描述 SUT (System Under Test，測試目標) 在給定輸入的情況下預期對應怎樣的輸出，若進一步將這樣的描述寫成可重複執行的測試腳本，即為撰寫測試案例。每當需要驗證程式的正確性，只需執行測試腳本，等待測試結束並產出相關報告，確認沒問題後，便可進行部署等後續工作。</p>
+</li>
+<li><p>自動執行測試 (Automated testing)：</p>
+<p> 只要有人參與的環節，都有機會出現疏漏，每次都要有人手動執行測試腳本是不太實際的，忘記測試就直接提交的情況非常有可能出現。因此，撰寫測試結束後，最終的目標是使測試能被自動運行，例如串在 CI/CD 流程之中，當 Commit 後、Merge 前或者要發布前都會自動執行測試腳本，使團隊能夠即時發現程式任何非預期的行為，減少 Bug 上線的機會。</p>
+<p> 舉例來說：LeetCode 將每個題目的輸入與輸出寫成測試案例，當我們提交答案時，它會自動提供預期的輸入給我們寫的 Function，並比對 Function 的輸出是否符合它的預期，也因為 LeetCode 在我們提交答案時自動執行測試，讓我們在刷題時能及時地得到回饋。</p>
+</li>
+</ol>
+<h2 id="撰寫測試案例的好處"><a href="#撰寫測試案例的好處" class="headerlink" title="撰寫測試案例的好處"></a>撰寫測試案例的好處</h2><p>撰寫測試案例最主要的目的是能夠隨時驗證程式運作結果確如預期，此外還有許多優點，下面列舉個人最有感的三大好處</p>
+<ol>
+<li><p>節省維護時間：</p>
+<p> 要知道一個 Function 的輸入與輸出的關係或運作結果是否是對的，一般且直接的作法就是刻意呼叫該 Function，並且使用 <code>print</code> 函數將結果輸出於 Console，最後使用人眼觀看輸出的值並用人腦判斷是否為預期，即所謂的 <code>print</code> 大法。如此一來每撰寫新的 Function 就要進行一次這樣的輪迴，若不小心改壞其他地方更是災難性的大量拉長維護時間，因為時間大部分都會花在思考要如何用 <code>print</code> 大法來 Debug，或者思考前一次使用來驗證輸入與輸出是否正確的值是什麼。</p>
+<p> 倘若今天只是開發較簡單的功能，例如：給兩個數並計算出兩數的合，這樣的作法是更快更容易的。但若是開發如 RESTful API Server 這種對外的服務，<code>print</code> 大法的運作流程為：編譯程式並運行，再使用 <code>curl</code>、<code>Postman</code> 等外部工具發一個 HTTP Request 到 Server，再回到 Server 的 Console 來確認輸出結果。當系統龐大起來，要用 <code>print</code> 大法確認每個 Endpoint 的正確性，光是想像也能感覺到這是非常耗時且不是這麼容易、可靠的，對吧？</p>
+<p> 撰寫測試案例可以將預期輸入與輸出的比對交由程式代勞，不需要再使用人眼與人腦去檢查，節省維護時間外，還可以將所有測資保存下來。若之後想將功能移植 (Porting) 到不同的程式語言，原本是需要詢問作者要餵什麼樣的資料與預期輸出的資料，而現在直接透過閱讀測試案例就能掌握使用方法。</p>
+</li>
+<li><p>降低維護人員的心理負擔：</p>
+<p> 不知道讀者有沒有這樣的經驗：接手一份 Code 並被交代要新增 A 功能的任務，在開發過程中影響到原本就存在的 B 功能與 C 功能的運作，一陣修補後勉勉強強的交出能動的 A 功能，而自己心裡知道雖然 B 功能與 C 功能現在正常，卻無法對它們能夠一直正常運作這件事保持信心，原因在於沒有可參考的測試案例或資料，無法確保在修改的過程中考慮到所有發生過的問題。</p>
+<p> 通常這樣的程式碼淪為「遺毒」的可能性是非常高的，沒有任何人敢對程式碼進行擴充、刪除或修改功能，因為沒有任何有效的方法可以快速知道程式碼是否有被改壞。若前人有撰寫完整的測試案例，讓後人在每次修改時得以運行測試腳本，明確的知道功能為正常運行，提高團隊對這份程式碼的信心。</p>
+</li>
+<li><p>即時修改程式架構以降低 SUT 之間的耦合性 (此處 SUT 泛指 Function、Class ⋯⋯等等))：</p>
+<p> 撰寫測試案例的好處很吸引人，聽起來也很容易，本質上就是將預期的輸入提供給 SUT ，並檢查 SUT 的輸出是否符合預期輸出，No Big Deal！但做起來其實不太容易，若較不熟悉 Design Patterns 的開發者，開發出的程式碼通常會偏向高耦合性，即 SUT 依賴於另一個物件或程式 (此時會稱被依賴的物件或程式為 DOC，Depended-On Component) 。</p>
+<p> 例如：在一個 A 物件中直接 <code>new</code> 另一個 B 物件並使用，這時若要測試 A 物件，必定也要同時把 B 物件的運行邏輯考慮進 A，最後導致測試 A 的時候其實也在測試 B 物件。這樣的壞處是什麼？可以想想看，假設應需求修改 B 物件的部分功能，原本只需要修改 B 物件本身的測試案例，現在連同 A 物件的測試案例也要修改！倘若 A 依賴更多物件，將導致撰寫或修改測試案例的難度大大提升，一樣會提高後續維護的難度，淪為「遺毒」指日可待。</p>
+<p> 從這個例子反思，並不是撰寫出測試案例就完事，我非常贊同自己曾經講過的一句話「只要是好測試的軟體架構，就是好架構」，好架構的前提是好測試。所以測試案例過於複雜也會導致沒有人敢增加或修改，因為牽一髮動全身，原本只有 SUT 與 DOC 之間連動，現在連測試案例也相互連動，修改所感到的痛苦是加倍的痛苦。</p>
+<p> 我們可以在撰寫測試案例過程中思考現在的架構是不是好測試的架構，若發現不是，應該即時修改架構使測試更加容易，最後寫出簡單又好維護的測試案例，附帶來的是好的程式架構。</p>
+</li>
+</ol>
+<h2 id="導入撰寫測試案例的潛在問題"><a href="#導入撰寫測試案例的潛在問題" class="headerlink" title="導入撰寫測試案例的潛在問題"></a>導入撰寫測試案例的潛在問題</h2><p>導入撰寫測試案例初衷都是好的，不外乎就是希望 Codebase 品質提升、降低維護成本、確保功能正確⋯⋯等等。但將此項目導入到團隊開發流程中之前，需要先思考可能遇到的問題</p>
+<ol>
+<li><p>團隊成員沒有撰寫測試案例的經驗：</p>
+<p> 撰寫測試案例與撰寫程式碼相同，透過經驗的積累較有辦法寫出優質的測試案例代碼，因此需要有更寬裕的開發時辰，允許成員在寫出初版測試案例後，有時間根據過程中學習到的經驗、知識或衍生想法修改為第二版、第三版測試，提高測試代碼的品質。</p>
+<p> 最佳的情況是團隊中有成員對於撰寫測試案例有豐富的經驗，透過經驗分享提供給初次撰寫測試案例的成員作為參考，減少摸索的時間。</p>
+</li>
+<li><p>撰寫測試案例時間長：</p>
+<p> 有經驗的人都能認同撰寫測試案例的時間會比開發功能的時間來得長，所以導入之前需要評估該項目是否真的需要撰寫測試案例，如果只是在概念驗證 (PoC，Proof of Concept) 階段，測試的撰寫可能就沒這麼必要，因為功能與開發方向會常常改變，導致原本的測試案例沒有作用。</p>
+<p> 若是要在產品化的項目中導入撰寫測試案例，那將會是非常明智的選擇，雖然一開始的開發時間需要稍微拉長，但測試所帶來的許多好處是讓大家不忍拒絕的呀！</p>
+</li>
+<li><p>需更改舊有的程式架構：</p>
+<p> 撰寫測試案例的好處之一「即時修改程式架構以降低 SUT 之間的耦合性」可以說是雙面刃，若今天是在新的專案中導入，這好處是非常吸引人的；但若是在舊有的程式碼中導入撰寫測試，那肯定是會有痛點的，因為原先的程式架構並沒有將測試的觀點考慮進去，導致無法寫出簡潔的測試案例，最後勢必要更改程式架構來配合測試案例的撰寫。</p>
+</li>
+</ol>
+<h2 id="測試的種類"><a href="#測試的種類" class="headerlink" title="測試的種類"></a>測試的種類</h2><p>根據測試所涵蓋範圍可以分為三種測試，分別為單元測試 (Unit Testing)、整合測試 (Integration Testing) 與端對端測試 (E2E Testing，End to End Testing)</p>
+<ol>
+<li><p>單元測試 (Unit Testing)：</p>
+<p> 所謂的 Unit 指的是純函數 (Pure Function)，而 Unit Testing 就是測試 Pure Function 的運作是否如預期，由於 SUT 是 Pure Function，所以 Unit Testing 的測試案例是非常容易撰寫的。</p>
+</li>
+<li><p>整合測試 (Integration Testing) ：</p>
+<p> 若 Unit Testing 是對純函做測試，那 Integration Testing 可以說是對有副作用 (Side Effect) 的 Function 做測試。舉例來說：若 Function 內部會透過呼叫其他模組 (例如：API、Database、Class、Function ⋯⋯等等) 以取得資料，針對這樣的函數所寫的測試案例就會被歸類在 Integration Testing。</p>
+<p> 為了進行 Integration Testing，必須先初始化 SUT 的外部依賴 (Database、DOC ⋯⋯等等)，若程式的結構過於複雜，初始化的撰寫往往是造成測試案例複雜度提升的主要元兇。為了解決此問題，發展出測試替身 (Test Doubles) 的概念，可以確保元件之間的低耦合度，使我們能夠撰寫出簡潔的 Integration Testing 測試案例。</p>
+</li>
+<li><p>端對端測試 (E2E Testing，End to End Testing)：</p>
+<p> E2E Testing 是三種測試中最貼近使用者觀點的測試，從使用者 (End) 的角度對 (to) 整個系統 (End) 進行測試，許多高層無法理解 Unit Testing 與 Integration Testing 的重要性卻可以認同 E2E Testing 有存在的必要，因為只要通過 E2E Testing，基本上可以確保使用者使用起來不會有太大的問題。</p>
+<p> 這也是三種測試中最難以撰寫、耗時、維護成本最高的測試，通常會遵照 80/20 法則，將大部分撰寫測試案例的心力放在最重要、不能出錯的功能上。例如：對電商平台來說，最重要的不外乎是「使用者能順利將商品放入購物車」、「使用者能順利下單並付款」等相關操作，因此針對這些功能所撰寫的 E2E Testing 測試案例所帶來的效益較高。</p>
+</li>
+</ol>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>測試是一門很深的學問，如何將測試寫得好？寫得有效？寫得可維護？這些問題並沒有標準答案，但透過平常撰寫測試案例的經驗與想法加上一次次的改進與反思，相信讀者能整理出一套撰寫測試案例的邏輯，若讀者還沒導入測試到自己的專案之中，現在正是時候！</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><p><a href="https://moduscreate.com/blog/an-overview-of-unit-integration-and-e2e-testing/">AN OVERVIEW OF UNIT, INTEGRATION, AND E2E TESTING Quality Assurance</a></p>
+</li>
+<li><p><a href="https://circleci.com/blog/unit-testing-vs-integration-testing/">Unit testing vs integration testing</a></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>測試筆記</category>
+      </categories>
+      <tags>
+        <tag>unit</tag>
+        <tag>pros</tag>
+        <tag>cons</tag>
+        <tag>test</tag>
+        <tag>automate</tag>
+        <tag>integration</tag>
+        <tag>e2e</tag>
       </tags>
   </entry>
 </search>
