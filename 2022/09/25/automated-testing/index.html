@@ -33,10 +33,11 @@
 <meta property="article:tag" content="unit">
 <meta property="article:tag" content="pros">
 <meta property="article:tag" content="cons">
-<meta property="article:tag" content="automate">
 <meta property="article:tag" content="test">
+<meta property="article:tag" content="automate">
 <meta property="article:tag" content="integration">
 <meta property="article:tag" content="e2e">
+<meta property="article:tag" content="tdd">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://weirenxue.github.io/2022/09/25/automated-testing/">
@@ -280,61 +281,68 @@
 <p> 測試案例即是描述 SUT (System Under Test，測試目標) 在給定輸入的情況下預期對應怎樣的輸出，若進一步將這樣的描述寫成可重複執行的測試腳本，即為撰寫測試案例。每當需要驗證程式的正確性，只需執行測試腳本，等待測試結束並產出相關報告，確認沒問題後，便可進行部署等後續工作。</p>
 </li>
 <li><p>自動執行測試 (Automated testing)：</p>
-<p> 只要有人參與的環節，都有機會出現疏漏，每次都要有人手動執行測試腳本是不太實際的，忘記測試就直接提交的情況非常有可能出現。因此，撰寫測試結束後，最終的目標是使測試能被自動運行，例如串在 CI/CD 流程之中，當 Commit 後、Merge 前或者要發布前都會自動執行測試腳本，使團隊能夠即時發現程式任何非預期的行為，減少 Bug 上線的機會。</p>
-<p> 舉例來說：LeetCode 將每個題目的輸入與輸出寫成測試案例，當我們提交答案時，它會自動提供預期的輸入給我們寫的 Function，並比對 Function 的輸出是否符合它的預期，也因為 LeetCode 在我們提交答案時自動執行測試，讓我們在刷題時能及時地得到回饋。</p>
+<p> 期望每個人都能記得手動執行測試腳本再進行後續動作是不太實際的，因為只要有人參與的環節，就有機會出現疏漏，忘記測試就直接提交的情況非常有可能出現。因此，撰寫測試案例結束後，最終的目標是使這些測試腳本能在適當時機被自動運行。例如：當 Commit 後、Merge 前或者要發布前都會由 CI/CD 自動執行測試腳本，使團隊能夠即時發現程式任何非預期的行為，降低 Bug 上線的機會。</p>
+<p> 舉例來說：LeetCode 將每個題目的輸入與輸出寫成測試案例，當我們提交答案時，它會自動提供預期的輸入給我們寫的 Function，並檢查輸出是否符合它的預期，也因為 LeetCode 在我們提交答案時自動執行測試，讓我們在刷題時能及時地得到回饋。</p>
 </li>
 </ol>
 <h2 id="撰寫測試案例的好處"><a href="#撰寫測試案例的好處" class="headerlink" title="撰寫測試案例的好處"></a>撰寫測試案例的好處</h2><p>撰寫測試案例最主要的目的是能夠隨時驗證程式運作結果確如預期，此外還有許多優點，下面列舉個人最有感的三大好處</p>
 <ol>
 <li><p>節省維護時間：</p>
-<p> 要知道一個 Function 的輸入與輸出的關係或運作結果是否是對的，一般且直接的作法就是刻意呼叫該 Function，並且使用 <code>print</code> 函數將結果輸出於 Console，最後使用人眼觀看輸出的值並用人腦判斷是否為預期，即所謂的 <code>print</code> 大法。如此一來每撰寫新的 Function 就要進行一次這樣的輪迴，若不小心改壞其他地方更是災難性的大量拉長維護時間，因為時間大部分都會花在思考要如何用 <code>print</code> 大法來 Debug，或者思考前一次使用來驗證輸入與輸出是否正確的值是什麼。</p>
-<p> 倘若今天只是開發較簡單的功能，例如：給兩個數並計算出兩數的合，這樣的作法是更快更容易的。但若是開發如 RESTful API Server 這種對外的服務，<code>print</code> 大法的運作流程為：編譯程式並運行，再使用 <code>curl</code>、<code>Postman</code> 等外部工具發一個 HTTP Request 到 Server，再回到 Server 的 Console 來確認輸出結果。當系統龐大起來，要用 <code>print</code> 大法確認每個 Endpoint 的正確性，光是想像也能感覺到這是非常耗時且不是這麼容易、可靠的，對吧？</p>
-<p> 撰寫測試案例可以將預期輸入與輸出的比對交由程式代勞，不需要再使用人眼與人腦去檢查，節省維護時間外，還可以將所有測資保存下來。若之後想將功能移植 (Porting) 到不同的程式語言，原本是需要詢問作者要餵什麼樣的資料與預期輸出的資料，而現在直接透過閱讀測試案例就能掌握使用方法。</p>
+<p> 要知道一個 Function 的輸入與輸出的關係或運作結果是否是對的，一般且直接的作法就是刻意呼叫該 Function，並且使用 <code>print</code> 函數將結果輸出於 Console，最後使用人眼觀看輸出的值並用人腦判斷是否為預期結果，即所謂的 <code>print</code> 大法。如此一來，每撰寫新的 Function 就要進行一次這樣的輪迴，若不小心改壞其他 Function 更是災難性的大幅拉長維護時間，因為時間大部分都會花在思考要如何用 <code>print</code> 大法來 Debug，或者思考前一次使用來驗證輸入與輸出是否正確的值是什麼。</p>
+<p> 倘若只是開發較簡單的功能，例如：給兩個數並計算出兩數之合，這樣的作法是更快更容易的。但若是開發如 RESTful API Server 這種線上服務，<code>print</code> 大法的運作流程為：編譯程式並運行，再使用 <code>curl</code>、<code>Postman</code> 等外部工具發一個 HTTP Request 到 Server，再回到 Server 的 Console 來確認輸出結果。當系統龐大起來，要用 <code>print</code> 大法確認每個 Endpoint 的正確性，光是想像也能感覺到這是非常耗時且不是這麼容易、可靠的，對吧？</p>
+<p> 撰寫測試案例可以將預期輸入與輸出的比對交由程式代勞，不需要再使用人眼與人腦去判斷，節省維護時間外，還可以將所有測資保存下來。若之後想將功能移植 (Porting) 到不同的程式語言，原本是需要詢問作者要餵什麼樣的資料與預期輸出的資料，而現在直接透過閱讀測試案例就能掌握使用方法。</p>
 </li>
 <li><p>降低維護人員的心理負擔：</p>
-<p> 不知道讀者有沒有這樣的經驗：接手一份 Code 並被交代要新增 A 功能的任務，在開發過程中影響到原本就存在的 B 功能與 C 功能的運作，一陣修補後勉勉強強的交出能動的 A 功能，而自己心裡知道雖然 B 功能與 C 功能現在正常，卻無法對它們能夠一直正常運作這件事保持信心，原因在於沒有可參考的測試案例或資料，無法確保在修改的過程中考慮到所有發生過的問題。</p>
-<p> 通常這樣的程式碼淪為「遺毒」的可能性是非常高的，沒有任何人敢對程式碼進行擴充、刪除或修改功能，因為沒有任何有效的方法可以快速知道程式碼是否有被改壞。若前人有撰寫完整的測試案例，讓後人在每次修改時得以運行測試腳本，明確的知道功能為正常運行，提高團隊對這份程式碼的信心。</p>
+<p> 不知道讀者有沒有這樣的經驗：接手一份 Code 並被交代要新增 A 功能的任務，在開發過程中影響到原本就存在的 B 功能與 C 功能的運作，一陣修補後勉勉強強的交出能動的 A 功能，而自己心裡知道雖然 B 功能與 C 功能現在正常，卻無法對它們能夠一直正常運作這件事保持信心，原因在於沒有可參考的測試案例，無法確保在修改的過程中有考慮到所有前人遇過的問題。</p>
+<p> 通常這樣的程式碼淪為「遺毒」的可能性是非常高的，沒有任何人敢對程式碼進行擴充、刪除或修改功能，因為沒有任何有效的方法可以快速知道程式碼是否有被改壞。若前人有撰寫完整的測試案例，讓我們得以在每次修改後運行測試腳本，明確的知道功能為正常運行，同時提高對這份程式碼的信心。</p>
 </li>
 <li><p>即時修改程式架構以降低 SUT 之間的耦合性 (此處 SUT 泛指 Function、Class ⋯⋯等等))：</p>
-<p> 撰寫測試案例的好處很吸引人，聽起來也很容易，本質上就是將預期的輸入提供給 SUT ，並檢查 SUT 的輸出是否符合預期輸出，No Big Deal！但做起來其實不太容易，若較不熟悉 Design Patterns 的開發者，開發出的程式碼通常會偏向高耦合性，即 SUT 依賴於另一個物件或程式 (此時會稱被依賴的物件或程式為 DOC，Depended-On Component) 。</p>
-<p> 例如：在一個 A 物件中直接 <code>new</code> 另一個 B 物件並使用，這時若要測試 A 物件，必定也要同時把 B 物件的運行邏輯考慮進 A，最後導致測試 A 的時候其實也在測試 B 物件。這樣的壞處是什麼？可以想想看，假設應需求修改 B 物件的部分功能，原本只需要修改 B 物件本身的測試案例，現在連同 A 物件的測試案例也要修改！倘若 A 依賴更多物件，將導致撰寫或修改測試案例的難度大大提升，一樣會提高後續維護的難度，淪為「遺毒」指日可待。</p>
-<p> 從這個例子反思，並不是撰寫出測試案例就完事，我非常贊同自己曾經講過的一句話「只要是好測試的軟體架構，就是好架構」，好架構的前提是好測試。所以測試案例過於複雜也會導致沒有人敢增加或修改，因為牽一髮動全身，原本只有 SUT 與 DOC 之間連動，現在連測試案例也相互連動，修改所感到的痛苦是加倍的痛苦。</p>
-<p> 我們可以在撰寫測試案例過程中思考現在的架構是不是好測試的架構，若發現不是，應該即時修改架構使測試更加容易，最後寫出簡單又好維護的測試案例，附帶來的是好的程式架構。</p>
+<p> 撰寫測試案例的好處很吸引人，聽起來也很容易，本質上就是將預期的輸入提供給 SUT ，並檢查其輸出是否符合預期輸出，No Big Deal！但做起來其實不太容易，若較不熟悉 Design Patterns 的開發者，開發出的程式碼通常會偏向高耦合性，即 SUT 依賴於另一個物件或程式 (此時會稱被依賴的物件或程式為 DOC，Depended-On Component) 。</p>
+<p> 例如：在一個 A 物件中直接 <code>new</code> 另一個 B 物件並使用，這時若要測試 A 物件，必定也要把 B 物件的運行邏輯考慮進來，最後導致測試 A 的時候其實也在測試 B 物件。這樣的壞處是什麼？可以想想看，假設應需求修改 B 物件的部分功能，原本只需要修改 B 物件本身的測試案例，現在連同 A 物件的測試案例也要修改！倘若 A 依賴更多物件，將導致撰寫或修改測試案例的難度大大提升，提高後續維護的難度，淪為「遺毒」指日可待。</p>
+<p> 從這個例子反思，並不是撰寫出測試案例就完事，我非常贊同自己曾經講過的一句話「只要是好測試的軟體架構，就是好架構」，好架構的前提是好測試。由於牽一髮動全身，原本只有 SUT 與 DOC 之間連動，現在連測試案例也相互連動，因修改所感到的痛苦是加倍的痛苦，可想而知測試案例過於複雜也會導致沒有人敢增加或修改。</p>
+<p> 我們可以在撰寫測試案例的過程中隨時反思現在的架構是不是好測試的架構，若發現不是，應該即時修改架構使測試更加容易，最後寫出簡單又好維護的測試案例，附帶來的是好的程式架構。</p>
 </li>
 </ol>
-<h2 id="導入撰寫測試案例的潛在問題"><a href="#導入撰寫測試案例的潛在問題" class="headerlink" title="導入撰寫測試案例的潛在問題"></a>導入撰寫測試案例的潛在問題</h2><p>導入撰寫測試案例初衷都是好的，不外乎就是希望 Codebase 品質提升、降低維護成本、確保功能正確⋯⋯等等。但將此項目導入到團隊開發流程中之前，需要先思考可能遇到的問題</p>
+<h2 id="導入撰寫測試案例的潛在問題"><a href="#導入撰寫測試案例的潛在問題" class="headerlink" title="導入撰寫測試案例的潛在問題"></a>導入撰寫測試案例的潛在問題</h2><p>導入撰寫測試案例不外乎希望可以藉此提升 Codebase 品質、降低維護成本、確保功能正確⋯⋯等等。但在正式導入進團隊開發流程之前，需要先思考可能遇到的問題與配套措施</p>
 <ol>
 <li><p>團隊成員沒有撰寫測試案例的經驗：</p>
-<p> 撰寫測試案例與撰寫程式碼相同，透過經驗的積累較有辦法寫出優質的測試案例代碼，因此需要有更寬裕的開發時辰，允許成員在寫出初版測試案例後，有時間根據過程中學習到的經驗、知識或衍生想法修改為第二版、第三版測試，提高測試代碼的品質。</p>
-<p> 最佳的情況是團隊中有成員對於撰寫測試案例有豐富的經驗，透過經驗分享提供給初次撰寫測試案例的成員作為參考，減少摸索的時間。</p>
+<p> 撰寫測試案例與撰寫程式碼相同，透過經驗的積累較有辦法寫出優質的測試案例代碼，因此需要有更寬裕的開發時辰，允許成員在寫出初版測試案例後，有時間根據過程中學習到的經驗、知識或衍生想法修改為第二版、第三版測試案例，提高測試代碼的品質。</p>
+<p> 最佳的情況是團隊中有成員對於撰寫測試案例擁有豐富的經驗，透過經驗分享提供給初次撰寫測試案例的成員作為參考，減少盲目摸索的時間。</p>
 </li>
 <li><p>撰寫測試案例時間長：</p>
-<p> 有經驗的人都能認同撰寫測試案例的時間會比開發功能的時間來得長，所以導入之前需要評估該項目是否真的需要撰寫測試案例，如果只是在概念驗證 (PoC，Proof of Concept) 階段，測試的撰寫可能就沒這麼必要，因為功能與開發方向會常常改變，導致原本的測試案例沒有作用。</p>
-<p> 若是要在產品化的項目中導入撰寫測試案例，那將會是非常明智的選擇，雖然一開始的開發時間需要稍微拉長，但測試所帶來的許多好處是讓大家不忍拒絕的呀！</p>
+<p> 有經驗的人應該都能認同撰寫測試案例的時間會比開發功能的時間來得長，所以導入之前需要評估該項目是否真的需要撰寫測試案例，如果只是在概念驗證 (PoC，Proof of Concept) 階段，測試案例的撰寫可能就沒這麼必要，因為功能與開發方向會常常改變，導致原本的測試案例沒有作用。</p>
+<p> 若是要在產品化的項目中導入撰寫測試案例，那將會是非常明智的選擇，雖然開發時間需要稍微拉長，但測試所帶來的許多好處是讓大家不忍拒絕的呀！</p>
 </li>
-<li><p>需更改舊有的程式架構：</p>
-<p> 撰寫測試案例的好處之一「即時修改程式架構以降低 SUT 之間的耦合性」可以說是雙面刃，若今天是在新的專案中導入，這好處是非常吸引人的；但若是在舊有的程式碼中導入撰寫測試，那肯定是會有痛點的，因為原先的程式架構並沒有將測試的觀點考慮進去，導致無法寫出簡潔的測試案例，最後勢必要更改程式架構來配合測試案例的撰寫。</p>
+<li><p>舊有的程式架構可能需要更動：</p>
+<p> 撰寫測試案例的好處之一「即時修改程式架構以降低 SUT 之間的耦合性」可以說是雙面刃，若今天是在新的專案中導入，這好處是非常吸引人的；但若是在舊有的程式碼中導入撰寫測試案例，那肯定是會有痛點的，因為原先的程式架構並沒有將測試考慮進去，導致無法寫出簡潔的測試案例，最後勢必要更改程式架構來配合測試案例的撰寫。</p>
 </li>
 </ol>
+<div class="note info">
+            <p>看到這裡，也許讀者心中會有一個疑問：「為了配合撰寫測試案例而修改程式架構，是正確的行為嗎？」</p><p>有名的 TDD (Test-Driven Development，測試驅動開發) 模式其實就是先撰寫測試案例，再根據測試案例寫出對應的 Code。因此，若整個專案都是使用 TDD 模式，也就可以說這個程式的架構是配合撰寫測試案例所產生的架構。</p><p>相信讀者心中都有答案了吧！</p>
+          </div>
 <h2 id="測試的種類"><a href="#測試的種類" class="headerlink" title="測試的種類"></a>測試的種類</h2><p>根據測試所涵蓋範圍可以分為三種測試，分別為單元測試 (Unit Testing)、整合測試 (Integration Testing) 與端對端測試 (E2E Testing，End to End Testing)</p>
 <ol>
 <li><p>單元測試 (Unit Testing)：</p>
-<p> 所謂的 Unit 指的是純函數 (Pure Function)，而 Unit Testing 就是測試 Pure Function 的運作是否如預期，由於 SUT 是 Pure Function，所以 Unit Testing 的測試案例是非常容易撰寫的。</p>
+<p> 所謂的 Unit 指的是純函數 (Pure Function)，而 Unit Testing 就是測試 Pure Function 的運作是否如預期。由於 SUT 是 Pure Function，所以 Unit Testing 的測試案例是非常容易撰寫的。</p>
 </li>
 <li><p>整合測試 (Integration Testing) ：</p>
-<p> 若 Unit Testing 是對純函做測試，那 Integration Testing 可以說是對有副作用 (Side Effect) 的 Function 做測試。舉例來說：若 Function 內部會透過呼叫其他模組 (例如：API、Database、Class、Function ⋯⋯等等) 以取得資料，針對這樣的函數所寫的測試案例就會被歸類在 Integration Testing。</p>
+<p> 若 Unit Testing 是對 Pure Function 做測試，那 Integration Testing 可以說是對有副作用 (Side Effect) 的 Function 做測試。舉例來說：若 Function 內部會透過呼叫其他模組 (例如：API、Database、Class、Function ⋯⋯等等) 以進行操作或取得資料，針對這樣的函數所寫的測試案例就會被歸類在 Integration Testing。</p>
 <p> 為了進行 Integration Testing，必須先初始化 SUT 的外部依賴 (Database、DOC ⋯⋯等等)，若程式的結構過於複雜，初始化的撰寫往往是造成測試案例複雜度提升的主要元兇。為了解決此問題，發展出測試替身 (Test Doubles) 的概念，可以確保元件之間的低耦合度，使我們能夠撰寫出簡潔的 Integration Testing 測試案例。</p>
 </li>
 <li><p>端對端測試 (E2E Testing，End to End Testing)：</p>
 <p> E2E Testing 是三種測試中最貼近使用者觀點的測試，從使用者 (End) 的角度對 (to) 整個系統 (End) 進行測試，許多高層無法理解 Unit Testing 與 Integration Testing 的重要性卻可以認同 E2E Testing 有存在的必要，因為只要通過 E2E Testing，基本上可以確保使用者使用起來不會有太大的問題。</p>
-<p> 這也是三種測試中最難以撰寫、耗時、維護成本最高的測試，通常會遵照 80/20 法則，將大部分撰寫測試案例的心力放在最重要、不能出錯的功能上。例如：對電商平台來說，最重要的不外乎是「使用者能順利將商品放入購物車」、「使用者能順利下單並付款」等相關操作，因此針對這些功能所撰寫的 E2E Testing 測試案例所帶來的效益較高。</p>
+<p> 這也是三種測試中最難以撰寫、耗時、維護成本最高的測試，通常會遵照 80/20 法則，將大部分撰寫測試案例的心力放在最重要、不能出錯的功能上。例如：對電商平台來說，不外乎是「使用者能順利將商品放入購物車」、「使用者能順利下單並付款」等交易相關操作最為重要，因此針對這些功能所撰寫的 E2E Testing 測試案例所帶來的效益較高。</p>
 </li>
 </ol>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>測試是一門很深的學問，如何將測試寫得好？寫得有效？寫得可維護？這些問題並沒有標準答案，但透過平常撰寫測試案例的經驗與想法加上一次次的改進與反思，相信讀者能整理出一套撰寫測試案例的邏輯，若讀者還沒導入測試到自己的專案之中，現在正是時候！</p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>測試是一門很深的學問，如何將測試寫得好？寫得有效？寫得可維護？這些問題並沒有標準答案，但透過平常撰寫測試案例的經驗與想法加上每次的改進與反思，相信讀者能整理出一套撰寫測試案例的邏輯，若讀者還沒導入測試到自己手邊的專案中，現在正是時候！</p>
 <h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://stackoverflow.com/questions/19167970/mock-functions-in-go#comments-19168875">In order to test, we must change the code is correct?</a></p>
+</li>
 <li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://moduscreate.com/blog/an-overview-of-unit-integration-and-e2e-testing/">AN OVERVIEW OF UNIT, INTEGRATION, AND E2E TESTING Quality Assurance</a></p>
 </li>
 <li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://circleci.com/blog/unit-testing-vs-integration-testing/">Unit testing vs integration testing</a></p>
+</li>
+<li><p><a target="_blank" rel="external nofollow noopener noreferrer" href="http://xunitpatterns.com/Test%20Double.html">xUnit Patterns - Test Double</a></p>
 </li>
 </ol>
 
@@ -417,10 +425,11 @@
               <a href="/tags/unit/" rel="tag"># unit</a>
               <a href="/tags/pros/" rel="tag"># pros</a>
               <a href="/tags/cons/" rel="tag"># cons</a>
-              <a href="/tags/automate/" rel="tag"># automate</a>
               <a href="/tags/test/" rel="tag"># test</a>
+              <a href="/tags/automate/" rel="tag"># automate</a>
               <a href="/tags/integration/" rel="tag"># integration</a>
               <a href="/tags/e2e/" rel="tag"># e2e</a>
+              <a href="/tags/tdd/" rel="tag"># tdd</a>
           </div>
 
         
@@ -526,7 +535,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">532</span>
+        <span class="site-state-item-count">533</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
