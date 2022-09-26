@@ -1145,40 +1145,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Math] 以移位運算優化除數為 2 的冪次方的除法</title>
-    <url>/2021/06/15/math_2/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>除法指令在 CPU 中的執行周期相較於其它運算 (加/減/乘) 還要來得長，所以會盡可能的找替代方案來算出除法結果。這裡討論的是，當除以一個 2 的冪次方數時要怎麼減化過程，特別是被除數為負數時的情況。</p>
-<h2 id="問題敘述"><a href="#問題敘述" class="headerlink" title="問題敘述"></a>問題敘述</h2><p>基本上 $x\gg k$ 等同於 $\dfrac{x}{2^k}$，但這個結果只能保證在 $x \geq 0$ 時是對的，若在 $x &lt; 0$ 時，可就不一定了！舉例來說，若 $x=-12345$ 且 $k=4$</p>
-<p>以除法運算來看，取整數後即 $-771$。</p>
-<script type="math/tex; mode=display">x\gg k=-12345\gg 4=\dfrac{-12345}{2^4}=-771.5625</script><p>在以位元運算來看</p>
-<script type="math/tex; mode=display">-12345_{10}\gg 4_{10}=1100\_1111\_1100\_0111_2 \gg 4_{10} = 1111\_1100\_1111\_1100_2 = -772</script><p>這與我們想要的結果 ($-771$) 不一樣，因為移位運算後的結果都是取 <code>floor</code> 後的值，即</p>
-<script type="math/tex; mode=display">x \gg k = floor(\dfrac{x}{2^k})</script><p>當 $x \geq 0$，我們要得到整數部份就要取 <code>floor</code>，這與移位運算的特性一致；而當 $x &lt; 0$ 時，我們要得到整數部份就要取 <code>ceil</code>，但此時移位運算是取 <code>floor</code>，所以就會有誤。</p>
-<p>因此，我們需要一個函數，當 $x &lt; 0$ 時作移位運算後結果為 $ceil(\dfrac{x}{2^k})$ 的演算法</p>
-<script type="math/tex; mode=display">(x + (2^k - 1)) >> k</script><h2 id="證明"><a href="#證明" class="headerlink" title="證明"></a>證明</h2><p>目標</p>
-<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = (x + (2^k - 1)) \gg k</script><p>要證明上式，必須先證明下式成立，</p>
-<script type="math/tex; mode=display">ceil(\dfrac{x}{y})=floor(\dfrac{x+y-1}{y}), \ \textrm{if}\ x\ \in \mathbb{Z}\ \textrm{and}\ y\ \in \mathbb{Z^+}</script><p>令</p>
-<script type="math/tex; mode=display">x=qy+r,\ 0 \leq r\leq y-1</script><p>q 為除法商數且 r 為除法餘數。再將此試代入目標等式右邊</p>
-<script type="math/tex; mode=display">\dfrac{x+y-1}{y}=\dfrac{qy+r+y-1}{y}=q+\dfrac{r+y-1}{y}</script><p>討論：</p>
-<p><code>case 1</code>：如果 $x$ 可以被 $y$ 整除，則 $r=0$</p>
-<script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{y-1}{y})=q=ceil(\dfrac{x}{y})</script><p><code>case 2</code>：如果 $x$ 不能被 $y$ 整除，則 $1\leq r\leq y-1$</p>
-<script type="math/tex; mode=display">\dfrac{y}{y}\leq \dfrac{r+y-1}{y}\leq \dfrac{2y-2}{y}</script><script type="math/tex; mode=display">1\leq\dfrac{r+y-1}{y}<2</script><script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{r+y-1}{y})=q+1=ceil(\dfrac{x}{y})</script><p>最後，再利用這個等式，可以得到若 <code>x &lt; 0</code></p>
-<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = floor ( \dfrac{x + 2^k - 1}{2^k}) = (x + (2^k - 1)) \gg k</script><p>得證</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a href="https://www.itread01.com/content/1548192791.html">計算機中如何實現除數是2的冪次的除法</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>math</tag>
-        <tag>shift</tag>
-        <tag>bit</tag>
-        <tag>division</tag>
-        <tag>power of 2</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Menu] 將程式添加於 Windows 右鍵清單</title>
     <url>/2021/10/08/windows_right_click_menu/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>右鍵清單是很常用到的功能，例如：透過右鍵點擊壓縮檔並使用 7-Zip 解壓縮檔案、重新整理桌面/檔案總管、開啟 Git 終端視窗……等等。有些程式使用到的頻率很高，但預設沒有出現在右鍵清單內，這時我們便可以透過手動添加清單項目的方式來達到這個目的。</p>
@@ -1257,6 +1223,40 @@
         <tag>hiew</tag>
         <tag>regedit</tag>
         <tag>reg</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Math] 以移位運算優化除數為 2 的冪次方的除法</title>
+    <url>/2021/06/15/math_2/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>除法指令在 CPU 中的執行周期相較於其它運算 (加/減/乘) 還要來得長，所以會盡可能的找替代方案來算出除法結果。這裡討論的是，當除以一個 2 的冪次方數時要怎麼減化過程，特別是被除數為負數時的情況。</p>
+<h2 id="問題敘述"><a href="#問題敘述" class="headerlink" title="問題敘述"></a>問題敘述</h2><p>基本上 $x\gg k$ 等同於 $\dfrac{x}{2^k}$，但這個結果只能保證在 $x \geq 0$ 時是對的，若在 $x &lt; 0$ 時，可就不一定了！舉例來說，若 $x=-12345$ 且 $k=4$</p>
+<p>以除法運算來看，取整數後即 $-771$。</p>
+<script type="math/tex; mode=display">x\gg k=-12345\gg 4=\dfrac{-12345}{2^4}=-771.5625</script><p>在以位元運算來看</p>
+<script type="math/tex; mode=display">-12345_{10}\gg 4_{10}=1100\_1111\_1100\_0111_2 \gg 4_{10} = 1111\_1100\_1111\_1100_2 = -772</script><p>這與我們想要的結果 ($-771$) 不一樣，因為移位運算後的結果都是取 <code>floor</code> 後的值，即</p>
+<script type="math/tex; mode=display">x \gg k = floor(\dfrac{x}{2^k})</script><p>當 $x \geq 0$，我們要得到整數部份就要取 <code>floor</code>，這與移位運算的特性一致；而當 $x &lt; 0$ 時，我們要得到整數部份就要取 <code>ceil</code>，但此時移位運算是取 <code>floor</code>，所以就會有誤。</p>
+<p>因此，我們需要一個函數，當 $x &lt; 0$ 時作移位運算後結果為 $ceil(\dfrac{x}{2^k})$ 的演算法</p>
+<script type="math/tex; mode=display">(x + (2^k - 1)) >> k</script><h2 id="證明"><a href="#證明" class="headerlink" title="證明"></a>證明</h2><p>目標</p>
+<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = (x + (2^k - 1)) \gg k</script><p>要證明上式，必須先證明下式成立，</p>
+<script type="math/tex; mode=display">ceil(\dfrac{x}{y})=floor(\dfrac{x+y-1}{y}), \ \textrm{if}\ x\ \in \mathbb{Z}\ \textrm{and}\ y\ \in \mathbb{Z^+}</script><p>令</p>
+<script type="math/tex; mode=display">x=qy+r,\ 0 \leq r\leq y-1</script><p>q 為除法商數且 r 為除法餘數。再將此試代入目標等式右邊</p>
+<script type="math/tex; mode=display">\dfrac{x+y-1}{y}=\dfrac{qy+r+y-1}{y}=q+\dfrac{r+y-1}{y}</script><p>討論：</p>
+<p><code>case 1</code>：如果 $x$ 可以被 $y$ 整除，則 $r=0$</p>
+<script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{y-1}{y})=q=ceil(\dfrac{x}{y})</script><p><code>case 2</code>：如果 $x$ 不能被 $y$ 整除，則 $1\leq r\leq y-1$</p>
+<script type="math/tex; mode=display">\dfrac{y}{y}\leq \dfrac{r+y-1}{y}\leq \dfrac{2y-2}{y}</script><script type="math/tex; mode=display">1\leq\dfrac{r+y-1}{y}<2</script><script type="math/tex; mode=display">floor(\dfrac{x+y-1}{y})=floor(q+\dfrac{r+y-1}{y})=q+1=ceil(\dfrac{x}{y})</script><p>最後，再利用這個等式，可以得到若 <code>x &lt; 0</code></p>
+<script type="math/tex; mode=display">ceil (\dfrac{x}{2^k}) = floor ( \dfrac{x + 2^k - 1}{2^k}) = (x + (2^k - 1)) \gg k</script><p>得證</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://www.itread01.com/content/1548192791.html">計算機中如何實現除數是2的冪次的除法</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>math</tag>
+        <tag>shift</tag>
+        <tag>bit</tag>
+        <tag>division</tag>
+        <tag>power of 2</tag>
       </tags>
   </entry>
   <entry>
@@ -1794,6 +1794,75 @@
       </tags>
   </entry>
   <entry>
+    <title>[PHP] CentOS 8.2 + Nginx + MariaDB + php-fpm + phpMyAdmin</title>
+    <url>/2021/06/18/centos_phpmyadmin/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到使用 MySQL/MariaDB 就會想到 phpMyAdmin 這個使用者圖像介面，它是用 PHP 寫出來與 MySQL/MariaDB 互動的介面，所以若要使用，必須先安裝網頁伺服器與 PHP。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+</ul>
+<h2 id="安裝-EPEL"><a href="#安裝-EPEL" class="headerlink" title="安裝 EPEL"></a>安裝 EPEL</h2><p>安裝由 Fedora 社群打造的第三方源 EPEL (Extra Packages for Enterprise Linux)，其中包含比官方 repository 還要新的套件版本</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install epel-release</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-Nginx"><a href="#安裝-Nginx" class="headerlink" title="安裝 Nginx"></a>安裝 Nginx</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/nginx_centos_nginx/">[Nginx] CentOS 安裝網頁伺服器 Nginx</a>，安裝好後從瀏覽器輸入 <a href="http://localhost">http://localhost</a> 確定可看到 Nginx 預設頁面</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl start nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-MariaDB"><a href="#安裝-MariaDB" class="headerlink" title="安裝 MariaDB"></a>安裝 MariaDB</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install mariadb-server mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl start mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mariadb</span><br></pre></td></tr></table></figure>
+<h2 id="安裝-php-fpm"><a href="#安裝-php-fpm" class="headerlink" title="安裝 php-fpm"></a>安裝 php-fpm</h2><p>這裡安裝預設版本 (目前是7.2版)</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install php php-fpm php-json php-mysqlnd php-mbstring</span><br></pre></td></tr></table></figure>
+<h3 id="修改-www-conf-設定"><a href="#修改-www-conf-設定" class="headerlink" title="修改 www.conf 設定"></a>修改 www.conf 設定</h3><p>修改 <code>/etc/php-fpm.d/www.conf</code> 檔案內容</p>
+<ol>
+<li>改 <code>user = apache</code> 為 <code>user = nginx</code></li>
+<li>改 <code>group = apache</code> 為 <code>group = nginx</code></li>
+<li>改 <code>listen = /run/php-fpm/www.sock</code> 為 <code>listen = /var/run/php-fpm/php-fpm.sock</code></li>
+<li>拿掉 <code>;listen.owner = nobody</code> 的分號，並改為 <code>listen.owner = nginx</code></li>
+<li>拿掉 <code>;listen.group = nobody</code> 的分號，並改為 <code>listen.group = nginx</code></li>
+<li>拿掉 <code>;listen.mode = 0660</code> 的分號</li>
+</ol>
+<h3 id="啟動-php-fpm-服務"><a href="#啟動-php-fpm-服務" class="headerlink" title="啟動 php-fpm 服務"></a>啟動 php-fpm 服務</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start php-fpm</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> php-fpm</span><br></pre></td></tr></table></figure>
+<h3 id="修改-php-fpm-conf-設定"><a href="#修改-php-fpm-conf-設定" class="headerlink" title="修改 php-fpm.conf 設定"></a>修改 php-fpm.conf 設定</h3><p>修改 <code>/etc/nginx/conf.d/php-fpm.conf</code> 檔案內容</p>
+<ol>
+<li>改 <code>server unix:/run/php-fpm/www.sock;</code> 為 <code>server unix:/var/run/php-fpm/php-fpm.sock;</code></li>
+</ol>
+<h3 id="新增-phpmyadmin-conf-檔案"><a href="#新增-phpmyadmin-conf-檔案" class="headerlink" title="新增 phpmyadmin.conf 檔案"></a>新增 phpmyadmin.conf 檔案</h3><p>新增 <code>/etc/nginx/conf.d/phpmyadmin.conf</code> 檔案，內容如下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  server_domain_or_IP;</span><br><span class="line"></span><br><span class="line">    root   /usr/share/nginx/html;</span><br><span class="line">    index index.php index.html index.htm;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        try_files $uri $uri/ =404;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 /404.html;</span><br><span class="line">    error_page 500 502 503 504 /50x.html;</span><br><span class="line"></span><br><span class="line">    location = /50x.html &#123;</span><br><span class="line">        root /usr/share/nginx/html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ~ \.php$ &#123;</span><br><span class="line">        try_files $uri =404;</span><br><span class="line">        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;</span><br><span class="line">        fastcgi_index index.php;</span><br><span class="line">        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">        include fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="重新載入設定"><a href="#重新載入設定" class="headerlink" title="重新載入設定"></a>重新載入設定</h3><p>Nginx 重新載入設定檔，要看到 <code>ok</code> 與 <code>/etc/nginx/nginx.conf test is successful</code> 才是對的哦！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl reload nginx</span><br><span class="line">[user@localhost ~]$ sudo nginx -t</span><br><span class="line">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br></pre></td></tr></table></figure>
+<h3 id="確認-php-fpm-運作"><a href="#確認-php-fpm-運作" class="headerlink" title="確認 php-fpm 運作"></a>確認 php-fpm 運作</h3><p>創建 <code>/usr/share/nginx/html/info.php</code> 其內容如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">phpinfo</span>();</span><br></pre></td></tr></table></figure>
+<p>這時從瀏覽器輸入 <a href="http://localhost/info.php">http://localhost/info.php</a> 確定可看到 <code>phpinfo</code> 的頁面，若看得到代表 Nginx + php-fpm 有在正常運作囉</p>
+<h2 id="安裝-phpMyAdmin"><a href="#安裝-phpMyAdmin" class="headerlink" title="安裝 phpMyAdmin"></a>安裝 phpMyAdmin</h2><p>下載 <a href="https://www.phpmyadmin.net/">phpMyAdmin</a> 並解壓縮到 <code>/usr/share/nginx/html</code> 目錄</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ unzip Downloads/phpMyAdmin-5.0.2-all-languages.zip </span><br><span class="line">[user@localhost ~]$ sudo <span class="built_in">mv</span> phpMyAdmin-5.0.2-all-languages/ /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
+<h3 id="創建-tmp-目錄"><a href="#創建-tmp-目錄" class="headerlink" title="創建 tmp 目錄"></a>創建 tmp 目錄</h3><p>創建 <code>phpMyAdmin/tmp/</code> 目錄並更改擁有者與群組為 <code>nginx:nginx</code>，同時更改權限為 <code>755</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo <span class="built_in">mkdir</span> /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo <span class="built_in">chown</span> nginx:nginx /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo <span class="built_in">chmod</span> 755 /usr/share/nginx/html/phpMyAdmin/tmp</span><br></pre></td></tr></table></figure>
+<h3 id="設定-blowfish-secret-金鑰"><a href="#設定-blowfish-secret-金鑰" class="headerlink" title="設定 blowfish_secret 金鑰"></a>設定 blowfish_secret 金鑰</h3><p>複製一個 config 樣板，並改名為 <code>config.inc.php</code>，此樣板會被 phpMyAdmin 載入</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo <span class="built_in">cp</span> /usr/share/nginx/html/phpMyAdmin/config.sample.inc.php  /usr/share/nginx/html/phpMyAdmin/config.inc.php</span><br></pre></td></tr></table></figure>
+<p>再從 <a href="https://phpsolved.com/phpmyadmin-blowfish-secret-generator/?g=[insert_php]echo%20$code;[/insert_php]">phpMyAdmin blowfish secret generator</a> 取得安全的金鑰，並複製到 <code>config.inc.php</code> 檔案中，例如</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$cfg</span>[<span class="string">&#x27;blowfish_secret&#x27;</span>] = <span class="string">&#x27;Jh448H=tn1sfkb3b3EKwvofq=QVuitPn&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="權限設定"><a href="#權限設定" class="headerlink" title="權限設定"></a>權限設定</h2><h3 id="開啟-php-session-權限"><a href="#開啟-php-session-權限" class="headerlink" title="開啟 php session 權限"></a>開啟 php session 權限</h3><p>設定 Nginx 對 php session 的權限，需將權限開啟，否則無法使用 phpMyAdmin 的登入功能</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo <span class="built_in">chown</span> nginx:nginx /var/lib/php/session/</span><br></pre></td></tr></table></figure>
+<h3 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h3><p>修改 phpMyAdmin 的安全性文本，讓 Nginx 可以有權限可以讀寫，否則 SELinux 會阻檔，然後在瀏覽器出現 403 的錯誤碼</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo <span class="built_in">chcon</span> -R -t httpd_sys_rw_content_t /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>在瀏覽器網址輸入 <a href="http://localhost/phpMyAdmin">http://localhost/phpMyAdmin</a> 就可以如同 Windows 上使用 xampp 一般，使用 phpMyAdmin 操作作資料庫啦！</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-centos-7">How To Install Linux, Nginx, MySQL, PHP (LEMP) stack On CentOS 7</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>centos</tag>
+        <tag>mariadb</tag>
+        <tag>8.2</tag>
+        <tag>php</tag>
+        <tag>10</tag>
+        <tag>7.2</tag>
+        <tag>php-fpm</tag>
+        <tag>phpmyadmin</tag>
+        <tag>xampp</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Opcode] JMP 轉成機械碼的原理與過程</title>
     <url>/2021/06/12/opcodejmp/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>JMP</code> 指令根據跳轉目的地遠近分成短跳轉 (Short jump)、近跳轉 (Near jump)、遠跳轉 (Far jump)、他們所代表的含意不一樣，使得機械碼 opcode 呈現的方式也不一樣。</p>
@@ -1916,75 +1985,6 @@
         <tag>short jump</tag>
         <tag>jmp</tag>
         <tag>opcode</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[PHP] CentOS 8.2 + Nginx + MariaDB + php-fpm + phpMyAdmin</title>
-    <url>/2021/06/18/centos_phpmyadmin/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>說到使用 MySQL/MariaDB 就會想到 phpMyAdmin 這個使用者圖像介面，它是用 PHP 寫出來與 MySQL/MariaDB 互動的介面，所以若要使用，必須先安裝網頁伺服器與 PHP。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="安裝-EPEL"><a href="#安裝-EPEL" class="headerlink" title="安裝 EPEL"></a>安裝 EPEL</h2><p>安裝由 Fedora 社群打造的第三方源 EPEL (Extra Packages for Enterprise Linux)，其中包含比官方 repository 還要新的套件版本</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install epel-release</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-Nginx"><a href="#安裝-Nginx" class="headerlink" title="安裝 Nginx"></a>安裝 Nginx</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/nginx_centos_nginx/">[Nginx] CentOS 安裝網頁伺服器 Nginx</a>，安裝好後從瀏覽器輸入 <a href="http://localhost">http://localhost</a> 確定可看到 Nginx 預設頁面</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl start nginx</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> nginx</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-MariaDB"><a href="#安裝-MariaDB" class="headerlink" title="安裝 MariaDB"></a>安裝 MariaDB</h2><p>詳細安裝與設定過程參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install mariadb-server mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl start mariadb</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> mariadb</span><br></pre></td></tr></table></figure>
-<h2 id="安裝-php-fpm"><a href="#安裝-php-fpm" class="headerlink" title="安裝 php-fpm"></a>安裝 php-fpm</h2><p>這裡安裝預設版本 (目前是7.2版)</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf -y install php php-fpm php-json php-mysqlnd php-mbstring</span><br></pre></td></tr></table></figure>
-<h3 id="修改-www-conf-設定"><a href="#修改-www-conf-設定" class="headerlink" title="修改 www.conf 設定"></a>修改 www.conf 設定</h3><p>修改 <code>/etc/php-fpm.d/www.conf</code> 檔案內容</p>
-<ol>
-<li>改 <code>user = apache</code> 為 <code>user = nginx</code></li>
-<li>改 <code>group = apache</code> 為 <code>group = nginx</code></li>
-<li>改 <code>listen = /run/php-fpm/www.sock</code> 為 <code>listen = /var/run/php-fpm/php-fpm.sock</code></li>
-<li>拿掉 <code>;listen.owner = nobody</code> 的分號，並改為 <code>listen.owner = nginx</code></li>
-<li>拿掉 <code>;listen.group = nobody</code> 的分號，並改為 <code>listen.group = nginx</code></li>
-<li>拿掉 <code>;listen.mode = 0660</code> 的分號</li>
-</ol>
-<h3 id="啟動-php-fpm-服務"><a href="#啟動-php-fpm-服務" class="headerlink" title="啟動 php-fpm 服務"></a>啟動 php-fpm 服務</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl start php-fpm</span><br><span class="line">[user@localhost ~]$ sudo systemctl <span class="built_in">enable</span> php-fpm</span><br></pre></td></tr></table></figure>
-<h3 id="修改-php-fpm-conf-設定"><a href="#修改-php-fpm-conf-設定" class="headerlink" title="修改 php-fpm.conf 設定"></a>修改 php-fpm.conf 設定</h3><p>修改 <code>/etc/nginx/conf.d/php-fpm.conf</code> 檔案內容</p>
-<ol>
-<li>改 <code>server unix:/run/php-fpm/www.sock;</code> 為 <code>server unix:/var/run/php-fpm/php-fpm.sock;</code></li>
-</ol>
-<h3 id="新增-phpmyadmin-conf-檔案"><a href="#新增-phpmyadmin-conf-檔案" class="headerlink" title="新增 phpmyadmin.conf 檔案"></a>新增 phpmyadmin.conf 檔案</h3><p>新增 <code>/etc/nginx/conf.d/phpmyadmin.conf</code> 檔案，內容如下</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  server_domain_or_IP;</span><br><span class="line"></span><br><span class="line">    root   /usr/share/nginx/html;</span><br><span class="line">    index index.php index.html index.htm;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        try_files $uri $uri/ =404;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 /404.html;</span><br><span class="line">    error_page 500 502 503 504 /50x.html;</span><br><span class="line"></span><br><span class="line">    location = /50x.html &#123;</span><br><span class="line">        root /usr/share/nginx/html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location ~ \.php$ &#123;</span><br><span class="line">        try_files $uri =404;</span><br><span class="line">        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;</span><br><span class="line">        fastcgi_index index.php;</span><br><span class="line">        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">        include fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="重新載入設定"><a href="#重新載入設定" class="headerlink" title="重新載入設定"></a>重新載入設定</h3><p>Nginx 重新載入設定檔，要看到 <code>ok</code> 與 <code>/etc/nginx/nginx.conf test is successful</code> 才是對的哦！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo systemctl reload nginx</span><br><span class="line">[user@localhost ~]$ sudo nginx -t</span><br><span class="line">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">nginx: configuration file /etc/nginx/nginx.conf <span class="built_in">test</span> is successful</span><br></pre></td></tr></table></figure>
-<h3 id="確認-php-fpm-運作"><a href="#確認-php-fpm-運作" class="headerlink" title="確認 php-fpm 運作"></a>確認 php-fpm 運作</h3><p>創建 <code>/usr/share/nginx/html/info.php</code> 其內容如下</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">phpinfo</span>();</span><br></pre></td></tr></table></figure>
-<p>這時從瀏覽器輸入 <a href="http://localhost/info.php">http://localhost/info.php</a> 確定可看到 <code>phpinfo</code> 的頁面，若看得到代表 Nginx + php-fpm 有在正常運作囉</p>
-<h2 id="安裝-phpMyAdmin"><a href="#安裝-phpMyAdmin" class="headerlink" title="安裝 phpMyAdmin"></a>安裝 phpMyAdmin</h2><p>下載 <a href="https://www.phpmyadmin.net/">phpMyAdmin</a> 並解壓縮到 <code>/usr/share/nginx/html</code> 目錄</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ unzip Downloads/phpMyAdmin-5.0.2-all-languages.zip </span><br><span class="line">[user@localhost ~]$ sudo <span class="built_in">mv</span> phpMyAdmin-5.0.2-all-languages/ /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
-<h3 id="創建-tmp-目錄"><a href="#創建-tmp-目錄" class="headerlink" title="創建 tmp 目錄"></a>創建 tmp 目錄</h3><p>創建 <code>phpMyAdmin/tmp/</code> 目錄並更改擁有者與群組為 <code>nginx:nginx</code>，同時更改權限為 <code>755</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo <span class="built_in">mkdir</span> /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo <span class="built_in">chown</span> nginx:nginx /usr/share/nginx/html/phpMyAdmin/tmp</span><br><span class="line">[user@localhost ~]$ sudo <span class="built_in">chmod</span> 755 /usr/share/nginx/html/phpMyAdmin/tmp</span><br></pre></td></tr></table></figure>
-<h3 id="設定-blowfish-secret-金鑰"><a href="#設定-blowfish-secret-金鑰" class="headerlink" title="設定 blowfish_secret 金鑰"></a>設定 blowfish_secret 金鑰</h3><p>複製一個 config 樣板，並改名為 <code>config.inc.php</code>，此樣板會被 phpMyAdmin 載入</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo <span class="built_in">cp</span> /usr/share/nginx/html/phpMyAdmin/config.sample.inc.php  /usr/share/nginx/html/phpMyAdmin/config.inc.php</span><br></pre></td></tr></table></figure>
-<p>再從 <a href="https://phpsolved.com/phpmyadmin-blowfish-secret-generator/?g=[insert_php]echo%20$code;[/insert_php]">phpMyAdmin blowfish secret generator</a> 取得安全的金鑰，並複製到 <code>config.inc.php</code> 檔案中，例如</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$cfg</span>[<span class="string">&#x27;blowfish_secret&#x27;</span>] = <span class="string">&#x27;Jh448H=tn1sfkb3b3EKwvofq=QVuitPn&#x27;</span>;</span><br></pre></td></tr></table></figure>
-<h2 id="權限設定"><a href="#權限設定" class="headerlink" title="權限設定"></a>權限設定</h2><h3 id="開啟-php-session-權限"><a href="#開啟-php-session-權限" class="headerlink" title="開啟 php session 權限"></a>開啟 php session 權限</h3><p>設定 Nginx 對 php session 的權限，需將權限開啟，否則無法使用 phpMyAdmin 的登入功能</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo <span class="built_in">chown</span> nginx:nginx /var/lib/php/session/</span><br></pre></td></tr></table></figure>
-<h3 id="設定-SELinux"><a href="#設定-SELinux" class="headerlink" title="設定 SELinux"></a>設定 SELinux</h3><p>修改 phpMyAdmin 的安全性文本，讓 Nginx 可以有權限可以讀寫，否則 SELinux 會阻檔，然後在瀏覽器出現 403 的錯誤碼</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo <span class="built_in">chcon</span> -R -t httpd_sys_rw_content_t /usr/share/nginx/html/phpMyAdmin</span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>在瀏覽器網址輸入 <a href="http://localhost/phpMyAdmin">http://localhost/phpMyAdmin</a> 就可以如同 Windows 上使用 xampp 一般，使用 phpMyAdmin 操作作資料庫啦！</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-centos-7">How To Install Linux, Nginx, MySQL, PHP (LEMP) stack On CentOS 7</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>centos</tag>
-        <tag>mariadb</tag>
-        <tag>8.2</tag>
-        <tag>php</tag>
-        <tag>10</tag>
-        <tag>7.2</tag>
-        <tag>php-fpm</tag>
-        <tag>phpmyadmin</tag>
-        <tag>xampp</tag>
       </tags>
   </entry>
   <entry>
@@ -2509,35 +2509,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
-    <url>/2021/06/17/usb_usb/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-</ul>
-<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>先確認目標裝置的權限，可以看到是 <code>660</code> 權限，也就是說非擁有者 (root) 且非群組 (dialout) 成員的其他人，是不能讀取的，這也是為什麼應用程式內讀不到的原因</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ <span class="built_in">ls</span> -al /dev/ttyUSB*</span><br><span class="line">crw-rw---- 1 root dialout 188, 0 十二  4 16:53 /dev/ttyUSB0</span><br><span class="line">crw-rw---- 1 root dialout 188, 1 十二  4 16:53 /dev/ttyUSB1</span><br><span class="line">crw-rw---- 1 root dialout 188, 2 十二  4 16:53 /dev/ttyUSB2</span><br><span class="line">crw-rw---- 1 root dialout 188, 3 十二  4 16:53 /dev/ttyUSB3</span><br></pre></td></tr></table></figure>
-<h2 id="加入群組"><a href="#加入群組" class="headerlink" title="加入群組"></a>加入群組</h2><p>一般使用者預設是沒有加入 <code>dialout</code> 群組的，因此將自己加入此群組藉此繼承擁有讀取序列埠的權限</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo usermod -a -G dialout user  <span class="comment"># user 當然就是使用者帳號，依需求更改</span></span><br></pre></td></tr></table></figure>
-<p>再回到應用程式內找尋 Serial Port 應該就能看到囉！</p>
-]]></content>
-      <categories>
-        <category>學習筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>linux</tag>
-        <tag>port</tag>
-        <tag>18.04</tag>
-        <tag>usb</tag>
-        <tag>serail</tag>
-        <tag>privilege</tag>
-        <tag>dialout</tag>
-        <tag>tty</tag>
-        <tag>usermod</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[User] Linux 新增使用者並賦予其使用 sudo 的權限</title>
     <url>/2021/06/17/user_linux_sudo/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>多人多工是 Linux 本身就具備的功能，因此新增或移除使用者帳號與更改權限是管理員必備的技能。這篇文章記錄如何在 Ubuntu、CentOS 上新增 sudoer。</p>
@@ -2598,28 +2569,32 @@
       </tags>
   </entry>
   <entry>
-    <title>[WIN32 API] 函數使用範例</title>
-    <url>/2021/06/15/win32_api_function_example/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接 Build 看效果。</p>
-<p>因此我看著文件慢慢的嘗試，寫出一個可以用的應用來。這裡收集了個人對於 <code>WIN32 API</code> 調用的範例，除了供大家參考外，自己也可以隨時複習。</p>
-<h2 id="原始碼"><a href="#原始碼" class="headerlink" title="原始碼"></a>原始碼</h2><ol>
-<li><a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam</a></li>
-<li><a href="https://github.com/weirenxue/enablemenuitem-example">EnableMenuItem, GetSubMenu, GetMenuItemID</a></li>
-<li><a href="https://github.com/weirenxue/settimer-example">SetTimer</a></li>
-</ol>
+    <title>[USB] 有接 USB 但在對應軟體中找不到序列埠的原因與解決方法</title>
+    <url>/2021/06/17/usb_usb/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 Linux 使用序列埠比較麻煩的是權限的問題，在有接上 USB 且 <code>/dev</code> 目錄下有看到所連接的裝置檔案 (例如：ttyUSB0)，若在軟體中還是沒有讀取到的話，通常就是權限設定錯誤的問題。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+</ul>
+<h2 id="問題原因"><a href="#問題原因" class="headerlink" title="問題原因"></a>問題原因</h2><p>先確認目標裝置的權限，可以看到是 <code>660</code> 權限，也就是說非擁有者 (root) 且非群組 (dialout) 成員的其他人，是不能讀取的，這也是為什麼應用程式內讀不到的原因</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ <span class="built_in">ls</span> -al /dev/ttyUSB*</span><br><span class="line">crw-rw---- 1 root dialout 188, 0 十二  4 16:53 /dev/ttyUSB0</span><br><span class="line">crw-rw---- 1 root dialout 188, 1 十二  4 16:53 /dev/ttyUSB1</span><br><span class="line">crw-rw---- 1 root dialout 188, 2 十二  4 16:53 /dev/ttyUSB2</span><br><span class="line">crw-rw---- 1 root dialout 188, 3 十二  4 16:53 /dev/ttyUSB3</span><br></pre></td></tr></table></figure>
+<h2 id="加入群組"><a href="#加入群組" class="headerlink" title="加入群組"></a>加入群組</h2><p>一般使用者預設是沒有加入 <code>dialout</code> 群組的，因此將自己加入此群組藉此繼承擁有讀取序列埠的權限</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@pc:~$ sudo usermod -a -G dialout user  <span class="comment"># user 當然就是使用者帳號，依需求更改</span></span><br></pre></td></tr></table></figure>
+<p>再回到應用程式內找尋 Serial Port 應該就能看到囉！</p>
 ]]></content>
       <categories>
         <category>學習筆記</category>
       </categories>
       <tags>
-        <tag>win32</tag>
-        <tag>api</tag>
-        <tag>example</tag>
-        <tag>dialogboxparam</tag>
-        <tag>enablemenuitem</tag>
-        <tag>getsubmenu</tag>
-        <tag>getmenuitemid</tag>
-        <tag>settimer</tag>
+        <tag>ubuntu</tag>
+        <tag>linux</tag>
+        <tag>port</tag>
+        <tag>18.04</tag>
+        <tag>usb</tag>
+        <tag>serail</tag>
+        <tag>privilege</tag>
+        <tag>dialout</tag>
+        <tag>tty</tag>
+        <tag>usermod</tag>
       </tags>
   </entry>
   <entry>
@@ -2731,6 +2706,31 @@
         <tag>zip</tag>
         <tag>chinese</tag>
         <tag>garbled</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[WIN32 API] 函數使用範例</title>
+    <url>/2021/06/15/win32_api_function_example/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在閱讀書藉「加密與解密」時，發現很多視窗的開發會用到 <code>DialogBoxParam</code> 等 <code>WIN32 API</code>，引發我想知道這些函數如何使用的好奇心，但網路上的文章總是沒有一個好例子，可以讓我直接 Build 看效果。</p>
+<p>因此我看著文件慢慢的嘗試，寫出一個可以用的應用來。這裡收集了個人對於 <code>WIN32 API</code> 調用的範例，除了供大家參考外，自己也可以隨時複習。</p>
+<h2 id="原始碼"><a href="#原始碼" class="headerlink" title="原始碼"></a>原始碼</h2><ol>
+<li><a href="https://github.com/weirenxue/dialogboxparam-example">DialogBoxParam</a></li>
+<li><a href="https://github.com/weirenxue/enablemenuitem-example">EnableMenuItem, GetSubMenu, GetMenuItemID</a></li>
+<li><a href="https://github.com/weirenxue/settimer-example">SetTimer</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>學習筆記</category>
+      </categories>
+      <tags>
+        <tag>win32</tag>
+        <tag>api</tag>
+        <tag>example</tag>
+        <tag>dialogboxparam</tag>
+        <tag>enablemenuitem</tag>
+        <tag>getsubmenu</tag>
+        <tag>getmenuitemid</tag>
+        <tag>settimer</tag>
       </tags>
   </entry>
   <entry>
@@ -3237,32 +3237,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
-    <url>/2021/06/15/ssl_crt_key/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>Ubuntu 18.04 LTS</li>
-<li>OpenSSL 1.1.1f</li>
-</ul>
-<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
-<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
-]]></content>
-      <categories>
-        <category>SSL 筆記</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>18.04</tag>
-        <tag>ssl</tag>
-        <tag>key</tag>
-        <tag>crt</tag>
-        <tag>match</tag>
-        <tag>cert</tag>
-        <tag>csr</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[SSL] 自簽憑證過程</title>
     <url>/2021/06/15/ssl_self_sign/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>SSL 是讓 Web 應用程式能擁有機密傳輸特性的一個機制，運作在應用層上。然而要申請一個有效的憑證，過程是非常耗時的，因此若在開發、測試階段，可先用自簽憑證來應急。但是！要上線的系統最好等有了合法憑證再發布，避免遭受中間人攻擊 (Man in The Middle, MITM)。</p>
@@ -3292,12 +3266,38 @@
         <tag>ssl</tag>
         <tag>ca</tag>
         <tag>key</tag>
-        <tag>crt</tag>
-        <tag>csr</tag>
         <tag>self</tag>
         <tag>sign</tag>
         <tag>openssl</tag>
         <tag>mitm</tag>
+        <tag>csr</tag>
+        <tag>crt</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[SSL] 確認申請回來的憑證與手中的私鑰匹配</title>
+    <url>/2021/06/15/ssl_crt_key/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近公司為了資安規定，所有系統上線都要裝上 SSL，4 月多發出申請的 CSR (Certificate Signing Request) 到最近 9 月才拿到申請回來的憑證，這期間雖然沒有去碰私鑰的檔案，但難免會怕因為什麼因素而使公私鑰對不上，所以找了方法來驗證。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>Ubuntu 18.04 LTS</li>
+<li>OpenSSL 1.1.1f</li>
+</ul>
+<h2 id="驗證"><a href="#驗證" class="headerlink" title="驗證"></a>驗證</h2><p>輸入下面三行指令，<code>server.key</code> 為私鑰、<code>server.crt</code> 為憑證檔 (含公鑰)、<code>server.csr</code> 為憑證簽章要求，若三個指令的結果都一樣，代表都是同一組公私鑰的產物，正常來說測試到公私鑰即可，這裡順便記錄 CSR 的測試方法</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">user@ubuntu:~$ openssl rsa -noout -modulus -<span class="keyword">in</span> server.key | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl x509 -noout -modulus -<span class="keyword">in</span> server.crt | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br><span class="line">user@ubuntu:~$ openssl req -<span class="keyword">in</span> server.csr -noout -modulus | openssl md5</span><br><span class="line">(stdin)= 1981515b2826b407bf658678b2a342da</span><br></pre></td></tr></table></figure>
+<p>這一步確認後，才有心情抓安裝 SSL 過程中出現的 bug。</p>
+]]></content>
+      <categories>
+        <category>SSL 筆記</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>18.04</tag>
+        <tag>ssl</tag>
+        <tag>key</tag>
+        <tag>csr</tag>
+        <tag>crt</tag>
+        <tag>match</tag>
+        <tag>cert</tag>
       </tags>
   </entry>
   <entry>
@@ -3724,30 +3724,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Day08] Tableau 輕鬆學 - 資料連線種類</title>
-    <url>/2021/07/29/day08_tableau/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在開始畫面中通常會使用到的是 Connect 窗格的功能，因此特別拿出來說明。在 Connect 窗格中我們可以建立與資料來源的連線設定，這裡說是連線，但我們可以把它想成是將資料匯入 Tableau Desktop，有了資料才能繼續後續的工作，例如：建立工作表與儀表板。</p>
-<h2 id="Connect"><a href="#Connect" class="headerlink" title="Connect"></a>Connect</h2><p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay08-%E8%B3%87%E6%96%99%E9%80%A3%E7%B7%9A%E7%A8%AE%E9%A1%9E%2Ftableau_connect.png?alt=media&amp;token=c8e5c3d8-01d8-4dd6-a93f-4772a16d6e26" alt="連線種類"><span class="image-caption">連線種類</span></p>
-<p>Connect 窗格分為四個子區塊</p>
-<h3 id="1-Search-for-Data"><a href="#1-Search-for-Data" class="headerlink" title="1. Search for Data"></a>1. Search for Data</h3><p>若在指定的 Tableau Server 上有已經建立好且符合需求的資料來源，可以透過這個功能直接對 Tableau Server 連線，將該資料來源拿來使用。剛開始接觸 Tableau Desktop 的時候會用到此功能的機會比較少，所以可以將此功能列為進階功能，平常使用大多還是以 To a File 與 To a Server 為主。</p>
-<h3 id="2-To-a-File"><a href="#2-To-a-File" class="headerlink" title="2. To a File"></a>2. To a File</h3><p>在這裡我們可以讓 Tableau Desktop 直接從文字檔讀取原始資料，文字檔包含多種格式，例如：Excel (<code>*.xls</code>/<code>*.xlsx</code>)、JSON、CSV 等，甚至是 PDF 檔案也可以當資料來源。</p>
-<h3 id="3-To-a-Server"><a href="#3-To-a-Server" class="headerlink" title="3. To a Server"></a>3. To a Server</h3><p>在這裡我們可以透過直接與資料伺服器連線以取得原始資料。這裡的資料伺服器有很多種類型，例如：資料庫 (MySQL、SQL Server、PostgreSQL 等)、Google 雲端服務 (Ads、Analytics、BigQuery、Drive 等)，會在這個清單內的資料伺服器應該都算是熱門的服務。</p>
-<h3 id="4-Saved-Data-Sources"><a href="#4-Saved-Data-Sources" class="headerlink" title="4. Saved Data Sources"></a>4. Saved Data Sources</h3><p>Tableau 在這個區塊中提供資料集樣板，一方面是可以配合官方的教程做為資料來源，一方面我們也可以拿來做想法測試或者概念 Demo。當手上沒有可用資料時，使用此資料來源來練習也是一種選擇。</p>
-]]></content>
-      <categories>
-        <category>Tableau 輕鬆學</category>
-      </categories>
-      <tags>
-        <tag>server</tag>
-        <tag>file</tag>
-        <tag>data</tag>
-        <tag>tableau</tag>
-        <tag>connect</tag>
-        <tag>source</tag>
-        <tag>search</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Day09] Tableau 輕鬆學 - Data Source 頁面</title>
     <url>/2021/07/30/day09_tableau/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>若實作中遇到與資料來源有關的設定，會回到 Data Source 頁面來做調整，因此在進入實作階段之前，讓我們腳步緩一緩，先到 Data Source 頁面認識每個區塊的功用。</p>
@@ -3779,6 +3755,30 @@
         <tag>layer</tag>
         <tag>previous</tag>
         <tag>step</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Day08] Tableau 輕鬆學 - 資料連線種類</title>
+    <url>/2021/07/29/day08_tableau/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在開始畫面中通常會使用到的是 Connect 窗格的功能，因此特別拿出來說明。在 Connect 窗格中我們可以建立與資料來源的連線設定，這裡說是連線，但我們可以把它想成是將資料匯入 Tableau Desktop，有了資料才能繼續後續的工作，例如：建立工作表與儀表板。</p>
+<h2 id="Connect"><a href="#Connect" class="headerlink" title="Connect"></a>Connect</h2><p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay08-%E8%B3%87%E6%96%99%E9%80%A3%E7%B7%9A%E7%A8%AE%E9%A1%9E%2Ftableau_connect.png?alt=media&amp;token=c8e5c3d8-01d8-4dd6-a93f-4772a16d6e26" alt="連線種類"><span class="image-caption">連線種類</span></p>
+<p>Connect 窗格分為四個子區塊</p>
+<h3 id="1-Search-for-Data"><a href="#1-Search-for-Data" class="headerlink" title="1. Search for Data"></a>1. Search for Data</h3><p>若在指定的 Tableau Server 上有已經建立好且符合需求的資料來源，可以透過這個功能直接對 Tableau Server 連線，將該資料來源拿來使用。剛開始接觸 Tableau Desktop 的時候會用到此功能的機會比較少，所以可以將此功能列為進階功能，平常使用大多還是以 To a File 與 To a Server 為主。</p>
+<h3 id="2-To-a-File"><a href="#2-To-a-File" class="headerlink" title="2. To a File"></a>2. To a File</h3><p>在這裡我們可以讓 Tableau Desktop 直接從文字檔讀取原始資料，文字檔包含多種格式，例如：Excel (<code>*.xls</code>/<code>*.xlsx</code>)、JSON、CSV 等，甚至是 PDF 檔案也可以當資料來源。</p>
+<h3 id="3-To-a-Server"><a href="#3-To-a-Server" class="headerlink" title="3. To a Server"></a>3. To a Server</h3><p>在這裡我們可以透過直接與資料伺服器連線以取得原始資料。這裡的資料伺服器有很多種類型，例如：資料庫 (MySQL、SQL Server、PostgreSQL 等)、Google 雲端服務 (Ads、Analytics、BigQuery、Drive 等)，會在這個清單內的資料伺服器應該都算是熱門的服務。</p>
+<h3 id="4-Saved-Data-Sources"><a href="#4-Saved-Data-Sources" class="headerlink" title="4. Saved Data Sources"></a>4. Saved Data Sources</h3><p>Tableau 在這個區塊中提供資料集樣板，一方面是可以配合官方的教程做為資料來源，一方面我們也可以拿來做想法測試或者概念 Demo。當手上沒有可用資料時，使用此資料來源來練習也是一種選擇。</p>
+]]></content>
+      <categories>
+        <category>Tableau 輕鬆學</category>
+      </categories>
+      <tags>
+        <tag>server</tag>
+        <tag>file</tag>
+        <tag>data</tag>
+        <tag>tableau</tag>
+        <tag>connect</tag>
+        <tag>source</tag>
+        <tag>search</tag>
       </tags>
   </entry>
   <entry>
@@ -4000,6 +4000,41 @@
       </tags>
   </entry>
   <entry>
+    <title>[Day16] Tableau 輕鬆學 - 儀表板</title>
+    <url>/2021/08/06/day16_tableau/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我們目前完成了兩個工作表的製作，再來就是要學習如何讓多個工作表可以一起互動，而儀表板的功能就是將多個工作表放在同一個畫面，使工作表能夠交互作用，更容易闡述從資料得到的觀點，因此這裡會分享如何建立儀表板。</p>
+<h2 id="新增儀表板"><a href="#新增儀表板" class="headerlink" title="新增儀表板"></a>新增儀表板</h2><p>點擊 <code>New Dashboard</code> 新增一個儀表板</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fnew_dashboard.png?alt=media&amp;token=5d7825f4-f31e-4e81-899f-f2fb0b29e6e3" alt="新增儀表板"><span class="image-caption">新增儀表板</span></p>
+<p>第一步先修改儀表板尺寸，通常是設定 <code>Automatic</code> 讓 Tableau Desktop 替我們自動適應可視空間，若有需求也可以自定義儀表板大小</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fautomatic_size.png?alt=media&amp;token=c8b4c7a3-26f0-453d-b9d9-95a0f74d8c72" alt="儀表板自適應大小設定"><span class="image-caption">儀表板自適應大小設定</span></p>
+<p>再將工作表拖曳到儀表板中，<code>州年度利潤地圖</code> 與 <code>區域產品銷售額與利潤</code> 分別放置於儀表板的上半部與下半部</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fdashboard_add_worksheet.png?alt=media&amp;token=52aa10bf-d6a5-4f47-ba6d-7d04f7a0d9eb" alt="加入工作表"><span class="image-caption">加入工作表</span></p>
+<h2 id="套用篩選器"><a href="#套用篩選器" class="headerlink" title="套用篩選器"></a>套用篩選器</h2><p>當我們調整篩選器 <code>Year of Order Date</code> 的時候，發現只有 <code>州年度利潤地圖</code> 會變動，而 <code>區域產品銷售額與利潤</code> 始終不動，這是因為我們在設計 <code>區域產品銷售額與利潤</code> 工作表的時候沒有套用這個篩選器，因此要指定該工作表使用這個篩選器，才能隨篩選器的值一起變動</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fset_filter.png?alt=media&amp;token=a53588e5-4596-491c-8f01-de9deea91783" alt="套用篩選器"><span class="image-caption">套用篩選器</span></p>
+<h2 id="將工作表做為篩選器"><a href="#將工作表做為篩選器" class="headerlink" title="將工作表做為篩選器"></a>將工作表做為篩選器</h2><h3 id="自動設定"><a href="#自動設定" class="headerlink" title="自動設定"></a>自動設定</h3><p>將工作表做為篩選器是儀表板中，讓工作表互動很關鍵的一步，點選要在儀表板中做為篩選器來源的工作表 (此為 <code>州年度利潤地圖</code>)，點擊漏斗的圖案開啟此功能</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fworksheet_as_filter.png?alt=media&amp;token=85aaf6b0-e3d1-42af-acf0-d452d4c07af2" alt="將工作表做為篩選器"><span class="image-caption">將工作表做為篩選器</span></p>
+<p>這樣當我們在 <code>州年度利潤地圖</code> 中任意點擊一個州，<code>區域產品銷售額與利潤</code> 就會顯示該州的銷售額與利潤，如此一來就能清楚的顯示每個州的利潤明細</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fclick_state.png?alt=media&amp;token=4601ac00-83d4-43f4-bf7a-0df948ebb9c9" alt="工作表互動"><span class="image-caption">工作表互動</span></p>
+<p>最後，將此儀表板命名為 <code>州利潤明細</code>。</p>
+<h3 id="手動設定"><a href="#手動設定" class="headerlink" title="手動設定"></a>手動設定</h3><p>有的時候自動設定 <code>將工作表做為篩選器</code> 會因為某些原因導致 Tableau Desktop 誤判要篩選的欄位，導致工作表沒有連繫在一起，進而無法像我們想像中的運作。這時可以透過手動設定達到相同的效果，若想要測試此功能，可以先將 <code>州年度利潤地圖</code> 的漏斗關閉</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fmanual_as_filter.png?alt=media&amp;token=4db22365-e4c8-42a9-8918-ae483a9ef65f" alt="手動設定將工作表設為篩選器"><span class="image-caption">手動設定將工作表設為篩選器</span></p>
+<p>手動設定的主要概念就是當 Source Sheets (<code>州年度利潤地圖</code>) 被 Select (點擊) 時 State 欄位的值會發生變化，Target Sheets (<code>區域產品銷售額與利潤</code>) 的 State 欄位的值也隨之變化。</p>
+<h2 id="工作簿原始檔案"><a href="#工作簿原始檔案" class="headerlink" title="工作簿原始檔案"></a>工作簿原始檔案</h2><!-- markdownlint-disable MD034 -->
+<a class="btn" href="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fday16_tableau.twb?alt=media&token=67fe38cf-a999-4731-852d-bb1e390c2089" title="完成的工作簿">
+            <i class="fa fa-download fa-lg"></i>Workbook
+          </a>
+<!-- markdownlint-restore MD034 -->
+<p>在實作中遇到困難是難免的，這裡提供原始檔作為參考，若仍然無法解決歡迎至下方討論區留言。</p>
+]]></content>
+      <categories>
+        <category>Tableau 輕鬆學</category>
+      </categories>
+      <tags>
+        <tag>tableau</tag>
+        <tag>dashboard</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Day17] Tableau 輕鬆學 - 美化儀表板外觀</title>
     <url>/2021/08/07/day17_tableau/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>儀表板同樣也可以進行外觀美化設定，這裡要特別注意的是只能針對儀表板的樣式做設定，而不能針對單一工作表的樣式，若對某個工作表內的樣式不滿意，就應該回到對應的工作表內去修改。</p>
@@ -4044,27 +4079,6 @@
       </tags>
   </entry>
   <entry>
-    <title>[Day19] Tableau 輕鬆學 - Data Extract</title>
-    <url>/2021/08/09/day19_tableau/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>每當我們修改工作表或者儀表板的時候，Tableau Desktop 會立即進行運算以顯示出對應的視圖，這樣的即時顯示對我們資料分析來說是非常加分的。但是，若遇到資料集有百萬甚至上千萬筆資料，每一步修改所造成的運算量是非常可觀的，有可能每修改一個地方就需要等待數分鐘甚至更久的時間才能看到結果，對於時間寶貴的我們來說，這是一個急需被解決的問題。因此，這裡分享如何使用 Data Extract 來緩解這樣的問題。</p>
-<h2 id="Data-Extract"><a href="#Data-Extract" class="headerlink" title="Data Extract"></a>Data Extract</h2><h3 id="說明"><a href="#說明" class="headerlink" title="說明"></a>說明</h3><p>Data Extract 能讓我們先從原本的資料集 (例如：資料庫) 中擷取資料放到 Tableau 自己的資料檔案 Hyper (<code>.hyper</code>)，Hyper 格式對大型資料集進行了優化，使 Tableau Desktop 可以透過快速資料引擎 (Fast Data Engine) 對存放於 Hyper 檔案中的資料集快速地進行查詢與分析處理，避免與資料集源頭直接連線。</p>
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>在 Data Source 頁面的右上角，會看到 Connection 區域有 <code>Live</code> 與 <code>Extract</code>，<code>Live</code> 指的是與資料源頭連線是即時的，所有的動作都是與資料源頭即時互動；而 <code>Extract</code> 就是我們所說的 Data Extract，會將資料集的資料先存一份到 Hyper 檔案中，之後的所有操作都是與 Hyper 檔案來做互動。這裡選擇 <code>Extract</code> 即可使用 Data Extract 的功能，若還需要進一步設定，可以點擊位於 <code>Extract</code> 右邊的 <code>Edit</code> 來做設定，通常會使用到的是 <code>Extract Filters</code>，讓我們可以在資料源頭就先過濾掉不需要的資料</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay19-Data-Extract%2Fextract_data.png?alt=media&amp;token=f4074766-5802-4db3-a1ae-eee679c4998b" alt="Data Extract 設定"><span class="image-caption">Data Extract 設定</span></p>
-<p>當我們離開 Data Source 頁面時 (例如：切換到其他工作表或儀表板)，Tableau Desktop 會請我們選擇要存放 Hyper 檔案的路徑，成功儲存才能使用 Hyper 資料格式所帶來的種種好處</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay19-Data-Extract%2Fsave_hyper.png?alt=media&amp;token=dcc183f1-106d-4acc-9fee-49b10e81aa66" alt="儲存 Hyper 檔案"><span class="image-caption">儲存 Hyper 檔案</span></p>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>曾經遇過千萬筆的資料集，實作時是選擇 Live 與資料庫連線，導致每個步驟的修改都要等上一兩分鐘，後來向前輩請教才知道 Data Extract 的好處！分享這個好用的小秘訣給讀者。</p>
-]]></content>
-      <categories>
-        <category>Tableau 輕鬆學</category>
-      </categories>
-      <tags>
-        <tag>data</tag>
-        <tag>tableau</tag>
-        <tag>extract</tag>
-        <tag>hyper</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[Day18] Tableau 輕鬆學 - Relationships 與 Joins</title>
     <url>/2021/08/08/day18_tableau/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我們在實作中學會如何建立工作表與儀表板，並在儀表板中讓多個工作表可以連動，使資料呈現方式多樣化。現在，讓我們停下腳步，回過頭來學習如何將匯入的多個資料表關聯起來，這是資料視覺化流程中最一開始的工作。在 Tableau Desktop 中關連的方式分為 Relationships 與 Joins 兩種，這裡會分享這兩種關聯的差異與建立方式。</p>
@@ -4093,6 +4107,27 @@
         <tag>tableau</tag>
         <tag>relationship</tag>
         <tag>join</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Day19] Tableau 輕鬆學 - Data Extract</title>
+    <url>/2021/08/09/day19_tableau/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>每當我們修改工作表或者儀表板的時候，Tableau Desktop 會立即進行運算以顯示出對應的視圖，這樣的即時顯示對我們資料分析來說是非常加分的。但是，若遇到資料集有百萬甚至上千萬筆資料，每一步修改所造成的運算量是非常可觀的，有可能每修改一個地方就需要等待數分鐘甚至更久的時間才能看到結果，對於時間寶貴的我們來說，這是一個急需被解決的問題。因此，這裡分享如何使用 Data Extract 來緩解這樣的問題。</p>
+<h2 id="Data-Extract"><a href="#Data-Extract" class="headerlink" title="Data Extract"></a>Data Extract</h2><h3 id="說明"><a href="#說明" class="headerlink" title="說明"></a>說明</h3><p>Data Extract 能讓我們先從原本的資料集 (例如：資料庫) 中擷取資料放到 Tableau 自己的資料檔案 Hyper (<code>.hyper</code>)，Hyper 格式對大型資料集進行了優化，使 Tableau Desktop 可以透過快速資料引擎 (Fast Data Engine) 對存放於 Hyper 檔案中的資料集快速地進行查詢與分析處理，避免與資料集源頭直接連線。</p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>在 Data Source 頁面的右上角，會看到 Connection 區域有 <code>Live</code> 與 <code>Extract</code>，<code>Live</code> 指的是與資料源頭連線是即時的，所有的動作都是與資料源頭即時互動；而 <code>Extract</code> 就是我們所說的 Data Extract，會將資料集的資料先存一份到 Hyper 檔案中，之後的所有操作都是與 Hyper 檔案來做互動。這裡選擇 <code>Extract</code> 即可使用 Data Extract 的功能，若還需要進一步設定，可以點擊位於 <code>Extract</code> 右邊的 <code>Edit</code> 來做設定，通常會使用到的是 <code>Extract Filters</code>，讓我們可以在資料源頭就先過濾掉不需要的資料</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay19-Data-Extract%2Fextract_data.png?alt=media&amp;token=f4074766-5802-4db3-a1ae-eee679c4998b" alt="Data Extract 設定"><span class="image-caption">Data Extract 設定</span></p>
+<p>當我們離開 Data Source 頁面時 (例如：切換到其他工作表或儀表板)，Tableau Desktop 會請我們選擇要存放 Hyper 檔案的路徑，成功儲存才能使用 Hyper 資料格式所帶來的種種好處</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay19-Data-Extract%2Fsave_hyper.png?alt=media&amp;token=dcc183f1-106d-4acc-9fee-49b10e81aa66" alt="儲存 Hyper 檔案"><span class="image-caption">儲存 Hyper 檔案</span></p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>曾經遇過千萬筆的資料集，實作時是選擇 Live 與資料庫連線，導致每個步驟的修改都要等上一兩分鐘，後來向前輩請教才知道 Data Extract 的好處！分享這個好用的小秘訣給讀者。</p>
+]]></content>
+      <categories>
+        <category>Tableau 輕鬆學</category>
+      </categories>
+      <tags>
+        <tag>data</tag>
+        <tag>tableau</tag>
+        <tag>extract</tag>
+        <tag>hyper</tag>
       </tags>
   </entry>
   <entry>
@@ -4126,41 +4161,6 @@
         <tag>calculated</tag>
         <tag>field</tag>
         <tag>function</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Day16] Tableau 輕鬆學 - 儀表板</title>
-    <url>/2021/08/06/day16_tableau/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我們目前完成了兩個工作表的製作，再來就是要學習如何讓多個工作表可以一起互動，而儀表板的功能就是將多個工作表放在同一個畫面，使工作表能夠交互作用，更容易闡述從資料得到的觀點，因此這裡會分享如何建立儀表板。</p>
-<h2 id="新增儀表板"><a href="#新增儀表板" class="headerlink" title="新增儀表板"></a>新增儀表板</h2><p>點擊 <code>New Dashboard</code> 新增一個儀表板</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fnew_dashboard.png?alt=media&amp;token=5d7825f4-f31e-4e81-899f-f2fb0b29e6e3" alt="新增儀表板"><span class="image-caption">新增儀表板</span></p>
-<p>第一步先修改儀表板尺寸，通常是設定 <code>Automatic</code> 讓 Tableau Desktop 替我們自動適應可視空間，若有需求也可以自定義儀表板大小</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fautomatic_size.png?alt=media&amp;token=c8b4c7a3-26f0-453d-b9d9-95a0f74d8c72" alt="儀表板自適應大小設定"><span class="image-caption">儀表板自適應大小設定</span></p>
-<p>再將工作表拖曳到儀表板中，<code>州年度利潤地圖</code> 與 <code>區域產品銷售額與利潤</code> 分別放置於儀表板的上半部與下半部</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fdashboard_add_worksheet.png?alt=media&amp;token=52aa10bf-d6a5-4f47-ba6d-7d04f7a0d9eb" alt="加入工作表"><span class="image-caption">加入工作表</span></p>
-<h2 id="套用篩選器"><a href="#套用篩選器" class="headerlink" title="套用篩選器"></a>套用篩選器</h2><p>當我們調整篩選器 <code>Year of Order Date</code> 的時候，發現只有 <code>州年度利潤地圖</code> 會變動，而 <code>區域產品銷售額與利潤</code> 始終不動，這是因為我們在設計 <code>區域產品銷售額與利潤</code> 工作表的時候沒有套用這個篩選器，因此要指定該工作表使用這個篩選器，才能隨篩選器的值一起變動</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fset_filter.png?alt=media&amp;token=a53588e5-4596-491c-8f01-de9deea91783" alt="套用篩選器"><span class="image-caption">套用篩選器</span></p>
-<h2 id="將工作表做為篩選器"><a href="#將工作表做為篩選器" class="headerlink" title="將工作表做為篩選器"></a>將工作表做為篩選器</h2><h3 id="自動設定"><a href="#自動設定" class="headerlink" title="自動設定"></a>自動設定</h3><p>將工作表做為篩選器是儀表板中，讓工作表互動很關鍵的一步，點選要在儀表板中做為篩選器來源的工作表 (此為 <code>州年度利潤地圖</code>)，點擊漏斗的圖案開啟此功能</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fworksheet_as_filter.png?alt=media&amp;token=85aaf6b0-e3d1-42af-acf0-d452d4c07af2" alt="將工作表做為篩選器"><span class="image-caption">將工作表做為篩選器</span></p>
-<p>這樣當我們在 <code>州年度利潤地圖</code> 中任意點擊一個州，<code>區域產品銷售額與利潤</code> 就會顯示該州的銷售額與利潤，如此一來就能清楚的顯示每個州的利潤明細</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fclick_state.png?alt=media&amp;token=4601ac00-83d4-43f4-bf7a-0df948ebb9c9" alt="工作表互動"><span class="image-caption">工作表互動</span></p>
-<p>最後，將此儀表板命名為 <code>州利潤明細</code>。</p>
-<h3 id="手動設定"><a href="#手動設定" class="headerlink" title="手動設定"></a>手動設定</h3><p>有的時候自動設定 <code>將工作表做為篩選器</code> 會因為某些原因導致 Tableau Desktop 誤判要篩選的欄位，導致工作表沒有連繫在一起，進而無法像我們想像中的運作。這時可以透過手動設定達到相同的效果，若想要測試此功能，可以先將 <code>州年度利潤地圖</code> 的漏斗關閉</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fmanual_as_filter.png?alt=media&amp;token=4db22365-e4c8-42a9-8918-ae483a9ef65f" alt="手動設定將工作表設為篩選器"><span class="image-caption">手動設定將工作表設為篩選器</span></p>
-<p>手動設定的主要概念就是當 Source Sheets (<code>州年度利潤地圖</code>) 被 Select (點擊) 時 State 欄位的值會發生變化，Target Sheets (<code>區域產品銷售額與利潤</code>) 的 State 欄位的值也隨之變化。</p>
-<h2 id="工作簿原始檔案"><a href="#工作簿原始檔案" class="headerlink" title="工作簿原始檔案"></a>工作簿原始檔案</h2><!-- markdownlint-disable MD034 -->
-<a class="btn" href="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay16-%E5%84%80%E8%A1%A8%E6%9D%BF%2Fday16_tableau.twb?alt=media&token=67fe38cf-a999-4731-852d-bb1e390c2089" title="完成的工作簿">
-            <i class="fa fa-download fa-lg"></i>Workbook
-          </a>
-<!-- markdownlint-restore MD034 -->
-<p>在實作中遇到困難是難免的，這裡提供原始檔作為參考，若仍然無法解決歡迎至下方討論區留言。</p>
-]]></content>
-      <categories>
-        <category>Tableau 輕鬆學</category>
-      </categories>
-      <tags>
-        <tag>tableau</tag>
-        <tag>dashboard</tag>
       </tags>
   </entry>
   <entry>
@@ -4438,6 +4438,37 @@
       </tags>
   </entry>
   <entry>
+    <title>[Day29] Tableau 輕鬆學 - TabPy 啟動排程</title>
+    <url>/2021/08/19/day29_tableau/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常我們會希望伺服器主機開機後，就立即上線服務客戶，這項要求對 TabPy Server 也不例外，除非有特殊情況，否則應該不會想要每次都以手動的方式來啟動。這裡會分享如何使用排程讓伺服器開機的同時自動運行 TabPy Server，省去伺服器管理人員的麻煩。</p>
+<h2 id="撰寫啟動腳本"><a href="#撰寫啟動腳本" class="headerlink" title="撰寫啟動腳本"></a>撰寫啟動腳本</h2><p>腳本的撰寫需要看 TabPy Server 運行的作業系統，若在 Windows 上運行就撰寫 <code>bat</code> 檔案，而 Linux 則是 <code>sh</code> 檔案，語法可能有些微不同，但概念都是一樣的。</p>
+<p>建立一個 <code>StartUpTabPy.bat</code> 檔案，內容如下 (路徑因環境而異，需視情況修改)</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\Tableau-Python-Server\Scripts\activate &amp;&amp; tabpy</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>activate</code>：運行 activate 執行檔以進入安裝 TabPy Server 的虛擬環境。這裡給的是 activate 執行檔的絕對路徑而不是相對路徑，可以避免一些不必要的錯誤。</li>
+<li><code>tabpy</code>：也就是我們平常在虛擬環境啟動 TabPy Server 的指令。</li>
+</ul>
+<p>整個意思就是：先進入虛擬環境再啟動 TabPy Server。</p>
+<h2 id="排程設定"><a href="#排程設定" class="headerlink" title="排程設定"></a>排程設定</h2><p>啟動腳本完成之後，我們要設定排程讓伺服器主機開機時自動執行該腳本，如此一來就能達到自動運行 TabPy Server 的效果。</p>
+<p>開啟工作排程器 (Task Scheduler)，點選 <code>Action Menu → Create Task...</code> 新增一個排程工作，填寫 <code>Name</code> 與勾選 <code>Security options</code></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay29-TabPy-%E5%95%9F%E5%8B%95%E6%8E%92%E7%A8%8B%2Fcreate_task.png?alt=media&amp;token=c07f82eb-07be-4ac3-9830-9cc3fcf1d2a7" alt="新增工作排程"><span class="image-caption">新增工作排程</span></p>
+<p>於 <code>Tiggers</code> 頁籤中新增一個觸發時機，並選擇開機時 (<code>At startup</code>)，再於 <code>Actions</code> 頁籤新增我們寫好的腳本檔案</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay29-TabPy-%E5%95%9F%E5%8B%95%E6%8E%92%E7%A8%8B%2Fsetting.png?alt=media&amp;token=cafefb81-3064-4af9-81fe-66367ee606bf" alt="Triggers &amp; Actions"><span class="image-caption">Triggers &amp; Actions</span></p>
+<h2 id="關閉-TabPy"><a href="#關閉-TabPy" class="headerlink" title="關閉 TabPy"></a>關閉 TabPy</h2><p>使用排程開啟的 TabPy Server 會再背景中運行，若我們想關閉或重啟 TabPy Server，就需要到工作管理員中強制關閉。於工作管理員的 <code>Details</code> 頁籤中右鍵點擊 <code>tabpy.exe</code>，選擇 <code>End task</code> 強制關閉</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay29-TabPy-%E5%95%9F%E5%8B%95%E6%8E%92%E7%A8%8B%2Fend_task.png?alt=media&amp;token=0ff32be9-f814-49c7-8876-99df07f399c8" alt="關閉 TabPy Server"><span class="image-caption">關閉 TabPy Server</span></p>
+]]></content>
+      <categories>
+        <category>Tableau 輕鬆學</category>
+      </categories>
+      <tags>
+        <tag>tableau</tag>
+        <tag>tabpy</tag>
+        <tag>startup</tag>
+        <tag>task</tag>
+        <tag>scheduler</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>[Day30] Tableau 輕鬆學 - 總結</title>
     <url>/2021/08/20/day30_tableau/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="/categories/Tableau-輕鬆學/">Tableau 輕鬆學</a> 系列文章也已經到了尾聲，從帶著讀者從頭認識 Tableau 並且調查人力市場需求以鼓勵讀者學習，到深入使用 Tableau Desktop 製作屬於讀者的工作表與儀表板並學會如何美化外觀、分享個人認為必需學會的基本觀念 (例如：Dimension/Measure、Rows/Columns 與 Relationships/Joins 的概念與區別)、遇到龐大資料量時 Data Extract 的用法，最後花較長的篇幅介紹 Tableau Python Server 的安裝與使用，乃至於備份還原與啟動排程。</p>
@@ -4483,37 +4514,6 @@
         <tag>lack</tag>
         <tag>sdk</tag>
         <tag>xilinx</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Day29] Tableau 輕鬆學 - TabPy 啟動排程</title>
-    <url>/2021/08/19/day29_tableau/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常我們會希望伺服器主機開機後，就立即上線服務客戶，這項要求對 TabPy Server 也不例外，除非有特殊情況，否則應該不會想要每次都以手動的方式來啟動。這裡會分享如何使用排程讓伺服器開機的同時自動運行 TabPy Server，省去伺服器管理人員的麻煩。</p>
-<h2 id="撰寫啟動腳本"><a href="#撰寫啟動腳本" class="headerlink" title="撰寫啟動腳本"></a>撰寫啟動腳本</h2><p>腳本的撰寫需要看 TabPy Server 運行的作業系統，若在 Windows 上運行就撰寫 <code>bat</code> 檔案，而 Linux 則是 <code>sh</code> 檔案，語法可能有些微不同，但概念都是一樣的。</p>
-<p>建立一個 <code>StartUpTabPy.bat</code> 檔案，內容如下 (路徑因環境而異，需視情況修改)</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">C:\Users\wrxue\Tableau-Python-Server\Scripts\activate &amp;&amp; tabpy</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>activate</code>：運行 activate 執行檔以進入安裝 TabPy Server 的虛擬環境。這裡給的是 activate 執行檔的絕對路徑而不是相對路徑，可以避免一些不必要的錯誤。</li>
-<li><code>tabpy</code>：也就是我們平常在虛擬環境啟動 TabPy Server 的指令。</li>
-</ul>
-<p>整個意思就是：先進入虛擬環境再啟動 TabPy Server。</p>
-<h2 id="排程設定"><a href="#排程設定" class="headerlink" title="排程設定"></a>排程設定</h2><p>啟動腳本完成之後，我們要設定排程讓伺服器主機開機時自動執行該腳本，如此一來就能達到自動運行 TabPy Server 的效果。</p>
-<p>開啟工作排程器 (Task Scheduler)，點選 <code>Action Menu → Create Task...</code> 新增一個排程工作，填寫 <code>Name</code> 與勾選 <code>Security options</code></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay29-TabPy-%E5%95%9F%E5%8B%95%E6%8E%92%E7%A8%8B%2Fcreate_task.png?alt=media&amp;token=c07f82eb-07be-4ac3-9830-9cc3fcf1d2a7" alt="新增工作排程"><span class="image-caption">新增工作排程</span></p>
-<p>於 <code>Tiggers</code> 頁籤中新增一個觸發時機，並選擇開機時 (<code>At startup</code>)，再於 <code>Actions</code> 頁籤新增我們寫好的腳本檔案</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay29-TabPy-%E5%95%9F%E5%8B%95%E6%8E%92%E7%A8%8B%2Fsetting.png?alt=media&amp;token=cafefb81-3064-4af9-81fe-66367ee606bf" alt="Triggers &amp; Actions"><span class="image-caption">Triggers &amp; Actions</span></p>
-<h2 id="關閉-TabPy"><a href="#關閉-TabPy" class="headerlink" title="關閉 TabPy"></a>關閉 TabPy</h2><p>使用排程開啟的 TabPy Server 會再背景中運行，若我們想關閉或重啟 TabPy Server，就需要到工作管理員中強制關閉。於工作管理員的 <code>Details</code> 頁籤中右鍵點擊 <code>tabpy.exe</code>，選擇 <code>End task</code> 強制關閉</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tableau%E8%BC%95%E9%AC%86%E5%AD%B8%2FDay29-TabPy-%E5%95%9F%E5%8B%95%E6%8E%92%E7%A8%8B%2Fend_task.png?alt=media&amp;token=0ff32be9-f814-49c7-8876-99df07f399c8" alt="關閉 TabPy Server"><span class="image-caption">關閉 TabPy Server</span></p>
-]]></content>
-      <categories>
-        <category>Tableau 輕鬆學</category>
-      </categories>
-      <tags>
-        <tag>tableau</tag>
-        <tag>tabpy</tag>
-        <tag>startup</tag>
-        <tag>task</tag>
-        <tag>scheduler</tag>
       </tags>
   </entry>
   <entry>
@@ -4822,6 +4822,36 @@
       </tags>
   </entry>
   <entry>
+    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
+    <url>/2021/06/19/mariadb_centos/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>CentOS 8.2</li>
+</ul>
+<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
+<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
+<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
+<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>伺服器架設筆記</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>centos</tag>
+        <tag>mariadb</tag>
+        <tag>8.2</tag>
+        <tag>update</tag>
+        <tag>latest</tag>
+        <tag>version</tag>
+        <tag>repository</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Gist 幫你吸引目光 - 文章點閱率顯示</title>
     <url>/2021/10/31/gist_article_click/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>GitHub 的 Gist 服務不僅能拿來紀錄程式碼片段、寫筆記，還能讓你的 GitHub Profile 更加引人注目。此篇文章紀錄如何使用 Gist API 將部落格點擊率放置到 GitHub Profile！</p>
@@ -4880,36 +4910,6 @@
         <tag>gist</tag>
         <tag>article</tag>
         <tag>octokit</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[MariaDB] CentOS 安裝最新版 MariaDB</title>
-    <url>/2021/06/19/mariadb_centos/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常 CentOS 官方的 repository 不會隨著各個套件更新到最新，因為對於伺服器對外服務來說，穩定版的套件才是是最重要的。但需要使用最新版本的 MariaDB 的話要怎麼辦呢？來看看如何做吧！</p>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>CentOS 8.2</li>
-</ul>
-<h2 id="新增-repository"><a href="#新增-repository" class="headerlink" title="新增 repository"></a>新增 repository</h2><p>新增一個檔案 <code>/etc/yum.repos.d/MariadDB.repo</code> 其內容如下。這裡要特別說明一下，若版本是選擇 <code>x.x</code>，則會安裝 <code>x.x</code> 版中最新的那個版本，像現在這個當下，在 <code>10.5</code> 中最新版本是 <code>10.5.5</code>；若想要下載 <code>10.5.4</code> 怎麼辦呢？很簡單！<code>10.5</code> 改為 <code>10.5.4</code> 就好了。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[mariadb]</span><br><span class="line">name = MariaDB</span><br><span class="line">baseurl = http://yum.mariadb.org/10.5/centos8-amd64</span><br><span class="line">module_hotfixes=1</span><br><span class="line">gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
-<p>確認 repository 有加入成功，若有看到 MariaDB 就可以開始安裝了喲！</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf makecache</span><br><span class="line">CentOS-8 - AppStream</span><br><span class="line">CentOS-8 - Base</span><br><span class="line">CentOS-8 - Extras</span><br><span class="line">MariaDB</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux Modular 8 - x86_64</span><br><span class="line">Extra Packages <span class="keyword">for</span> Enterprise Linux 8 - x86_64</span><br><span class="line">Metadata cache created.</span><br></pre></td></tr></table></figure>
-<h2 id="安裝"><a href="#安裝" class="headerlink" title="安裝"></a>安裝</h2><p>詳細安裝與設定步驟可以參考 <a href="/2021/06/18/mysql_centos_mysql_8_0_root/">[MySQL] CentOS 8 安裝 MySQL 8.0 與更改 root 密碼</a></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ sudo dnf install mariadb-server mariadb</span><br></pre></td></tr></table></figure>
-<h2 id="檢查版本"><a href="#檢查版本" class="headerlink" title="檢查版本"></a>檢查版本</h2><p>在 <code>Version</code> 欄位可以看到是目前最新的版本 <code>10.5.5</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[user@localhost ~]$ rpm -qi MariaDB-server</span><br><span class="line">Name        : MariaDB-server</span><br><span class="line">Version     : 10.5.5</span><br><span class="line">Release     : 1.el8</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Install Date: Wed 23 Sep 2020 03:43:14 PM CST</span><br><span class="line">Group       : Applications/Databases</span><br><span class="line">Size        : 132924528</span><br><span class="line">License     : GPLv2</span><br><span class="line">Signature   : DSA/SHA1, Sat 08 Aug 2020 10:10:11 AM CST, Key ID cbcb082a1bb943db</span><br><span class="line">Source RPM  : MariaDB-server-10.5.5-1.el8.src.rpm</span><br><span class="line">Build Date  : Sat 08 Aug 2020 12:27:40 AM CST</span><br><span class="line">Build Host  : rhel8-amd64</span><br><span class="line">Relocations : (not relocatable)</span><br><span class="line">Vendor      : MariaDB Foundation</span><br><span class="line">URL         : http://mariadb.org</span><br><span class="line">Summary     : MariaDB: a very fast and robust SQL database server</span><br><span class="line">Description :</span><br><span class="line">MariaDB: a very fast and robust SQL database server</span><br><span class="line"></span><br><span class="line">It is GPL v2 licensed, <span class="built_in">which</span> means you can use the it free of charge under the</span><br><span class="line">conditions of the GNU General Public License Version 2 (http://www.gnu.org/licenses/).</span><br><span class="line"></span><br><span class="line">MariaDB documentation can be found at https://mariadb.com/kb</span><br><span class="line">MariaDB bug reports should be submitted through https://jira.mariadb.org</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>伺服器架設筆記</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>centos</tag>
-        <tag>mariadb</tag>
-        <tag>8.2</tag>
-        <tag>update</tag>
-        <tag>latest</tag>
-        <tag>version</tag>
-        <tag>repository</tag>
       </tags>
   </entry>
   <entry>
@@ -5200,6 +5200,91 @@
       </tags>
   </entry>
   <entry>
+    <title>讀 Paper 懶人器</title>
+    <url>/2021/06/14/read_paper_lazier/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Paper 通常以英文流通最為廣泛，在閱讀時總是會搭配 google translate 查找不懂的語句或單字，但在複製整個語句或整段原文時，不應該存在的換行也會被複製進來。導致在輸入進 google translate 翻譯之前需要手動去掉換行。剛開始可能會覺得還好，但用到後來會發現這是非常浪費時間與惱人的事。</p>
+<p>除此之外，有時候翻譯出來的中文慣用語會是中國大陸的慣用語，而不是台灣的慣用語，例如：server 在台灣會翻為「伺服器」而非「服務器」、macro 在台灣會翻為「巨集」而非「宏」。</p>
+<p>因此我開發一個應用程式，為了解決這些困擾之處，其功能為當我們複製某段文章時，可以自動去掉換行，並且進行翻譯、替換某些自訂文字，再使用 <code>Ctrl-V</code> 貼上時，已經是翻譯與替換後的結果！絕對是碩士、博士們讀 Paper 的一個利器。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fdemo_cover.png?alt=media&amp;token=e650fd4d-4bd0-43e7-bc1c-e14ac3840132" alt="應用程式畫面展示"><span class="image-caption">應用程式畫面展示</span></p>
+<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
+<li><a href="https://youtu.be/aHq7Z5r3jDs">此專案介紹影片</a></li>
+<li><a href="https://github.com/weirenxue/read-paper-lazier">GitHub</a></li>
+<li><a href="https://www.youtube.com/watch?v=vX0utNYPfGs">使用教學影片</a></li>
+</ul>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
+<li>python 3.8.5</li>
+<li>pip 21.1.2</li>
+<li>google-cloud-translate 3.2.0</li>
+<li>pyperclip 1.8.2</li>
+</ul>
+<h2 id="概念流程圖"><a href="#概念流程圖" class="headerlink" title="概念流程圖"></a>概念流程圖</h2><p>寫程式之前紙上談兵是一個好習慣，先將流程圖畫下來，思考整個過程是否具有邏輯錯誤，一改再改，最後成為定案。下圖即為此專案的主功能流程圖，我們主要需要做的事情與順序為</p>
+<ol>
+<li>監聽 Copy 事件</li>
+<li>得到剪貼板中的文字</li>
+<li>去掉所有換行字元</li>
+<li>將其翻譯成中文</li>
+<li>翻譯後的文字替換特定文字</li>
+<li>輸出最後文字至剪貼板</li>
+</ol>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fmainfunction.png?alt=media&amp;token=c0dddc3b-e058-499e-b66d-e9f411086965" alt="主功能流程圖"><span class="image-caption">主功能流程圖</span></p>
+<h2 id="各個擊破"><a href="#各個擊破" class="headerlink" title="各個擊破"></a>各個擊破</h2><h3 id="監聽-Copy-事件"><a href="#監聽-Copy-事件" class="headerlink" title="監聽 Copy 事件"></a>監聽 Copy 事件</h3><p>在 <code>Python</code> 之中內沒有內建可以監聽 Copy 事件發生的函數，因此只能自己造輪子，我採用的方法是，比對現在剪貼板中的值與上一個狀態的值是否相同，若不同代表 Copy 事件發生</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> pyperclip</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Hook</span>():</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        self.run = <span class="literal">True</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">copyHook</span>(<span class="params">self, callback</span>):</span><br><span class="line">        self.run = <span class="literal">True</span></span><br><span class="line">        self.runHook(<span class="keyword">lambda</span> : self._copyHook(callback))</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_copyHook</span>(<span class="params">self, callback</span>):</span><br><span class="line">        <span class="comment"># 清除剪貼板</span></span><br><span class="line">        copiedText = <span class="string">&quot;&quot;</span></span><br><span class="line">        pyperclip.copy(copiedText)</span><br><span class="line">        <span class="keyword">while</span> self.run:</span><br><span class="line">            <span class="comment"># 複製事件是否發生</span></span><br><span class="line">            tmp_value = pyperclip.paste()</span><br><span class="line">            <span class="keyword">if</span> tmp_value != copiedText <span class="keyword">and</span> tmp_value != <span class="string">&#x27;&#x27;</span>:</span><br><span class="line">                <span class="comment"># 複製事件發生，對剪貼板中的文字進行處理</span></span><br><span class="line">                copiedText = callback(tmp_value)</span><br><span class="line">                <span class="comment"># 將處理後的文字輸出至剪貼板</span></span><br><span class="line">                pyperclip.copy(copiedText)</span><br><span class="line">            time.sleep(<span class="number">0.1</span>)</span><br><span class="line">            </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">runHook</span>(<span class="params">self, functionHandle</span>):</span><br><span class="line">        t = threading.Thread(target=functionHandle)</span><br><span class="line">        t.start()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">stop</span>(<span class="params">self</span>):</span><br><span class="line">        self.run = <span class="literal">False</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">copyHookCallback</span>(<span class="params">copiedText</span>):</span><br><span class="line">    <span class="built_in">print</span>(copiedText)</span><br><span class="line">    <span class="keyword">return</span> copiedText</span><br><span class="line"></span><br><span class="line">h = Hook()</span><br><span class="line">h.copyHook(copyHookCallback)</span><br></pre></td></tr></table></figure>
+<p>執行後，任意複製文字，都會原封不動地輸出在 Console 底下，由此可以確認監聽 Copy 事件功能已經完備。</p>
+<h4 id="Callback-Function"><a href="#Callback-Function" class="headerlink" title="Callback Function"></a>Callback Function</h4><p>這裡使用了一個小技巧，可以將一個 <code>Callback Function</code> 當作參數傳給 <code>Hook.copyHook</code>，當 Copy 事件發生時，會呼叫該函數並把剪貼板的文字傳入，在函數內可以對文字做任何想做的事，最後回傳想要輸出在剪貼板的文字。</p>
+<p>這裡實際應用該函數來達到我們想要的效果，也就是去除換行、翻譯為中文、替換文字。</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">cancelCRLF</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">translation</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">replaceText</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">copyHookCallback</span>(<span class="params">copiedText</span>):</span><br><span class="line">    <span class="comment"># 去除換行</span></span><br><span class="line">    noCRLF = cancelCRLF(copiedText)</span><br><span class="line">    <span class="comment"># 翻譯成中文</span></span><br><span class="line">    translated = translation(noCRLF)</span><br><span class="line">    <span class="comment"># 替換特定文字</span></span><br><span class="line">    replaced = replaceText(translated)</span><br><span class="line">    <span class="keyword">return</span> replaced</span><br></pre></td></tr></table></figure>
+<h3 id="去除換行"><a href="#去除換行" class="headerlink" title="去除換行"></a>去除換行</h3><p>這功能相對簡單，因為只需要將 <code>\r</code>、<code>\r\n</code>、<code>\n</code> 等去掉即可，剛好 Python 有一個內建的函式 <code>splitlines</code> 可以協助我們去除換行符號</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">cancelCRLF</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27; &#x27;</span>.join(text.splitlines())</span><br></pre></td></tr></table></figure>
+<h3 id="翻譯為中文"><a href="#翻譯為中文" class="headerlink" title="翻譯為中文"></a>翻譯為中文</h3><p>在翻譯為中文這裡可以有兩種做法</p>
+<ol>
+<li>使用 <code>selenium</code> 開啟 <a href="https://translate.google.com/?hl=zh-TW">Google Translate</a>，將文字貼進左邊的原文窗格內，等待翻譯好之後再從右邊翻譯窗格拿到翻譯後的結果。但這樣的缺點是使用者需要另外下載 <code>selenium driver</code>。</li>
+<li>使用 Google Cloud Translate API 服務，以 API 的方式來做整合，較不會有環境問題，因此我採用這種作法。</li>
+</ol>
+<h4 id="Google-Cloud-Translate-API"><a href="#Google-Cloud-Translate-API" class="headerlink" title="Google Cloud Translate API"></a>Google Cloud Translate API</h4><p>想要使用這項服務，需先申請 GCP (Google Cloud Platform) 帳號，再依照下方步驟來取得 API Key</p>
+<p>啟用 Google Cloud Translation API</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fenable_translation_api.png?alt=media&amp;token=6ccd3502-bb96-404a-a002-96ae3bb6edf2" alt="啟用 Google Cloud Translation API 步驟"><span class="image-caption">啟用 Google Cloud Translation API 步驟</span></p>
+<p>啟用之後需要幾個步驟取得 API Key</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fcreate_credentials.png?alt=media&amp;token=b6e3cbb9-f26a-444c-9b70-2111cc81588e" alt="建立 Credential"><span class="image-caption">建立 Credential</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Ffill_form.png?alt=media&amp;token=74357faf-00b5-441d-8d4b-033b084e1226" alt="填寫表單資訊"><span class="image-caption">填寫表單資訊</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fmanage_api_key.png?alt=media&amp;token=af719d95-8285-4b3a-9551-885db206cf26" alt="進入管理金鑰介面"><span class="image-caption">進入管理金鑰介面</span></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fsave_api_key.png?alt=media&amp;token=2fb2c867-bd64-479d-95a6-f96382add50e" alt="儲存 API Key"><span class="image-caption">儲存 API Key</span></p>
+<h4 id="Translate-API-使用"><a href="#Translate-API-使用" class="headerlink" title="Translate API 使用"></a>Translate API 使用</h4><p>費勁千辛萬苦申請到 API Key 之後就可以馬上整合到應用程式裡啦！其中 <code>apiKeyJson</code> 是 API Key 的絕對路徑</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> google.cloud <span class="keyword">import</span> translate_v2 <span class="keyword">as</span> translate</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">translation</span>(<span class="params">text</span>):</span><br><span class="line">    translate_client = translate.Client.from_service_account_json(apiKeyJson)</span><br><span class="line">    target = <span class="string">&#x27;zh-TW&#x27;</span> <span class="comment"># 翻譯為中文</span></span><br><span class="line">    translation = translate_client.translate(text, target_language=target)</span><br><span class="line">    <span class="keyword">return</span> translation[<span class="string">&#x27;translatedText&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<h3 id="替換文字"><a href="#替換文字" class="headerlink" title="替換文字"></a>替換文字</h3><p>替換文字很簡單，只需把介面中 <code>Regex Entry</code> 與對應的 <code>Replace With Entry</code> 一一替換即可，<code>replaceMap</code> 儲存了所有對應 <code>[&#123;&#39;regexEntry&#39;: tk.Entry(), &#39;replaceWithEntry&#39;: tk.Entry()&#125;, ...]</code>。</p>
+<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">replaceText</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">for</span> element <span class="keyword">in</span> replaceMap:</span><br><span class="line">        regex = element[<span class="string">&#x27;regexEntry&#x27;</span>].get()</span><br><span class="line">        replaceWith = element[<span class="string">&#x27;replaceWithEntry&#x27;</span>].get()</span><br><span class="line">        <span class="keyword">if</span> regex == <span class="string">&#x27;&#x27;</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        text = re.sub(regex, replaceWith, text)</span><br><span class="line">    <span class="keyword">return</span> text</span><br></pre></td></tr></table></figure>
+<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>到目前為止，功能基本上都已經實現，剩下的只有 GUI 呈現的部份，這部分不在此篇文章強調的重點內，可以直接參考 <a href="https://github.com/weirenxue/read-paper-lazier">GitHub</a>。最後附上使用影片教大家如何秒變懶人</p>
+<!-- markdownlint-disable MD033 -->
+<iframe width="560" height="315" src="https://www.youtube.com/embed/vX0utNYPfGs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<!-- markdownlint-restore MD033 -->
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><p><a href="https://stackoverflow.com/questions/14685999/trigger-an-event-when-clipboard-content-changes">Trigger an event when clipboard content changes</a></p>
+</li>
+<li><p><a href="https://www.appcoda.com.tw/google-translation-api/">利用 Google Translation API 添加即時翻譯功能　讓你的 App 更加升級！</a></p>
+</li>
+<li><p><a href="https://moon-half.info/p/3332">使用 Google Cloud Translate API</a></p>
+</li>
+<li><p><a href="https://cloud.google.com/docs/authentication/production#passing_code">Authenticating as a service account</a></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>專案開發筆記</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>api</tag>
+        <tag>google</tag>
+        <tag>copy</tag>
+        <tag>paper</tag>
+        <tag>lazier</tag>
+        <tag>cloud</tag>
+        <tag>translate</tag>
+        <tag>listener</tag>
+        <tag>event</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>自動每日登入 iT邦幫忙 取得活動點數</title>
     <url>/2021/06/27/ithelp_auto_login/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>許多論壇都擁有活動點數制度，「iT邦幫忙」也不意外的擁有這項功能，其中有一項是每天登入可以加 2 點活動點數，但不知道是 Bug 還是故意的，竟然需要先登出再登入，有了登入的動作才會計算當天登入的活動點數，很不符合常理。</p>
@@ -5297,91 +5382,6 @@
         <tag>workflow</tag>
         <tag>secrets</tag>
         <tag>fork</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>讀 Paper 懶人器</title>
-    <url>/2021/06/14/read_paper_lazier/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Paper 通常以英文流通最為廣泛，在閱讀時總是會搭配 google translate 查找不懂的語句或單字，但在複製整個語句或整段原文時，不應該存在的換行也會被複製進來。導致在輸入進 google translate 翻譯之前需要手動去掉換行。剛開始可能會覺得還好，但用到後來會發現這是非常浪費時間與惱人的事。</p>
-<p>除此之外，有時候翻譯出來的中文慣用語會是中國大陸的慣用語，而不是台灣的慣用語，例如：server 在台灣會翻為「伺服器」而非「服務器」、macro 在台灣會翻為「巨集」而非「宏」。</p>
-<p>因此我開發一個應用程式，為了解決這些困擾之處，其功能為當我們複製某段文章時，可以自動去掉換行，並且進行翻譯、替換某些自訂文字，再使用 <code>Ctrl-V</code> 貼上時，已經是翻譯與替換後的結果！絕對是碩士、博士們讀 Paper 的一個利器。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fdemo_cover.png?alt=media&amp;token=e650fd4d-4bd0-43e7-bc1c-e14ac3840132" alt="應用程式畫面展示"><span class="image-caption">應用程式畫面展示</span></p>
-<h2 id="成果"><a href="#成果" class="headerlink" title="成果"></a>成果</h2><ul>
-<li><a href="https://youtu.be/aHq7Z5r3jDs">此專案介紹影片</a></li>
-<li><a href="https://github.com/weirenxue/read-paper-lazier">GitHub</a></li>
-<li><a href="https://www.youtube.com/watch?v=vX0utNYPfGs">使用教學影片</a></li>
-</ul>
-<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ul>
-<li>python 3.8.5</li>
-<li>pip 21.1.2</li>
-<li>google-cloud-translate 3.2.0</li>
-<li>pyperclip 1.8.2</li>
-</ul>
-<h2 id="概念流程圖"><a href="#概念流程圖" class="headerlink" title="概念流程圖"></a>概念流程圖</h2><p>寫程式之前紙上談兵是一個好習慣，先將流程圖畫下來，思考整個過程是否具有邏輯錯誤，一改再改，最後成為定案。下圖即為此專案的主功能流程圖，我們主要需要做的事情與順序為</p>
-<ol>
-<li>監聽 Copy 事件</li>
-<li>得到剪貼板中的文字</li>
-<li>去掉所有換行字元</li>
-<li>將其翻譯成中文</li>
-<li>翻譯後的文字替換特定文字</li>
-<li>輸出最後文字至剪貼板</li>
-</ol>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fmainfunction.png?alt=media&amp;token=c0dddc3b-e058-499e-b66d-e9f411086965" alt="主功能流程圖"><span class="image-caption">主功能流程圖</span></p>
-<h2 id="各個擊破"><a href="#各個擊破" class="headerlink" title="各個擊破"></a>各個擊破</h2><h3 id="監聽-Copy-事件"><a href="#監聽-Copy-事件" class="headerlink" title="監聽 Copy 事件"></a>監聽 Copy 事件</h3><p>在 <code>Python</code> 之中內沒有內建可以監聽 Copy 事件發生的函數，因此只能自己造輪子，我採用的方法是，比對現在剪貼板中的值與上一個狀態的值是否相同，若不同代表 Copy 事件發生</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> pyperclip</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Hook</span>():</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        self.run = <span class="literal">True</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">copyHook</span>(<span class="params">self, callback</span>):</span><br><span class="line">        self.run = <span class="literal">True</span></span><br><span class="line">        self.runHook(<span class="keyword">lambda</span> : self._copyHook(callback))</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_copyHook</span>(<span class="params">self, callback</span>):</span><br><span class="line">        <span class="comment"># 清除剪貼板</span></span><br><span class="line">        copiedText = <span class="string">&quot;&quot;</span></span><br><span class="line">        pyperclip.copy(copiedText)</span><br><span class="line">        <span class="keyword">while</span> self.run:</span><br><span class="line">            <span class="comment"># 複製事件是否發生</span></span><br><span class="line">            tmp_value = pyperclip.paste()</span><br><span class="line">            <span class="keyword">if</span> tmp_value != copiedText <span class="keyword">and</span> tmp_value != <span class="string">&#x27;&#x27;</span>:</span><br><span class="line">                <span class="comment"># 複製事件發生，對剪貼板中的文字進行處理</span></span><br><span class="line">                copiedText = callback(tmp_value)</span><br><span class="line">                <span class="comment"># 將處理後的文字輸出至剪貼板</span></span><br><span class="line">                pyperclip.copy(copiedText)</span><br><span class="line">            time.sleep(<span class="number">0.1</span>)</span><br><span class="line">            </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">runHook</span>(<span class="params">self, functionHandle</span>):</span><br><span class="line">        t = threading.Thread(target=functionHandle)</span><br><span class="line">        t.start()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">stop</span>(<span class="params">self</span>):</span><br><span class="line">        self.run = <span class="literal">False</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">copyHookCallback</span>(<span class="params">copiedText</span>):</span><br><span class="line">    <span class="built_in">print</span>(copiedText)</span><br><span class="line">    <span class="keyword">return</span> copiedText</span><br><span class="line"></span><br><span class="line">h = Hook()</span><br><span class="line">h.copyHook(copyHookCallback)</span><br></pre></td></tr></table></figure>
-<p>執行後，任意複製文字，都會原封不動地輸出在 Console 底下，由此可以確認監聽 Copy 事件功能已經完備。</p>
-<h4 id="Callback-Function"><a href="#Callback-Function" class="headerlink" title="Callback Function"></a>Callback Function</h4><p>這裡使用了一個小技巧，可以將一個 <code>Callback Function</code> 當作參數傳給 <code>Hook.copyHook</code>，當 Copy 事件發生時，會呼叫該函數並把剪貼板的文字傳入，在函數內可以對文字做任何想做的事，最後回傳想要輸出在剪貼板的文字。</p>
-<p>這裡實際應用該函數來達到我們想要的效果，也就是去除換行、翻譯為中文、替換文字。</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">cancelCRLF</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">translation</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">replaceText</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">copyHookCallback</span>(<span class="params">copiedText</span>):</span><br><span class="line">    <span class="comment"># 去除換行</span></span><br><span class="line">    noCRLF = cancelCRLF(copiedText)</span><br><span class="line">    <span class="comment"># 翻譯成中文</span></span><br><span class="line">    translated = translation(noCRLF)</span><br><span class="line">    <span class="comment"># 替換特定文字</span></span><br><span class="line">    replaced = replaceText(translated)</span><br><span class="line">    <span class="keyword">return</span> replaced</span><br></pre></td></tr></table></figure>
-<h3 id="去除換行"><a href="#去除換行" class="headerlink" title="去除換行"></a>去除換行</h3><p>這功能相對簡單，因為只需要將 <code>\r</code>、<code>\r\n</code>、<code>\n</code> 等去掉即可，剛好 Python 有一個內建的函式 <code>splitlines</code> 可以協助我們去除換行符號</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">cancelCRLF</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27; &#x27;</span>.join(text.splitlines())</span><br></pre></td></tr></table></figure>
-<h3 id="翻譯為中文"><a href="#翻譯為中文" class="headerlink" title="翻譯為中文"></a>翻譯為中文</h3><p>在翻譯為中文這裡可以有兩種做法</p>
-<ol>
-<li>使用 <code>selenium</code> 開啟 <a href="https://translate.google.com/?hl=zh-TW">Google Translate</a>，將文字貼進左邊的原文窗格內，等待翻譯好之後再從右邊翻譯窗格拿到翻譯後的結果。但這樣的缺點是使用者需要另外下載 <code>selenium driver</code>。</li>
-<li>使用 Google Cloud Translate API 服務，以 API 的方式來做整合，較不會有環境問題，因此我採用這種作法。</li>
-</ol>
-<h4 id="Google-Cloud-Translate-API"><a href="#Google-Cloud-Translate-API" class="headerlink" title="Google Cloud Translate API"></a>Google Cloud Translate API</h4><p>想要使用這項服務，需先申請 GCP (Google Cloud Platform) 帳號，再依照下方步驟來取得 API Key</p>
-<p>啟用 Google Cloud Translation API</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fenable_translation_api.png?alt=media&amp;token=6ccd3502-bb96-404a-a002-96ae3bb6edf2" alt="啟用 Google Cloud Translation API 步驟"><span class="image-caption">啟用 Google Cloud Translation API 步驟</span></p>
-<p>啟用之後需要幾個步驟取得 API Key</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fcreate_credentials.png?alt=media&amp;token=b6e3cbb9-f26a-444c-9b70-2111cc81588e" alt="建立 Credential"><span class="image-caption">建立 Credential</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Ffill_form.png?alt=media&amp;token=74357faf-00b5-441d-8d4b-033b084e1226" alt="填寫表單資訊"><span class="image-caption">填寫表單資訊</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fmanage_api_key.png?alt=media&amp;token=af719d95-8285-4b3a-9551-885db206cf26" alt="進入管理金鑰介面"><span class="image-caption">進入管理金鑰介面</span></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/%E8%AE%80-Paper-%E6%87%B6%E4%BA%BA%E5%99%A8%2Fsave_api_key.png?alt=media&amp;token=2fb2c867-bd64-479d-95a6-f96382add50e" alt="儲存 API Key"><span class="image-caption">儲存 API Key</span></p>
-<h4 id="Translate-API-使用"><a href="#Translate-API-使用" class="headerlink" title="Translate API 使用"></a>Translate API 使用</h4><p>費勁千辛萬苦申請到 API Key 之後就可以馬上整合到應用程式裡啦！其中 <code>apiKeyJson</code> 是 API Key 的絕對路徑</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> google.cloud <span class="keyword">import</span> translate_v2 <span class="keyword">as</span> translate</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">translation</span>(<span class="params">text</span>):</span><br><span class="line">    translate_client = translate.Client.from_service_account_json(apiKeyJson)</span><br><span class="line">    target = <span class="string">&#x27;zh-TW&#x27;</span> <span class="comment"># 翻譯為中文</span></span><br><span class="line">    translation = translate_client.translate(text, target_language=target)</span><br><span class="line">    <span class="keyword">return</span> translation[<span class="string">&#x27;translatedText&#x27;</span>]</span><br></pre></td></tr></table></figure>
-<h3 id="替換文字"><a href="#替換文字" class="headerlink" title="替換文字"></a>替換文字</h3><p>替換文字很簡單，只需把介面中 <code>Regex Entry</code> 與對應的 <code>Replace With Entry</code> 一一替換即可，<code>replaceMap</code> 儲存了所有對應 <code>[&#123;&#39;regexEntry&#39;: tk.Entry(), &#39;replaceWithEntry&#39;: tk.Entry()&#125;, ...]</code>。</p>
-<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">replaceText</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">for</span> element <span class="keyword">in</span> replaceMap:</span><br><span class="line">        regex = element[<span class="string">&#x27;regexEntry&#x27;</span>].get()</span><br><span class="line">        replaceWith = element[<span class="string">&#x27;replaceWithEntry&#x27;</span>].get()</span><br><span class="line">        <span class="keyword">if</span> regex == <span class="string">&#x27;&#x27;</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        text = re.sub(regex, replaceWith, text)</span><br><span class="line">    <span class="keyword">return</span> text</span><br></pre></td></tr></table></figure>
-<h2 id="完成"><a href="#完成" class="headerlink" title="完成"></a>完成</h2><p>到目前為止，功能基本上都已經實現，剩下的只有 GUI 呈現的部份，這部分不在此篇文章強調的重點內，可以直接參考 <a href="https://github.com/weirenxue/read-paper-lazier">GitHub</a>。最後附上使用影片教大家如何秒變懶人</p>
-<!-- markdownlint-disable MD033 -->
-<iframe width="560" height="315" src="https://www.youtube.com/embed/vX0utNYPfGs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-<!-- markdownlint-restore MD033 -->
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><p><a href="https://stackoverflow.com/questions/14685999/trigger-an-event-when-clipboard-content-changes">Trigger an event when clipboard content changes</a></p>
-</li>
-<li><p><a href="https://www.appcoda.com.tw/google-translation-api/">利用 Google Translation API 添加即時翻譯功能　讓你的 App 更加升級！</a></p>
-</li>
-<li><p><a href="https://moon-half.info/p/3332">使用 Google Cloud Translate API</a></p>
-</li>
-<li><p><a href="https://cloud.google.com/docs/authentication/production#passing_code">Authenticating as a service account</a></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>專案開發筆記</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>api</tag>
-        <tag>google</tag>
-        <tag>copy</tag>
-        <tag>paper</tag>
-        <tag>lazier</tag>
-        <tag>cloud</tag>
-        <tag>translate</tag>
-        <tag>listener</tag>
-        <tag>event</tag>
       </tags>
   </entry>
   <entry>
@@ -5614,305 +5614,6 @@
       </tags>
   </entry>
   <entry>
-    <title>自動化測試概述 - 撰寫測試案例與自動執行測試</title>
-    <url>/2022/09/25/automated-testing/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>開發程式的過程中最常做的事就是編譯、運行、看結果，若結果不符預期，對原始碼進行修改後再執行一樣的步驟直到運作正確為止，一來一回著實耗費工程師不少寶貴時間。此外，修改代碼時還需要注意不要影響到其它地方的程式碼運行，若因此而產生錯誤就要花更多時間修改，是一種維護成本。長時間下來，這樣的程式碼難免成為所謂的「遺毒」。自動化測試這時候就能派上用場，自動化測試是解決這個問題的一種方法，也是最根本的方法，讓電腦代替人工進行對 Codebase 的測試，除了有省時省力的好處，同時也是降低維護成本的關鍵。</p>
-<h2 id="自動化測試"><a href="#自動化測試" class="headerlink" title="自動化測試"></a>自動化測試</h2><p>需先有測試案例才有東西可以自動運行，因此雖然自動化測試是一個詞，但實際上包含兩件事，分別是撰寫測試案例 (Write Test Cases) 與自動執行測試 (Automated testing)</p>
-<ol>
-<li><p>撰寫測試案例 (Write Test Cases)：</p>
-<p> 測試案例即是描述 SUT (System Under Test，測試目標) 在給定輸入的情況下預期對應怎樣的輸出，若進一步將這樣的描述寫成可重複執行的測試腳本，即為撰寫測試案例。每當需要驗證程式的正確性，只需執行測試腳本，等待測試結束並產出相關報告，確認沒問題後，便可進行部署等後續工作。</p>
-</li>
-<li><p>自動執行測試 (Automated testing)：</p>
-<p> 期望每個人都能記得手動執行測試腳本再進行後續動作是不太實際的，因為只要有人參與的環節，就有機會出現疏漏，忘記測試就直接提交的情況非常有可能出現。因此，撰寫測試案例結束後，最終的目標是使這些測試腳本能在適當時機被自動運行。例如：當 Commit 後、Merge 前或者要發布前都會由 CI/CD 自動執行測試腳本，使團隊能夠即時發現程式任何非預期的行為，降低 Bug 上線的機會。</p>
-<p> 舉例來說：LeetCode 將每個題目的輸入與輸出寫成測試案例，當我們提交答案時，它會自動提供預期的輸入給我們寫的 Function，並檢查輸出是否符合它的預期，也因為 LeetCode 在我們提交答案時自動執行測試，讓我們在刷題時能及時地得到回饋。</p>
-</li>
-</ol>
-<h2 id="撰寫測試案例的好處"><a href="#撰寫測試案例的好處" class="headerlink" title="撰寫測試案例的好處"></a>撰寫測試案例的好處</h2><p>撰寫測試案例最主要的目的是能夠隨時驗證程式運作結果確如預期，此外還有許多優點，下面列舉個人最有感的三大好處</p>
-<ol>
-<li><p>節省維護時間：</p>
-<p> 要知道一個 Function 的輸入與輸出的關係或運作結果是否是對的，一般且直接的作法就是刻意呼叫該 Function，並且使用 <code>print</code> 函數將結果輸出於 Console，最後使用人眼觀看輸出的值並用人腦判斷是否為預期結果，即所謂的 <code>print</code> 大法。如此一來，每撰寫新的 Function 就要進行一次這樣的輪迴，若不小心改壞其他 Function 更是災難性的大幅拉長維護時間，因為時間大部分都會花在思考要如何用 <code>print</code> 大法來 Debug，或者思考前一次使用來驗證輸入與輸出是否正確的值是什麼。</p>
-<p> 倘若只是開發較簡單的功能，例如：給兩個數並計算出兩數之合，這樣的作法是更快更容易的。但若是開發如 RESTful API Server 這種線上服務，<code>print</code> 大法的運作流程為：編譯程式並運行，再使用 <code>curl</code>、<code>Postman</code> 等外部工具發一個 HTTP Request 到 Server，再回到 Server 的 Console 來確認輸出結果。當系統龐大起來，要用 <code>print</code> 大法確認每個 Endpoint 的正確性，光是想像也能感覺到這是非常耗時且不是這麼容易、可靠的，對吧？</p>
-<p> 撰寫測試案例可以將預期輸入與輸出的比對交由程式代勞，不需要再使用人眼與人腦去判斷，節省維護時間外，還可以將所有測資保存下來。若之後想將功能移植 (Porting) 到不同的程式語言，原本是需要詢問作者要餵什麼樣的資料與預期輸出的資料，而現在直接透過閱讀測試案例就能掌握使用方法。</p>
-</li>
-<li><p>降低維護人員的心理負擔：</p>
-<p> 不知道讀者有沒有這樣的經驗：接手一份 Code 並被交代要新增 A 功能的任務，在開發過程中影響到原本就存在的 B 功能與 C 功能的運作，一陣修補後勉勉強強的交出能動的 A 功能，而自己心裡知道雖然 B 功能與 C 功能現在正常，卻無法對它們能夠一直正常運作這件事保持信心，原因在於沒有可參考的測試案例，無法確保在修改的過程中有考慮到所有前人遇過的問題。</p>
-<p> 通常這樣的程式碼淪為「遺毒」的可能性是非常高的，沒有任何人敢對程式碼進行擴充、刪除或修改功能，因為沒有任何有效的方法可以快速知道程式碼是否有被改壞。若前人有撰寫完整的測試案例，讓我們得以在每次修改後運行測試腳本，明確的知道功能為正常運行，同時提高對這份程式碼的信心。</p>
-</li>
-<li><p>即時修改程式架構以降低 SUT 之間的耦合性 (此處 SUT 泛指 Function、Class ⋯⋯等等))：</p>
-<p> 撰寫測試案例的好處很吸引人，聽起來也很容易，本質上就是將預期的輸入提供給 SUT ，並檢查其輸出是否符合預期輸出，No Big Deal！但做起來其實不太容易，若較不熟悉 Design Patterns 的開發者，開發出的程式碼通常會偏向高耦合性，即 SUT 依賴於另一個物件或程式 (此時會稱被依賴的物件或程式為 DOC，Depended-On Component) 。</p>
-<p> 例如：在一個 A 物件中直接 <code>new</code> 另一個 B 物件並使用，這時若要測試 A 物件，必定也要把 B 物件的運行邏輯考慮進來，最後導致測試 A 的時候其實也在測試 B 物件。這樣的壞處是什麼？可以想想看，假設應需求修改 B 物件的部分功能，原本只需要修改 B 物件本身的測試案例，現在連同 A 物件的測試案例也要修改！倘若 A 依賴更多物件，將導致撰寫或修改測試案例的難度大大提升，提高後續維護的難度，淪為「遺毒」指日可待。</p>
-<p> 從這個例子反思，並不是撰寫出測試案例就完事，我非常贊同自己曾經講過的一句話「只要是好測試的軟體架構，就是好架構」，好架構的前提是好測試。由於牽一髮動全身，原本只有 SUT 與 DOC 之間連動，現在連測試案例也相互連動，因修改所感到的痛苦是加倍的痛苦，可想而知測試案例過於複雜也會導致沒有人敢增加或修改。</p>
-<p> 我們可以在撰寫測試案例的過程中隨時反思現在的架構是不是好測試的架構，若發現不是，應該即時修改架構使測試更加容易，最後寫出簡單又好維護的測試案例，附帶來的是好的程式架構。</p>
-</li>
-</ol>
-<h2 id="導入撰寫測試案例的潛在問題"><a href="#導入撰寫測試案例的潛在問題" class="headerlink" title="導入撰寫測試案例的潛在問題"></a>導入撰寫測試案例的潛在問題</h2><p>導入撰寫測試案例不外乎希望可以藉此提升 Codebase 品質、降低維護成本、確保功能正確⋯⋯等等。但在正式導入進團隊開發流程之前，需要先思考可能遇到的問題與配套措施</p>
-<ol>
-<li><p>團隊成員沒有撰寫測試案例的經驗：</p>
-<p> 撰寫測試案例與撰寫程式碼相同，透過經驗的積累較有辦法寫出優質的測試案例代碼，因此需要有更寬裕的開發時辰，允許成員在寫出初版測試案例後，有時間根據過程中學習到的經驗、知識或衍生想法修改為第二版、第三版測試案例，提高測試代碼的品質。</p>
-<p> 最佳的情況是團隊中有成員對於撰寫測試案例擁有豐富的經驗，透過經驗分享提供給初次撰寫測試案例的成員作為參考，減少盲目摸索的時間。</p>
-</li>
-<li><p>撰寫測試案例時間長：</p>
-<p> 有經驗的人應該都能認同撰寫測試案例的時間會比開發功能的時間來得長，所以導入之前需要評估該項目是否真的需要撰寫測試案例，如果只是在概念驗證 (PoC，Proof of Concept) 階段，測試案例的撰寫可能就沒這麼必要，因為功能與開發方向會常常改變，導致原本的測試案例沒有作用。</p>
-<p> 若是要在產品化的項目中導入撰寫測試案例，那將會是非常明智的選擇，雖然開發時間需要稍微拉長，但測試所帶來的許多好處是讓大家不忍拒絕的呀！</p>
-</li>
-<li><p>舊有的程式架構可能需要更動：</p>
-<p> 撰寫測試案例的好處之一「即時修改程式架構以降低 SUT 之間的耦合性」可以說是雙面刃，若今天是在新的專案中導入，這好處是非常吸引人的；但若是在舊有的程式碼中導入撰寫測試案例，那肯定是會有痛點的，因為原先的程式架構並沒有將測試考慮進去，導致無法寫出簡潔的測試案例，最後勢必要更改程式架構來配合測試案例的撰寫。</p>
-</li>
-</ol>
-<div class="note info">
-            <p>看到這裡，也許讀者心中會有一個疑問：「為了配合撰寫測試案例而修改程式架構，是正確的行為嗎？」</p><p>有名的 TDD (Test-Driven Development，測試驅動開發) 模式其實就是先撰寫測試案例，再根據測試案例寫出對應的 Code。因此，若整個專案都是使用 TDD 模式，也就可以說這個程式的架構是配合撰寫測試案例所產生的架構。</p><p>相信讀者心中都有答案了吧！</p>
-          </div>
-<h2 id="測試的種類"><a href="#測試的種類" class="headerlink" title="測試的種類"></a>測試的種類</h2><p>根據測試所涵蓋範圍可以分為三種測試，分別為單元測試 (Unit Testing)、整合測試 (Integration Testing) 與端對端測試 (E2E Testing，End to End Testing)</p>
-<ol>
-<li><p>單元測試 (Unit Testing)：</p>
-<p> 所謂的 Unit 指的是純函數 (Pure Function)，而 Unit Testing 就是測試 Pure Function 的運作是否如預期。由於 SUT 是 Pure Function，所以 Unit Testing 的測試案例是非常容易撰寫的。</p>
-</li>
-<li><p>整合測試 (Integration Testing) ：</p>
-<p> 若 Unit Testing 是對 Pure Function 做測試，那 Integration Testing 可以說是對有副作用 (Side Effect) 的 Function 做測試。舉例來說：若 Function 內部會透過呼叫其他模組 (例如：API、Database、Class、Function ⋯⋯等等) 以進行操作或取得資料，針對這樣的函數所寫的測試案例就會被歸類在 Integration Testing。</p>
-<p> 為了進行 Integration Testing，必須先初始化 SUT 的外部依賴 (Database、DOC ⋯⋯等等)，若程式的結構過於複雜，初始化的撰寫往往是造成測試案例複雜度提升的主要元兇。為了解決此問題，發展出測試替身 (Test Doubles) 的概念，可以確保元件之間的低耦合度，使我們能夠撰寫出簡潔的 Integration Testing 測試案例。</p>
-</li>
-<li><p>端對端測試 (E2E Testing，End to End Testing)：</p>
-<p> E2E Testing 是三種測試中最貼近使用者觀點的測試，從使用者 (End) 的角度對 (to) 整個系統 (End) 進行測試，許多高層無法理解 Unit Testing 與 Integration Testing 的重要性卻可以認同 E2E Testing 有存在的必要，因為只要通過 E2E Testing，基本上可以確保使用者使用起來不會有太大的問題。</p>
-<p> 這也是三種測試中最難以撰寫、耗時、維護成本最高的測試，通常會遵照 80/20 法則，將大部分撰寫測試案例的心力放在最重要、不能出錯的功能上。例如：對電商平台來說，不外乎是「使用者能順利將商品放入購物車」、「使用者能順利下單並付款」等交易相關操作最為重要，因此針對這些功能所撰寫的 E2E Testing 測試案例所帶來的效益較高。</p>
-</li>
-</ol>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>測試是一門很深的學問，如何將測試寫得好？寫得有效？寫得可維護？這些問題並沒有標準答案，但透過平常撰寫測試案例的經驗與想法加上每次的改進與反思，相信讀者能整理出一套撰寫測試案例的邏輯，若讀者還沒導入測試到自己手邊的專案中，現在正是時候！</p>
-<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
-<li><p><a href="http://xunitpatterns.com/Test%20Double.html">xUnit Patterns - Test Double</a></p>
-</li>
-<li><p><a href="https://stackoverflow.com/questions/19167970/mock-functions-in-go#comments-19168875">In order to test, we must change the code is correct?</a></p>
-</li>
-<li><p><a href="https://moduscreate.com/blog/an-overview-of-unit-integration-and-e2e-testing/">AN OVERVIEW OF UNIT, INTEGRATION, AND E2E TESTING Quality Assurance</a></p>
-</li>
-<li><p><a href="https://circleci.com/blog/unit-testing-vs-integration-testing/">Unit testing vs integration testing</a></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>測試筆記</category>
-      </categories>
-      <tags>
-        <tag>unit</tag>
-        <tag>pros</tag>
-        <tag>cons</tag>
-        <tag>automate</tag>
-        <tag>test</tag>
-        <tag>integration</tag>
-        <tag>e2e</tag>
-        <tag>tdd</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Tool] IT 的好幫手 - 帳密顯示器</title>
-    <url>/2021/06/15/tool_it_ap_displayer/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 IT 產業中大概率會碰到管理很多伺服器的情況，要如何有組織的記錄這些帳號，是一個很重要的技能，記的好可以增加管理效率。個人有試過使用 Word、Excel，但每次要搜尋某帳號時都會花一段時間，且密碼都為明碼，若有人在旁觀看會非常不自在，且檔案位置難以管理，若是存雲端，則怕有資安疑慮。因此開發這個專案，讓帳號密碼顯示更為方便又兼顧安全性。</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-IT-%E7%9A%84%E5%A5%BD%E5%B9%AB%E6%89%8B-%E5%B8%B3%E5%AF%86%E9%A1%AF%E7%A4%BA%E5%99%A8%2Fapdisplayer2.0.0-border.png?alt=media&amp;token=3190406d-e769-4552-b45c-99f8259bf184" alt="AP Displayer"><span class="image-caption">AP Displayer</span></p>
-<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><div class="note info">
-            <p><a href="https://github.com/weirenxue/ap-displayer/releases">帳密顯示器</a></p>
-          </div>
-<p>進入上方選擇所需檔案進行下載，這裡提供免安裝檔 <a href="https://github.com/weirenxue/ap-displayer/releases/download/v2.0-alpha.0/AP.Displayer.2.0.0.exe">AP.Displayer.2.0.0.exe</a> 與安裝檔 <a href="https://github.com/weirenxue/ap-displayer/releases/download/v2.0-alpha.0/AP.Displayer.Setup.2.0.0.exe">AP.Displayer.Setup.2.0.0.exe</a></p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-IT-%E7%9A%84%E5%A5%BD%E5%B9%AB%E6%89%8B-%E5%B8%B3%E5%AF%86%E9%A1%AF%E7%A4%BA%E5%99%A8%2Finstaller_v2.0-alpha.0.png?alt=media&amp;token=f64e84df-8806-42f0-902b-ffb64eb4928f" alt="下載"><span class="image-caption">下載</span></p>
-<h2 id="為什麼要使用此專案？"><a href="#為什麼要使用此專案？" class="headerlink" title="為什麼要使用此專案？"></a>為什麼要使用此專案？</h2><p>我們可以將帳密表存在於 Excel (<code>*.xlsx</code>) 中，在透過此專案所開發之應用程式顯示，根據自己的喜好篩選資訊、遮罩資訊、隱藏資訊。  </p>
-<h2 id="此專案所帶來的好處？"><a href="#此專案所帶來的好處？" class="headerlink" title="此專案所帶來的好處？"></a>此專案所帶來的好處？</h2><ol>
-<li><strong>可以處理受加密的 xlsx 檔案 (當然需輸入正確密碼)</strong>，這樣若 Excel 加密過就不用擔心外流。✨👍😎</li>
-<li>得益於使用 Excel 當作 DB，<strong>不會有任何可能性將帳密存於別人的資料庫內</strong>，非常安全。👏</li>
-<li><strong>根據自己的喜好隱藏密碼或其他機敏資訊欄位</strong>，他人在旁邊偷看時也只能看到帳號而不知密碼，比直接開啟 Excel 好多了！👏</li>
-<li><strong>直接點擊按鈕執行登入動作</strong>，省去剪剪貼貼的步驟，不同協定有不同效果。例如<ol>
-<li>協定為 <code>rdp</code>：將<strong>自動開啟遠端軟體 (mstsc)</strong>，輸入目標 URI 並帶著帳密登入，免去剪剪貼貼輸入 IP/AP 的繁雜程序。👏</li>
-<li>協定為 <code>http</code>/<code>https</code>：網頁登入形式太多，因此不協助登入，將會<strong>使用系統預設瀏覽器開啟該網址 (URI)</strong>。另外可用滑鼠右鍵🖱️點擊應用程式中的表格，即可直接複製帳號與密碼，省去框選/複製的時間，直接於網頁登入欄位貼上資訊。👏</li>
-<li>其他協定：目前尚未實作，歡迎一起將此專案做的更完善。</li>
-</ol>
-</li>
-<li><strong>使用下拉式選單</strong> 或者 <strong>關鍵字</strong> 篩選出想要的資訊<ol>
-<li>下拉式選單：<strong>由使用者自己選定</strong>甚麼欄位要用來做為下拉式選單篩選，非常自由。👏</li>
-<li>關鍵字：單筆資料中，只要有一個欄位包含關鍵字的就會被篩選出來，可用半形逗號 (,) 來輸入多個關鍵字！👏</li>
-</ol>
-</li>
-<li><strong>右鍵點擊表格，即可複製表格中的資訊</strong>，省去框選並複製的時間 (自己框選還有可能選錯、多選到空白鍵，有這個功能真是太好了 😭)。👏</li>
-<li>此專案只會呈現資訊，並不能修改內容，<strong>不用怕修改到原始檔案</strong>。👏</li>
-<li>備份 Excel 檔即可。👏</li>
-</ol>
-<h2 id="如何使用？"><a href="#如何使用？" class="headerlink" title="如何使用？"></a>如何使用？</h2><ol>
-<li>下載 <a href="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-IT-%E7%9A%84%E5%A5%BD%E5%B9%AB%E6%89%8B-%E5%B8%B3%E5%AF%86%E9%A1%AF%E7%A4%BA%E5%99%A8%2Ftemplate.xlsx?alt=media&amp;token=7d97e0da-ac7b-40a9-b4b8-af8a80390ce5">template.xlsx</a> 檔案並開啟，會看到有兩個工作表📄📄，分別為 <code>metadata</code>、<code>ap</code>。<ul>
-<li><code>metadata</code> 工作表<br>  已經有定義好的一排標頭 (順序請勿更動)，根據定義增加紀錄即可。此工作表用來定義應用程式中顯示資料的相關設定。<ol>
-<li><code>apHeader</code>：在 <code>ap</code> 工作表中的欄位名稱。✔️</li>
-<li><code>displayHeader</code>：要顯示在應用程式的欄位名稱。✔️</li>
-<li><code>hide</code>：是否預設隱藏此欄位，可另於應用程式中設定隱藏或顯示，空值代表不隱藏。✔️</li>
-<li><code>mask</code>：是否預設遮罩此欄位，被遮罩的內容會以 <code>*</code> 符號表示，空值代表不遮罩。✔️</li>
-<li><code>filterPriority</code>：下拉式選單的欄位優先順序，優先權越高填寫越高的數值，若為非數值，會以 <code>-9999</code> 作為其優先權；若為空值表示不作為篩選欄位。✔️</li>
-</ol>
-</li>
-<li><code>ap</code> 工作表<br>  根據在 <code>metadata</code> 工作表設定的欄位，於此處添加相對應欄位。有 4 個欄位必須要有 (也必須存在於 <code>metadata</code> 工作表 ‼️)，如此一來對應的動作按鈕才能運作，分別為<ol>
-<li><code>protocol</code>：該系統對應的協定，目前 rdp/http/https 有對應的動作。</li>
-<li><code>uri</code>：該系統對應的 uri。</li>
-<li><code>account</code>：帳號。</li>
-<li><code>password</code>：密碼。</li>
-</ol>
-</li>
-</ul>
-</li>
-<li>視需求加密 Excel 檔案。🔒</li>
-<li>開啟 AP Displayer，選擇檔案 (<code>*.xlsx</code>) 並輸入密碼 (若有的話，無密碼則為空即可)。🔑</li>
-<li>將會列出 Excel 內的帳密資訊！💯</li>
-</ol>
-<h2 id="歡迎-fork"><a href="#歡迎-fork" class="headerlink" title="歡迎 fork"></a>歡迎 fork</h2><p>歡迎社群的力量一起增強這個工具的功能！</p>
-]]></content>
-      <categories>
-        <category>自行開發工具使用教學</category>
-      </categories>
-      <tags>
-        <tag>electron</tag>
-        <tag>js</tag>
-        <tag>password</tag>
-        <tag>react</tag>
-        <tag>account</tag>
-        <tag>tool</tag>
-        <tag>it</tag>
-        <tag>displayer</tag>
-        <tag>word</tag>
-        <tag>excel</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Tool] 傳輸測試必備 - 垃圾檔案製造機</title>
-    <url>/2021/10/31/tool_dummy_file/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>大量的虛擬檔案 (Dummy file) 在傳輸測試中起到了至關重要的作用。需先有一定的檔案量，才有可能測試出較無偏差的結果，<code>dfgen</code> 這個工具允許使用者先行指定單一檔案大小的範圍，再指定總檔案容量大小，最後生成對應的 Dummy file。</p>
-<h2 id="原始碼與執行檔連結"><a href="#原始碼與執行檔連結" class="headerlink" title="原始碼與執行檔連結"></a>原始碼與執行檔連結</h2><!-- markdownlint-disable MD034 -->
-<ol>
-<li><a class="btn" href="https://github.com/weirenxue/dummy-file-generator" title="Source code of Dummy file generator">
-            <i class="fab fa-github"></i>Source code
-          </a>
-</li>
-<li><a class="btn" href="https://github.com/weirenxue/dummy-file-generator/releases/tag/v1.0.0" title="Exe of Dummy file generator">
-            <i class="fab fa-github"></i>dfgen.exe
-          </a>
-</li>
-</ol>
-<!-- markdownlint-restore MD034 -->
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>執行檔目前只針對 Windows 10 做打包，若非 Windows 10 但熟悉 Python 的讀者可以將 Source Code Clone 到本地端執行。</p>
-<p>透過 <code>-h</code> 指令查看參數說明</p>
-<figure class="highlight ps"><table><tr><td class="code"><pre><span class="line">.\dfgen.exe <span class="literal">-h</span></span><br><span class="line">usage: dfgen.exe [-<span class="type">h</span>] [-<span class="type">t</span> <span class="type">TARGET_SIZE</span>] [--<span class="type">min</span>-<span class="type">size</span> <span class="type">MIN_SIZE</span>] [--<span class="type">max</span>-<span class="type">size</span> <span class="type">MAX_SIZE</span>] [-<span class="type">c</span>] destination</span><br><span class="line"></span><br><span class="line">positional arguments:</span><br><span class="line">  destination           <span class="built_in">Where</span> are the dummy files stored to.</span><br><span class="line"></span><br><span class="line">optional arguments:</span><br><span class="line">  <span class="literal">-h</span>, <span class="literal">--help</span>            show this help message and <span class="keyword">exit</span></span><br><span class="line">  <span class="literal">-t</span> TARGET_SIZE, <span class="literal">--target-size</span> TARGET_SIZE</span><br><span class="line">                        The total size of target. ([<span class="type">B</span>|<span class="type">KB</span>|<span class="type">MB</span>|<span class="type">GB</span>|<span class="type">TB</span>] default unit is Byte)</span><br><span class="line">  <span class="literal">--min-size</span> MIN_SIZE   The minimim size of a dummy file. ([<span class="type">B</span>|<span class="type">KB</span>|<span class="type">MB</span>|<span class="type">GB</span>|<span class="type">TB</span>] default unit is Byte)</span><br><span class="line">  <span class="literal">--max-size</span> MAX_SIZE   The maximum size of a dummy file. ([<span class="type">B</span>|<span class="type">KB</span>|<span class="type">MB</span>|<span class="type">GB</span>|<span class="type">TB</span>] default unit is Byte)</span><br><span class="line">  <span class="literal">-c</span>, <span class="literal">--clear-first</span>     Whether to <span class="built_in">clear</span> the files <span class="keyword">in</span> the destination directory first. (Default is false)</span><br></pre></td></tr></table></figure>
-<h2 id="使用範例"><a href="#使用範例" class="headerlink" title="使用範例"></a>使用範例</h2><ol>
-<li><p>在指定的目錄 <code>E:\dummy\</code> 產製 Dummy file，並且指定總容量為 <code>1GB</code>、單一檔案容量最小為 <code>1B</code> 而最大為 <code>5MB</code></p>
- <figure class="highlight ps"><table><tr><td class="code"><pre><span class="line">.\dfgen.exe <span class="literal">--target-size</span> <span class="number">1</span>GB <span class="literal">--min-size</span> <span class="number">1</span>B <span class="literal">--max-size</span> <span class="number">5</span>MB E:\dummy\</span><br></pre></td></tr></table></figure>
-<ul>
-<li>執行之前，需先確認目錄 <code>E:\dummy\</code> 存在，且為空目錄。</li>
-</ul>
-</li>
-<li><p>產製 Dummy file 在不為空的目錄</p>
- <figure class="highlight ps"><table><tr><td class="code"><pre><span class="line">.\dfgen.exe <span class="literal">--target-size</span> <span class="number">1</span>GB <span class="literal">--min-size</span> <span class="number">1</span>B <span class="literal">--max-size</span> <span class="number">5</span>MB E:\dummy\ <span class="literal">-c</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>當 <code>-c</code> 被設定，將會在產製 Dummy file 前，先清空指定的目錄。<strong>必須小心執行這個操作，因為清空的檔案無法復原！</strong></li>
-</ul>
-</li>
-<li><p>如果 <code>--min-size</code> 大於 <code>--max-size</code>，會自動將兩個值對調，下方指令的執行結果與前一個範例結果相同</p>
- <figure class="highlight ps"><table><tr><td class="code"><pre><span class="line">.\dfgen.exe <span class="literal">--target-size</span> <span class="number">1</span>GB <span class="literal">--min-size</span> <span class="number">5</span>MB <span class="literal">--max-size</span> <span class="number">1</span>B E:\dummy\ <span class="literal">-c</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>自行開發工具使用教學</category>
-      </categories>
-      <tags>
-        <tag>file</tag>
-        <tag>python</tag>
-        <tag>test</tag>
-        <tag>tool</tag>
-        <tag>dummy</tag>
-        <tag>transmission</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</title>
-    <url>/2021/06/15/tool_sql_injection/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
-<h2 id="工具連結"><a href="#工具連結" class="headerlink" title="工具連結"></a>工具連結</h2><div class="note info">
-            <p><a href="/injection-in-time/">SQL 注入合成器</a></p>
-          </div>
-<h2 id="安裝說明"><a href="#安裝說明" class="headerlink" title="安裝說明"></a>安裝說明</h2><p>這個工具是以 <code>javascript</code> 開發的，目的是讓使用者只需有瀏覽器，即可隨時使用，不用額外安裝軟體！</p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
-<li>將 SQL 語句貼至 <code>GUESS SQL HERE</code>，注入之前的預覽會在 <code>PREVIEW</code> 區域。</li>
-<li>填寫要注入的參數名稱於 <code>Parameter Name</code>。</li>
-<li>填寫對應要注入的值於 <code>Value</code>。</li>
-<li>注入後的 SQL 語句會顯示在 <code>AFTER INJECTION</code> 區域。</li>
-<li>可由 <code>PREVIEW</code> 與 <code>AFTER INJECTION</code> 對比查看，體會一下 SQL Injection 的威力！</li>
-</ol>
-<h2 id="補充小常識"><a href="#補充小常識" class="headerlink" title="補充小常識"></a>補充小常識</h2><p>要預防被注入、安全的執行 SQL，必定要用 <code>Parameterized Query + Prepared Statement</code>，缺一不可。</p>
-]]></content>
-      <categories>
-        <category>自行開發工具使用教學</category>
-      </categories>
-      <tags>
-        <tag>time</tag>
-        <tag>tool</tag>
-        <tag>sql</tag>
-        <tag>injection</tag>
-        <tag>real</tag>
-        <tag>synthesis</tag>
-        <tag>tutorial</tag>
-        <tag>penetrate</tag>
-        <tag>pentest</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>[Tool] 提高效率必用 - 多字串取代器</title>
-    <url>/2021/07/09/tool_multi_str_replace/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>不論是在上學做作業、上班做報告時，都一定有碰過字串取代的功能。只取代一個文字可能還好，但有沒有體會過要取代 5 個字彙甚至更多的那種無力感呢？我就有這種深刻的體會，因為在寫程式時也會需要用到這個功能，這裡就以我最常遇到的情況當一個範例，教各位如何使用這個工具，提升自己的工作效率！</p>
-<h2 id="工具連結"><a href="#工具連結" class="headerlink" title="工具連結"></a>工具連結</h2><div class="note info">
-            <p><a href="/multi-str-replace/">多字串取代器</a></p>
-          </div>
-<h2 id="介面說明"><a href="#介面說明" class="headerlink" title="介面說明"></a>介面說明</h2><p>多字串取代器是一個網頁型態的工具，只需要有瀏覽器 (Chrome、Firefox 等) 就可以使用，不用另外下載與安裝，提高便攜性。介面中有兩個頁籤</p>
-<h3 id="替換文字設定"><a href="#替換文字設定" class="headerlink" title="替換文字設定"></a>替換文字設定</h3><p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-%E6%8F%90%E9%AB%98%E6%95%88%E7%8E%87%E5%BF%85%E7%94%A8-%E5%A4%9A%E5%AD%97%E4%B8%B2%E5%8F%96%E4%BB%A3%E5%99%A8%2Freplace_setting.png?alt=media&amp;token=8571e19a-5afa-4ea5-a63e-d193f0744146" alt="替換文字設定"><span class="image-caption">替換文字設定</span></p>
-<p>這個頁面可以讓我們親自設定想要取代的字彙 (Find What) 與被取代的字彙 (Replace With)。</p>
-<p>視使用情況，要取代的字彙量有可能多也有可能少，因此設計 <code>新增欄位</code>/<code>移除欄位</code> 按鈕讓使用者可以隨意新增或刪除要取代的字彙，不限定數量上限。</p>
-<p>若設定完後，認為這些設定將來有可能還會用到，這裡也提供匯出的功能，下次直接將這次匯出的檔案匯入，就可以馬上使用上次設定好的字串對應，是一種很貼心的設計，讓使用者不用每次都輸入這麼多字彙，同時也避免人為輸入可能產生的錯誤。</p>
-<p>當然，因為匯出的是一個檔案，因此可以分享給親朋好友、同事，讓對方使用此工具批量替換文字，使文章的用字遣詞達到一致性。</p>
-<div class="note info">
-            <p>被取代的文字背後運作是使用 Regex 字串比對來完成的，允許使用者輸入 Regex 形式，效率更上一層樓！</p>
-          </div>
-<h3 id="取代文字操作"><a href="#取代文字操作" class="headerlink" title="取代文字操作"></a>取代文字操作</h3><p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-%E6%8F%90%E9%AB%98%E6%95%88%E7%8E%87%E5%BF%85%E7%94%A8-%E5%A4%9A%E5%AD%97%E4%B8%B2%E5%8F%96%E4%BB%A3%E5%99%A8%2Freplace_opt.png?alt=media&amp;token=f0a481ef-0a1e-459f-aa0d-7ec12a015fc5" alt="取代文字操作"><span class="image-caption">取代文字操作</span></p>
-<p>這個頁面的功能簡潔易瞭，首先將文章貼入文字框內，再點擊 <code>取代</code> 按鈕，框內中的文字會將「替換文字設定」頁籤所設定好的字彙替換掉。若想要複製文字框內的所有文字，點擊 <code>複製</code> 按鈕，若想要清除則直接點擊 <code>清除</code> 按鈕，讓使用者不需要手動全選 (<code>Ctrl + A</code>)，再複製 (<code>Ctrl + C</code>) /清除 (<code>backspace</code>)。</p>
-<h2 id="使用範例"><a href="#使用範例" class="headerlink" title="使用範例"></a>使用範例</h2><h3 id="問題說明"><a href="#問題說明" class="headerlink" title="問題說明"></a>問題說明</h3><p>相信在寫 <code>SQL</code> 搭配其它後端語言 (<code>C#</code>、<code>JAVA</code>、<code>GO</code> 等，這裡以 <code>C#</code> 為例子) 的時候，第一步一定是在 DBMS 上確認 SQL 邏輯是否正確，第二步就會遭遇到問題，當我們要將 <code>SQL</code> 轉為字串放到後端語言中，需要先將 <code>SQL</code> 前後加上引號，若 <code>SQL</code> 只有簡短的一行不會造成太大困擾，若 <code>SQL</code> 有幾十行，手動加上引號會要工程師的命 (但可能只有我不想手動做這件事也說不定 😄)，不僅僅是浪費時間，同時也可能因為在手動加入引號的過程中，發生細微的錯誤而沒注意到。</p>
-<p>舉例來說，若 <code>SQL</code> 原文如下</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">name</span><br><span class="line">,birthday</span><br><span class="line">,sex</span><br><span class="line">,age</span><br><span class="line">,family</span><br><span class="line">,height</span><br><span class="line">,weight</span><br><span class="line"><span class="keyword">FROM</span> <span class="keyword">member</span></span><br></pre></td></tr></table></figure>
-<!-- markdownlint-disable MD038 -->
-<p>要將其放到 <code>C#</code> 程式中，必須每一行前面加上 <code>&quot;</code> 與後面加上 <code>&quot; +</code>，這是一件非常繁瑣的事情，且是每個 <code>SQL</code> 都必需經過這個步驟，想想都覺得累</p>
-<!-- markdownlint-restore MD038 -->
-<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line"><span class="built_in">string</span> SQL = </span><br><span class="line">            <span class="string">&quot; SELECT &quot;</span> +</span><br><span class="line">            <span class="string">&quot; name &quot;</span> +</span><br><span class="line">            <span class="string">&quot; ,birthday &quot;</span> +</span><br><span class="line">            <span class="string">&quot; ,sex &quot;</span> +</span><br><span class="line">            <span class="string">&quot; ,age &quot;</span> +</span><br><span class="line">            <span class="string">&quot; ,family &quot;</span> +</span><br><span class="line">            <span class="string">&quot; ,height &quot;</span> +</span><br><span class="line">            <span class="string">&quot; ,weight &quot;</span> +</span><br><span class="line">            <span class="string">&quot; FROM member &quot;</span>;</span><br></pre></td></tr></table></figure>
-<h3 id="利用工具解決問題"><a href="#利用工具解決問題" class="headerlink" title="利用工具解決問題"></a>利用工具解決問題</h3><p>現在就利用多字串取代器協助我們完成這件繁瑣的事情吧！</p>
-<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-%E6%8F%90%E9%AB%98%E6%95%88%E7%8E%87%E5%BF%85%E7%94%A8-%E5%A4%9A%E5%AD%97%E4%B8%B2%E5%8F%96%E4%BB%A3%E5%99%A8%2Freplace_example.png?alt=media&amp;token=b607a0c9-4eff-4d9a-b02d-ccc3f7554319" alt="多字串取代器使用範例"><span class="image-caption">多字串取代器使用範例</span></p>
-<ol>
-<li>更改標題名稱：直接點擊表格標題區域即可修改，修改為自己看得懂的標題，當匯出的時候也會以此標題為匯出的檔名。</li>
-<li>設定對應的字串<ol>
-<li><code>\s*$</code>：將每一行結尾的所有空白鍵都替換為空字串，也就是去除結尾空白的意思。</li>
-<li><code>^\s*</code>：將每一行開頭的所有空白鍵都替換為空字串，也就是去除開頭空白的意思。 <!-- markdownlint-disable MD038 --></li>
-<li><code>$</code>：將每一行的結尾都加上 <code>&quot; +</code></li>
-<li><code>^</code>：將每一行的結尾都加上 <code>&quot;</code> <!-- markdownlint-restore MD038 --></li>
-</ol>
-</li>
-<li>將要取代的文字在文字框貼上。</li>
-<li>取代：順序為從上往下的將第 2 步驟設定的取代字彙取代掉。</li>
-<li>最後的取代結果。</li>
-</ol>
-<p>是不是很簡單！這裡提供匯出的檔案 <a href="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-%E6%8F%90%E9%AB%98%E6%95%88%E7%8E%87%E5%BF%85%E7%94%A8-%E5%A4%9A%E5%AD%97%E4%B8%B2%E5%8F%96%E4%BB%A3%E5%99%A8%2FSQL%20to%20C%23_20210709_150338.json?alt=media&amp;token=dfccbf7e-f7ff-4721-bec6-2b63e35bd1ed">SQL to C#.json</a> 供大家下載來嘗試使用，實際操作更快上手，只需點擊匯入按鈕將此檔案上傳即可使用。</p>
-<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>隨著自己遇到的問題越來越多，陸陸續續做出一些小工具試圖解決這些問題，多字串取代器是其中一個小工具，解決了不論是開發或是文書上總會遇到的煩惱，因此在這裡分享給大家一起使用。</p>
-<div class="note info">
-            <p>若有任何疑問、建議或問題回報，歡迎於下方討論區留言。</p>
-          </div>
-]]></content>
-      <categories>
-        <category>自行開發工具使用教學</category>
-      </categories>
-      <tags>
-        <tag>tool</tag>
-        <tag>multiple</tag>
-        <tag>string</tag>
-        <tag>replace</tag>
-        <tag>once</tag>
-        <tag>lazy</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>[RDP] Windows 10 新增使用者並賦予遠端桌面權限</title>
     <url>/2021/06/13/rdp_windows_10/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在同一台電腦 Windows 上，若想要擁有自己個人桌面，就需要不與他人共用的一個使用者帳號；若想要遠端連線，則需要賦予使用者帳號遠端桌面的權限。</p>
@@ -6046,6 +5747,305 @@
         <tag>多人</tag>
         <tag>多工</tag>
         <tag>xrdp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Tool] IT 的好幫手 - 帳密顯示器</title>
+    <url>/2021/06/15/tool_it_ap_displayer/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 IT 產業中大概率會碰到管理很多伺服器的情況，要如何有組織的記錄這些帳號，是一個很重要的技能，記的好可以增加管理效率。個人有試過使用 Word、Excel，但每次要搜尋某帳號時都會花一段時間，且密碼都為明碼，若有人在旁觀看會非常不自在，且檔案位置難以管理，若是存雲端，則怕有資安疑慮。因此開發這個專案，讓帳號密碼顯示更為方便又兼顧安全性。</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-IT-%E7%9A%84%E5%A5%BD%E5%B9%AB%E6%89%8B-%E5%B8%B3%E5%AF%86%E9%A1%AF%E7%A4%BA%E5%99%A8%2Fapdisplayer2.0.0-border.png?alt=media&amp;token=3190406d-e769-4552-b45c-99f8259bf184" alt="AP Displayer"><span class="image-caption">AP Displayer</span></p>
+<h2 id="取得工具"><a href="#取得工具" class="headerlink" title="取得工具"></a>取得工具</h2><div class="note info">
+            <p><a href="https://github.com/weirenxue/ap-displayer/releases">帳密顯示器</a></p>
+          </div>
+<p>進入上方選擇所需檔案進行下載，這裡提供免安裝檔 <a href="https://github.com/weirenxue/ap-displayer/releases/download/v2.0-alpha.0/AP.Displayer.2.0.0.exe">AP.Displayer.2.0.0.exe</a> 與安裝檔 <a href="https://github.com/weirenxue/ap-displayer/releases/download/v2.0-alpha.0/AP.Displayer.Setup.2.0.0.exe">AP.Displayer.Setup.2.0.0.exe</a></p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-IT-%E7%9A%84%E5%A5%BD%E5%B9%AB%E6%89%8B-%E5%B8%B3%E5%AF%86%E9%A1%AF%E7%A4%BA%E5%99%A8%2Finstaller_v2.0-alpha.0.png?alt=media&amp;token=f64e84df-8806-42f0-902b-ffb64eb4928f" alt="下載"><span class="image-caption">下載</span></p>
+<h2 id="為什麼要使用此專案？"><a href="#為什麼要使用此專案？" class="headerlink" title="為什麼要使用此專案？"></a>為什麼要使用此專案？</h2><p>我們可以將帳密表存在於 Excel (<code>*.xlsx</code>) 中，在透過此專案所開發之應用程式顯示，根據自己的喜好篩選資訊、遮罩資訊、隱藏資訊。  </p>
+<h2 id="此專案所帶來的好處？"><a href="#此專案所帶來的好處？" class="headerlink" title="此專案所帶來的好處？"></a>此專案所帶來的好處？</h2><ol>
+<li><strong>可以處理受加密的 xlsx 檔案 (當然需輸入正確密碼)</strong>，這樣若 Excel 加密過就不用擔心外流。✨👍😎</li>
+<li>得益於使用 Excel 當作 DB，<strong>不會有任何可能性將帳密存於別人的資料庫內</strong>，非常安全。👏</li>
+<li><strong>根據自己的喜好隱藏密碼或其他機敏資訊欄位</strong>，他人在旁邊偷看時也只能看到帳號而不知密碼，比直接開啟 Excel 好多了！👏</li>
+<li><strong>直接點擊按鈕執行登入動作</strong>，省去剪剪貼貼的步驟，不同協定有不同效果。例如<ol>
+<li>協定為 <code>rdp</code>：將<strong>自動開啟遠端軟體 (mstsc)</strong>，輸入目標 URI 並帶著帳密登入，免去剪剪貼貼輸入 IP/AP 的繁雜程序。👏</li>
+<li>協定為 <code>http</code>/<code>https</code>：網頁登入形式太多，因此不協助登入，將會<strong>使用系統預設瀏覽器開啟該網址 (URI)</strong>。另外可用滑鼠右鍵🖱️點擊應用程式中的表格，即可直接複製帳號與密碼，省去框選/複製的時間，直接於網頁登入欄位貼上資訊。👏</li>
+<li>其他協定：目前尚未實作，歡迎一起將此專案做的更完善。</li>
+</ol>
+</li>
+<li><strong>使用下拉式選單</strong> 或者 <strong>關鍵字</strong> 篩選出想要的資訊<ol>
+<li>下拉式選單：<strong>由使用者自己選定</strong>甚麼欄位要用來做為下拉式選單篩選，非常自由。👏</li>
+<li>關鍵字：單筆資料中，只要有一個欄位包含關鍵字的就會被篩選出來，可用半形逗號 (,) 來輸入多個關鍵字！👏</li>
+</ol>
+</li>
+<li><strong>右鍵點擊表格，即可複製表格中的資訊</strong>，省去框選並複製的時間 (自己框選還有可能選錯、多選到空白鍵，有這個功能真是太好了 😭)。👏</li>
+<li>此專案只會呈現資訊，並不能修改內容，<strong>不用怕修改到原始檔案</strong>。👏</li>
+<li>備份 Excel 檔即可。👏</li>
+</ol>
+<h2 id="如何使用？"><a href="#如何使用？" class="headerlink" title="如何使用？"></a>如何使用？</h2><ol>
+<li>下載 <a href="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-IT-%E7%9A%84%E5%A5%BD%E5%B9%AB%E6%89%8B-%E5%B8%B3%E5%AF%86%E9%A1%AF%E7%A4%BA%E5%99%A8%2Ftemplate.xlsx?alt=media&amp;token=7d97e0da-ac7b-40a9-b4b8-af8a80390ce5">template.xlsx</a> 檔案並開啟，會看到有兩個工作表📄📄，分別為 <code>metadata</code>、<code>ap</code>。<ul>
+<li><code>metadata</code> 工作表<br>  已經有定義好的一排標頭 (順序請勿更動)，根據定義增加紀錄即可。此工作表用來定義應用程式中顯示資料的相關設定。<ol>
+<li><code>apHeader</code>：在 <code>ap</code> 工作表中的欄位名稱。✔️</li>
+<li><code>displayHeader</code>：要顯示在應用程式的欄位名稱。✔️</li>
+<li><code>hide</code>：是否預設隱藏此欄位，可另於應用程式中設定隱藏或顯示，空值代表不隱藏。✔️</li>
+<li><code>mask</code>：是否預設遮罩此欄位，被遮罩的內容會以 <code>*</code> 符號表示，空值代表不遮罩。✔️</li>
+<li><code>filterPriority</code>：下拉式選單的欄位優先順序，優先權越高填寫越高的數值，若為非數值，會以 <code>-9999</code> 作為其優先權；若為空值表示不作為篩選欄位。✔️</li>
+</ol>
+</li>
+<li><code>ap</code> 工作表<br>  根據在 <code>metadata</code> 工作表設定的欄位，於此處添加相對應欄位。有 4 個欄位必須要有 (也必須存在於 <code>metadata</code> 工作表 ‼️)，如此一來對應的動作按鈕才能運作，分別為<ol>
+<li><code>protocol</code>：該系統對應的協定，目前 rdp/http/https 有對應的動作。</li>
+<li><code>uri</code>：該系統對應的 uri。</li>
+<li><code>account</code>：帳號。</li>
+<li><code>password</code>：密碼。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>視需求加密 Excel 檔案。🔒</li>
+<li>開啟 AP Displayer，選擇檔案 (<code>*.xlsx</code>) 並輸入密碼 (若有的話，無密碼則為空即可)。🔑</li>
+<li>將會列出 Excel 內的帳密資訊！💯</li>
+</ol>
+<h2 id="歡迎-fork"><a href="#歡迎-fork" class="headerlink" title="歡迎 fork"></a>歡迎 fork</h2><p>歡迎社群的力量一起增強這個工具的功能！</p>
+]]></content>
+      <categories>
+        <category>自行開發工具使用教學</category>
+      </categories>
+      <tags>
+        <tag>electron</tag>
+        <tag>js</tag>
+        <tag>password</tag>
+        <tag>react</tag>
+        <tag>account</tag>
+        <tag>tool</tag>
+        <tag>it</tag>
+        <tag>displayer</tag>
+        <tag>word</tag>
+        <tag>excel</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Tool] 傳輸測試必備 - 垃圾檔案製造機</title>
+    <url>/2021/10/31/tool_dummy_file/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>大量的虛擬檔案 (Dummy file) 在傳輸測試中起到了至關重要的作用。需先有一定的檔案量，才有可能測試出較無偏差的結果，<code>dfgen</code> 這個工具允許使用者先行指定單一檔案大小的範圍，再指定總檔案容量大小，最後生成對應的 Dummy file。</p>
+<h2 id="原始碼與執行檔連結"><a href="#原始碼與執行檔連結" class="headerlink" title="原始碼與執行檔連結"></a>原始碼與執行檔連結</h2><!-- markdownlint-disable MD034 -->
+<ol>
+<li><a class="btn" href="https://github.com/weirenxue/dummy-file-generator" title="Source code of Dummy file generator">
+            <i class="fab fa-github"></i>Source code
+          </a>
+</li>
+<li><a class="btn" href="https://github.com/weirenxue/dummy-file-generator/releases/tag/v1.0.0" title="Exe of Dummy file generator">
+            <i class="fab fa-github"></i>dfgen.exe
+          </a>
+</li>
+</ol>
+<!-- markdownlint-restore MD034 -->
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>執行檔目前只針對 Windows 10 做打包，若非 Windows 10 但熟悉 Python 的讀者可以將 Source Code Clone 到本地端執行。</p>
+<p>透過 <code>-h</code> 指令查看參數說明</p>
+<figure class="highlight ps"><table><tr><td class="code"><pre><span class="line">.\dfgen.exe <span class="literal">-h</span></span><br><span class="line">usage: dfgen.exe [-<span class="type">h</span>] [-<span class="type">t</span> <span class="type">TARGET_SIZE</span>] [--<span class="type">min</span>-<span class="type">size</span> <span class="type">MIN_SIZE</span>] [--<span class="type">max</span>-<span class="type">size</span> <span class="type">MAX_SIZE</span>] [-<span class="type">c</span>] destination</span><br><span class="line"></span><br><span class="line">positional arguments:</span><br><span class="line">  destination           <span class="built_in">Where</span> are the dummy files stored to.</span><br><span class="line"></span><br><span class="line">optional arguments:</span><br><span class="line">  <span class="literal">-h</span>, <span class="literal">--help</span>            show this help message and <span class="keyword">exit</span></span><br><span class="line">  <span class="literal">-t</span> TARGET_SIZE, <span class="literal">--target-size</span> TARGET_SIZE</span><br><span class="line">                        The total size of target. ([<span class="type">B</span>|<span class="type">KB</span>|<span class="type">MB</span>|<span class="type">GB</span>|<span class="type">TB</span>] default unit is Byte)</span><br><span class="line">  <span class="literal">--min-size</span> MIN_SIZE   The minimim size of a dummy file. ([<span class="type">B</span>|<span class="type">KB</span>|<span class="type">MB</span>|<span class="type">GB</span>|<span class="type">TB</span>] default unit is Byte)</span><br><span class="line">  <span class="literal">--max-size</span> MAX_SIZE   The maximum size of a dummy file. ([<span class="type">B</span>|<span class="type">KB</span>|<span class="type">MB</span>|<span class="type">GB</span>|<span class="type">TB</span>] default unit is Byte)</span><br><span class="line">  <span class="literal">-c</span>, <span class="literal">--clear-first</span>     Whether to <span class="built_in">clear</span> the files <span class="keyword">in</span> the destination directory first. (Default is false)</span><br></pre></td></tr></table></figure>
+<h2 id="使用範例"><a href="#使用範例" class="headerlink" title="使用範例"></a>使用範例</h2><ol>
+<li><p>在指定的目錄 <code>E:\dummy\</code> 產製 Dummy file，並且指定總容量為 <code>1GB</code>、單一檔案容量最小為 <code>1B</code> 而最大為 <code>5MB</code></p>
+ <figure class="highlight ps"><table><tr><td class="code"><pre><span class="line">.\dfgen.exe <span class="literal">--target-size</span> <span class="number">1</span>GB <span class="literal">--min-size</span> <span class="number">1</span>B <span class="literal">--max-size</span> <span class="number">5</span>MB E:\dummy\</span><br></pre></td></tr></table></figure>
+<ul>
+<li>執行之前，需先確認目錄 <code>E:\dummy\</code> 存在，且為空目錄。</li>
+</ul>
+</li>
+<li><p>產製 Dummy file 在不為空的目錄</p>
+ <figure class="highlight ps"><table><tr><td class="code"><pre><span class="line">.\dfgen.exe <span class="literal">--target-size</span> <span class="number">1</span>GB <span class="literal">--min-size</span> <span class="number">1</span>B <span class="literal">--max-size</span> <span class="number">5</span>MB E:\dummy\ <span class="literal">-c</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>當 <code>-c</code> 被設定，將會在產製 Dummy file 前，先清空指定的目錄。<strong>必須小心執行這個操作，因為清空的檔案無法復原！</strong></li>
+</ul>
+</li>
+<li><p>如果 <code>--min-size</code> 大於 <code>--max-size</code>，會自動將兩個值對調，下方指令的執行結果與前一個範例結果相同</p>
+ <figure class="highlight ps"><table><tr><td class="code"><pre><span class="line">.\dfgen.exe <span class="literal">--target-size</span> <span class="number">1</span>GB <span class="literal">--min-size</span> <span class="number">5</span>MB <span class="literal">--max-size</span> <span class="number">1</span>B E:\dummy\ <span class="literal">-c</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>自行開發工具使用教學</category>
+      </categories>
+      <tags>
+        <tag>file</tag>
+        <tag>python</tag>
+        <tag>tool</tag>
+        <tag>dummy</tag>
+        <tag>transmission</tag>
+        <tag>test</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Tool] 提高效率必用 - 多字串取代器</title>
+    <url>/2021/07/09/tool_multi_str_replace/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>不論是在上學做作業、上班做報告時，都一定有碰過字串取代的功能。只取代一個文字可能還好，但有沒有體會過要取代 5 個字彙甚至更多的那種無力感呢？我就有這種深刻的體會，因為在寫程式時也會需要用到這個功能，這裡就以我最常遇到的情況當一個範例，教各位如何使用這個工具，提升自己的工作效率！</p>
+<h2 id="工具連結"><a href="#工具連結" class="headerlink" title="工具連結"></a>工具連結</h2><div class="note info">
+            <p><a href="/multi-str-replace/">多字串取代器</a></p>
+          </div>
+<h2 id="介面說明"><a href="#介面說明" class="headerlink" title="介面說明"></a>介面說明</h2><p>多字串取代器是一個網頁型態的工具，只需要有瀏覽器 (Chrome、Firefox 等) 就可以使用，不用另外下載與安裝，提高便攜性。介面中有兩個頁籤</p>
+<h3 id="替換文字設定"><a href="#替換文字設定" class="headerlink" title="替換文字設定"></a>替換文字設定</h3><p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-%E6%8F%90%E9%AB%98%E6%95%88%E7%8E%87%E5%BF%85%E7%94%A8-%E5%A4%9A%E5%AD%97%E4%B8%B2%E5%8F%96%E4%BB%A3%E5%99%A8%2Freplace_setting.png?alt=media&amp;token=8571e19a-5afa-4ea5-a63e-d193f0744146" alt="替換文字設定"><span class="image-caption">替換文字設定</span></p>
+<p>這個頁面可以讓我們親自設定想要取代的字彙 (Find What) 與被取代的字彙 (Replace With)。</p>
+<p>視使用情況，要取代的字彙量有可能多也有可能少，因此設計 <code>新增欄位</code>/<code>移除欄位</code> 按鈕讓使用者可以隨意新增或刪除要取代的字彙，不限定數量上限。</p>
+<p>若設定完後，認為這些設定將來有可能還會用到，這裡也提供匯出的功能，下次直接將這次匯出的檔案匯入，就可以馬上使用上次設定好的字串對應，是一種很貼心的設計，讓使用者不用每次都輸入這麼多字彙，同時也避免人為輸入可能產生的錯誤。</p>
+<p>當然，因為匯出的是一個檔案，因此可以分享給親朋好友、同事，讓對方使用此工具批量替換文字，使文章的用字遣詞達到一致性。</p>
+<div class="note info">
+            <p>被取代的文字背後運作是使用 Regex 字串比對來完成的，允許使用者輸入 Regex 形式，效率更上一層樓！</p>
+          </div>
+<h3 id="取代文字操作"><a href="#取代文字操作" class="headerlink" title="取代文字操作"></a>取代文字操作</h3><p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-%E6%8F%90%E9%AB%98%E6%95%88%E7%8E%87%E5%BF%85%E7%94%A8-%E5%A4%9A%E5%AD%97%E4%B8%B2%E5%8F%96%E4%BB%A3%E5%99%A8%2Freplace_opt.png?alt=media&amp;token=f0a481ef-0a1e-459f-aa0d-7ec12a015fc5" alt="取代文字操作"><span class="image-caption">取代文字操作</span></p>
+<p>這個頁面的功能簡潔易瞭，首先將文章貼入文字框內，再點擊 <code>取代</code> 按鈕，框內中的文字會將「替換文字設定」頁籤所設定好的字彙替換掉。若想要複製文字框內的所有文字，點擊 <code>複製</code> 按鈕，若想要清除則直接點擊 <code>清除</code> 按鈕，讓使用者不需要手動全選 (<code>Ctrl + A</code>)，再複製 (<code>Ctrl + C</code>) /清除 (<code>backspace</code>)。</p>
+<h2 id="使用範例"><a href="#使用範例" class="headerlink" title="使用範例"></a>使用範例</h2><h3 id="問題說明"><a href="#問題說明" class="headerlink" title="問題說明"></a>問題說明</h3><p>相信在寫 <code>SQL</code> 搭配其它後端語言 (<code>C#</code>、<code>JAVA</code>、<code>GO</code> 等，這裡以 <code>C#</code> 為例子) 的時候，第一步一定是在 DBMS 上確認 SQL 邏輯是否正確，第二步就會遭遇到問題，當我們要將 <code>SQL</code> 轉為字串放到後端語言中，需要先將 <code>SQL</code> 前後加上引號，若 <code>SQL</code> 只有簡短的一行不會造成太大困擾，若 <code>SQL</code> 有幾十行，手動加上引號會要工程師的命 (但可能只有我不想手動做這件事也說不定 😄)，不僅僅是浪費時間，同時也可能因為在手動加入引號的過程中，發生細微的錯誤而沒注意到。</p>
+<p>舉例來說，若 <code>SQL</code> 原文如下</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">name</span><br><span class="line">,birthday</span><br><span class="line">,sex</span><br><span class="line">,age</span><br><span class="line">,family</span><br><span class="line">,height</span><br><span class="line">,weight</span><br><span class="line"><span class="keyword">FROM</span> <span class="keyword">member</span></span><br></pre></td></tr></table></figure>
+<!-- markdownlint-disable MD038 -->
+<p>要將其放到 <code>C#</code> 程式中，必須每一行前面加上 <code>&quot;</code> 與後面加上 <code>&quot; +</code>，這是一件非常繁瑣的事情，且是每個 <code>SQL</code> 都必需經過這個步驟，想想都覺得累</p>
+<!-- markdownlint-restore MD038 -->
+<figure class="highlight cs"><table><tr><td class="code"><pre><span class="line"><span class="built_in">string</span> SQL = </span><br><span class="line">            <span class="string">&quot; SELECT &quot;</span> +</span><br><span class="line">            <span class="string">&quot; name &quot;</span> +</span><br><span class="line">            <span class="string">&quot; ,birthday &quot;</span> +</span><br><span class="line">            <span class="string">&quot; ,sex &quot;</span> +</span><br><span class="line">            <span class="string">&quot; ,age &quot;</span> +</span><br><span class="line">            <span class="string">&quot; ,family &quot;</span> +</span><br><span class="line">            <span class="string">&quot; ,height &quot;</span> +</span><br><span class="line">            <span class="string">&quot; ,weight &quot;</span> +</span><br><span class="line">            <span class="string">&quot; FROM member &quot;</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="利用工具解決問題"><a href="#利用工具解決問題" class="headerlink" title="利用工具解決問題"></a>利用工具解決問題</h3><p>現在就利用多字串取代器協助我們完成這件繁瑣的事情吧！</p>
+<p><img src="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-%E6%8F%90%E9%AB%98%E6%95%88%E7%8E%87%E5%BF%85%E7%94%A8-%E5%A4%9A%E5%AD%97%E4%B8%B2%E5%8F%96%E4%BB%A3%E5%99%A8%2Freplace_example.png?alt=media&amp;token=b607a0c9-4eff-4d9a-b02d-ccc3f7554319" alt="多字串取代器使用範例"><span class="image-caption">多字串取代器使用範例</span></p>
+<ol>
+<li>更改標題名稱：直接點擊表格標題區域即可修改，修改為自己看得懂的標題，當匯出的時候也會以此標題為匯出的檔名。</li>
+<li>設定對應的字串<ol>
+<li><code>\s*$</code>：將每一行結尾的所有空白鍵都替換為空字串，也就是去除結尾空白的意思。</li>
+<li><code>^\s*</code>：將每一行開頭的所有空白鍵都替換為空字串，也就是去除開頭空白的意思。 <!-- markdownlint-disable MD038 --></li>
+<li><code>$</code>：將每一行的結尾都加上 <code>&quot; +</code></li>
+<li><code>^</code>：將每一行的結尾都加上 <code>&quot;</code> <!-- markdownlint-restore MD038 --></li>
+</ol>
+</li>
+<li>將要取代的文字在文字框貼上。</li>
+<li>取代：順序為從上往下的將第 2 步驟設定的取代字彙取代掉。</li>
+<li>最後的取代結果。</li>
+</ol>
+<p>是不是很簡單！這裡提供匯出的檔案 <a href="https://firebasestorage.googleapis.com/v0/b/gh-pages-88339.appspot.com/o/Tool-%E6%8F%90%E9%AB%98%E6%95%88%E7%8E%87%E5%BF%85%E7%94%A8-%E5%A4%9A%E5%AD%97%E4%B8%B2%E5%8F%96%E4%BB%A3%E5%99%A8%2FSQL%20to%20C%23_20210709_150338.json?alt=media&amp;token=dfccbf7e-f7ff-4721-bec6-2b63e35bd1ed">SQL to C#.json</a> 供大家下載來嘗試使用，實際操作更快上手，只需點擊匯入按鈕將此檔案上傳即可使用。</p>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>隨著自己遇到的問題越來越多，陸陸續續做出一些小工具試圖解決這些問題，多字串取代器是其中一個小工具，解決了不論是開發或是文書上總會遇到的煩惱，因此在這裡分享給大家一起使用。</p>
+<div class="note info">
+            <p>若有任何疑問、建議或問題回報，歡迎於下方討論區留言。</p>
+          </div>
+]]></content>
+      <categories>
+        <category>自行開發工具使用教學</category>
+      </categories>
+      <tags>
+        <tag>tool</tag>
+        <tag>multiple</tag>
+        <tag>string</tag>
+        <tag>replace</tag>
+        <tag>once</tag>
+        <tag>lazy</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>[Tool] 滲透利器 - SQL Injection 合成語句即時顯示器</title>
+    <url>/2021/06/15/tool_sql_injection/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Injection 攻擊名列 OWASP TOP 10 中的 Top 1！SQL Injection 也是一種 Injection 形式，身為工程師去了解 SQL Injection 原理是必要的。SQL Injection 合成出新的語句，對於初學者而言難以憑空想像，通常需要使用程式來查看，若每測試一個語句就要寫幾行程式，太麻煩了！這裡開發出網頁版的時實 SQL 合成，適合拿來在課堂上教學使用，更適合在滲透測試時可以用來猜測、利用與驗證。</p>
+<h2 id="工具連結"><a href="#工具連結" class="headerlink" title="工具連結"></a>工具連結</h2><div class="note info">
+            <p><a href="/injection-in-time/">SQL 注入合成器</a></p>
+          </div>
+<h2 id="安裝說明"><a href="#安裝說明" class="headerlink" title="安裝說明"></a>安裝說明</h2><p>這個工具是以 <code>javascript</code> 開發的，目的是讓使用者只需有瀏覽器，即可隨時使用，不用額外安裝軟體！</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ol>
+<li>將 SQL 語句貼至 <code>GUESS SQL HERE</code>，注入之前的預覽會在 <code>PREVIEW</code> 區域。</li>
+<li>填寫要注入的參數名稱於 <code>Parameter Name</code>。</li>
+<li>填寫對應要注入的值於 <code>Value</code>。</li>
+<li>注入後的 SQL 語句會顯示在 <code>AFTER INJECTION</code> 區域。</li>
+<li>可由 <code>PREVIEW</code> 與 <code>AFTER INJECTION</code> 對比查看，體會一下 SQL Injection 的威力！</li>
+</ol>
+<h2 id="補充小常識"><a href="#補充小常識" class="headerlink" title="補充小常識"></a>補充小常識</h2><p>要預防被注入、安全的執行 SQL，必定要用 <code>Parameterized Query + Prepared Statement</code>，缺一不可。</p>
+]]></content>
+      <categories>
+        <category>自行開發工具使用教學</category>
+      </categories>
+      <tags>
+        <tag>time</tag>
+        <tag>tool</tag>
+        <tag>sql</tag>
+        <tag>injection</tag>
+        <tag>real</tag>
+        <tag>synthesis</tag>
+        <tag>tutorial</tag>
+        <tag>penetrate</tag>
+        <tag>pentest</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>自動化測試概述 - 撰寫測試案例與自動執行測試</title>
+    <url>/2022/09/25/automated-testing/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>開發程式的過程中最常做的事就是編譯、運行、看結果，若結果不符預期，對原始碼進行修改後再執行一樣的步驟直到運作正確為止，一來一回著實耗費不少寶貴時間。此外，修改代碼時還需要注意不要影響到其它地方的程式碼運行，若因此而產生錯誤就要花更多時間修改，是一種維護成本。長時間下來，這樣的程式碼難免成為所謂的「遺毒」。自動化測試這時候就能派上用場，自動化測試是解決這個問題的一種方法，也是最根本的方法，讓電腦代替人工進行對 Codebase 的測試，除了有省時省力的好處，同時也是降低維護成本的關鍵。</p>
+<h2 id="自動化測試"><a href="#自動化測試" class="headerlink" title="自動化測試"></a>自動化測試</h2><p>需先有測試案例才有東西可以自動運行，因此雖然自動化測試是一個詞，但實際上包含兩件事，分別是撰寫測試案例 (Write Test Cases) 與自動執行測試 (Test automation)</p>
+<ol>
+<li><p>撰寫測試案例 (Write Test Cases)：</p>
+<p> 測試案例即是描述 SUT (System Under Test，測試目標) 在給定輸入的情況下預期對應怎樣的輸出，若進一步將這樣的描述寫成可重複執行的測試腳本，即為撰寫測試案例。每當需要驗證程式的正確性，只需執行測試腳本，等待測試結束並產出相關報告，確認沒問題後，便可進行部署等後續工作。</p>
+</li>
+<li><p>自動執行測試 (Test automation)：</p>
+<p> 期望每個人都能記得手動執行測試腳本再進行後續動作是不太實際的，因為只要有人參與的環節，就有機會出現疏漏，忘記測試就直接提交的情況非常有可能出現。因此，撰寫測試案例結束後，最終的目標是使這些測試腳本能在適當時機被自動運行。例如：當 Commit 後、Merge 前或者要發布前都會由 CI/CD 自動執行測試腳本，使團隊能夠即時發現程式任何非預期的行為，降低 Bug 上線的機會。</p>
+<p> 舉例來說：LeetCode 將每個題目的輸入與輸出寫成測試案例，當我們提交答案時，它會自動提供預期的輸入給我們寫的 Function，並檢查輸出是否符合它的預期，也因為 LeetCode 在我們提交答案時自動執行測試，讓我們在刷題時能及時地得到回饋。</p>
+</li>
+</ol>
+<h2 id="撰寫測試案例的好處"><a href="#撰寫測試案例的好處" class="headerlink" title="撰寫測試案例的好處"></a>撰寫測試案例的好處</h2><p>撰寫測試案例最主要的目的是能夠隨時驗證程式運作結果確如預期，此外還有許多優點，下面列舉個人最有感的三大好處</p>
+<ol>
+<li><p>節省維護時間：</p>
+<p> 要知道一個 Function 的輸入與輸出的關係或運作結果是否是對的，一般且直接的作法就是刻意呼叫該 Function，並且使用 <code>print</code> 函數將結果輸出於 Console，最後使用人眼觀看輸出的值並用人腦判斷是否為預期結果，即所謂的 <code>print</code> 大法。如此一來，每撰寫新的 Function 就要進行一次這樣的輪迴，若不小心改壞其他 Function 更是災難性的大幅拉長維護時間，因為時間大部分都會花在思考要如何用 <code>print</code> 大法來 Debug，或者思考前一次使用來驗證輸入與輸出是否正確的值是什麼。</p>
+<p> 倘若只是開發較簡單的功能 (例如：給兩個數並計算出兩數之合)，這樣的作法是更快更容易的。但若是開發如 RESTful API Server 這種線上服務，<code>print</code> 大法的運作流程為：編譯程式並運行，再使用 <code>curl</code>、<code>Postman</code> 等外部工具發一個 HTTP Request 到 Server，再回到 Server 的 Console 來確認輸出結果。當系統龐大起來，要用 <code>print</code> 大法確認每個 Endpoint 的正確性，光是想像也能感覺到這是非常耗時且不是這麼容易、可靠的，對吧？</p>
+<p> 撰寫測試案例可以將預期輸入與輸出的比對交由程式代勞，不需要再使用人眼與人腦去判斷，節省維護時間外，還可以將所有測資保存下來。若之後想將功能移植 (Porting) 到不同的程式語言，原本是需要詢問作者要餵什麼樣的資料與預期輸出的資料，而現在直接透過閱讀測試案例就能掌握使用方法。</p>
+</li>
+<li><p>降低維護人員的心理負擔：</p>
+<p> 不知道讀者有沒有這樣的經驗：接手一份 Code 並被交代要新增 A 功能的任務，在開發過程中影響到原本就存在的 B 功能與 C 功能的運作，一陣修補後勉勉強強的交出能動的 A 功能，而自己心裡知道雖然 B 功能與 C 功能現在正常，卻無法對它們能夠一直正常運作這件事保持信心，原因在於沒有可參考的測試案例，無法確保在修改的過程中有考慮到所有前人遇過的問題。</p>
+<p> 通常這樣的程式碼淪為「遺毒」的可能性是非常高的，沒有任何人敢對程式碼進行擴充、刪除或修改功能，因為沒有任何有效的方法可以快速知道程式碼是否有被改壞。若前人有撰寫完整的測試案例，讓我們得以在每次修改後運行測試腳本，明確的知道功能為正常運行，同時提高對這份程式碼的信心。</p>
+</li>
+<li><p>即時修改程式架構以降低模組之間的耦合性 (此處模組泛指 Function、Class ⋯⋯等等))：</p>
+<p> 撰寫測試案例的好處很吸引人，聽起來也很容易，本質上就是將預期的輸入提供給 SUT ，並檢查其輸出是否符合預期輸出，No Big Deal！但做起來其實不太容易，若較不熟悉 Design Patterns 的開發者，開發出的程式碼通常會偏向高耦合性，即 SUT 依賴於另一個物件或程式 (此時會稱被依賴的物件或程式為 DOC，Depended-On Component) 。</p>
+<p> 例如：在一個 A 物件中直接 <code>new</code> 一個 B 物件來使用，這時若要測試 A 物件，必定也要把 B 物件的運行邏輯考慮進來，最後導致測試 A 物件的邏輯時其實也在測試 B 物件的邏輯。這樣的壞處是什麼？可以想想看，假設應需求修改 B 物件的部分功能，原本只需要修改 B 物件本身的測試案例，現在連同 A 物件的測試案例也要修改！倘若 A 依賴更多物件，將導致撰寫或修改測試案例的難度大大提升，提高後續維護的難度，淪為「遺毒」指日可待。</p>
+<p> 從這個例子反思，並不是撰寫出測試案例就完事，我非常贊同自己曾經講過的一句話「只要是好測試的軟體架構，就是好架構」，好架構的前提是好測試。由於牽一髮動全身，原本只有 SUT 與 DOC 之間連動，現在連測試案例之間也相互連動，因修改所感到的痛苦是加倍的痛苦，可想而知測試案例過於複雜也會導致沒有人敢增加或修改。</p>
+<p> 我們可以在撰寫測試案例的過程中隨時反思現在的架構是不是好測試的架構，若發現不是，應該即時修改架構使測試更加容易，最後寫出簡單又好維護的測試案例，附帶來的是好的程式架構。</p>
+</li>
+</ol>
+<h2 id="導入撰寫測試案例的潛在問題"><a href="#導入撰寫測試案例的潛在問題" class="headerlink" title="導入撰寫測試案例的潛在問題"></a>導入撰寫測試案例的潛在問題</h2><p>導入撰寫測試案例不外乎希望可以藉此提升 Codebase 品質、降低維護成本、確保功能正確⋯⋯等等。但在正式導入進團隊開發流程之前，需要先思考可能遇到的問題與配套措施</p>
+<ol>
+<li><p>團隊成員沒有撰寫測試案例的經驗：</p>
+<p> 撰寫測試案例與撰寫程式碼相同，透過經驗的積累較有辦法寫出優質的測試案例代碼，因此需要有更寬裕的開發時辰，允許成員在寫出初版測試案例後，有時間根據過程中學習到的經驗、知識或衍生想法修改為第二版、第三版測試案例，提高測試代碼的品質。</p>
+<p> 最佳的情況是團隊中有成員對於撰寫測試案例擁有豐富的經驗，透過經驗分享提供給初次撰寫測試案例的成員作為參考，減少盲目摸索的時間。</p>
+</li>
+<li><p>撰寫測試案例時間長：</p>
+<p> 有經驗的人應該都能認同撰寫測試案例的時間會比開發功能的時間來得長，所以導入之前需要評估該項目是否真的需要撰寫測試案例，如果只是在概念驗證 (PoC，Proof of Concept) 階段，測試案例的撰寫可能就沒這麼必要，因為功能與開發方向會常常改變，導致原本的測試案例沒有作用。</p>
+<p> 若是要在產品化的項目中導入撰寫測試案例，那將會是非常明智的選擇，雖然開發時間需要稍微拉長，但測試所帶來的許多好處是讓大家不忍拒絕的呀！</p>
+</li>
+<li><p>舊有的程式架構可能需要更動：</p>
+<p> 撰寫測試案例的好處之一「即時修改程式架構以降低模組之間的耦合性」可以說是雙面刃，若今天是在新的專案中導入，這好處是非常吸引人的；但若是在舊有的程式碼中導入撰寫測試案例，那肯定是會有痛點的，因為原先的程式架構並沒有將測試考慮進去，導致無法寫出簡潔的測試案例，最後勢必要更改程式架構來配合測試案例的撰寫。</p>
+</li>
+</ol>
+<div class="note info">
+            <p>看到這裡，也許讀者心中會有一個疑問：「為了配合撰寫測試案例而修改程式架構，是正確的行為嗎？」</p><p>有名的 TDD (Test-Driven Development，測試驅動開發) 模式其實就是先撰寫測試案例，再根據測試案例寫出對應的 Code。因此，若整個專案都是使用 TDD 模式，也就可以說這個程式的架構是配合撰寫測試案例所產生的架構。</p><p>相信讀者心中都有答案了吧！</p>
+          </div>
+<h2 id="測試的種類"><a href="#測試的種類" class="headerlink" title="測試的種類"></a>測試的種類</h2><p>根據測試所涵蓋範圍可以分為三種測試，分別為單元測試 (Unit Testing)、整合測試 (Integration Testing) 與端對端測試 (E2E Testing，End to End Testing)</p>
+<ol>
+<li><p>單元測試 (Unit Testing)：</p>
+<p> 所謂的 Unit 指的是純函數 (Pure Function)，而 Unit Testing 就是測試 Pure Function 的運作是否如預期。由於 SUT 是 Pure Function，所以 Unit Testing 的測試案例是非常容易撰寫的。</p>
+</li>
+<li><p>整合測試 (Integration Testing) ：</p>
+<p> 若 Unit Testing 是對 Pure Function 做測試，那 Integration Testing 可以說是對有副作用 (Side Effect) 的 Function 做測試。舉例來說：若 Function 內部會透過呼叫其他模組 (例如：API、Database、Class、Function ⋯⋯等等) 以進行操作或取得資料，針對這樣的函數所寫的測試案例就會被歸類在 Integration Testing。</p>
+<p> 為了進行 Integration Testing，必須先初始化 SUT 的外部依賴 (Database、DOC ⋯⋯等等)，若程式的結構過於複雜，初始化的撰寫往往是造成測試案例複雜度提升的主要元兇。為了解決此問題，發展出測試替身 (Test Doubles) 的概念，可以確保元件之間的低耦合度，使我們能夠撰寫出簡潔的 Integration Testing 測試案例。</p>
+</li>
+<li><p>端對端測試 (E2E Testing，End to End Testing)：</p>
+<p> E2E Testing 是三種測試中最貼近使用者觀點的測試，從使用者 (End) 的角度對 (to) 整個系統 (End) 進行測試，許多高層無法理解 Unit Testing 與 Integration Testing 的重要性卻可以認同 E2E Testing 有存在的必要，因為只要通過 E2E Testing，基本上可以確保使用者使用起來不會有太大的問題。</p>
+<p> 這也是三種測試中最難以撰寫、耗時、維護成本最高的測試，通常會遵照 80/20 法則，將大部分撰寫測試案例的心力放在最重要、不能出錯的功能上。例如：對電商平台來說，不外乎是「使用者能順利將商品放入購物車」、「使用者能順利下單並付款」等交易相關操作最為重要，因此針對這些功能所撰寫的 E2E Testing 測試案例所帶來的效益較高。</p>
+</li>
+</ol>
+<h2 id="結語"><a href="#結語" class="headerlink" title="結語"></a>結語</h2><p>測試是一門很深的學問，如何將測試寫得好？寫得有效？寫得可維護？這些問題並沒有標準答案，但透過平常撰寫測試案例的經驗與想法加上每次的改進與反思，相信讀者能整理出一套撰寫測試案例的邏輯，若讀者還沒導入測試到自己手邊的專案中，現在正是時候！</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><p><a href="http://xunitpatterns.com/Test%20Double.html">xUnit Patterns - Test Double</a></p>
+</li>
+<li><p><a href="https://stackoverflow.com/questions/19167970/mock-functions-in-go#comments-19168875">In order to test, we must change the code is correct?</a></p>
+</li>
+<li><p><a href="https://moduscreate.com/blog/an-overview-of-unit-integration-and-e2e-testing/">AN OVERVIEW OF UNIT, INTEGRATION, AND E2E TESTING Quality Assurance</a></p>
+</li>
+<li><p><a href="https://circleci.com/blog/unit-testing-vs-integration-testing/">Unit testing vs integration testing</a></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>測試筆記</category>
+      </categories>
+      <tags>
+        <tag>unit</tag>
+        <tag>pros</tag>
+        <tag>cons</tag>
+        <tag>test</tag>
+        <tag>automate</tag>
+        <tag>integration</tag>
+        <tag>e2e</tag>
+        <tag>tdd</tag>
       </tags>
   </entry>
 </search>
