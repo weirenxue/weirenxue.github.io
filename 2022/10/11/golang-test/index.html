@@ -32,8 +32,8 @@
 <meta property="article:author" content="Wei-Ren Xue">
 <meta property="article:tag" content="require">
 <meta property="article:tag" content="golang">
-<meta property="article:tag" content="test">
 <meta property="article:tag" content="go">
+<meta property="article:tag" content="test">
 <meta property="article:tag" content="testing">
 <meta property="article:tag" content="assert">
 <meta name="twitter:card" content="summary">
@@ -347,9 +347,8 @@
 <ul>
 <li><code>assert.Equal(t, 1, 2)</code>：相信在還沒閱讀此函數的說明文件前，讀者能從函數名看出要比對的條件是「相等」，並從輸入參數知道比對的對象是 1 與 2。提升可讀性的同時，將我們從重工地獄釋放出來，再也不需寫 Boilerplate Code (<code>if</code> + <code>t.Error</code>)。</li>
 </ul>
-<p>執行測試觀察結果</p>
+<p>執行測試觀察結果，<code>assert</code> 於測試失敗所提供的訊息非常齊全，不只說明了失敗原因 (<code>Not equal</code>)，也記錄當下的期望值 (<code>expected: 1</code>) 與實際值 (<code>actual  : 2</code>)，可謂一目了然！</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ go <span class="built_in">test</span> -v</span><br><span class="line">=== RUN   TestAssert</span><br><span class="line">    add_test.go:10: </span><br><span class="line">                Error Trace:    /project_name/something/something_test.go:10</span><br><span class="line">                Error:          Not equal: </span><br><span class="line">                                expected: 1</span><br><span class="line">                                actual  : 2</span><br><span class="line">                Test:           TestAssert</span><br><span class="line">--- FAIL: TestAssert (0.00s)</span><br><span class="line">FAIL</span><br><span class="line"><span class="built_in">exit</span> status 1</span><br><span class="line">FAIL    learning-test/something       0.458s</span><br></pre></td></tr></table></figure>
-<p>錯誤資訊非常齊全，不只說明了錯誤原因 (<code>Not equal</code>)，也記錄當下的期望值 (<code>expected: 1</code>) 與實際值 (<code>actual  : 2</code>)！可謂一目了然。</p>
 <div class="note info">
             <p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://pkg.go.dev/github.com/stretchr/testify@v1.8.0/assert">assert</a> 套件除了 <code>Equal</code> 外，還有很多函數可以使用，例如：<code>NotNil</code>、<code>True</code>、<code>WithinDuration</code> ⋯⋯ 等等，幾乎每種測試條件都有對應的函數，建議使用 <code>if</code> + <code>t.Error</code> 之前先試著尋找是否有可取代 Boilerplate Code 的函數。</p>
           </div>
@@ -360,9 +359,9 @@
 </ol>
 <p>有沒有似曾相識的感覺？沒錯，就是和 <code>t.Error</code> 與 <code>t.Fatal</code> 的差異相同！同樣的，沒有一定要使用 <code>assert</code> 或者 <code>require</code>，全看測試案例的情境做選擇。</p>
 <h2 id="Testing-Mode"><a href="#Testing-Mode" class="headerlink" title="Testing Mode"></a>Testing Mode</h2><p>go test 有兩種不同運行模式，分別為 Local Directory Mode 與 Package List Mode。</p>
-<h3 id="Local-Directory-Mode"><a href="#Local-Directory-Mode" class="headerlink" title="Local Directory Mode"></a>Local Directory Mode</h3><p><strong>沒有指定</strong>要測試的 Package，即為 Local Directory Mode，例如：<code>go test</code>、<code>go test -v</code>。</p>
+<h3 id="Local-Directory-Mode"><a href="#Local-Directory-Mode" class="headerlink" title="Local Directory Mode"></a>Local Directory Mode</h3><p><strong>沒有指定</strong>要測試的 Package，即為 Local Directory Mode，例如：<code>go test</code>、<code>go test -v</code>。go test 會編譯<strong>當前目錄</strong>中的 Source Code 與 Test Code 產出測試執行檔 (Test Binary) 並運行以取得測試結果。</p>
 <p>此模式不會緩存 (Caching) 測試結果，因此不論何時運行測試，都會真的重新執行測試並取得最新結果。</p>
-<h3 id="Package-List-Mode"><a href="#Package-List-Mode" class="headerlink" title="Package List Mode"></a>Package List Mode</h3><p><strong>有指定</strong>要測試的 Package，即為 Package List Mode，例如：<code>go test .</code>、<code>go test ./...</code>、<code>go test some_package_name</code>。</p>
+<h3 id="Package-List-Mode"><a href="#Package-List-Mode" class="headerlink" title="Package List Mode"></a>Package List Mode</h3><p><strong>有指定</strong>要測試的 Package，即為 Package List Mode，例如：<code>go test .</code>、<code>go test ./...</code>、<code>go test some_package_name</code>。go test 會編譯<strong>指定 Packages</strong> 的 Source Code 與 Test Code 產出 Test Binaries (每個 Package 一個 Test Binary) 並運行以取得測試結果。</p>
 <p>為了避免不必要的重複運行，此模式會 Caching 測試結果，若滿足 Cache 機制 (執行同一個 Test Binary 且使用可緩存的 (Cacheable) Test Flags 如 <code>-benchtime</code>、<code>-cpu</code>、<code>-list</code>、<code>-parallel</code>、<code>-run</code>、<code>-short</code>、<code>-timeout</code>、<code>-failfast</code> 與 <code>-v</code>)，並且 Cache 中存在對應的測試結果，go test 將會直接印出 Cache 的測試結果，同時在原本 Elapsed Time 的地方標記為 <code>(cached)</code>，如下方所示</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># first test</span></span><br><span class="line">$ go <span class="built_in">test</span> .</span><br><span class="line">ok      learning-test/add       0.390s</span><br><span class="line"></span><br><span class="line"><span class="comment"># second test</span></span><br><span class="line">$ go <span class="built_in">test</span> .</span><br><span class="line">ok      learning-test/add       (cached)</span><br></pre></td></tr></table></figure>
 <p>雖然 Cache 機制聽起來不錯，但不希望由 Cache 取得測試結果反而是比較常見的情境，在這樣的情況下，我們想要每次都是重新執行測試以獲得最新測試報告。有兩種做法能達到這樣的效果</p>
@@ -434,6 +433,9 @@
   <div class="popular-posts-header">相關文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/10/07/golang-test/" rel="bookmark">Golang Test</a></div>
+    </li>
+    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="/2021/08/05/electron_window_require/" rel="bookmark">[Electron.js] window.require is not a function 的原因及解決方法</a></div>
     </li>
     <li class="popular-posts-item">
@@ -444,9 +446,6 @@
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="/2022/04/22/prometheus_histogram_quantile/" rel="bookmark">[Prometheus] 詳解 histogram_quantile(q, sum(rate()) by (le)) 原理</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/2022/09/25/automated-testing/" rel="bookmark">自動化測試概述 - 撰寫測試案例與自動執行測試</a></div>
     </li>
   </ul>
 
@@ -498,8 +497,8 @@
           <div class="post-tags">
               <a href="/tags/require/" rel="tag"># require</a>
               <a href="/tags/golang/" rel="tag"># golang</a>
-              <a href="/tags/test/" rel="tag"># test</a>
               <a href="/tags/go/" rel="tag"># go</a>
+              <a href="/tags/test/" rel="tag"># test</a>
               <a href="/tags/testing/" rel="tag"># testing</a>
               <a href="/tags/assert/" rel="tag"># assert</a>
           </div>
@@ -510,8 +509,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/09/25/automated-testing/" rel="prev" title="自動化測試概述 - 撰寫測試案例與自動執行測試">
-      <i class="fa fa-chevron-left"></i> 自動化測試概述 - 撰寫測試案例與自動執行測試
+    <a href="/2022/10/07/golang-test/" rel="prev" title="Golang Test">
+      <i class="fa fa-chevron-left"></i> Golang Test
     </a></div>
       <div class="post-nav-item"></div>
     </div>
@@ -594,7 +593,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">129</span>
+          <span class="site-state-item-count">130</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -607,7 +606,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">536</span>
+        <span class="site-state-item-count">537</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
