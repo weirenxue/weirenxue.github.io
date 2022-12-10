@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-TW,en,default">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <meta name="google-site-verification" content="bRutnYAGKI_g4c5FRGiaW-C5afjLcMHUt0AsB4kSRaU">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"weirenxue.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+<script data-ad-client="ca-pub-1417890905860188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <meta name="description" content="HTTP 是廣受使用的傳輸協議之一，其為客戶端 (Client) 與伺服器 (Server) 通訊訂定一個 Request&#x2F;Response 標準，可以輕易地使用瀏覽器、爬蟲工具等遵守 HTTP 協定的 Client 來對 Server 發出請求以取得資料。在程式開發中，透過 HTTP 呼叫第三方 Server 的 API 是常見的一個行為，例如：LINE Notify、Firebase 等服務，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang HTTP Client Unit Test by Mock HTTP Server">
+<meta property="og:url" content="https://weirenxue.github.io/2022/12/10/http-client-unit-test/index.html">
+<meta property="og:site_name" content="薛惟仁 筆記本">
+<meta property="og:description" content="HTTP 是廣受使用的傳輸協議之一，其為客戶端 (Client) 與伺服器 (Server) 通訊訂定一個 Request&#x2F;Response 標準，可以輕易地使用瀏覽器、爬蟲工具等遵守 HTTP 協定的 Client 來對 Server 發出請求以取得資料。在程式開發中，透過 HTTP 呼叫第三方 Server 的 API 是常見的一個行為，例如：LINE Notify、Firebase 等服務，">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2022-12-10T13:06:09.000Z">
+<meta property="article:modified_time" content="2022-12-10T13:06:09.000Z">
+<meta property="article:author" content="Wei-Ren Xue">
+<meta property="article:tag" content="http">
+<meta property="article:tag" content="header">
+<meta property="article:tag" content="client">
+<meta property="article:tag" content="golang">
+<meta property="article:tag" content="get">
+<meta property="article:tag" content="unit">
+<meta property="article:tag" content="mock">
+<meta property="article:tag" content="fake">
+<meta property="article:tag" content="test">
+<meta property="article:tag" content="request">
+<meta property="article:tag" content="response">
+<meta property="article:tag" content="post">
+<meta property="article:tag" content="go">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://weirenxue.github.io/2022/12/10/http-client-unit-test/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>Golang HTTP Client Unit Test by Mock HTTP Server | 薛惟仁 筆記本</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0W9Q94E89P"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-0W9Q94E89P');
+        gtag('config', 'UA-195965659-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">薛惟仁 筆記本</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">歡迎來到知識寶庫</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+        <li class="menu-item menu-item-tools">
+
+    <a href="/tools/" rel="section"><i class="fas fa-toolbox fa-fw"></i>工具箱</a>
+
+  </li>
+        <li class="menu-item menu-item-portfolios">
+
+    <a href="/portfolios/" rel="section"><i class="fas fa-code-branch fa-fw"></i>學習歷程</a>
+
+  </li>
+        <li class="menu-item menu-item-tableau-easy">
+
+    <a href="/categories/Tableau-%E8%BC%95%E9%AC%86%E5%AD%B8/" rel="section"><i class="fas fa-chart-bar fa-fw"></i>Tableau 輕鬆學</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" placeholder="搜尋..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/weirenxue" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="external nofollow noopener noreferrer" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2022/12/10/http-client-unit-test/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Wei-Ren Xue">
+      <meta itemprop="description" content="Software Engineer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="薛惟仁 筆記本">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Golang HTTP Client Unit Test by Mock HTTP Server
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2022-12-10 21:06:09" itemprop="dateCreated datePublished" datetime="2022-12-10T21:06:09+08:00">2022-12-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B8%AC%E8%A9%A6%E7%AD%86%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">測試筆記</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+            <div class="post-description">HTTP 是廣受使用的傳輸協議之一，其為客戶端 (Client) 與伺服器 (Server) 通訊訂定一個 Request/Response 標準，可以輕易地使用瀏覽器、爬蟲工具等遵守 HTTP 協定的 Client 來對 Server 發出請求以取得資料。在程式開發中，透過 HTTP 呼叫第三方 Server 的 API 是常見的一個行為，例如：LINE Notify、Firebase 等服務，背後皆是使用 HTTP 與其 Server 交換資料。為了確保邏輯正確性且提高代碼品質，正確撰寫 HTTP Client 的測試就變得格外重要。</div>
+
+        </div>
+      </header>
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>HTTP 是廣受使用的傳輸協議之一，其為客戶端 (Client) 與伺服器 (Server) 通訊訂定一個 Request/Response 標準，可以輕易地使用瀏覽器、爬蟲工具等遵守 HTTP 協定的 Client 來對 Server 發出請求以取得資料。在程式開發中，透過 HTTP 呼叫第三方 Server 的 API 是常見的一個行為，例如：LINE Notify、Firebase 等服務，背後皆是使用 HTTP 與其 Server 交換資料。為了確保邏輯正確性且提高代碼品質，正確撰寫 HTTP Client 的測試就變得格外重要。</p>
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><ol>
+<li>go version go1.19.3</li>
+</ol>
+<h2 id="測試手段的選擇"><a href="#測試手段的選擇" class="headerlink" title="測試手段的選擇"></a>測試手段的選擇</h2><p>正確選擇測試手段是非常重要的，好的測試方法會 <del>帶我們飛</del> 帶來好維護的測試代碼。</p>
+<h3 id="Integration-Test"><a href="#Integration-Test" class="headerlink" title="Integration Test"></a>Integration Test</h3><p>每次測試皆對 Server 發出真實請求以取得真實回應，想法直接但有幾個值得思考的問題</p>
+<ol>
+<li>若真的對 Server 發出請求，要怎麼確保每次 Server 的回覆都固定不變，讓我們的測試可以順利通過？</li>
+<li>若測試時 Server 出現內部問題 (例如：關機維護)，此時測試不會通過，但不代表我們的代碼有錯。</li>
+<li>若是使用以呼叫次數計費的 API，代表每次運行測試都有一定的金錢成本在。</li>
+</ol>
+<p>這些問題的根本原因都是一樣的，是因為 Integration Test 依賴於真實 Server，若我們可以讓測試不依賴真實 Server，則這些問題就不會存在，Mock HTTP Server 為這些問題的一種解決方案。</p>
+<h3 id="Unit-Test-by-Mock-HTTP-Server"><a href="#Unit-Test-by-Mock-HTTP-Server" class="headerlink" title="Unit Test by Mock HTTP Server"></a>Unit Test by Mock HTTP Server</h3><p>某種程度上可說這種方法是 Integration Test，但測試本身不受外部依賴的運作行為干擾，因為現在依賴的是 Mock HTTP Server，使用完全自己假造的 HTTP Server 取代真實 Server 來進行測試，這樣我們可以確保</p>
+<ol>
+<li>每次請求都會以我們事先撰寫內容作為回應，這個內容是永恆不變的。</li>
+<li>Mock HTTP Server 不會有內部問題，因此不影響測試結果。</li>
+<li>API Server 是我們假造的，所以也免除了費用問題。</li>
+</ol>
+<div class="note success">
+            <p>綜合上述 <strong>Unit Test by Mock HTTP Server</strong> 將會是我們採用的測試手段！</p>
+          </div>
+<h2 id="情境說明"><a href="#情境說明" class="headerlink" title="情境說明"></a>情境說明</h2><p>API Server (<code>http://example.com</code>) 提供兩個端點 (Endpoints) 讓我們可以取得或操作使用者相關資訊</p>
+<ul>
+<li><p><code>GET /api/v1/users</code> 取得使用者資訊</p>
+<ul>
+<li><p>請求成功：回傳 200 OK 狀態碼與所有使用者的名稱</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">[</span></span><br><span class="line">    <span class="string">&quot;Jack&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;Marry&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="string">&quot;Sandy&quot;</span></span><br><span class="line"><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>請求失敗：回傳 4xx 或 5xx 狀態碼並帶著錯誤訊息</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;msg&quot;</span><span class="punctuation">:</span> <span class="string">&quot;something wrong!&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><code>POST /api/v1/user</code> 創建使用者</p>
+<ul>
+<li><p>請求格式：<code>Content-Type</code> 需為 <code>application/json</code>，且 playload 格式如下</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Jack&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>請求成功：回傳 201 Created 狀態碼與該使用者相關資訊</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ABC-111&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Jack&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>請求失敗：回傳 4xx 或 5xx 狀態碼並帶著錯誤訊息</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;msg&quot;</span><span class="punctuation">:</span> <span class="string">&quot;something wrong!&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<div class="note info">
+            <p>這是虛構出來的情境，<a target="_blank" rel="external nofollow noopener noreferrer" href="https://example.com">example.com</a> 是為製作教學範例文件提供方便而存在的網站，我們可以真的去呼叫 <code>http://example.com/api/v1/users</code>，但他的回應不會如我們預期。</p>
+          </div>
+<h2 id="HTTP-Client-撰寫與測試"><a href="#HTTP-Client-撰寫與測試" class="headerlink" title="HTTP Client 撰寫與測試"></a>HTTP Client 撰寫與測試</h2><!-- markdownlint-disable MD034 -->
+<p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://github.com/weirenxue/golang-http-client-test">Source Code</a> 已上傳於 GitHub，歡迎自行 Clone/Fork 來運行！以下摘錄重要的部分，每一行代碼的作用皆詳細註解在程式碼中，請耐心閱讀、吸收並化為自身內力。<br><!-- markdownlint-restore MD034 --></p>
+<h3 id="取得使用者資訊"><a href="#取得使用者資訊" class="headerlink" title="取得使用者資訊"></a>取得使用者資訊</h3><div class="tabs" id="取得使用者資訊"><ul class="nav-tabs"><li class="tab active"><a href="#取得使用者資訊-1">GetUsers</a></li><li class="tab"><a href="#取得使用者資訊-2">TestGetUsers</a></li></ul><div class="tab-content"><div class="tab-pane active" id="取得使用者資訊-1"><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> errorResponse <span class="keyword">struct</span> &#123;</span><br><span class="line">    Msg <span class="type">string</span> <span class="string">`json:&quot;msg&quot;`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetUsers</span><span class="params">(baseUrl <span class="type">string</span>)</span></span> ([]<span class="type">string</span>, <span class="type">error</span>) &#123;</span><br><span class="line">    url := baseUrl + <span class="string">&quot;/api/v1/users&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Send the http request to the server.</span></span><br><span class="line">    resp, err := http.Get(url)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Reading and parsing the response body.</span></span><br><span class="line">    body, err := io.ReadAll(resp.Body)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> resp.StatusCode == http.StatusOK &#123;</span><br><span class="line">        <span class="comment">// If the request is successful,</span></span><br><span class="line">        <span class="comment">// return the user information.</span></span><br><span class="line">        <span class="keyword">var</span> data []<span class="type">string</span></span><br><span class="line">        err = json.Unmarshal(body, &amp;data)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> data, err</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// If it fails, return the &quot;msg&quot; in the</span></span><br><span class="line">        <span class="comment">// response body.</span></span><br><span class="line">        <span class="keyword">var</span> data errorResponse</span><br><span class="line">        err = json.Unmarshal(body, &amp;data)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, errors.New(data.Msg)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="取得使用者資訊-2"><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestGetUsers</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    t.Run(<span class="string">&quot;happy path, we can get users info&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">        <span class="comment">// Create a router that routes http requests to specific handlers.</span></span><br><span class="line">        router := http.NewServeMux()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// We expect to have the mock http server process /api/v1/users</span></span><br><span class="line">        <span class="comment">// while faking its response as we expect it to look.</span></span><br><span class="line">        router.HandleFunc(<span class="string">&quot;/api/v1/users&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">                This is where we can test the format of our request!</span></span><br><span class="line"><span class="comment">                Let&#x27;s say assert that the request was made with the correct header.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">                For example, check if the request comes with an authorization header</span></span><br><span class="line"><span class="comment">                and a value of &quot;bearer xxx&quot;.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">                assert.Equal(t, &quot;bearer xxx&quot;, r.Header.Get(&quot;Authorization&quot;))</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// We expect the http method is GET.</span></span><br><span class="line">            assert.Equal(t, http.MethodGet, r.Method)</span><br><span class="line"></span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">                This is where we mock the response of the the request. That is,</span></span><br><span class="line"><span class="comment">                what we expect the API Server to send back.</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// return 200 OK and users info.</span></span><br><span class="line">            w.WriteHeader(http.StatusOK)</span><br><span class="line">            w.Write([]<span class="type">byte</span>(<span class="string">`[</span></span><br><span class="line"><span class="string">                &quot;Jack&quot;,</span></span><br><span class="line"><span class="string">                &quot;Marry&quot;,</span></span><br><span class="line"><span class="string">                &quot;Sandy&quot;</span></span><br><span class="line"><span class="string">            ]`</span>))</span><br><span class="line">        &#125;)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create an http server and register the router with a</span></span><br><span class="line">        <span class="comment">// predefined mock handler.</span></span><br><span class="line">        fakeServer := httptest.NewServer(router)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// We should always close the http server at the end of the test</span></span><br><span class="line">        <span class="comment">// to release related resources.</span></span><br><span class="line">        <span class="keyword">defer</span> fakeServer.Close()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// The URL from the mock http server is in the format of http://127.0.0.1</span></span><br><span class="line">        <span class="comment">// and the port is random.</span></span><br><span class="line">        baseUrl := fakeServer.URL</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Calling a function to be tested.</span></span><br><span class="line">        users, err := GetUsers(baseUrl)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Test the results of the function as we expect.</span></span><br><span class="line">        assert.NoError(t, err)</span><br><span class="line">        assert.Len(t, users, <span class="number">3</span>)</span><br><span class="line">        assert.Equal(t, []<span class="type">string</span>&#123;<span class="string">&quot;Jack&quot;</span>, <span class="string">&quot;Marry&quot;</span>, <span class="string">&quot;Sandy&quot;</span>&#125;, users)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    t.Run(<span class="string">&quot;unhappy path, API server has some problems&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">        <span class="comment">// Create a router that routes http requests to specific handlers.</span></span><br><span class="line">        router := http.NewServeMux()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// We expect to have the mock http server process /api/v1/users</span></span><br><span class="line">        <span class="comment">// while faking its response as we expect it to look.</span></span><br><span class="line">        router.HandleFunc(<span class="string">&quot;/api/v1/users&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">                This is where we can test the format of our request!</span></span><br><span class="line"><span class="comment">                Let&#x27;s say assert that the request was made with the correct header.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">                For example, check if the request comes with an authorization header</span></span><br><span class="line"><span class="comment">                and a value of &quot;bearer xxx&quot;.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">                assert.Equal(t, &quot;bearer xxx&quot;, r.Header.Get(&quot;Authorization&quot;))</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// We expect the http method is GET.</span></span><br><span class="line">            assert.Equal(t, http.MethodGet, r.Method)</span><br><span class="line"></span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">                This is where we mock the response of the the request. That is,</span></span><br><span class="line"><span class="comment">                what we expect the API server to send back.</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// return 500 Internal Server Error.</span></span><br><span class="line">            w.WriteHeader(http.StatusInternalServerError)</span><br><span class="line">            w.Write([]<span class="type">byte</span>(<span class="string">`&#123;</span></span><br><span class="line"><span class="string">                &quot;msg&quot;: &quot;get error&quot;</span></span><br><span class="line"><span class="string">            &#125;`</span>))</span><br><span class="line">        &#125;)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create an http server and register the router with a</span></span><br><span class="line">        <span class="comment">// predefined mock handler.</span></span><br><span class="line">        fakeServer := httptest.NewServer(router)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// We should always close the http server at the end of the test</span></span><br><span class="line">        <span class="comment">// to release related resources.</span></span><br><span class="line">        <span class="keyword">defer</span> fakeServer.Close()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// The URL from the mock http server is in the format of http://127.0.0.1</span></span><br><span class="line">        <span class="comment">// and the port is random.</span></span><br><span class="line">        baseUrl := fakeServer.URL</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Calling a function to be tested.</span></span><br><span class="line">        _, err := GetUsers(baseUrl)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Test the results of the function as we expect.</span></span><br><span class="line">        assert.Error(t, err)</span><br><span class="line">        assert.EqualError(t, err, <span class="string">&quot;get error&quot;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div></div>
+<h3 id="創建使用者"><a href="#創建使用者" class="headerlink" title="創建使用者"></a>創建使用者</h3><div class="tabs" id="創建使用者"><ul class="nav-tabs"><li class="tab active"><a href="#創建使用者-1">CreateUser</a></li><li class="tab"><a href="#創建使用者-2">TestCreateUser</a></li></ul><div class="tab-content"><div class="tab-pane active" id="創建使用者-1"><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> CreateUserRequest <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="type">string</span> <span class="string">`json:&quot;name&quot;`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> CreateUserResponse <span class="keyword">struct</span> &#123;</span><br><span class="line">    ID   <span class="type">string</span> <span class="string">`json:&quot;id&quot;`</span></span><br><span class="line">    Name <span class="type">string</span> <span class="string">`json:&quot;name&quot;`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">CreateUser</span><span class="params">(baseUrl, userName <span class="type">string</span>)</span></span> (*CreateUserResponse, <span class="type">error</span>) &#123;</span><br><span class="line">    url := baseUrl + <span class="string">&quot;/api/v1/user&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Create a payload that should be POSTed to the server.</span></span><br><span class="line">    payload := CreateUserRequest&#123;</span><br><span class="line">        Name: userName,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Encode the payload into json format.</span></span><br><span class="line">    <span class="keyword">var</span> buf bytes.Buffer</span><br><span class="line">    err := json.NewEncoder(&amp;buf).Encode(payload)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Create a new http POST request with the payload</span></span><br><span class="line">    <span class="comment">// and modify the Content-Type header.</span></span><br><span class="line">    req, err := http.NewRequest(http.MethodPost, url, &amp;buf)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    req.Header.Add(<span class="string">&quot;Content-Type&quot;</span>, <span class="string">&quot;application/json&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Send the http request to the server.</span></span><br><span class="line">    resp, err := http.DefaultClient.Do(req)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Reading and parsing the response body.</span></span><br><span class="line">    body, err := io.ReadAll(resp.Body)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> resp.StatusCode == http.StatusCreated &#123;</span><br><span class="line">        <span class="comment">// If the request is successful,</span></span><br><span class="line">        <span class="comment">// return the user information.</span></span><br><span class="line">        <span class="keyword">var</span> data CreateUserResponse</span><br><span class="line">        err = json.Unmarshal(body, &amp;data)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> &amp;data, <span class="literal">nil</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// If it fails, return the &quot;msg&quot; in the</span></span><br><span class="line">        <span class="comment">// response body.</span></span><br><span class="line">        <span class="keyword">var</span> data errorResponse</span><br><span class="line">        err = json.Unmarshal(body, &amp;data)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, errors.New(data.Msg)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="創建使用者-2"><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestCreateUser</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    t.Run(<span class="string">&quot;happy path, API server has some problems&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">        <span class="comment">// Create a router that routes http requests to specific handlers.</span></span><br><span class="line">        router := http.NewServeMux()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// We expect to have the mock http server process /api/v1/user</span></span><br><span class="line">        <span class="comment">// while faking its response as we expect it to look.</span></span><br><span class="line">        router.HandleFunc(<span class="string">&quot;/api/v1/user&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">                This is where we can test the format of our request!</span></span><br><span class="line"><span class="comment">                Let&#x27;s say assert that the request was made with the correct header.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">                For example, check if the request comes with an authorization header</span></span><br><span class="line"><span class="comment">                and a value of &quot;bearer xxx&quot;.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">                assert.Equal(t, &quot;bearer xxx&quot;, r.Header.Get(&quot;Authorization&quot;))</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// We expect the http method is POST.</span></span><br><span class="line">            assert.Equal(t, http.MethodPost, r.Method)</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Check if the Content-Type header is application/json.</span></span><br><span class="line">            assert.Equal(t, <span class="string">&quot;application/json&quot;</span>, r.Header.Get(<span class="string">&quot;Content-Type&quot;</span>))</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Check the payload format of the request.</span></span><br><span class="line">            body, err := io.ReadAll(r.Body)</span><br><span class="line">            assert.NoError(t, err)</span><br><span class="line">            assert.JSONEq(t, <span class="string">`&#123;&quot;name&quot;: &quot;Jack&quot;&#125;`</span>, <span class="type">string</span>(body))</span><br><span class="line"></span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">                This is where we mock the response of the the request. That is,</span></span><br><span class="line"><span class="comment">                what we expect the API Server to send back.</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// return 201 Created and user info.</span></span><br><span class="line">            w.WriteHeader(http.StatusCreated)</span><br><span class="line">            w.Write([]<span class="type">byte</span>(<span class="string">`&#123;</span></span><br><span class="line"><span class="string">                &quot;id&quot;: &quot;id_foo&quot;,</span></span><br><span class="line"><span class="string">                &quot;name&quot;: &quot;name_foo&quot;</span></span><br><span class="line"><span class="string">            &#125;`</span>))</span><br><span class="line">        &#125;)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create an http server and register the router with a</span></span><br><span class="line">        <span class="comment">// predefined mock handler.</span></span><br><span class="line">        fakeServer := httptest.NewServer(router)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// We should always close the http server at the end of the test</span></span><br><span class="line">        <span class="comment">// to release related resources.</span></span><br><span class="line">        <span class="keyword">defer</span> fakeServer.Close()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// The URL from the mock http server is in the format of http://127.0.0.1</span></span><br><span class="line">        <span class="comment">// and the port is random.</span></span><br><span class="line">        baseUrl := fakeServer.URL</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Calling a function to be tested.</span></span><br><span class="line">        user, err := CreateUser(baseUrl, <span class="string">&quot;Jack&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Test the results of the function as we expect.</span></span><br><span class="line">        assert.NoError(t, err)</span><br><span class="line">        assert.Equal(t, <span class="string">&quot;id_foo&quot;</span>, user.ID)</span><br><span class="line">        assert.Equal(t, <span class="string">&quot;name_foo&quot;</span>, user.Name)</span><br><span class="line">    &#125;)</span><br><span class="line">    t.Run(<span class="string">&quot;unhappy path, some error occur&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">        <span class="comment">// Create a router that routes http requests to specific handlers.</span></span><br><span class="line">        router := http.NewServeMux()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// We expect to have the mock http server process /api/v1/user</span></span><br><span class="line">        <span class="comment">// while faking its response as we expect it to look.</span></span><br><span class="line">        router.HandleFunc(<span class="string">&quot;/api/v1/user&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">                This is where we can test the format of our request!</span></span><br><span class="line"><span class="comment">                Let&#x27;s say assert that the request was made with the correct header.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">                For example, check if the request comes with an authorization header</span></span><br><span class="line"><span class="comment">                and a value of &quot;bearer xxx&quot;.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">                assert.Equal(t, &quot;bearer xxx&quot;, r.Header.Get(&quot;Authorization&quot;))</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// We expect the http method is POST.</span></span><br><span class="line">            assert.Equal(t, http.MethodPost, r.Method)</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Check if the Content-Type header is application/json.</span></span><br><span class="line">            assert.Equal(t, <span class="string">&quot;application/json&quot;</span>, r.Header.Get(<span class="string">&quot;Content-Type&quot;</span>))</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Check the payload format of the request.</span></span><br><span class="line">            body, err := io.ReadAll(r.Body)</span><br><span class="line">            assert.NoError(t, err)</span><br><span class="line">            assert.JSONEq(t, <span class="string">`&#123;&quot;name&quot;: &quot;Jack&quot;&#125;`</span>, <span class="type">string</span>(body))</span><br><span class="line"></span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">                This is where we mock the response of the the request. That is,</span></span><br><span class="line"><span class="comment">                what we expect the API Server to send back.</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// return 500 Internal Server Error.</span></span><br><span class="line">            w.WriteHeader(http.StatusInternalServerError)</span><br><span class="line">            w.Write([]<span class="type">byte</span>(<span class="string">`&#123;</span></span><br><span class="line"><span class="string">                &quot;msg&quot;: &quot;get error&quot;</span></span><br><span class="line"><span class="string">            &#125;`</span>))</span><br><span class="line">        &#125;)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create an http server and register the router with a</span></span><br><span class="line">        <span class="comment">// predefined mock handler.</span></span><br><span class="line">        fakeServer := httptest.NewServer(router)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// We should always close the http server at the end of the test</span></span><br><span class="line">        <span class="comment">// to release related resources.</span></span><br><span class="line">        <span class="keyword">defer</span> fakeServer.Close()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// The URL from the mock http server is in the format of http://127.0.0.1</span></span><br><span class="line">        <span class="comment">// and the port is random.</span></span><br><span class="line">        baseUrl := fakeServer.URL</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Calling a function to be tested.</span></span><br><span class="line">        _, err := CreateUser(baseUrl, <span class="string">&quot;Jack&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Test the results of the function as we expect.</span></span><br><span class="line">        assert.Error(t, err)</span><br><span class="line">        assert.EqualError(t, err, <span class="string">&quot;get error&quot;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div></div>
+
+    </div>
+
+    
+    
+    
+      <div>
+    <strong>很高興能在這裡幫助到您，歡迎登入 Liker 為我鼓掌 5 次，或者成為我的讚賞公民，鼓勵我繼續創造優質文章。</strong>
+    <script type="text/javascript">
+      document.write(
+        "<iframe scrolling='no' frameborder='0' style='height: 212px; width: 100%;' " + 
+        "sandbox='allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation' " + 
+        "src='https://button.like.co/in/embed/weirenxue/button?referrer=" +
+        encodeURIComponent(location.href.split("?")[0].split("#")[0]) + "'></iframe>");
+    </script>
+</div>
+
+      
+  <div class="popular-posts-header">相關文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/10/11/golang-test/" rel="bookmark">Golang Test - go test 基本使用方式與詳細解說</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/06/17/apache_http_server/" rel="bookmark">[Apache] 修改 HTTP 標頭中的 Server 欄位</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/09/25/automated-testing/" rel="bookmark">自動化測試概述 - 撰寫測試案例與自動執行測試</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/06/15/python_user_agent/" rel="bookmark">[Python] 爬蟲修改 User-Agent 標頭</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/06/15/iis_server_x_powered_by_x_aspnet_version/" rel="bookmark">[IIS] 隱藏 Server, X-Powered-By, X-AspNet-Version 標頭</a></div>
+    </li>
+  </ul>
+
+        <div class="reward-container">
+  <div>以最優質的內容回應您的鼓勵</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    贊助
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/jkopay.jpg" alt="Wei-Ren Xue 街口支付">
+        <p>街口支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/opay.png" alt="Wei-Ren Xue 歐付寶">
+        <p>歐付寶</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-f7+5u+4t-da+6l" data-ad-client="ca-pub-1417890905860188" data-ad-slot="8643645962"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>作者： </strong>Wei-Ren Xue
+  </li>
+  <li class="post-copyright-link">
+    <strong>文章連結：</strong>
+    <a href="https://weirenxue.github.io/2022/12/10/http-client-unit-test/" title="Golang HTTP Client Unit Test by Mock HTTP Server">https://weirenxue.github.io/2022/12/10/http-client-unit-test/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版權聲明： </strong>本網誌所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noopener noreferrer" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 許可協議。轉載請註明出處！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/http/" rel="tag"># http</a>
+              <a href="/tags/header/" rel="tag"># header</a>
+              <a href="/tags/client/" rel="tag"># client</a>
+              <a href="/tags/golang/" rel="tag"># golang</a>
+              <a href="/tags/get/" rel="tag"># get</a>
+              <a href="/tags/unit/" rel="tag"># unit</a>
+              <a href="/tags/mock/" rel="tag"># mock</a>
+              <a href="/tags/fake/" rel="tag"># fake</a>
+              <a href="/tags/test/" rel="tag"># test</a>
+              <a href="/tags/request/" rel="tag"># request</a>
+              <a href="/tags/response/" rel="tag"># response</a>
+              <a href="/tags/post/" rel="tag"># post</a>
+              <a href="/tags/go/" rel="tag"># go</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/10/11/golang-test/" rel="prev" title="Golang Test - go test 基本使用方式與詳細解說">
+      <i class="fa fa-chevron-left"></i> Golang Test - go test 基本使用方式與詳細解說
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%92%B0%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">環境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%AC%E8%A9%A6%E6%89%8B%E6%AE%B5%E7%9A%84%E9%81%B8%E6%93%87"><span class="nav-number">3.</span> <span class="nav-text">測試手段的選擇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Integration-Test"><span class="nav-number">3.1.</span> <span class="nav-text">Integration Test</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unit-Test-by-Mock-HTTP-Server"><span class="nav-number">3.2.</span> <span class="nav-text">Unit Test by Mock HTTP Server</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%83%85%E5%A2%83%E8%AA%AA%E6%98%8E"><span class="nav-number">4.</span> <span class="nav-text">情境說明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-Client-%E6%92%B0%E5%AF%AB%E8%88%87%E6%B8%AC%E8%A9%A6"><span class="nav-number">5.</span> <span class="nav-text">HTTP Client 撰寫與測試</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%96%E5%BE%97%E4%BD%BF%E7%94%A8%E8%80%85%E8%B3%87%E8%A8%8A"><span class="nav-number">5.1.</span> <span class="nav-text">取得使用者資訊</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%B5%E5%BB%BA%E4%BD%BF%E7%94%A8%E8%80%85"><span class="nav-number">5.2.</span> <span class="nav-text">創建使用者</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Wei-Ren Xue" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAC9UExURVlZWdPT07KysmRkZIWFhfT09JmZmWZmZm9vb39/fxkZGUxMTDMzM3p6epCQkKamppubm729venp6cjIyN7e3tbW1s/Pz8LCwnx8fLS0tFZWVoiIiI+Pj6GhoeTk5Glpabu7u93d3evr66CgoJSUlKqqqsnJyeDg4Hd3d8PDw+Xl5bi4uNHR0dvb26Ojo6urq+fn51hYWDg4OCgoKHBwcK2traenp0FBQe7u7vHx8U5OTre3t8zMzHV1df///7GrnpQAAAA/dFJOU///////////////////////////////////////////////////////////////////////////////////AI4mfBcAAAUGSURBVHja7NoJb6M4GMZxY0NCD64kve/pMZ2d3Z297+X7f6zFNmBAMUXa6URl/q9UJSWPUPzrizFWRUlNLgEBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYYIEFAVhggQUWWGBBABZYYIEFFlgQgAUWWGCBBRYEYIEFFlhggQUBWGCBBRZYYEEAFlhggQUWWBCABRZYYIEFFgRggQUWWGCBBQFYYIEFFlhgQQAWWGCBBRZYEIAFFlhggQUWBGCBBRZYn6cCIcRXgvX/h9qcIVBqDdbEM8RCxGCB9QqXYRwHYDHBgwXWl8eKZKiESHI3Ba1kWs3fKixcaJUl1YyeBm7Ocq+yLItUiVBGnXxenSHJolIKEcwHq6ikbOX1YGVzQCTN8LPmSLreghUl9sN4Uw7yajMrLC0TZ1ImzqY6FEop0+pIaEN5HaoOxVuwEqFyc4I46uSlzOLqgxlh6UaR9l3VYWl9Fdoxb1Q90KJtu41pwwFW/WHhTtW8i7TafLCqRsk6bsGw63L9qurXRmuIlbT9lDQnlXU+nBFW1Q2qnZbDprWa2tjR90LZFqx1/+Td/HpGWLlrLDvIwTcx6dQ1Vrntbig68cDms3JwbA5Y1azs1ger6sNV/bbIw1jU81MvNAGrl58RVn8ozW+btF08iGFoAlYvP3csfVur1gJBEIA1uBmue5dhZDOyO2epbmgCVi8/I6x0MMHH9pjsTfBhNzQBq5uPZoQlB0uH3DZG4EZqQ26fL3sZq5uf09Ih6qw3i/pm6BZO0qZX7rrUS68Xsbr5ZE4rePMk08pk9aUZugfqppvs6AM1Acvlo/StP+6EbW06z8hJqxbYp2BZPQUnFsLsKuhQdaHqn5ewbF7KXIn0jWO5MqOQ7RaNLPtbNMmmhimj0GUmYLl8Gs0Lq4wyPbTu1l2QKqHSouzs3OlDIslW5SQsnY/NXmFplyNvEuuLV/Tau9BzwiraDUSwXmysztYWWNtL1psXeumgIrDGaqXvBfUuvtqUYI3V2t1wk1e2msFluJJm6zDJXv/fIfjPP7DAAgsssCiwwAILLLDAosACCyywwAKLAgsssMACC6zt9fDz/v75tyOB+98PD2+ORgKffjw4OP1uJPDxl+Xy8v1I4MPF3t7VNyOB4/vF4uzdzrG+39f1kz/w66Guv/yBvw90KX/gZKkr8Qf+2dOV+gNHC12/7RxrabD2/a31bLAO/a11YbAO/K21MFhLf2s9Gqw9f2vdGqzFu11jnVusE2/gxmI9eQOnFuvYG7i0WH7uK4t15w2cWazrXWP9a7H8f/bQYvm/6IPF+sF/pVssf19Ii/WH/0K2WH/uGuvEWC39gSdj9Twy+Rqri5EZx1gt/IE7Y/XoD1wbq9vd3w1PlufnD2OBp+ebm/uxwPHF6emnscDR4vLy41jg7vHq6sNY4Pr27OyYdRaLUrDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssMCiwAILLLDAAosCCyywwAILLAossMACCyywKLDAAgsssL6u+k+AAQCR9eHtLKvLfwAAAABJRU5ErkJggg==" data-original="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Wei-Ren Xue</p>
+  <div class="site-description" itemprop="description">Software Engineer</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">541</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/weirenxue" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;weirenxue" rel="external nofollow noopener noreferrer" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:weirenxue@gmail.com" title="E-Mail → mailto:weirenxue@gmail.com" rel="external nofollow noopener noreferrer" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://stackoverflow.com/users/16755404" title="StackOverflow → https:&#x2F;&#x2F;stackoverflow.com&#x2F;users&#x2F;16755404" rel="external nofollow noopener noreferrer" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+
+    <div class="gooAd sidebar-inner" style="display: block; opacity: 1; transform: initial;">
+      <!-- Google AdSense start -->
+      <!-- sidebar廣告 -->
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1417890905860188" data-ad-slot="8051131597" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+      <!-- Google AdSense end -->
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fab fa-redhat"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wei-Ren Xue 若要轉載，請標註出處與原網址。</span>
+</div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-60dc346c8505aa6a" async="async"></script>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+  <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-firestore.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey   : 'AIzaSyAlpzvsZgBg0RMAyT6Ror6sl3FJRJw7su0',
+      projectId: 'gh-pages-88339'
+    });
+
+    function getCount(doc, increaseCount) {
+      // IncreaseCount will be false when not in article page
+      return doc.get().then(d => {
+        var count = 0;
+        if (!d.exists) { // Has no data, initialize count
+          if (increaseCount) {
+            doc.set({
+              count: 1
+            });
+            count = 1;
+          }
+        } else { // Has data
+          count = d.data().count;
+          if (increaseCount) {
+            // If first view this article
+            doc.set({ // Increase count
+              count: count + 1,
+              pathname: window.location.pathname,
+              updatedAt: firebase.firestore.Timestamp.fromDate(new Date())
+            });
+            count++;
+          }
+        }
+
+        return count;
+      });
+    }
+
+    function appendCountTo(el) {
+      return count => {
+        el.innerText = count;
+      }
+    }
+  </script>
+  <script>
+    (function() {
+      var db = firebase.firestore();
+      var articles = db.collection('articles');
+
+      if (CONFIG.page.isPost) { // Is article page
+        var title = document.querySelector('.post-title').innerText.trim();
+        var doc = articles.doc(title);
+        var increaseCount = CONFIG.hostname === location.hostname;
+        if (localStorage.getItem(title)) {
+          increaseCount = false;
+        } else {
+          // Mark as visited
+          localStorage.setItem(title, true);
+        }
+        getCount(doc, increaseCount).then(appendCountTo(document.querySelector('.firestore-visitors-count')));
+      } else if (CONFIG.page.isHome) { // Is index page
+        var promises = [...document.querySelectorAll('.post-title')].map(element => {
+          var title = element.innerText.trim();
+          var doc = articles.doc(title);
+          return getCount(doc);
+        });
+        Promise.all(promises).then(counts => {
+          var metas = document.querySelectorAll('.firestore-visitors-count');
+          counts.forEach((val, idx) => {
+            appendCountTo(metas[idx])(val);
+          });
+        });
+      }
+    })();
+  </script>
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://weirenxue.github.io/2022/12/10/http-client-unit-test/";
+    this.page.identifier = "2022/12/10/http-client-unit-test/";
+    this.page.title = "Golang HTTP Client Unit Test by Mock HTTP Server";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://weirenxue.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(e){e.imageLazyLoadSetting.processImages=t;var n=e.imageLazyLoadSetting.isSPA,i=e.imageLazyLoadSetting.preloadRatio||1,r=o();function o(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(){n&&(r=o());for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(e.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];e=function(){r=r.filter(function(t){return o!==t})},(t=o).hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,t.removeAttribute("data-original"),e&&e()},t.src!==i&&(n.src=i))}()}function a(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",a),e.addEventListener("resize",a),e.addEventListener("orientationchange",a)}(this);</script></body>
+</html>
