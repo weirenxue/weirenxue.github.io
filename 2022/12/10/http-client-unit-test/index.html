@@ -298,9 +298,9 @@
 <li>API Server 是我們假造的，所以也免除了費用問題。</li>
 </ol>
 <div class="note success">
-            <p>綜合上述 <strong>Unit Test by Mock HTTP Server</strong> 將會是我們採用的測試手段！</p>
+            <p>綜合上述，<strong>Unit Test by Mock HTTP Server</strong> 將會是我們採用的測試手段！</p>
           </div>
-<h2 id="情境說明"><a href="#情境說明" class="headerlink" title="情境說明"></a>情境說明</h2><p>API Server (<code>http://example.com</code>) 提供兩個端點 (Endpoints) 讓我們可以取得或操作使用者相關資訊</p>
+<h2 id="情境說明"><a href="#情境說明" class="headerlink" title="情境說明"></a>情境說明</h2><p>API Server (<code>http://example.com</code>) 提供兩個端點 (Endpoints) 讓我們可以取得或操作使用者相關資訊。</p>
 <ul>
 <li><p><code>GET /api/v1/users</code> 取得使用者資訊</p>
 <ul>
@@ -327,7 +327,7 @@
 </li>
 </ul>
 <div class="note info">
-            <p>這是虛構出來的情境，<a target="_blank" rel="external nofollow noopener noreferrer" href="https://example.com">example.com</a> 是為製作教學範例文件提供方便而存在的網站，我們可以真的去呼叫 <code>http://example.com/api/v1/users</code>，但他的回應不會如我們預期。</p>
+            <p>這是虛構出來的情境，<a target="_blank" rel="external nofollow noopener noreferrer" href="https://example.com">example.com</a> 是為製作教學文件提供方便而存在的網站，我們可以真的去呼叫 <code>http://example.com/api/v1/users</code>，但他的回應不會如我們預期。</p>
           </div>
 <h2 id="HTTP-Client-撰寫與測試"><a href="#HTTP-Client-撰寫與測試" class="headerlink" title="HTTP Client 撰寫與測試"></a>HTTP Client 撰寫與測試</h2><!-- markdownlint-disable MD034 -->
 <p><a target="_blank" rel="external nofollow noopener noreferrer" href="https://github.com/weirenxue/golang-http-client-test">Source Code</a> 已上傳於 GitHub，歡迎自行 Clone/Fork 來運行！以下摘錄重要的部分，每一行代碼的作用皆詳細註解在程式碼中，請耐心閱讀、吸收並化為自身內力。<br><!-- markdownlint-restore MD034 --></p>
