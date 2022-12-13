@@ -212,6 +212,85 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW,en,default">
+    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2022/12/13/uds-http-client-test/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Wei-Ren Xue">
+      <meta itemprop="description" content="Software Engineer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="薛惟仁 筆記本">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/12/13/uds-http-client-test/" class="post-title-link" itemprop="url">[Golang] Unit Testing of HTTP Client using Unix Domain Socket</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2022-12-13 21:11:56" itemprop="dateCreated datePublished" datetime="2022-12-13T21:11:56+08:00">2022-12-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B8%AC%E8%A9%A6%E7%AD%86%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">測試筆記</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+      
+          <p>HTTP 搭配 TCP/IP 來運作是常見的案例，但實際上 HTTP 本身只假定下層協定會提供可靠的傳輸，所以只要任何滿足可靠傳輸的協定都能成為 HTTP 的下層。在行程間通訊 (IPC, Inter-Process Communication) 應用情境中，較常使用 Unix Domain Socket (UDS) 來取代 TCP/IP，例如：docker 指令透過 Docker Server 建立的 UDS 發送 HTTP Request 給 Docker Server。因此，對開發者來說，知道如何對使用 UDS 作為下層傳輸協定的 HTTP Client 進行測試是重要的。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/12/13/uds-http-client-test/">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW,en,default">
     <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2022/12/10/http-client-unit-test/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -919,89 +998,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW,en,default">
-    <link itemprop="mainEntityOfPage" href="https://weirenxue.github.io/2022/03/08/nfc_ndef/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Wei-Ren Xue">
-      <meta itemprop="description" content="Software Engineer">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="薛惟仁 筆記本">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/03/08/nfc_ndef/" class="post-title-link" itemprop="url">[NFC] NDEF 解析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">發表於</span>
-
-              <time title="創建時間：2022-03-08 19:24:45" itemprop="dateCreated datePublished" datetime="2022-03-08T19:24:45+08:00">2022-03-08</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分類於</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98/" itemprop="url" rel="index"><span itemprop="name">學習筆記</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="閱讀次數">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-users"></i>
-              </span>
-              <span class="post-meta-item-text">閱讀次數：</span>
-              <span class="firestore-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-      
-          <p>RFID (Radio Frequency IDentification) 是一種身份識別技術，採用無線通訊對目標標籤進行識別與讀寫；NFC (Near-field communication) 算是 RFID 的一種應用情境，但其通訊距離較短，適合用在注重安全性的應用上，例如：電子支付等。NDEF (NFC Data Exchange Format) 為 NFC 的主要資料格式，使 NFC 標籤 (Tag) 與讀取器 (Reader) 不會受到廠商的限制。這篇文章主要舉例說明如何解讀 NDEF。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/03/08/nfc_ndef/">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一頁"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一頁"></i></a>
   </nav>
 
 
@@ -1068,7 +1068,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-count">131</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -1081,7 +1081,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">541</span>
+        <span class="site-state-item-count">542</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
