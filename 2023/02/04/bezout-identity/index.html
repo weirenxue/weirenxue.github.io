@@ -289,13 +289,13 @@
 <li><p>證明 ($d \mid a$)</p>
 <p> $a$ 除以 $d$ 的<a target="_blank" rel="external nofollow noopener noreferrer" href="https://en.wikipedia.org/wiki/Euclidean_division">帶餘除法 (Euclidean division)</a> 為</p>
 <script type="math/tex; mode=display">a=dq+r \ 且\ q \in \mathbb{Z},0 \leq r \lt d</script><p> 進一步整理式子</p>
-<script type="math/tex; mode=display">r=a-dq=a-q(as+bt)=a(1-qs)-bqt</script><p> 已知 $(1-qs), -qt \in \mathbb{Z}$，所以 $r$ 實際上為 $ax+by$ 的形式，因此可以說 $r \in S \cup \{0\}$。而 $d$ 為 $S$ 集合中的最小正整數，使餘數 $r$ 不可能存在於 $S$ (因為 $r \lt d$)，即 $r$ 必須為 0，得證 $d \mid a$。</p>
+<script type="math/tex; mode=display">r=a-dq=a-q(as+bt)=a(1-qs)-bqt</script><p> 已知 $(1-qs), -qt \in \mathbb{Z}$，所以 $r$ 實際上為 $ax+by$ 的形式，因此可以說 $r \in S \cup \{0\}$。而 $d$ 為 $S$ 集合中的最小值，使餘數 $r$ 不可能存在於 $S$ (因為 $r \lt d$)，即 $r$ 必須為 0，得證 $d \mid a$。</p>
 </li>
 <li><p>同理可證，$d \mid b$。</p>
 </li>
 </ol>
 <h3 id="證明-c-leq-d"><a href="#證明-c-leq-d" class="headerlink" title="證明 $c \leq d$"></a>證明 $c \leq d$</h3><p>令 $c$ 為 $a$ 與 $b$ 的公因數，存在 $u$ 與 $v$ ($u, v \in \mathbb{Z}$) 使 $a = cu,b = cv$，則 $d$ 可表示為</p>
-<script type="math/tex; mode=display">d=ax+by=cux+cvy=c(ux+vy)</script><p>因為 $(ux+vy) \in Z$，所以 $c \mid d$，且 $d \gt0$，因此 $c \leq d$，也就是說 $d$ 為 $a$ 與 $b$ 的最大公因數。</p>
+<script type="math/tex; mode=display">d=ax+by=cux+cvy=c(ux+vy)</script><p>因為 $(ux+vy) \in Z$，所以 $c \mid d$，且 $d \gt0$，因此 $c \leq d$，也就是說 $d = gcd(a,b)$。</p>
 <div class="note success">
             <p>得證 <script type="math/tex">d=gcd(a,b)=ax+by\ \ \ x,y \in \mathbb{Z}</script></p>
           </div>
